@@ -1,9 +1,35 @@
 # P0A EVIDENCE REPORT
 
+## Machine-readable gate
+
+Fill this block before running `node scripts/hooks/pre-finish.mjs`.
+
+```json
+{
+  "verdict": "UNSET",
+  "android_build": "UNSET",
+  "android_install_run": "UNSET",
+  "automated_tests": "UNSET",
+  "human_playtest": "UNSET"
+}
+```
+
+Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`.
+
+For `PASS`, the required gate values are:
+- `android_build`: `PASS`
+- `android_install_run`: `PASS`
+- `automated_tests`: `PASS`
+- `human_playtest`: `RECORDED`
+
+For `PASS_WITH_REMEDIATION` or `FAIL`, every field must still be explicitly recorded; do not leave `UNSET`.
+
 ## Baseline
 
 - Repository:
 - Branch:
+- Resolved baseline ref:
+- Resolved baseline commit:
 - Starting HEAD:
 - Final HEAD:
 - Working tree status:
@@ -84,7 +110,7 @@ See `ASSET_SOURCES.csv`.
 
 ## Final Verdict
 
-**PASS / PASS WITH REMEDIATION / FAIL**
+Record the same verdict as the machine-readable gate above.
 
 ### Evidence supporting verdict
 
@@ -92,6 +118,7 @@ See `ASSET_SOURCES.csv`.
 
 ### Next action
 
-- Authorize `TASK-TIEU-TIEN-KY-PHASE0B-AUTHORITATIVE-MOBILE-FEASIBILITY-001`
-- or create one remediation task
-- or stop/rethink hypothesis
+Choose exactly one:
+- authorize `TASK-TIEU-TIEN-KY-PHASE0B-AUTHORITATIVE-MOBILE-FEASIBILITY-001`;
+- create one bounded remediation task;
+- stop/rethink the hypothesis.
