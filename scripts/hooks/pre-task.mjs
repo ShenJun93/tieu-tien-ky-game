@@ -20,8 +20,8 @@ function readAuthority(root) {
 let root;
 try { root = run('git', ['rev-parse', '--show-toplevel']); }
 catch { fail('not inside a git repository'); }
-
 process.chdir(root);
+
 const authority = readAuthority(root);
 if (authority.status !== 'ACTIVE') fail(`task status is ${authority.status}, expected ACTIVE`);
 
@@ -34,11 +34,22 @@ if (!authority.task_file || !fs.existsSync(path.join(root, authority.task_file))
   fail(`authorized task file is missing: ${authority.task_file ?? '(unset)'}`);
 }
 
+const baselineRef = authority.baseline_ref ?? 'refs/remotes/origin/main';
+let baseline;
+try { baseline = run('git', ['rev-parse', '--verify', baselineRef]); }
+catch { fail(`baseline ref is missing: ${baselineRef}; fetch/sync the repository before starting`); }
+
+let mergeBase;
+try { mergeBase = run('git', ['merge-base', 'HEAD', baseline]); }
+catch { fail(`cannot resolve merge-base with ${baselineRef}`); }
+if (mergeBase !== baseline) fail(`authorized branch does not contain current baseline ${baseline.slice(0, 12)} from ${baselineRef}`);
+
 const dirty = run('git', ['status', '--porcelain']);
 if (dirty && process.env.ALLOW_DIRTY !== '1') {
-  fail('working tree is not clean; inspect existing changes before starting (set ALLOW_DIRTY=1 only with explicit operator approval)');
+  fail('working tree is not clean; inspect existing changes before starting (ALLOW_DIRTY=1 requires explicit operator approval)');
 }
 
 console.log(`PRE-TASK PASS: ${authority.task_id}`);
 console.log(`branch: ${branch}`);
+console.log(`baseline: ${baseline}`);
 console.log(`task: ${authority.task_file}`);
