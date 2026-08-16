@@ -1,0 +1,56 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+Recordings/
+
+# Asset Store tools
+Assets/AssetStoreTools*
+
+# IDE / editor
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity crash / generated
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+
+# Local agent/tool scratch
+.codex/
+.claude/
+.playwright-mcp/
