@@ -39,11 +39,13 @@ No gameplay implementation has been accepted yet.
 
 ## Governance
 
-Minimal governance pack is being introduced through:
-`chore/minimal-agent-governance`
+Minimal governance set:
+- root rule: `AGENTS.md`;
+- skills: `execute-task`, `review-task`, `test-and-repair`;
+- lifecycle guards: `pre-task`, `scope-gate`, `pre-finish`;
+- state docs: `WORKFLOW.md`, `CURRENT_STATE.md`, `NEXT_TASK.md`.
 
-Required operating rule:
-`AGENTS.md`
+This is intentionally the minimum governance layer. Add new rules/skills/hooks only after a repeated real failure proves the need.
 
 ## Stop conditions
 
