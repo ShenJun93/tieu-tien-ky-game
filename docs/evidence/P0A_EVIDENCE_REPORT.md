@@ -7,18 +7,98 @@
   "verdict": "FAIL",
   "android_build": "BLOCKED_NOT_RUN",
   "android_install_run": "BLOCKED_NOT_RUN",
-  "automated_tests": "BLOCKED_NOT_RUN",
+  "automated_tests": "PASS",
   "human_playtest": "BLOCKED_NOT_RUN"
 }
 ```
 
-Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`. `PASS` is not claimed: none of
-the four gate fields reached `PASS`/`RECORDED`, and the PASS gate explicitly requires all
-of them. This report also does not claim `PASS_WITH_REMEDIATION`, because that verdict
-requires the micro-loop to have been judged "promising," and no runtime evidence exists
-to support that judgement — nothing described below has been compiled, opened, or run.
+Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`. `PASS` is not claimed: the
+Android build/install and human playtest gates have not been executed, and the PASS gate
+explicitly requires all four fields. This report also does not claim
+`PASS_WITH_REMEDIATION` here, because that verdict requires the micro-loop to have been
+judged "promising" by the Human/Game Director, which is outside this remediation's scope.
+See **Remediation Update** below for what changed: the Unity toolchain was found
+installed and used directly, so `automated_tests` now reflects a real, executed batch-mode
+result instead of the original unverified/blocked source-only draft.
 
-## Why every runtime/device gate is BLOCKED_NOT_RUN
+## Remediation Update — 2026-08-16 (touch multi-touch input fix)
+
+This is a follow-up remediation pass on top of the source-only draft below. Scope was
+bounded to one thing only: fixing `TouchInputReader` so that a left-half move touch and a
+right-half attack touch can be held independently on real mobile multi-touch hardware,
+instead of relying on `Pointer.current` (which only tracks one primary pointer and cannot
+represent two simultaneous, independent contacts).
+
+- Starting HEAD (this remediation): `d19fc9004a63627fb3fe90ea27c5a6b88ca13f42`
+- Final HEAD (this remediation): recorded in the commit that follows this report
+- Branch: `feat/p0a-local-microfun-spike`
+- Unity project open: **PASS** — Unity 6000.3.21f1 was found installed at
+  `E:\Tools\Unity\Hub\Editor\6000.3.21f1` (a Hub secondary install path) and opened this
+  project directly.
+- Compilation: **PASS** — `Unity.exe -batchmode -nographics -projectPath . -runTests
+  -testPlatform EditMode ...` completed a full asset import + script compile with 0
+  `error CS` and 0 `warning CS` entries in the log (including the previously-reported
+  `TouchInputReader.moveTouchId` unused-field warning, now resolved because the field is
+  genuinely used for per-touch ownership).
+- Automated tests: **PASS — 19/19** (15 pre-existing + 4 new), 0 failed, 0 inconclusive,
+  0 skipped. Exit code `0`. See **Automated Tests** below for the breakdown.
+- Android build/install/run and human playtest: still **BLOCKED_NOT_RUN** — not attempted
+  in this remediation pass; scope was bounded to the input fix only, per task instruction.
+
+### What changed and why
+
+`TouchInputReader` (`Assets/_Project/Input/TouchInputReader.cs`) previously read
+`Pointer.current`, which resolves to a single "primary" pointer and cannot represent two
+independent, simultaneous touches. It now:
+
+1. Enables `EnhancedTouchSupport` for the component's lifecycle (`OnEnable`/`OnDisable`,
+   with a self-healing re-check at the top of `Update()` — see Known Issues) and reads
+   `UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches` directly.
+2. Tracks a single owning touch (`moveTouchId`) for the left-half move zone: the first
+   left-half touch to begin claims ownership and keeps it — including while other touches
+   are active — until that exact touch ends or is canceled; other left-half touches
+   beginning in the meantime are ignored for ownership.
+3. Treats any right-half touch beginning in a frame as an attack trigger, independent of
+   whether a move touch is currently held, so a right-side tap works both on its own and
+   concurrently with an active left-side drag.
+4. Uses a per-frame local `bool` (not a counter) for the attack signal, so two right-half
+   touches beginning in the same frame still produce exactly one
+   `AttackTriggeredThisFrame = true`, not a double-trigger.
+5. Falls back to `Mouse.current` (left button, `Screen` half check) when no touchscreen is
+   present, preserving Editor mouse testing with the same left-move/right-attack split as
+   before.
+
+No InputActions assets, virtual joystick framework, generic input architecture, new
+package dependencies, UI, backend, or gameplay-balance changes were introduced.
+`Packages/manifest.json` gained one `"testables": ["com.unity.inputsystem"]` entry (no new
+package) so the already-installed Input System package's own `InputTestFixture` test
+utilities compile into the project's EditMode test assembly; the test asmdef gained
+references to `Unity.InputSystem` and `Unity.InputSystem.TestFramework` for the same
+reason.
+
+### Debugging note
+
+The first batch-mode test run (before the self-healing re-check in `Update()` was added)
+failed all 4 new tests with `InvalidOperationException: EnhancedTouch API is not enabled;
+call EnhancedTouchSupport.Enable()`, thrown from `Touch.get_activeTouches()`. This was not
+a multi-touch logic bug: `OnEnable()` had not taken effect by the time the test's explicit
+`reader.Update()` call ran, which is a timing quirk of Unity's EditMode NUnit test runner
+(a synchronous `[Test]` method does not pump the Editor's normal update loop the way
+interactive Play Mode does). The fix makes `Update()` defensively call
+`EnhancedTouchSupport.Enable()` if it hasn't already (tracked via an owned-by-this flag so
+`Enable`/`Disable` stay balanced), which is correct and harmless in real Play Mode too and
+made the second run pass 19/19.
+
+## Why every runtime/device gate is BLOCKED_NOT_RUN (original source-only draft)
+
+**Superseded for the Unity/compile/test gates** — see **Remediation Update** above. Unity
+6000.3.21f1 was later found installed at a Hub secondary install path
+(`E:\Tools\Unity\Hub\Editor\6000.3.21f1`) that this section's original search did not
+check, and has since been used directly to open, compile, and test the project. The
+Android SDK/device unavailability described below has not been re-verified and is not
+claimed current; Android/playtest gates remain `BLOCKED_NOT_RUN` simply because this
+remediation's scope did not include attempting them, not because the original blocker is
+confirmed to still apply.
 
 The operator machine used for this task has none of the required toolchain:
 
@@ -112,17 +192,27 @@ large serialized scene graph that could not be validated without the Editor.
 
 ## Automated Tests
 
+**Executed** via `Unity.exe -batchmode -nographics -projectPath . -runTests -testPlatform
+EditMode -testResults <path>` on Unity 6000.3.21f1. Result: **19/19 PASS, 0 FAIL, 0
+inconclusive, 0 skipped**, process exit code `0`.
+
 | Test | Result | Evidence |
 |---|---|---|
-| Attack rate/cooldown | BLOCKED_NOT_RUN | `Assets/_Project/Tests/EditMode/AttackCooldownTests.cs` written (5 cases over `Core.Cooldown`); never executed — no Unity/dotnet test runner available |
-| Water + Lightning reaction | BLOCKED_NOT_RUN | `Assets/_Project/Tests/EditMode/WaterLightningReactionTests.cs` written (4 cases over `ElementalReaction.TryTriggerConductiveBurst`); never executed |
-| No reaction outside water | BLOCKED_NOT_RUN | Covered by the same file (`LightningHit_OutsideWaterZone_DoesNotTrigger`, `PhysicalHit_OutsideWaterZone_DoesNotTrigger`); never executed |
-| Knockback bound | BLOCKED_NOT_RUN | `Assets/_Project/Tests/EditMode/KnockbackBoundTests.cs` written (6 cases over `KnockbackCalculator.ClampToBound`); never executed |
+| Attack rate/cooldown | PASS (5/5) | `Assets/_Project/Tests/EditMode/AttackCooldownTests.cs` over `Core.Cooldown` |
+| Water + Lightning reaction | PASS (2/4, see next row) | `Assets/_Project/Tests/EditMode/WaterLightningReactionTests.cs` over `ElementalReaction.TryTriggerConductiveBurst` |
+| No reaction outside water | PASS (2/4) | Same file (`LightningHit_OutsideWaterZone_DoesNotTrigger`, `PhysicalHit_OutsideWaterZone_DoesNotTrigger`) |
+| Knockback bound | PASS (6/6) | `Assets/_Project/Tests/EditMode/KnockbackBoundTests.cs` over `KnockbackCalculator.ClampToBound` |
+| Touch input multi-touch ownership (added in this remediation) | PASS (4/4) | `Assets/_Project/Tests/EditMode/TouchInputReaderMultiTouchTests.cs`, using the Input System's own `InputTestFixture`: left-touch owns movement and doesn't attack; a right-half touch beginning while the left move-touch is held triggers attack without resetting `MoveInput`; a second left-half touch cannot steal ownership from the first; two right-half touches beginning in the same frame still produce exactly one `AttackTriggeredThisFrame` |
 
-No test framework (Unity Test Framework or standalone `dotnet test`) is available on
-this machine, so none of these tests have ever produced a pass/fail result. They are
-written against plain, engine-light C# so they can be run with minimal ceremony once
-Unity is available.
+15 pre-existing tests + 4 new = 19 total. The new test file required no new package: it
+uses `UnityEngine.InputSystem.InputTestFixture` and `EnhancedTouch` test helpers
+(`BeginTouch`/`MoveTouch`/`EndTouch`/`SetTouch`) already shipped inside the installed
+`com.unity.inputsystem` package, exposed to the project's test assembly by adding
+`"testables": ["com.unity.inputsystem"]` to `Packages/manifest.json` and referencing
+`Unity.InputSystem`/`Unity.InputSystem.TestFramework` from the EditMode test asmdef. No
+generic test framework was invented. Physical Android device validation remains the
+authoritative evidence for real multi-touch feel and is not substituted by these
+simulated-touch unit tests.
 
 ## Human Playtest
 
@@ -156,27 +246,22 @@ fonts.
 
 ## Known Issues
 
-- No Unity Editor, dotnet SDK, Android SDK, or Android device is available in this
-  operator environment — this is the primary and only reason every runtime gate is
-  blocked, not a defect in the design or code as written.
-- None of the C# source has ever been compiled. It is written carefully against
-  documented Unity/Input System APIs, but undiscovered compile errors are possible and
-  should be expected as a normal first-open outcome, not a surprise.
-- `ProjectSettings/ProjectSettings.asset` and other Editor-generated default settings
-  files (`TagManager.asset`, `EditorBuildSettings.asset`, etc.) were deliberately **not**
-  hand-authored, to avoid inventing a large, version-sensitive serialized asset that
-  could not be validated and might actively block the project from opening. Only
-  `ProjectSettings/ProjectVersion.txt` (pins the Unity version) and `Packages/manifest.json`
-  (pins Input System, Test Framework, and the physics module) were written. On first
-  open, Unity will generate the rest with engine defaults; Company Name, Product Name,
-  and the Android application/package identifier still need to be set in Player Settings
-  before an Android build is possible.
+- **Superseded:** Unity 6000.3.21f1 was found installed (Hub secondary install path
+  `E:\Tools\Unity\Hub\Editor\6000.3.21f1`) and used directly for the Remediation Update
+  above — the project opens, compiles with 0 errors, and 19/19 EditMode tests pass.
+  Android SDK/NDK and device availability in the current operator environment were **not
+  re-checked** in this remediation pass (out of scope; see Remediation Update).
+- `TouchInputReader.Update()` defensively re-enables `EnhancedTouchSupport` on every frame
+  if it wasn't already (see Remediation Update → Debugging note). This is a one-line,
+  ref-counted, idempotent guard, not a behavior change, but is worth a second look in
+  review since it papers over an Editor EditMode-test timing quirk whose root cause was
+  not fully traced beyond "OnEnable had not taken effect yet."
 - The greybox scene has no on-screen visual joystick affordance; touch input works via
   invisible left/right screen-half zones only, which may cause first-touch confusion in
   a real playtest until visual feedback is added.
-- `Assets/_Project/Scenes/P0A_Greybox.unity` is not yet registered in Build Settings
-  (`EditorBuildSettings.asset` was not hand-authored — see above); it will need to be
-  added to Build Settings manually (or via "Add Open Scenes") before an Android build.
+- `Assets/_Project/Scenes/P0A_Greybox.unity` Build Settings registration status was not
+  re-verified in this remediation pass; confirm it's added to Build Settings (or via "Add
+  Open Scenes") before attempting an Android build.
 
 ## Scope Deviations
 
@@ -198,32 +283,30 @@ fonts.
 
 ## Final Verdict
 
-**FAIL**
+**FAIL** — unchanged by this remediation. Still not `PASS` and not
+`PASS_WITH_REMEDIATION`.
 
 ### Evidence supporting verdict
 
-- The PASS gate requires, among other things, that the project "opens cleanly in Unity
-  6000.3.21f1," that the Android build is reproducible and runs on a real device, and
-  that automated tests and human playtest evidence exist. None of these have occurred;
-  all are `BLOCKED_NOT_RUN` for a single, disclosed, environmental reason (no Unity/
-  Android toolchain on this machine).
-- `PASS_WITH_REMEDIATION` was considered and rejected: it requires the micro-loop to be
-  judged "promising," which requires at least some executed evidence. None exists yet —
-  nothing in this report should be read as evidence the design works, only that the
-  source exists and is ready to be validated.
-- This is not a design failure: nothing here suggests touch feel, hit readability, the
-  knockback interaction, or the Water+Lightning reaction are unworkable. The blocker is
-  purely environmental/tooling.
+- The PASS gate requires, among other things, that the Android build is reproducible and
+  runs on a real device, and that human playtest evidence exists. Both remain
+  `BLOCKED_NOT_RUN` — not attempted in this remediation pass, which was explicitly
+  bounded to the touch-input multi-touch fix only.
+- `PASS_WITH_REMEDIATION` is still not claimed: it requires the micro-loop to be judged
+  "promising" by the Human/Game Director, which is a judgment call outside this
+  remediation's scope, not something this report can self-certify.
+- What **has** changed since the original source-only draft: the Unity/compile/test
+  claims are no longer unverified. Unity 6000.3.21f1 opened this project, compiled it with
+  0 errors, and ran 19/19 EditMode tests (15 pre-existing + 4 new multi-touch tests) with
+  0 failures. See **Remediation Update** above.
+- This remains not a design failure: nothing here suggests touch feel, hit readability,
+  the knockback interaction, or the Water+Lightning reaction are unworkable. The
+  remaining blockers are the not-yet-attempted Android build/device/playtest gates.
 
 ### Next action
 
-Recommended: validate this source-only draft in Unity `6000.3.21f1` on the operator's
-machine (or any machine with the full toolchain) — open the project, resolve any
-compile errors, run the four EditMode test files under
-`Assets/_Project/Tests/EditMode/`, register the scene in Build Settings, set Player
-Settings (Company/Product Name, Android package identifier, minimum API level), produce
-an Android development build, install/run it on a real device, and record genuine
-device/playtest evidence in a follow-up pass over this same report.
-
-Do not authorize P0B on the basis of this report. Do not treat this FAIL as a design
-rejection — treat it as "implementation drafted, verification pending."
+One next action only, per this remediation's own scope limits: **physical Android device
+validation** — build, install, and run on a real Android device, and record genuine
+device/playtest evidence in a follow-up pass over this same report. Do not start P0B. Do
+not merge this branch. Do not claim final P0A `PASS` until that device/playtest evidence
+exists.
