@@ -86,7 +86,7 @@ Do not implement:
 
 ## Governance
 
-- `main` stores accepted baseline only.
+- `main` stores accepted baseline and repository-wide governance.
 - Implementation occurs on isolated task branches.
 - Human/Game Director is merge authority.
 - High-risk architecture/network/legal/release changes require independent evidence/review.
@@ -96,8 +96,12 @@ Do not implement:
 
 `TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001`
 
-The full master plan is maintained externally as:
+## Repository source of truth
 
-`TIEU_TIEN_KY_MASTER_GAME_AND_STUDIO_PLAN_v0.1.4_BRAND_CANON.md`
+Operational canon is maintained inside this repository:
 
-It should be added to this repository before the project leaves P0A so the repository becomes the canonical source of truth.
+`docs/master/MASTER_PLAN.md`
+
+Agents should not read the Master Plan by default. Read `CURRENT_STATE.md`, `NEXT_TASK.md`, and the active task first; consult the Master Plan only for architecture/canon decisions.
+
+Historical long-form research/reviewer rationale may be archived separately, but it does not override repository operational canon without an explicit canon change.
