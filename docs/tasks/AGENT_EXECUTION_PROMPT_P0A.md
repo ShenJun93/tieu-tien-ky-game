@@ -21,13 +21,26 @@ Your job is to create the smallest evidence-producing P0A spike. Do not improve 
 
 ## First actions
 
-Before edits:
+**Before running any repository hook or making any edit, synchronize the task branch to the current accepted `origin/main`:**
+
+```bash
+git fetch origin
+git switch feat/p0a-local-microfun-spike
+git merge --ff-only origin/main
+```
+
+If the fast-forward fails, **STOP + REPORT**. Do not merge normally, rebase, reset, force-update, or continue on a stale P0A branch.
+
+Then, before edits:
 1. Verify repository/root path.
 2. Verify branch `feat/p0a-local-microfun-spike` and clean working state.
-3. Verify exact Unity version availability: `6000.3.21f1`.
-4. Inventory existing files.
-5. Record capacity envelope in the evidence report.
-6. Produce a concise implementation plan mapped to the P0A PASS gate.
+3. Verify that `scripts/hooks/pre-task.mjs` on the checked-out branch contains the current baseline-ancestry check and then run `node scripts/hooks/pre-task.mjs`.
+4. Verify exact Unity version availability: `6000.3.21f1`.
+5. Inventory existing files.
+6. Record capacity envelope in the evidence report.
+7. Produce a concise implementation plan mapped to the P0A PASS gate.
+
+`baseline_ref` resolves the locally fetched `refs/remotes/origin/main`; therefore the fetch above is mandatory for every fresh P0A execution session.
 
 Do not change Unity version silently. If the exact patch is blocked by a concrete known issue, stop and report evidence.
 
