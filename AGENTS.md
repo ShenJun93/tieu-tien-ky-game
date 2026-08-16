@@ -11,7 +11,7 @@ Before changing files:
 3. the task file referenced by `NEXT_TASK.md`
 4. only the code/docs needed for that task
 
-Do not read the full Master Plan unless the current task requires an architecture/canon decision.
+Do not read `docs/master/MASTER_PLAN.md` unless the current task requires an architecture/canon decision.
 
 ## Core rules
 
@@ -25,6 +25,7 @@ Do not read the full Master Plan unless the current task requires an architectur
 8. No `PASS` without the evidence required by the task.
 9. No auto-merge. Human/Game Director is merge authority.
 10. Prefer the smallest deletion-friendly implementation that proves the hypothesis.
+11. Governance/control-plane files are outside normal implementation scope unless a governance task explicitly authorizes them.
 
 ## Required lifecycle guards
 
@@ -48,6 +49,18 @@ node scripts/hooks/pre-finish.mjs
 
 If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
 
+The guards resolve the task baseline from `NEXT_TASK.md`, verify committed scope, and require structured evidence. A hook PASS is process evidence only; it never substitutes for required device/playtest judgement.
+
+## Governance self-test
+
+When modifying `AGENTS.md`, `.agents/`, `scripts/hooks/`, or `docs/governance/`, run:
+
+```bash
+node --test scripts/hooks/hooks.test.mjs
+```
+
+Do not claim a governance repair passes without a fresh successful run.
+
 ## Skills
 
 Use the smallest matching skill:
@@ -61,7 +74,8 @@ Use the smallest matching skill:
 Every implementation task must report:
 
 - exact branch;
-- exact HEAD;
+- resolved baseline commit;
+- exact final HEAD;
 - changed files;
 - tests/builds run and results;
 - required device/playtest evidence when applicable;
