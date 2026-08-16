@@ -30,3 +30,18 @@ P0A is intentionally tiny: Android physical-device prototype, touch movement, on
 `main` is the canonical baseline. Feature implementation must occur on isolated task branches and return evidence before merge. Human/Game Director remains merge authority.
 
 This repository is private. The working title has not yet completed trademark/store/domain clearance.
+
+## P0A implementation status (unverified draft)
+
+The `Assets/`, `Packages/`, and `ProjectSettings/` scaffold for P0A was authored on an
+operator machine with no Unity Editor, no Android SDK, and no connected Android device
+available. The gameplay C# source, tests, and greybox scene are source-only and have
+**never been opened, compiled, run, built, or playtested**. See
+`docs/evidence/P0A_EVIDENCE_REPORT.md` for the exact gate-by-gate status.
+
+Before relying on this as a working prototype, open the project once in Unity
+`6000.3.21f1`: this will regenerate the remaining default `ProjectSettings/*` files
+(`ProjectSettings.asset`, `TagManager.asset`, etc.), which were intentionally left for
+the Editor to generate rather than hand-authored. Then set Company Name / Product Name /
+Android package identifier in Player Settings, run the EditMode tests under
+`Assets/_Project/Tests/EditMode/`, and build+run on a physical Android device.
