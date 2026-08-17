@@ -12,20 +12,19 @@ Updated: 2026-08-17
 
 ## Canon
 
-- Working title: **TIỂU TIÊN KÝ**
+- Working title: **TIỂU TIÊN KÝ**.
 - Standalone mobile-first Android + iOS product.
-- Gameplay orientation direction: **landscape-only** unless a later explicit canon change reopens it.
+- Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
 - Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
+- Built-in Render Pipeline is allowed during P0A; URP is a later production direction, not a P0A blocker.
 - P0B remains NOT AUTHORIZED.
 
 ## Active phase
 
 **P0A — Local Playable Core / Micro-Fun Validation**
 
-P0A remains local/offline and Android-first for evidence. Its operating goal is being rebaselined from isolated technical checks toward one bounded playable core loop that can be played continuously for roughly 2–3 minutes and judged as a game.
-
-The intended P0A loop remains narrow:
+P0A remains local/offline and Android-first for evidence. The operating goal is one bounded playable core loop that can be played continuously for roughly 2–3 minutes and judged as a game.
 
 ```text
 move
@@ -39,15 +38,9 @@ move
 
 This is still a prototype, not production architecture and not P0B.
 
-## Rebaseline in progress
+## Preserved implementation checkpoint
 
-Governance task: `#6 — P0A Fun-First Rebaseline & Playable Core Loop Authority`
-
-Branch: `chore/p0a-fun-first-rebaseline-001`
-
-### Local P0A checkpoint gate — SATISFIED
-
-The previously dirty, physically-tested P0A worktree was checkpointed without reset/clean/stash/revert and pushed normally to:
+The previously dirty, physically-tested P0A worktree was safely checkpointed and pushed normally to:
 
 `feat/p0a-local-microfun-spike@77f4599fce4844a106827ed79d8b0aa7357a95e4`
 
@@ -57,7 +50,7 @@ Verified remote ancestry:
 
 The checkpoint contains 37 intentional project files under `Assets/_Project/`, `ProjectSettings/`, and `docs/evidence/`. Generated/recovery/ambiguous local files were conservatively left uncommitted rather than discarded.
 
-The rebaseline PR may now proceed to **independent read-only review**. It must still not merge automatically; Human/Game Director remains merge authority.
+Checkpoint evidence records real Unity/Android/device progress but does **not** claim overall P0A PASS or Human/Game Director micro-fun acceptance.
 
 ## Locked operating decisions
 
@@ -65,17 +58,28 @@ The rebaseline PR may now proceed to **independent read-only review**. It must s
 - One meaningful product slice should normally produce one final human-facing APK.
 - Human/device gate is a hard STOP: no adb polling, scheduled retries, device monitoring, auto-install, auto-launch or USB-triggered resume.
 - Non-blocking technical debt is recorded and deferred when safe.
-- Independent review is risk-based; high-risk changes still require it, and aggregate P0A should normally receive an independent merge review.
-- A task-branch commit is a checkpoint, not acceptance/merge.
-- Built-in Render Pipeline is allowed for P0A. URP remains a later production direction and is not a P0A blocker.
+- Independent review is risk-based; high-risk changes still require it, and aggregate/canonical P0A integration should normally receive independent review.
+- A task-branch commit is a checkpoint, not acceptance or merge.
 - Portrait is not a supported gameplay orientation for the current product direction.
+- Repeated failure after one deliberate bounded remediation triggers design rethink instead of endless technical patching.
 
-## Current physical/evidence checkpoint
-
-Checkpoint `77f4599f...` preserves the current P0A technical state and reconciled evidence. The evidence records real Unity/Android/device progress but does **not** claim overall P0A PASS or Human/Game Director micro-fun acceptance. P0B remains NOT AUTHORIZED.
-
-## Next product execution after rebaseline
+## Current execution authority
 
 `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`
 
-Goal: produce one credit-efficient gameplay step that feels materially more like a game, then hand off one exact APK for a 2–3 minute Human playtest.
+Machine-readable authority:
+
+`docs/governance/NEXT_TASK.md`
+
+The task is executable on `feat/p0a-local-microfun-spike` only after that branch contains both:
+
+1. checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`; and
+2. the accepted current `origin/main` containing this Fun-First rebaseline.
+
+The repository baseline-ancestry guard is the execution gate.
+
+## Current product goal
+
+Produce one credit-efficient gameplay step that feels materially more like a game, hand off one exact APK, then obtain a 2–3 minute Human playtest verdict.
+
+No accepted P0A evidence → no P0B authorization.
