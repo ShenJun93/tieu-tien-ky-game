@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 
 ## Repository
 
@@ -8,53 +8,62 @@ Updated: 2026-08-16
 - Local operator path: `E:\GameDev\tieu-tien-ky-game`
 - Visibility: private
 - Default branch: `main`
-- `main` is the accepted canonical baseline and must also contain repository-wide governance/canon.
-- Exact task baseline is resolved from `docs/governance/NEXT_TASK.md` and recorded in task evidence.
+- Human/Game Director remains merge authority.
 
 ## Canon
 
 - Working title: **TIỂU TIÊN KÝ**
-- Product: mobile-first Android + iOS
-- Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**
-- Operational Master Plan: `docs/master/MASTER_PLAN.md`
-- Production architecture direction: Unity 6.3 LTS + Photon Fusion authoritative multiplayer + Nakama/PostgreSQL later when authorized
-- P0A intentionally excludes backend/cloud/iOS multiplayer implementation
+- Standalone mobile-first Android + iOS product.
+- Gameplay orientation direction: **landscape-only** unless a later explicit canon change reopens it.
+- Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
+- Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
+- P0B remains NOT AUTHORIZED.
 
 ## Active phase
 
-**P0A — Local Micro-Fun Spike**
+**P0A — Local Playable Core / Micro-Fun Validation**
 
-Implementation branch:
-`feat/p0a-local-microfun-spike`
+P0A remains local/offline and Android-first for evidence. Its operating goal is being rebaselined from isolated technical checks toward one bounded playable core loop that can be played continuously for roughly 2–3 minutes and judged as a game.
 
-Task:
-`TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001`
+The intended P0A loop remains narrow:
 
-Issue:
-`#1 — P0A — Local Micro-Fun Spike`
+```text
+move
+→ enemy pressure
+→ one basic attack
+→ readable impact + knockback
+→ environment / Water × Lightning consequence
+→ enemy defeat/reset
+→ continue playing
+```
 
-## Current authorization
+This is still a prototype, not production architecture and not P0B.
 
-P0A is AUTHORIZED.
-P0B is NOT AUTHORIZED.
+## Rebaseline in progress
 
-No gameplay implementation has been accepted yet.
+Governance task: `#6 — P0A Fun-First Rebaseline & Playable Core Loop Authority`
 
-## Governance
+Branch: `chore/p0a-fun-first-rebaseline-001`
 
-Minimal governance set:
-- root rule: `AGENTS.md`;
-- skills: `execute-task`, `review-task`, `test-and-repair`;
-- lifecycle guards: `pre-task`, `scope-gate`, `pre-finish`;
-- hook behavior tests: `scripts/hooks/hooks.test.mjs`;
-- state docs: `WORKFLOW.md`, `CURRENT_STATE.md`, `NEXT_TASK.md`.
+Safety gate: the remote P0A implementation branch at `54e90701c9172b1d7cef658c80b77261b22fa22c` is known to lag the operator's local physically-tested worktree. **Do not merge the rebaseline to `main` until that local P0A state is checkpoint-committed and pushed without reset/clean/stash/revert.**
 
-The guards must verify branch/baseline, canonicalized scope, committed diff and structured evidence. Add new rules/skills/hooks only after a repeated real failure proves the need.
+## Locked operating decisions
 
-## Stop conditions
+- One active write workstream.
+- One meaningful product slice should normally produce one final human-facing APK.
+- Human/device gate is a hard STOP: no adb polling, scheduled retries, device monitoring, auto-install, auto-launch or USB-triggered resume.
+- Non-blocking technical debt is recorded and deferred when safe.
+- Independent review is risk-based; high-risk changes still require it, and aggregate P0A should normally receive an independent merge review.
+- A task-branch commit is a checkpoint, not acceptance/merge.
+- Built-in Render Pipeline is allowed for P0A. URP remains a later production direction and is not a P0A blocker.
+- Portrait is not a supported gameplay orientation for the current product direction.
 
-- no evidence-backed P0A PASS -> no P0B;
-- no silent scope expansion;
-- no backend/cloud/economy/production-art work in P0A;
-- if `main` moves during active execution, stop and explicitly synchronize/re-authorize;
-- human operator remains merge authority.
+## Current physical evidence already obtained
+
+The local P0A work has already produced real Android physical-device evidence for movement, multitouch attack, camera follow, arena containment, knockback/environment interaction and the Water + Lightning reaction path. Those local changes/evidence have not all been reconciled to the remote branch yet, so this document intentionally does not invent an exact final local HEAD.
+
+## Next product execution after rebaseline
+
+`TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`
+
+Goal: produce one credit-efficient gameplay step that feels materially more like a game, then hand off one exact APK for a 2–3 minute Human playtest.

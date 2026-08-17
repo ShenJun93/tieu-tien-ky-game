@@ -1,6 +1,6 @@
 # AGENTS.md — TIỂU TIÊN KÝ
 
-This file is the root operating rule for every coding/review agent in this repository.
+This file is the root operating rule for coding/review agents in this repository.
 
 ## Mandatory read order
 
@@ -11,37 +11,67 @@ Before changing files:
 3. the task file referenced by `NEXT_TASK.md`
 4. only the code/docs needed for that task
 
-Do not read `docs/master/MASTER_PLAN.md` unless the current task requires an architecture/canon decision.
+Read `docs/master/MASTER_PLAN.md` only when the task needs a canon/architecture decision.
 
 ## Core rules
 
-1. Work only on the single `ACTIVE` task.
+1. Work only on the single `ACTIVE` write task unless independent parallelism is explicitly authorized.
 2. Never implement directly on `main`.
-3. Do not expand scope silently.
-4. Do not add a major dependency, service, SDK, architecture, or canon change without explicit authorization.
-5. Do not rewrite unrelated code while implementing a task.
-6. If task instructions contradict repository state or canon: **STOP + REPORT**. Do not guess.
-7. Executor does not self-accept its own high-risk work.
-8. No `PASS` without the evidence required by the task.
-9. No auto-merge. Human/Game Director is merge authority.
-10. Prefer the smallest deletion-friendly implementation that proves the hypothesis.
-11. Governance/control-plane files are outside normal implementation scope unless a governance task explicitly authorizes them.
+3. Optimize prototype work for the **product question**, not for infrastructure completeness.
+4. A P0A product task should create a player-perceptible step forward. Do not split one product slice into many tiny remediation tasks unless a blocker genuinely requires it.
+5. Non-blocking technical debt that is safe to repair later must be recorded and deferred, not allowed to derail the active product slice.
+6. Do not add a major dependency, service, SDK, architecture, or canon change without explicit authorization.
+7. Do not rewrite unrelated code while implementing a task.
+8. If task instructions contradict repository authority/canon: **STOP + REPORT**. Do not guess.
+9. No `PASS` without the evidence required by the task.
+10. No auto-merge. Human/Game Director is merge authority.
+11. Prefer deletion-friendly implementation over speculative frameworks.
+12. A commit on a task branch is a checkpoint, not acceptance and not merge. Commit intentionally so artifacts/evidence can be tied to an exact HEAD.
 
-## Required lifecycle guards
+## Human Gate — hard stop
 
-Run before edits:
+When the next required action belongs to the Human/Game Director:
+
+- STOP all commands.
+- Do not poll `adb` or another external condition.
+- Do not sleep/retry/wake on a schedule.
+- Do not monitor device connectivity.
+- Do not auto-install or auto-launch a build while waiting.
+- USB/device reconnection is **never** authorization to continue.
+- Resume only after an explicit new operator message.
+
+Report:
+
+```text
+BLOCKED_ON_HUMAN_GATE
+WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+```
+
+For physical mobile playtests, prefer one exact final human-facing APK per product slice. The Human installs/tests that exact artifact; do not silently rebuild after handoff.
+
+## Review policy
+
+Independent review is **risk-based**, not mandatory after every low-risk prototype iteration.
+
+Independent review is required for high-risk architecture/network/security/legal/release changes and should normally be used for the aggregate P0A merge gate. Low-risk P0A gameplay/presentation iterations may use executor self-check + Final Foreman review + Human physical acceptance.
+
+A writer must never present its own self-review as independent review.
+
+## Lifecycle guards
+
+Before edits:
 
 ```bash
 node scripts/hooks/pre-task.mjs
 ```
 
-Before writing/moving/deleting files, validate intended paths:
+Before writing/moving/deleting files:
 
 ```bash
 node scripts/hooks/scope-gate.mjs <path> [path...]
 ```
 
-Run before declaring `DONE`/`PASS`:
+Before declaring a task complete when the active task contract uses the guard:
 
 ```bash
 node scripts/hooks/pre-finish.mjs
@@ -49,39 +79,36 @@ node scripts/hooks/pre-finish.mjs
 
 If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
 
-The guards resolve the task baseline from `NEXT_TASK.md`, verify committed scope, and require structured evidence. A hook PASS is process evidence only; it never substitutes for required device/playtest judgement.
-
 ## Governance self-test
 
-When modifying `AGENTS.md`, `.agents/`, `scripts/hooks/`, or `docs/governance/`, run:
+When modifying `AGENTS.md`, `.agents/`, `scripts/hooks/`, or `docs/governance/`, run when a compatible local execution surface is available:
 
 ```bash
 node --test scripts/hooks/hooks.test.mjs
 ```
 
-Do not claim a governance repair passes without a fresh successful run.
+Do not claim a governance hook repair passes without a fresh successful run.
 
 ## Skills
 
 Use the smallest matching skill:
 
-- `.agents/skills/execute-task/SKILL.md` — normal authorized implementation.
-- `.agents/skills/review-task/SKILL.md` — independent review; read-only by default.
-- `.agents/skills/test-and-repair/SKILL.md` — reproduce a failure and make the smallest repair.
+- `.agents/skills/execute-task/SKILL.md` — authorized implementation/product slice.
+- `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it.
+- `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority.
 
 ## Required final report
 
-Every implementation task must report:
+Every implementation task reports:
 
-- exact branch;
-- resolved baseline commit;
-- exact final HEAD;
+- exact branch and HEAD;
 - changed files;
-- tests/builds run and results;
-- required device/playtest evidence when applicable;
-- known issues;
+- player-visible/product changes;
+- focused tests/builds and results;
+- required device/playtest evidence;
+- deferred technical debt;
 - scope deviations;
-- final verdict or recommendation;
+- final recommendation;
 - one proposed next action only.
 
-Do not replace evidence with statements such as “looks good”, “should work”, or “done”.
+Do not replace evidence with “looks good”, “should work”, or “done”.

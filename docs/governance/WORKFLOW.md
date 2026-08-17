@@ -1,106 +1,139 @@
 # WORKFLOW — TIỂU TIÊN KÝ
 
+## Operating principle
+
+The repository exists to help ship evidence about the game, not to maximize process.
+
+For prototype gameplay work:
+
+> **One task should be worth one task.**
+
+Prefer a bounded product slice that creates a visible/felt change over a chain of tiny technical tasks.
+
 ## Operating loop
 
 ```text
 Human / Game Director
-  -> Final Foreman defines ONE task
-  -> GitHub Issue + task branch
-  -> Executor agent implements
-  -> Evidence report
-  -> Independent reviewer
-  -> Final Foreman synthesis
-  -> Human merge authority
-  -> update CURRENT_STATE / NEXT_TASK
-  -> next task
+  → Final Foreman defines ONE product slice
+  → executor implements + self-checks
+  → focused automated verification
+  → ONE final human-facing APK
+  → HARD HUMAN GATE
+  → Human physical playtest
+  → Final Foreman synthesis
+  → PASS / one bounded remediation / redesign
 ```
 
-## One-task rule
+Independent review is inserted when risk warrants it, not mechanically after every low-risk prototype iteration.
 
-Only one primary task may be `ACTIVE` unless parallel work is explicitly authorized because workstreams are independent.
+## One-write-task rule
 
-## Task contract
+Only one primary write task may be `ACTIVE` unless explicit independent parallelism is authorized. Two writers must not mutate the same Unity worktree concurrently.
 
-Every task needs:
+Read-only review/research may run separately when useful.
 
-- objective;
-- authorized branch;
-- baseline policy/ref;
-- scope/allowed paths;
-- forbidden work;
-- acceptance gate;
-- evidence requirements;
-- next-task policy.
+## Product-slice rule
 
-## Roles
+A P0A implementation task should answer a product question and normally produce a player-perceptible change.
 
-- **Human/Game Director:** final product and merge authority.
-- **Final Foreman:** task design, synthesis, accept/remediate/stop recommendation.
-- **Executor:** implementation only within authority.
-- **Independent reviewer:** reviews evidence/diff; does not self-approve executor work.
+Inside one authorized slice, the executor may repair small local defects needed to complete the slice without opening a new task for each defect.
 
-Agents are roles, not permanent model assignments.
+Do not split into separate tasks for:
+- harmless warnings;
+- placeholder visual imperfections;
+- diagnostic tooling issues that do not block the playtest;
+- non-critical test-harness quirks;
+- technical debt that is safe to repair later.
+
+Record those under `DEFERRED TECHNICAL DEBT` and move on.
+
+Create a new remediation task only when the required fix materially crosses authority, changes architecture, or cannot safely be contained inside the current slice.
+
+## Failure budget
+
+After a Human playtest:
+
+- PASS → continue.
+- FAIL but direction remains promising → at most one deliberate bounded remediation for the same product hypothesis.
+- Repeated FAIL → rethink/change the design rather than stacking technical patches indefinitely.
+
+This rule does not prevent fixing a compile/crash/data-corruption blocker.
+
+## Human Gate — hard stop
+
+When Human action is required:
+
+```text
+BLOCKED_ON_HUMAN_GATE
+WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+```
+
+Then:
+- stop all commands;
+- no `adb` polling;
+- no device monitoring;
+- no scheduled sleep/retry/wakeup loops;
+- no automatic install/launch;
+- USB/device reconnection is never authorization to resume;
+- resume only after an explicit operator message.
+
+## Artifact discipline
+
+For physical mobile gates:
+
+```text
+Agent:
+code → focused tests → exact APK → report → HARD STOP
+
+Human:
+connect phone temporarily → install exact APK → disconnect if desired → play → report evidence
+```
+
+Prefer one final human-facing APK per product slice. Intermediate builds are implementation detail and should not cause repeated Human test cycles unless a blocker makes them unavoidable.
+
+Once an APK is handed off, do not silently rebuild it. If code changes, explicitly state that a new artifact supersedes the old one.
+
+## Review policy
+
+Independent review is mandatory for high-risk architecture/network/security/legal/release changes.
+
+For low-risk P0A gameplay/presentation/tuning work, executor self-check + Final Foreman review + Human physical evidence is normally sufficient.
+
+Before merging the aggregate P0A result to `main`, an independent read-only review is normally expected because the accumulated diff is larger and becomes canonical.
 
 ## Git
 
-- `main` = accepted baseline **plus repository-wide governance/canon**.
-- one branch per authorized task or bounded governance change.
+- `main` = accepted baseline + repository-wide governance/canon.
+- implementation occurs on authorized task branches.
 - no direct implementation on `main`.
-- small intentional commits.
 - no auto-merge.
-- a task branch must contain the baseline resolved from `NEXT_TASK.md`.
-- if `main` changes during an active task, stop and explicitly synchronize/re-authorize rather than silently drifting.
+- Human/Game Director is merge authority.
+- task-branch commits are encouraged as safe checkpoints and artifact anchors; commit != acceptance != merge.
+- never reset/clean/stash/revert operator work unless explicitly authorized.
+- if `main` changes during an active task, synchronize explicitly; do not silently drift.
 
-## Lifecycle
+## Lifecycle guards
 
-### Before work
+Use `pre-task`, `scope-gate`, and `pre-finish` when compatible with the active task contract. A guard PASS is process evidence only and never substitutes for gameplay/device evidence.
 
-```bash
-node scripts/hooks/pre-task.mjs
-```
+## Game-specific priorities
 
-This verifies task status, exact branch, clean tree, task file and current baseline ancestry.
+P0A prioritizes:
 
-### Before mutation
+1. player-perceptible fun/readability;
+2. Android physical evidence;
+3. simple code that can be deleted/retuned;
+4. focused tests for gameplay invariants;
+5. only then cleanup/polish.
 
-```bash
-node scripts/hooks/scope-gate.mjs <intended-path> [more-paths]
-```
+Technical perfection is not a P0A gate.
 
-Paths are canonicalized; absolute paths and traversal outside repository scope are blocked.
+## After every meaningful product slice
 
-### Before completion claim
+Record:
 
-```bash
-node scripts/hooks/pre-finish.mjs
-```
-
-This independently checks:
-- branch/baseline;
-- clean working tree;
-- the **committed diff** against allowed/forbidden paths;
-- machine-readable evidence state.
-
-A PASS from this hook is process evidence only. Required human/device/playtest acceptance remains separate.
-
-### When governance changes
-
-```bash
-node --test scripts/hooks/hooks.test.mjs
-```
-
-Governance/control-plane behavior must be verified before merge.
-
-## After every task
-
-Record exactly:
-
-1. What was completed?
-2. What decisions were locked?
-3. Did canon change?
-4. Which state/docs must be updated?
-5. What is the single next task?
-
-## Game-specific gate
-
-Passing automated tests does not prove game fun. When a task requires device/playtest evidence, missing human evidence blocks acceptance.
+1. What can the player now actually do/feel?
+2. What decisions became locked?
+3. What debt was intentionally deferred?
+4. What evidence was obtained?
+5. What is the single next product action?

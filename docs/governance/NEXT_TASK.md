@@ -4,10 +4,10 @@ Humans may read the summary below. Hooks read the JSON block.
 
 ```json
 {
-  "status": "ACTIVE",
-  "task_id": "TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001",
+  "status": "PENDING_REBASELINE_MERGE",
+  "task_id": "TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001",
   "branch": "feat/p0a-local-microfun-spike",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001.md",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md",
   "evidence_file": "docs/evidence/P0A_EVIDENCE_REPORT.md",
   "baseline_ref": "refs/remotes/origin/main",
   "allowed_paths": [
@@ -27,6 +27,7 @@ Humans may read the summary below. Hooks read the JSON block.
     "ios/",
     ".github/workflows/",
     "docs/governance/",
+    "docs/master/",
     "scripts/hooks/",
     ".agents/",
     "AGENTS.md"
@@ -35,16 +36,22 @@ Humans may read the summary below. Hooks read the JSON block.
 }
 ```
 
-## Baseline policy
+## Activation gate
 
-`pre-task` and `pre-finish` resolve `baseline_ref` locally and require that exact commit to be an ancestor of the task branch. With the one-active-workstream rule, a new `main` commit after task start is a synchronization event: stop, review the new baseline, then explicitly re-authorize before continuing.
+This task is intentionally **not ACTIVE yet**.
 
-The exact resolved baseline SHA must be copied into the P0A evidence report at task start.
+Before changing `status` to `ACTIVE`:
 
-## Summary
+1. checkpoint-commit and push the operator's current local P0A worktree without reset/clean/stash/revert;
+2. review/merge the Fun-First Rebaseline PR to `main` under Human/Game Director authority;
+3. synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` baseline without discarding the P0A checkpoint;
+4. record the resulting exact P0A HEAD/baseline in evidence;
+5. then explicitly activate this task.
 
-Build the smallest Android physical-device micro-fun spike: touch movement, one basic attack, one knockback/environment interaction, and one Water + Lightning reaction.
+Until those steps are complete, agents must not treat this file as authorization to start the Playable Core Loop.
 
-Do not start P0B, backend, cloud, economy, production art, iOS/TestFlight, replay, or a full Content Compiler.
+## Product summary
 
-The task file is the detailed authority. If the JSON metadata and task file disagree, stop and report the contradiction.
+After activation, build one bounded local Android playable core loop: movement, one basic attack with readable impact, one simple pressure enemy, knockback/environment play, Water × Lightning with a stronger consequence, quick defeat/reset and minimal score/readability. The Human should be able to play continuously for roughly 2–3 minutes and judge whether the prototype is beginning to feel like a game.
+
+P0B, backend, cloud, production art, economy, large AI/framework work and iOS release pipeline remain forbidden.
