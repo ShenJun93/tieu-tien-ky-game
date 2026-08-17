@@ -19,13 +19,13 @@ Consult `docs/master/MASTER_PLAN.md` only if a canon/architecture question actua
 
 1. Verify repository/root path.
 2. Verify branch `feat/p0a-local-microfun-spike`.
-3. Verify the operator's P0A checkpoint is present and no local work was discarded.
+3. Verify checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4` is an ancestor of the working branch and no local P0A work was discarded.
 4. Fetch current `origin/main` and verify the task branch contains the accepted rebaseline commit before implementation.
 5. Inspect dirty state. Do not reset/clean/stash/revert operator work.
 6. Run the repository pre-task guard when compatible with the activated task state.
-7. Inspect current local P0A code as source of truth; the remote pre-checkpoint implementation is not authoritative if the synchronized local branch contains later accepted work.
+7. Inspect current synchronized P0A code as source of truth; the old remote pre-checkpoint implementation is not authoritative.
 
-If the branch has not been synchronized to the accepted rebaseline, STOP + REPORT. Do not improvise a merge/rebase/reset strategy.
+If checkpoint `77f4599f...` is missing from branch ancestry or the branch has not been synchronized to the accepted rebaseline, STOP + REPORT. Do not improvise a merge/rebase/reset strategy.
 
 ## Working mode
 
