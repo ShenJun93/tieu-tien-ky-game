@@ -5,9 +5,9 @@ Humans may read the summary below. Hooks read the JSON block.
 ```json
 {
   "status": "ACTIVE",
-  "task_id": "TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001",
+  "task_id": "TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001",
   "branch": "feat/p0a-local-microfun-spike",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001.md",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md",
   "evidence_file": "docs/evidence/P0A_EVIDENCE_REPORT.md",
   "baseline_ref": "refs/remotes/origin/main",
   "allowed_paths": [
@@ -27,6 +27,7 @@ Humans may read the summary below. Hooks read the JSON block.
     "ios/",
     ".github/workflows/",
     "docs/governance/",
+    "docs/master/",
     "scripts/hooks/",
     ".agents/",
     "AGENTS.md"
@@ -35,16 +36,23 @@ Humans may read the summary below. Hooks read the JSON block.
 }
 ```
 
-## Baseline policy
+## Effective activation rule
 
-`pre-task` and `pre-finish` resolve `baseline_ref` locally and require that exact commit to be an ancestor of the task branch. With the one-active-workstream rule, a new `main` commit after task start is a synchronization event: stop, review the new baseline, then explicitly re-authorize before continuing.
+This authority becomes executable on `feat/p0a-local-microfun-spike` **only after this Fun-First rebaseline is accepted into `main` and that implementation branch is explicitly synchronized to the accepted `origin/main` without discarding checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`.**
 
-The exact resolved baseline SHA must be copied into the P0A evidence report at task start.
+The lifecycle guard enforces the accepted-main ancestry requirement. Before synchronization, the implementation branch does not contain this authority and must not continue the superseded technical-spike task.
 
-## Summary
+Required sequence:
 
-Build the smallest Android physical-device micro-fun spike: touch movement, one basic attack, one knockback/environment interaction, and one Water + Lightning reaction.
+1. independent review + Human merge of the Fun-First Rebaseline PR;
+2. synchronize `feat/p0a-local-microfun-spike` with accepted `origin/main` while preserving checkpoint `77f4599f...`;
+3. verify both the checkpoint and accepted rebaseline are ancestors of the resulting P0A HEAD;
+4. run the normal task guard and execute this task.
 
-Do not start P0B, backend, cloud, economy, production art, iOS/TestFlight, replay, or a full Content Compiler.
+No second governance activation task is required.
 
-The task file is the detailed authority. If the JSON metadata and task file disagree, stop and report the contradiction.
+## Product summary
+
+Build one bounded local Android playable core loop: movement, one basic attack with readable impact, one simple pressure enemy, knockback/environment play, Water × Lightning with a stronger consequence, quick defeat/reset and minimal score/readability. The Human should be able to play continuously for roughly 2–3 minutes and judge whether the prototype is beginning to feel like a game.
+
+P0B, backend, cloud, production art, economy, large AI/framework work and iOS release pipeline remain forbidden.
