@@ -17,12 +17,19 @@ namespace TieuTienKy.Gameplay
         KnockbackReceiver knockbackReceiver;
         TouchInputReader inputReader;
         float verticalVelocity;
+        float runMoveSpeedMultiplier = 1f;
 
         void Awake()
         {
             controller = GetComponent<CharacterController>();
             knockbackReceiver = GetComponent<KnockbackReceiver>();
             inputReader = GetComponent<TouchInputReader>();
+        }
+
+        /// <summary>Run-blessing-driven move speed multiplier (e.g. Phong Hành). Scales the base moveSpeed at motion time; never overwrites it.</summary>
+        public void SetRunMoveSpeedMultiplier(float multiplier)
+        {
+            runMoveSpeedMultiplier = multiplier;
         }
 
         void Update()
@@ -32,7 +39,7 @@ namespace TieuTienKy.Gameplay
 
             if (!knockbackReceiver.IsBeingKnockedBack && moveDirection.sqrMagnitude > 0.0001f)
             {
-                Vector3 motion = moveDirection * moveSpeed * Time.deltaTime;
+                Vector3 motion = moveDirection * moveSpeed * runMoveSpeedMultiplier * Time.deltaTime;
                 controller.Move(motion);
 
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
