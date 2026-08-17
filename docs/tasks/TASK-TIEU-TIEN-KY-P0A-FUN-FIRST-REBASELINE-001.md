@@ -52,14 +52,19 @@ Because this rebaseline changes repository-wide authority/canon, **independent r
 
 Human/Game Director remains the only merge authority. No auto-merge.
 
-## Activation gate after merge
+## Post-merge synchronization gate
+
+The new `NEXT_TASK` is already encoded as `ACTIVE` in this rebaseline candidate to avoid a second governance activation cycle, but it is not executable from the old P0A branch state.
 
 After Human merge of this rebaseline:
 
-1. synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` without discarding checkpoint `77f4599f...`;
-2. reconcile `docs/evidence/P0A_EVIDENCE_REPORT.md` only if the synchronization changes recorded truth;
-3. update `docs/governance/NEXT_TASK.md` status from `PENDING_REBASELINE_MERGE` to `ACTIVE` only when the synchronized P0A branch is ready;
-4. execute `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`.
+1. explicitly synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` without discarding checkpoint `77f4599f...`;
+2. verify both the checkpoint and accepted rebaseline/main are ancestors of the resulting P0A HEAD;
+3. reconcile `docs/evidence/P0A_EVIDENCE_REPORT.md` only if synchronization changes recorded truth;
+4. run the normal repository task guard;
+5. execute `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`.
+
+The baseline-ancestry guard is the execution gate. No second governance activation task is required.
 
 ## Review
 
@@ -69,9 +74,10 @@ Independent review must check:
 - no contradiction between `AGENTS`, `WORKFLOW`, `CURRENT_STATE`, `NEXT_TASK`, canonical baseline, Master Plan and the new Playable Core Loop task;
 - landscape-only and Built-in-RP-for-P0A decisions are consistently represented;
 - hard Human Gate semantics are consistent;
-- checkpoint/activation sequencing cannot discard the P0A checkpoint;
+- checkpoint/merge/synchronization sequencing cannot discard the P0A checkpoint;
+- `ACTIVE` authority cannot be executed until the P0A branch contains the accepted main baseline;
 - no automatic merge.
 
 ## Final outcome
 
-This task is merge-ready only after independent review returns an acceptable verdict. Human/Game Director decides merge. After merge, the P0A implementation branch must be synchronized and the new Playable Core Loop task explicitly activated; merge itself is not task activation.
+This task is merge-ready only after independent review returns an acceptable verdict. Human/Game Director decides merge. After merge, the P0A implementation branch must be explicitly synchronized before the new task is executed.
