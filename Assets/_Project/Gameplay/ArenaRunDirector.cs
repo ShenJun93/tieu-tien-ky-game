@@ -21,11 +21,13 @@ namespace TieuTienKy.Gameplay
         static readonly Color PursuerColor = new Color(0.8f, 0.3f, 0.3f);
         static readonly Color LancerColor = new Color(0.55f, 0.25f, 0.65f);
         static readonly Color BossColor = new Color(0.85f, 0.65f, 0.15f);
+        static readonly Color BossAccentColor = new Color(1f, 0.9f, 0.4f);
 
         const int PursuerMaxHealth = 2;
         const int LancerMaxHealth = 3;
         const int EliteMaxHealth = 4;
-        const int BossPlaceholderMaxHealth = 6;
+        const int BossMaxHealth = 18;
+        const float BossVisualScale = 1.35f;
 
         Transform playerRoot;
         Combatant playerCombatant;
@@ -208,15 +210,9 @@ namespace TieuTienKy.Gameplay
             yield return SettleAndAdvanceAfterCombat();
         }
 
-        /// <summary>
-        /// Placeholder boss stage kept minimal and reusable-foundation-only
-        /// (same Combatant/enemy spawn path) so the run remains completable
-        /// end to end. Replaced by a real MiniBossController in the mini-boss
-        /// task.
-        /// </summary>
         IEnumerator RunBossStage()
         {
-            SpawnEnemy(EnemyCombatProfile.Pursuer(chaseSpeedMultiplier: 0.9f), BossColor, BossPlaceholderMaxHealth, SpawnOffset(0f, 6f));
+            SpawnBoss(SpawnOffset(0f, 6f));
 
             yield return WaitForEnemiesCleared();
             if (defeated)
@@ -367,6 +363,39 @@ namespace TieuTienKy.Gameplay
             activeEnemies.Add(combatant);
             activeEnemyObjects.Add(enemy);
             combatant.Defeated += () => HandleEnemyDefeated(combatant, enemy);
+        }
+
+        /// <summary>
+        /// Same reusable Combatant/root+view spawn path as SpawnEnemy, with
+        /// a MiniBossController instead of EnemyCombatController and a
+        /// visibly larger/contrasting shell. On defeat this participates in
+        /// wave-clear tracking exactly like any other enemy.
+        /// </summary>
+        void SpawnBoss(Vector3 position)
+        {
+            var boss = new GameObject("MiniBoss");
+            boss.transform.position = position;
+
+            var controller = boss.AddComponent<CharacterController>();
+            controller.center = Vector3.zero;
+            controller.height = 2f * BossVisualScale;
+            controller.radius = 0.5f * BossVisualScale;
+
+            boss.AddComponent<KnockbackReceiver>();
+            var combatant = boss.AddComponent<Combatant>();
+            combatant.ConfigureMaxHealth(BossMaxHealth);
+
+            var view = boss.AddComponent<PrimitiveCharacterView>();
+            view.Build(BossColor, BossAccentColor, armed: true, visualScale: BossVisualScale);
+
+            boss.AddComponent<PrimitiveTelegraphVFX>();
+
+            var bossController = boss.AddComponent<MiniBossController>();
+            bossController.Initialize(playerRoot, playerCombatant);
+
+            activeEnemies.Add(combatant);
+            activeEnemyObjects.Add(boss);
+            combatant.Defeated += () => HandleEnemyDefeated(combatant, boss);
         }
 
         void HandleEnemyDefeated(Combatant combatant, GameObject enemyObject)
