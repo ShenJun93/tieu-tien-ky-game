@@ -2,7 +2,7 @@
 
 **Working title:** Tiểu Tiên Ký  
 **Tagline:** *Mỗi trận, một kỳ duyên.*  
-**Status:** Pre-production / P0A Fun-First rebaseline in progress  
+**Status:** Pre-production / P0A Fun-First  
 **Platforms:** Android + iOS (mobile-first); Windows is internal dev/debug only.  
 **Gameplay orientation:** Landscape-only.
 
@@ -25,7 +25,7 @@ Tiểu Tiên Ký is a standalone chibi cultivation PvPvE arena project. It combi
 
 ## Current phase
 
-P0A is being rebaselined from isolated technical checks to a bounded **Playable Core Loop**:
+P0A now targets a bounded **Playable Core Loop** rather than isolated technical checks:
 
 ```text
 move
@@ -47,6 +47,10 @@ Current operational canon:
 
 `docs/master/MASTER_PLAN.md`
 
+Preserved P0A implementation checkpoint before the Fun-First transition:
+
+`77f4599fce4844a106827ed79d8b0aa7357a95e4`
+
 ## Human Gate / artifact discipline
 
 For physical mobile slices:
@@ -61,6 +65,8 @@ No adb polling, automatic device monitoring, USB-triggered resume or silent rebu
 ## Governance
 
 `main` is the canonical baseline. Feature implementation occurs on authorized branches. A task-branch commit is a checkpoint, not acceptance or merge. Human/Game Director remains merge authority; no auto-merge.
+
+The current Playable Core task becomes executable on the P0A implementation branch only after that branch contains the accepted current `main` baseline and preserved checkpoint `77f4599f...`.
 
 P0B remains NOT AUTHORIZED until P0A receives accepted technical + Human playtest evidence.
 
