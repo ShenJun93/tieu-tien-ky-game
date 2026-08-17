@@ -16,6 +16,97 @@ Fill this block before running `node scripts/hooks/pre-finish.mjs` on the activa
 
 Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`. `PASS` is not claimed here: the PASS gate requires `android_install_run: PASS` and `human_playtest: RECORDED`, neither of which exist yet. `PASS_WITH_REMEDIATION` is not claimed either, since that verdict requires a Human/Game Director judgement this executor cannot self-certify. Per the established convention in this report (see history below), incomplete gate evidence is recorded as `FAIL`, not invented as a fourth state — this does not imply the implementation is judged bad, only that required evidence is not yet complete.
 
+## P0A+ Mini Arena Run Update — 2026-08-17 (reusable foundation slice, pending Human Gate)
+
+This is a materially larger slice than the P0A Playable Core Loop update below, executed as one INLINE MACRO EXECUTION per explicit Human/Game Director approval of the P0A+ design (`design/p0a-plus-mini-arena-run-001` @ `83c3aaf57770b244edebf9a5cb3f6616082d2053`) and implementation plan (`docs/superpowers/plans/2026-08-17-p0a-plus-mini-arena-run.md` @ `e3d1f65d19d182c77de2270f9abebd340efabaf9`), both read directly off the design branch without merging it. Governance note: `scripts/hooks/pre-task.mjs` PASSES mechanically (branch/baseline ancestry/clean-tree checks all succeed) but reports `task_id: TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001` because `docs/governance/NEXT_TASK.md` still names the prior, already-completed P0A slice rather than this approved P0A+ continuation. Per the operator's explicit instruction this mismatch is reported here rather than silently fixed by mutating governance files inside this gameplay execution; it did not make implementation unsafe (no genuine ancestry/scope failure), so execution proceeded.
+
+- **Starting HEAD**: `ce3b0219a373e3fa94a195cd1e40654ee7518046` (exact approved gameplay checkpoint, matches the "Final/checkpoint HEAD" of the P0A Playable Core Loop update below plus its own evidence-only follow-up commit).
+- **Final implementation HEAD (pre-evidence-commit)**: `b9e78aa427e168bfac714f2404dc8406668310d0`.
+- **Checkpoint commits** (8, one per plan task, each gated on a green focused-test run):
+  1. `d78e06e` — refactor(p0a): introduce reusable combatant health foundation
+  2. `934e986` — feat(p0a): add replaceable full-body sword cultivator view
+  3. `35711b6` — feat(p0a): add telegraphed enemy combat archetypes
+  4. `2327377` — feat(p0a): add reusable in-run cultivation blessings
+  5. `68e40bc` — feat(p0a): add reusable arena run and wave progression
+  6. `a43ecab` — feat(p0a): add reusable arena water and spirit-wind events
+  7. `103def1` — feat(p0a): add mini-boss culmination to arena run
+  8. `b9e78aa` — test(p0a): add Play Mode integration smoke test for full run wiring
+
+### Reusable systems created/replaced
+
+- `ActorHealth` (pure) + `Combatant` (Unity-facing health/Water-membership/reaction/knockback/defeat, `IWaterZoneAware`) replace `DummyTarget`-owned health and reaction state; shared by player, both enemy archetypes, and the boss. `HitInfo` now carries an attack-owned `ConductiveKnockbackMultiplier` instead of a hardcoded victim-side value.
+- `PrimitiveCharacterView` (replaceable `CharacterView`/Body/Head/Arms/Legs/WeaponSocket[/Sword] built only from Android-safe Cube/Capsule primitives, visual children stripped of gameplay colliders) + `SwordAttackView` (presentation-only weapon swing bound to new `BasicAttack.AttackStarted/Impacted/Recovered` events). Gameplay components live only on the actor root.
+- `EnemyAttackCycle` (pure CHASE → TELEGRAPH → ATTACK signal → RECOVERY) drives `EnemyCombatController` for two concrete profiles, `EnemyCombatProfile.Pursuer()`/`Lancer()`; `PrimitiveTelegraphVFX` gives each a readable warning marker. A Lancer never retargets once its telegraph begins.
+- `RunBlessingState` (pure Cơ Duyên stack tracker, 3 stacks max each, reset only on restart) + `BlessingChoiceHud` (temporary IMGUI selection shell, owns no state).
+- `ArenaRunProgression` (pure `Wave1 → Blessing1 → Wave2 → Blessing2 → EliteWave → Blessing3 → Boss → Victory` state machine, `MarkDefeat` from any combat stage, `Reset` to `Wave1`) + `ArenaRunDirector` (live wave spawning, blessing gates with a realtime settle before pausing `Time.timeScale` so an in-flight hit-stop can't be clobbered, victim/defeat/restart, kill count, run timer that naturally pauses at blessing gates via `Time.deltaTime`).
+- `ArenaEventCycle` (pure WARNING → ACTIVE → COOLDOWN → INACTIVE) drives `ArenaEventDirector`'s Water Shift (relocates the single Water Zone among 3 predefined positions) and Spirit Wind (telegraphed lane knockback, positioning only, never direct damage).
+- `BossAttackCycle` (deterministic `ArcStrike → Charge → RadialPulse → ArcStrike`) + `MiniBossController`, reusing `EnemyAttackCycle` (reconfigured per pattern) on the same `Combatant`/`CharacterController`/`KnockbackReceiver` foundation as the two enemy archetypes.
+- `RunHud` (temporary HP/stage/kills/timer + Victory/Defeat/RESTART panel) replaces `KillScoreHud`.
+- `DummyTarget` and `KillScoreHud` deleted once all references were migrated (Tasks 3/5).
+
+### What was visibly changed for the player
+
+- Player is a full-body chibi cultivator (head/torso/arms/legs) holding a visible Lightning-tinted sword that swings on attack, not a bare capsule.
+- Two readable enemy archetypes now telegraph before attacking (orange short footprint for Pursuer, red long lane for Lancer) with an exposed recovery window, instead of a single chase-only dummy.
+- A run now has real structure: two waves, an elite wave, three Cơ Duyên choice gates, two arena chaos events (Water Shift, Spirit Wind), a distinctly larger/tinted 3-pattern mini-boss, and a Victory/Defeat + RESTART panel — replacing the prior single-target infinite-respawn loop.
+- Player can take damage and die; the run now has a real end state and restart, not just a kill counter.
+
+### Player/enemy/boss major tuning (starting values, taken directly from the approved plan; not yet Human-tuned)
+
+- Player: 5 max HP; base Conductive multiplier 2.5× (now attack-owned via `HitInfo`, blessing-adjustable).
+- Pursuer: 2 HP, chase 2.8 m/s, attack range 1.55 m, telegraph 0.35 s, recovery 0.65 s, 1 dmg, knockback 3.5.
+- Lancer: 3 HP, chase 2.25 m/s, attack range 3.2 m, telegraph 0.65 s, recovery 1.0 s, 1 dmg, knockback 5, lunge 2.3 m, no retarget after telegraph begins.
+- Elite wave: same archetypes at 4 HP, +10-15% chase speed.
+- Mini-boss: 18 HP, 1.35× visual scale; ArcStrike (0.55s/0.8s, knockback 4), Charge (0.8s/1.1s, lunge 3.2m, knockback 6.5), RadialPulse (0.9s/1.2s, radial knockback 5).
+- No dash added; counterplay is movement + telegraph-read + recovery punish only, per plan.
+
+### Blessing effects
+
+- Lôi Kiếm (Thunder Sword): +0.75 Conductive multiplier per stack (base 2.5 → 3.25 → 4.0 → 4.75 at 3 stacks).
+- Phong Hành (Wind Stride): ×1.12 move speed and ×0.92 attack recovery per stack, compounding (e.g. 2 stacks → ×1.2544 speed).
+- Hộ Thể (Body Ward): +2 max HP per stack, applied via a full heal at the same gate.
+- All three cap at 3 stacks; `Reset()` returns to base and is called only on run restart.
+
+### Arena events
+
+- Water Shift: warned ~0.8s via a tinted destination marker, then relocates the single Water Zone among 3 predefined arena positions; existing `WaterZone` trigger-membership logic picks up Conductive opportunities at the new spot unchanged. Scheduled once during Wave 2 (+3.5s).
+- Spirit Wind: warned ~0.8s via a long lane marker, then applies a bounded knockback (magnitude 7) to any Combatant (player or enemy) caught inside — positioning only, never damage. Scheduled once during the Elite Wave (+2s), plus a follow-up Water Shift (+6s, skipped if the wave already cleared).
+- Both events are cancelled and any lingering warning marker is cleared on player defeat and on restart.
+
+### Final EditMode result
+
+**104/104 PASS**, 0 failed, 0 inconclusive, 0 skipped, 0 compile errors, 0 compile warnings. Run via the same locked `Unity 6000.3.21f1` batch harness (`-batchmode -nographics -runTests -testPlatform EditMode`, never combined with `-quit`) used throughout this project. New coverage added this slice: `ActorHealthTests`, `PrimitiveCharacterViewTests`, `EnemyAttackCycleTests`, `RunBlessingStateTests`, `ArenaRunProgressionTests`, `ArenaEventCycleTests`, `BossAttackCycleTests`; `WaterZoneLightningIntegrationTests` migrated from `DummyTarget` to `Combatant` in place. All pre-existing EditMode tests from the P0A Playable Core Loop update remain green.
+
+### Play Mode integration check (new this slice)
+
+EditMode cannot exercise `Awake`/coroutines/physics the way a live run does (this project's own established finding, see `WaterZoneLightningIntegrationTests`'s doc comments), so a small `TieuTienKy.Gameplay.PlayModeTests` assembly and one `[UnityTest]` (`GreyboxIntegrationSmokeTests.Bootstrap_BuildsFullyWiredRunReadyForWave1`) were added: it instantiates the real `GreyboxSceneBootstrapper`, lets it run two frames, and asserts the player is a fully-wired armed sword cultivator, `ArenaRunDirector` is at `Wave1` with a live spawned Pursuer, and `RunHud`/`BlessingChoiceHud`/`ArenaEventDirector`/`WaterZone`/`HazardObstacle`/all four arena walls exist. **1/1 PASS.** This is wiring proof only, not a fun/balance judgment.
+
+### Android build result
+
+**PASS** — `BuildPipeline.BuildPlayer` (temporary one-shot `Assets/Editor/P0APlusBuildScript.cs`, removed after use) reported `result=Succeeded totalErrors=0 totalWarnings=1`. The single warning's text was not resolved to readable content in the captured batch log (same class of non-blocking gap as the prior P0A update below); recorded as deferred debt. Build settings unchanged from the prior P0A build: Android, ARM64 (`AndroidTargetArchitectures: 2`), OpenGLES3 explicit/non-automatic, package `com.shenjun93.tieutienky.p0a`. Landscape-only orientation re-verified unchanged in `ProjectSettings.asset` (`allowedAutorotateToPortrait: 0`, `allowedAutorotateToPortraitUpsideDown: 0`, Landscape Left/Right `1`).
+
+- **Output APK**: `E:\GameDev\tieu-tien-ky-game\Builds\Android\P0A.apk`
+- **File size**: 16,647,776 bytes (~15.9 MB)
+- **Build timestamp**: 2026-08-17 23:27 (overwrites the prior P0A-checkpoint-era APK built 2026-08-17 17:04 at the same path)
+- **Physical device install/run and Human playtest: not attempted.** Per the Hard Human Gate, no `adb` install, launch, or device polling was performed for this artifact. This is the stop point.
+
+### Deferred nonblocking debt
+
+- Android build's single reported warning is not resolved to readable text in the captured batch log (same unresolved class as the prior P0A update). Does not block the Succeeded result; reconsider only if a related symptom appears on device.
+- The Boss stage's tuning (18 HP, pattern timings) is taken directly from the approved plan's starting values and has not been adjusted against observed play — no Human playtest data exists yet to tune against.
+- The P0A development diagnostic overlay's "WATER DIAG V2" section no longer tracks a specific enemy (enemies are now dynamic per-wave spawns rather than one persistent dummy); it stays null-safe and simply shows nothing there. Development-only, not a product requirement.
+- `docs/governance/NEXT_TASK.md` still names the prior P0A Playable Core Loop task (see governance note above); not mutated in this gameplay execution per operator instruction.
+
+### Scope deviations
+
+None beyond what the approved plan itself specifies. All changes stayed within `Assets/`, `docs/evidence/`; no networking, backend, economy, save/progression, or production-art work. No dash action was added (per plan, movement + telegraph-read + recovery-punish counterplay is tested first). The Boss stage briefly held a placeholder tougher-Pursuer stand-in between the Task 5 and Task 7 checkpoint commits within this same execution; by the final implementation HEAD it is the real `MiniBossController`.
+
+### Next action — exactly one
+
+`BLOCKED_ON_HUMAN_GATE` — Human installs the exact final APK (`E:\GameDev\tieu-tien-ky-game\Builds\Android\P0A.apk`) and plays one full run or until defeat, up to ~10 minutes, then reports evidence against the P0A+ design's acceptance questions (`docs/superpowers/specs/2026-08-17-p0a-plus-mini-arena-run-design.md` §15). Only after that evidence exists can this report's verdict be finalized. Do not auto-authorize or start P0B.
+
+---
+
 ## Remediation Update — 2026-08-17 (P0A Playable Core Loop implementation)
 
 This is a new implementation pass on top of the accepted Fun-First rebaseline (PR #7, `main@2cd409e50e291a9a1fb0b8346751df9112e7fba6`), executing `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001` per explicit operator continuation. It builds directly on the preserved local checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4` (see the checkpoint reconciliation update below) after that branch was synchronized to the accepted `origin/main`.
