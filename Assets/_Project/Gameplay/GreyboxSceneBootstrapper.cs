@@ -8,7 +8,7 @@ namespace TieuTienKy.Gameplay
 {
     /// <summary>
     /// Builds the entire P0A greybox arena procedurally at runtime from Unity
-    /// primitives (player, dummy target, water zone, hazard obstacle). This
+    /// primitives (player, enemies, water zone, hazard obstacle). This
     /// keeps the .unity scene file itself trivial (camera, light, and this
     /// single bootstrap object) instead of hand-authoring a large serialized
     /// scene graph outside the Editor.
@@ -25,9 +25,14 @@ namespace TieuTienKy.Gameplay
         static readonly Color GroundColor = new Color(0.55f, 0.55f, 0.55f);
         static readonly Color PlayerColor = new Color(0.9f, 0.75f, 0.2f);
         static readonly Color PlayerAccentColor = new Color(0.65f, 0.9f, 1f);
-        static readonly Color DummyColor = new Color(0.8f, 0.3f, 0.3f);
+        static readonly Color PursuerColor = new Color(0.8f, 0.3f, 0.3f);
+        static readonly Color LancerColor = new Color(0.55f, 0.25f, 0.65f);
         static readonly Color WaterZoneColor = new Color(0.2f, 0.5f, 0.9f, 0.6f);
         static readonly Color HazardColor = new Color(0.3f, 0.3f, 0.3f);
+
+        const int PlayerMaxHealth = 5;
+        const int PursuerMaxHealth = 2;
+        const int LancerMaxHealth = 3;
 
         static Material s_PrimitiveMaterial;
 
@@ -35,18 +40,23 @@ namespace TieuTienKy.Gameplay
         {
             GameObject ground = BuildGround();
             GameObject player = BuildPlayer(new Vector3(0f, 1f, 0f));
-            GameObject dummy = BuildDummyTarget(new Vector3(3f, 1f, 0f), player.transform);
+            player.GetComponent<Combatant>().ConfigureMaxHealth(PlayerMaxHealth);
+
+            var killHud = new GameObject("P0A_KillScoreHud").AddComponent<KillScoreHud>();
+
+            GameObject pursuer = BuildEnemy(EnemyCombatProfile.Pursuer(), new Vector3(3f, 1f, 0f), player.transform, PursuerColor, PursuerMaxHealth, killHud);
+            BuildEnemy(EnemyCombatProfile.Lancer(), new Vector3(-3f, 1f, 2f), player.transform, LancerColor, LancerMaxHealth, killHud);
+
             BuildWaterZone(new Vector3(3f, 0.5f, 0f), new Vector3(3f, 1f, 3f));
             BuildHazardObstacle(new Vector3(5.5f, 1f, 0f));
             BuildArenaBoundaries(ground);
 
-            player.transform.LookAt(dummy.transform.position);
+            player.transform.LookAt(pursuer.transform.position);
 
             AttachPlayerFollowCamera(player);
-            AttachKillScoreHud(dummy);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            AttachDiagnosticOverlay(ground, player, dummy);
+            AttachDiagnosticOverlay(ground, player, pursuer);
 #endif
         }
 
@@ -70,27 +80,19 @@ namespace TieuTienKy.Gameplay
             follow.Initialize(player.transform);
         }
 
-        /// <summary>Minimal Human-playtest readability: kill count increments whenever the DummyTarget it is wired to is defeated. No other coupling between UI and gameplay.</summary>
-        static void AttachKillScoreHud(GameObject dummy)
-        {
-            var hud = new GameObject("P0A_KillScoreHud").AddComponent<KillScoreHud>();
-            DummyTarget dummyTarget = dummy.GetComponent<DummyTarget>();
-            dummyTarget.Defeated += hud.RegisterKill;
-        }
-
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         /// <summary>
         /// Dev/Editor-only P0A diagnostic overlay (player/arena/input/perf
         /// readout, mini-map, RESET TEST). Attached here - rather than via
         /// Find-based resolution inside the overlay itself - so it receives
-        /// the exact Ground/Player/DummyTarget instances this bootstrap just
+        /// the exact Ground/Player/enemy instances this bootstrap just
         /// built, with no change to their behavior.
         /// </summary>
-        static void AttachDiagnosticOverlay(GameObject ground, GameObject player, GameObject dummy)
+        static void AttachDiagnosticOverlay(GameObject ground, GameObject player, GameObject trackedEnemy)
         {
             Debug.Log("[P0A_DIAG] ATTACH");
             var overlay = new GameObject("P0A_DiagnosticOverlay").AddComponent<P0ADiagnosticOverlay>();
-            overlay.Initialize(ground, player, dummy);
+            overlay.Initialize(ground, player, trackedEnemy);
         }
 #endif
 
@@ -134,22 +136,36 @@ namespace TieuTienKy.Gameplay
             return player;
         }
 
-        static GameObject BuildDummyTarget(Vector3 position, Transform chaseTarget)
+        /// <summary>
+        /// Same empty-root + replaceable-view split as BuildPlayer. This is
+        /// an intermediate integration only - permanent wave/spawn ownership
+        /// moves to ArenaRunDirector.
+        /// </summary>
+        static GameObject BuildEnemy(EnemyCombatProfile profile, Vector3 position, Transform playerTransform, Color tint, int maxHealth, KillScoreHud killHud)
         {
-            GameObject dummy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            dummy.name = "DummyTarget";
-            dummy.transform.position = position;
-            Tint(dummy, DummyColor);
+            var enemy = new GameObject(profile.Archetype == EnemyArchetype.Lancer ? "Lancer" : "Pursuer");
+            enemy.transform.position = position;
 
-            ReplaceWithCharacterController(dummy);
+            var controller = enemy.AddComponent<CharacterController>();
+            controller.center = Vector3.zero;
+            controller.height = 2f;
+            controller.radius = 0.5f;
 
-            dummy.AddComponent<KnockbackReceiver>();
-            dummy.AddComponent<DummyTarget>();
+            enemy.AddComponent<KnockbackReceiver>();
+            var combatant = enemy.AddComponent<Combatant>();
+            combatant.ConfigureMaxHealth(maxHealth);
 
-            var pressure = dummy.AddComponent<EnemyPressure>();
-            pressure.Initialize(chaseTarget);
+            var view = enemy.AddComponent<PrimitiveCharacterView>();
+            view.Build(tint, tint, armed: false, visualScale: 1f);
 
-            return dummy;
+            enemy.AddComponent<PrimitiveTelegraphVFX>();
+
+            var combatController = enemy.AddComponent<EnemyCombatController>();
+            combatController.Initialize(playerTransform, playerTransform.GetComponent<Combatant>(), profile);
+
+            combatant.Defeated += killHud.RegisterKill;
+
+            return enemy;
         }
 
         static void BuildWaterZone(Vector3 position, Vector3 size)
@@ -221,20 +237,6 @@ namespace TieuTienKy.Gameplay
 
             var collider = wall.AddComponent<BoxCollider>();
             collider.size = size;
-        }
-
-        static void ReplaceWithCharacterController(GameObject go)
-        {
-            var existingCollider = go.GetComponent<CapsuleCollider>();
-            if (existingCollider != null)
-            {
-                Destroy(existingCollider);
-            }
-
-            var controller = go.AddComponent<CharacterController>();
-            controller.center = Vector3.zero;
-            controller.height = 2f;
-            controller.radius = 0.5f;
         }
 
         static void Tint(GameObject go, Color color)
