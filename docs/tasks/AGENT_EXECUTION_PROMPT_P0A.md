@@ -1,111 +1,103 @@
-# AGENT EXECUTION PROMPT — TIỂU TIÊN KÝ P0A
+# AGENT EXECUTION PROMPT — TIỂU TIÊN KÝ P0A PLAYABLE CORE LOOP
 
 You are the implementation executor for:
 
-`TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001`
+`TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`
 
-## Authority
+Do not begin unless `docs/governance/NEXT_TASK.md` says this exact task is `ACTIVE`.
 
-Read first:
-1. `docs/CANONICAL_BASELINE.md`
-2. `docs/tasks/TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001.md`
-3. `docs/brand/TIEU_TIEN_KY_BRAND_ART_DIRECTION_v0.1.md`
+## Read first
 
-The task scope is authoritative. Do not expand it.
+1. `docs/governance/CURRENT_STATE.md`
+2. `docs/governance/NEXT_TASK.md`
+3. `docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md`
+4. only then the code needed for the slice
 
-## Working mode
-
-Act as a senior Unity gameplay engineer under strict scope governance.
-
-Your job is to create the smallest evidence-producing P0A spike. Do not improve architecture beyond what P0A needs.
+Consult `docs/master/MASTER_PLAN.md` only if a canon/architecture question actually appears.
 
 ## First actions
 
-**Before running any repository hook or making any edit, synchronize the task branch to the current accepted `origin/main`:**
-
-```bash
-git fetch origin
-git switch feat/p0a-local-microfun-spike
-git merge --ff-only origin/main
-```
-
-If the fast-forward fails, **STOP + REPORT**. Do not merge normally, rebase, reset, force-update, or continue on a stale P0A branch.
-
-Then, before edits:
 1. Verify repository/root path.
-2. Verify branch `feat/p0a-local-microfun-spike` and clean working state.
-3. Verify that `scripts/hooks/pre-task.mjs` on the checked-out branch contains the current baseline-ancestry check and then run `node scripts/hooks/pre-task.mjs`.
-4. Verify exact Unity version availability: `6000.3.21f1`.
-5. Inventory existing files.
-6. Record capacity envelope in the evidence report.
-7. Produce a concise implementation plan mapped to the P0A PASS gate.
+2. Verify branch `feat/p0a-local-microfun-spike`.
+3. Verify checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4` is an ancestor of the working branch and no local P0A work was discarded.
+4. Fetch current `origin/main` and verify the task branch contains the accepted rebaseline commit before implementation.
+5. Inspect dirty state. Do not reset/clean/stash/revert operator work.
+6. Run the repository pre-task guard when compatible with the activated task state.
+7. Inspect current synchronized P0A code as source of truth; the old remote pre-checkpoint implementation is not authoritative.
 
-`baseline_ref` resolves the locally fetched `refs/remotes/origin/main`; therefore the fetch above is mandatory for every fresh P0A execution session.
+If checkpoint `77f4599f...` is missing from branch ancestry or the branch has not been synchronized to the accepted rebaseline, STOP + REPORT. Do not improvise a merge/rebase/reset strategy.
 
-Do not change Unity version silently. If the exact patch is blocked by a concrete known issue, stop and report evidence.
+## Working mode
+
+**FUN-FIRST / PRODUCT-OUTCOME-FIRST / CREDIT-EFFICIENT**
+
+Implement the whole bounded playable core loop before stopping for safe non-blocking technical debt.
+
+Do not turn every small defect into a new remediation task.
+
+One product slice should produce one final Human-facing APK.
+
+## Hard constraints
+
+- Unity `6000.3.21f1`.
+- Android physical build/playtest.
+- Landscape-only gameplay; Portrait is unsupported.
+- Built-in RP is allowed in P0A; do not migrate to URP in this task.
+- One Basic Attack only.
+- One simple pressure enemy; no production AI/framework.
+- Keep Water × Lightning reaction and make its gameplay consequence clearly stronger than normal hit.
+- No P0B, networking, backend, economy, production art or large architecture work.
 
 ## Implementation priority
 
-1. Unity project boots.
-2. Android development build boots on a real device.
-3. Touch movement works.
-4. Basic attack/hit works and reads clearly.
-5. One knockback/environment interaction works.
-6. One `Water Zone + Lightning Hit -> Conductive Burst` micro-reaction works.
-7. Minimal deterministic tests pass.
-8. Human playtest evidence is recorded.
-9. `docs/evidence/P0A_EVIDENCE_REPORT.md` is completed.
+1. playable loop boots and remains stable;
+2. landscape orientation is actually enforced;
+3. enemy pressure makes movement matter;
+4. attack has fast readable anticipation → impact → recovery;
+5. hit/knockback feels materially clearer than the old debug-like attack;
+6. Water × Lightning is obviously stronger than normal hit;
+7. defeat/reset allows 2–3 minutes of uninterrupted play;
+8. minimal score/readability only if useful;
+9. focused tests;
+10. one final Android APK.
 
-## Engineering rules
+## Debt policy
 
-- Shared gameplay code must not depend directly on Android APIs.
-- Use primitives and placeholder materials/VFX.
-- Prefer deletion-friendly code over speculative frameworks.
-- Do not create a generic elemental engine.
-- Do not create a generic ability framework unless the tiny spike genuinely requires it.
-- Do not connect Photon Cloud in P0A.
-- If Fusion is used, keep it local/`GameMode.Single` compatible only.
-- No Nakama, PostgreSQL, Firebase, GameLift, Edgegap, IAP, economy, accounts, iOS/TestFlight, production art, smart Thiên Đạo, replay system or full Content Compiler.
-- No paid service or asset without explicit authorization.
-- Every external asset must be recorded in `ASSET_SOURCES.csv`.
+If an issue does not crash, corrupt state, invalidate gameplay, block build/playtest or create serious compounding debt, record it as:
 
-## Minimum tests
+`DEFERRED TECHNICAL DEBT`
 
-Keep tests limited to deterministic logic:
-- attack cooldown/rate limit;
-- Water + Lightning reaction triggers;
-- no reaction outside Water Zone;
-- knockback magnitude remains within the expected bound.
+and continue.
 
-Do not build a large test framework.
+Do not spend substantial time proving root causes irrelevant to the current product question.
 
-## Stop conditions
+## Build / Human Gate
 
-Stop and report instead of improvising if:
-- Unity 6000.3.21f1 cannot be used due to a concrete blocker;
-- Android build requires architecture/dependencies outside authorized scope;
-- Fusion forces an incompatible project change;
-- backend/cloud would be needed to proceed;
-- implementation would cross into P0B;
-- working tree contains unrelated user changes.
+Final artifact:
+
+`E:\GameDev\tieu-tien-ky-game\Builds\Android\P0A.apk`
+
+After final automated work:
+
+```text
+BLOCKED_ON_HUMAN_GATE
+WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+```
+
+Then STOP ALL COMMANDS.
+
+Never poll `adb`, monitor the phone, schedule retries, auto-install/launch, or resume because USB reconnects.
 
 ## Required final response
 
-Return exactly:
-1. `RESULT: PASS / PASS WITH REMEDIATION / FAIL`
-2. Exact starting HEAD and final HEAD
-3. Branch
-4. Changed files
-5. Unity/package versions
-6. Android device/build evidence
-7. Automated tests + results
-8. Human playtest observations
-9. Performance observations
-10. Known issues
-11. Scope deviations
-12. Asset/license inventory
-13. Recommendation: authorize P0B / one remediation task / stop
+Keep it short:
 
-Do not claim success without real Android-device and playtest evidence.
+1. player-visible/gameplay changes;
+2. exact changed files;
+3. major tuning values;
+4. tests/build result;
+5. deferred technical debt;
+6. exact HEAD and APK path;
+7. one Human 2–3 minute playtest instruction.
 
-Do not open or start P0B inside this task.
+Do not claim P0A PASS yourself. Do not merge. Do not start P0B.

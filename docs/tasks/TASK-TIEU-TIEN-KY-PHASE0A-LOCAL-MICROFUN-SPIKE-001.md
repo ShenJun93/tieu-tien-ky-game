@@ -1,5 +1,14 @@
 # TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001
 
+> **HISTORICAL / SUPERSEDED AS EXECUTION AUTHORITY (2026-08-17).**  
+> This file is preserved as the original P0A technical-spike contract for audit history. Do **not** execute it as the current task. Current machine-readable authority is `docs/governance/NEXT_TASK.md`; after the Fun-First rebaseline is activated, execution moves to `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`.
+>
+> The original contract below is intentionally preserved rather than rewritten so earlier evidence remains interpretable in its original scope.
+
+---
+
+## Original contract snapshot
+
 Status: **AUTHORIZED FOR DESIGN + IMPLEMENTATION**  
 Project: **TIỂU TIÊN KÝ**  
 Branch: `feat/p0a-local-microfun-spike`
