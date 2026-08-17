@@ -33,12 +33,15 @@ namespace TieuTienKy.Gameplay
         Combatant playerCombatant;
         PlayerController playerController;
         BasicAttack playerAttack;
+        PlayerBlessingPresentation playerBlessingPresentation;
         Vector3 playerSpawnPosition;
         int playerBaseMaxHealth;
+        ArenaBounds arenaBounds;
 
         BlessingChoiceHud blessingHud;
         RunHud runHud;
         ArenaEventDirector arenaEvents;
+        OnboardingHud onboardingHud;
 
         static readonly Vector3 SpiritWindImpulse = new Vector3(7f, 0f, 0f);
 
@@ -56,25 +59,39 @@ namespace TieuTienKy.Gameplay
         public int KillCount => killCount;
         public float ElapsedSeconds => elapsedSeconds;
 
+        /// <summary>Read-only current Cơ Duyên stacks, for RunHud's compact build readout. HUD reads this; it never mutates it.</summary>
+        public RunBlessingState Blessings => blessings;
+
+        /// <summary>Live boss Combatant while Stage == Boss, for RunHud's boss HP bar. Null outside the Boss stage or after the boss is defeated/reset.</summary>
+        public Combatant CurrentBoss { get; private set; }
+
+        public int ActiveEnemyCount => activeEnemies.Count;
+
         public void Initialize(
             Transform playerRootTransform,
             Combatant playerCombatantRef,
             PlayerController playerControllerRef,
             BasicAttack playerAttackRef,
+            PlayerBlessingPresentation playerBlessingPresentationRef,
             int baseMaxHealth,
             BlessingChoiceHud blessingChoiceHud,
             RunHud hud,
-            ArenaEventDirector arenaEventDirector)
+            ArenaEventDirector arenaEventDirector,
+            ArenaBounds arenaUsableBounds,
+            OnboardingHud onboardingHudRef)
         {
             playerRoot = playerRootTransform;
             playerCombatant = playerCombatantRef;
             playerController = playerControllerRef;
             playerAttack = playerAttackRef;
+            playerBlessingPresentation = playerBlessingPresentationRef;
             playerSpawnPosition = playerRootTransform.position;
             playerBaseMaxHealth = baseMaxHealth;
             blessingHud = blessingChoiceHud;
             runHud = hud;
             arenaEvents = arenaEventDirector;
+            arenaBounds = arenaUsableBounds;
+            onboardingHud = onboardingHudRef;
 
             playerCombatant.Defeated += HandlePlayerDefeated;
 
@@ -100,6 +117,8 @@ namespace TieuTienKy.Gameplay
             playerCombatant.ConfigureMaxHealth(playerBaseMaxHealth);
             playerController.SetRunMoveSpeedMultiplier(1f);
             playerAttack.SetRunModifiers(1f, RunBlessingState.BaseConductiveMultiplier);
+            playerBlessingPresentation?.ApplyStacks(0, 0, 0);
+            onboardingHud?.Show();
 
             running = true;
             StopAllCoroutines();
@@ -213,6 +232,7 @@ namespace TieuTienKy.Gameplay
         IEnumerator RunBossStage()
         {
             SpawnBoss(SpawnOffset(0f, 6f));
+            runHud.ShowBossArrivalCue();
 
             yield return WaitForEnemiesCleared();
             if (defeated)
@@ -261,6 +281,11 @@ namespace TieuTienKy.Gameplay
             playerController.SetRunMoveSpeedMultiplier(modifiers.MoveSpeedMultiplier);
             playerAttack.SetRunModifiers(modifiers.AttackRecoveryMultiplier, modifiers.ConductiveMultiplier);
             playerCombatant.SetMaxHealthAndRestore(playerBaseMaxHealth + modifiers.MaxHealthBonus);
+
+            playerBlessingPresentation?.ApplyStacks(
+                blessings.StackCount(BlessingId.ThunderSword),
+                blessings.StackCount(BlessingId.WindStride),
+                blessings.StackCount(BlessingId.BodyWard));
         }
 
         IEnumerator DelayedWaterShift(float delaySeconds)
@@ -336,7 +361,15 @@ namespace TieuTienKy.Gameplay
             progression.MarkDefeat();
         }
 
-        Vector3 SpawnOffset(float x, float z) => new Vector3(playerSpawnPosition.x + x, playerSpawnPosition.y, playerSpawnPosition.z + z);
+        /// <summary>
+        /// Root-cause fix for the physical-device Boss-stage blocker: offsets
+        /// from the player's CURRENT position (not the frozen run-start
+        /// anchor), clamped into the arena's usable interior, so a spawn -
+        /// most importantly the boss - is always within a bounded, reachable
+        /// distance of wherever the player actually is by that point in the
+        /// run.
+        /// </summary>
+        Vector3 SpawnOffset(float x, float z) => ArenaSpawnPlanner.ComputeSpawnPosition(playerRoot.position, x, z, arenaBounds);
 
         void SpawnEnemy(EnemyCombatProfile profile, Color tint, int maxHealth, Vector3 position)
         {
@@ -391,10 +424,11 @@ namespace TieuTienKy.Gameplay
             boss.AddComponent<PrimitiveTelegraphVFX>();
 
             var bossController = boss.AddComponent<MiniBossController>();
-            bossController.Initialize(playerRoot, playerCombatant);
+            bossController.Initialize(playerRoot, playerCombatant, arenaBounds);
 
             activeEnemies.Add(combatant);
             activeEnemyObjects.Add(boss);
+            CurrentBoss = combatant;
             combatant.Defeated += () => HandleEnemyDefeated(combatant, boss);
         }
 
@@ -403,6 +437,11 @@ namespace TieuTienKy.Gameplay
             activeEnemies.Remove(combatant);
             activeEnemyObjects.Remove(enemyObject);
             killCount++;
+
+            if (combatant == CurrentBoss)
+            {
+                CurrentBoss = null;
+            }
 
             if (enemyObject != null)
             {
@@ -422,6 +461,7 @@ namespace TieuTienKy.Gameplay
 
             activeEnemies.Clear();
             activeEnemyObjects.Clear();
+            CurrentBoss = null;
         }
     }
 }

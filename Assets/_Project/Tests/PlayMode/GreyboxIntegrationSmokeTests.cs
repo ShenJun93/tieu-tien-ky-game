@@ -18,7 +18,7 @@ namespace TieuTienKy.Gameplay.Tests
         {
             "Ground", "Player", "WaterZone", "HazardObstacle",
             "ArenaWall_North", "ArenaWall_South", "ArenaWall_East", "ArenaWall_West",
-            "P0A_RunHud", "P0A_BlessingChoiceHud", "P0A_ArenaEventDirector", "P0A_ArenaRunDirector",
+            "P0A_RunHud", "P0A_BlessingChoiceHud", "P0A_OnboardingHud", "P0A_ArenaEventDirector", "P0A_ArenaRunDirector",
             "P0A_DiagnosticOverlay", "Pursuer", "Lancer", "MiniBoss"
         };
 

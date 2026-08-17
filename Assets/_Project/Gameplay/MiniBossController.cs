@@ -53,14 +53,16 @@ namespace TieuTienKy.Gameplay
         EnemyAttackCycle timingCycle;
         Vector3 lockedForward = Vector3.forward;
         float verticalVelocity;
+        ArenaBounds arenaBounds;
 
         public BossPattern CurrentPattern => patternCycle.CurrentPattern;
         public EnemyAttackPhase Phase => timingCycle?.Phase ?? EnemyAttackPhase.Chase;
 
-        public void Initialize(Transform playerTransform, Combatant playerTargetCombatant)
+        public void Initialize(Transform playerTransform, Combatant playerTargetCombatant, ArenaBounds arenaUsableBounds)
         {
             player = playerTransform;
             playerCombatant = playerTargetCombatant;
+            arenaBounds = arenaUsableBounds;
             patternCycle.Reset();
             timingCycle = new EnemyAttackCycle(CurrentTiming().TelegraphSeconds, CurrentTiming().RecoverySeconds);
         }
@@ -148,6 +150,7 @@ namespace TieuTienKy.Gameplay
             if (timing.LungeDistance > 0f)
             {
                 controller.Move(lockedForward * timing.LungeDistance);
+                ClampIntoArenaIfOutside();
             }
 
             bool radial = patternCycle.CurrentPattern == BossPattern.RadialPulse;
@@ -166,6 +169,27 @@ namespace TieuTienKy.Gameplay
                 target.TakeHit(new HitInfo(timing.Damage, DamageElement.Physical, knockDirection * timing.KnockbackMagnitude));
                 break;
             }
+        }
+
+        /// <summary>
+        /// Defense-in-depth for the "charge/knockback cannot strand the
+        /// encounter permanently" acceptance requirement: the perimeter
+        /// walls already stop a Charge lunge physically, but if the boss
+        /// ever ends up outside the arena's usable interior (e.g. wedged at
+        /// a corner) this snaps it back in bounds instead of leaving it
+        /// unreachable for the rest of the run.
+        /// </summary>
+        void ClampIntoArenaIfOutside()
+        {
+            if (arenaBounds.Contains(transform.position))
+            {
+                return;
+            }
+
+            Vector3 clamped = arenaBounds.Clamp(transform.position);
+            controller.enabled = false;
+            transform.position = clamped;
+            controller.enabled = true;
         }
 
         static Vector3 SafeDirection(Vector3 direction)

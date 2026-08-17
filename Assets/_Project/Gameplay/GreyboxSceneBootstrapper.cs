@@ -22,6 +22,19 @@ namespace TieuTienKy.Gameplay
         const float ArenaWallThickness = 1f;
         const float ArenaWallBelowGroundMargin = 1f;
 
+        /// <summary>
+        /// Inset applied to the Ground's actual bounds to get the usable
+        /// interior for spawn placement (ArenaBounds) - large enough that
+        /// the largest actor (the 1.35x-scaled boss, radius ~0.675) never
+        /// spawns overlapping a perimeter wall. Root-cause note: the Ground
+        /// (a Unity primitive Plane at localScale (2,1,2)) is a 10x10 area
+        /// (+-5 on X/Z), not the +-10 previously assumed when the fixed
+        /// per-stage spawn offsets were authored (Boss's (0, 6) alone
+        /// exceeds the ground's own Z half-extent, landing at/past the
+        /// perimeter wall) - see docs/evidence/P0A_EVIDENCE_REPORT.md.
+        /// </summary>
+        const float ArenaUsableMargin = 0.75f;
+
         static readonly Color GroundColor = new Color(0.55f, 0.55f, 0.55f);
         static readonly Color PlayerColor = new Color(0.9f, 0.75f, 0.2f);
         static readonly Color PlayerAccentColor = new Color(0.65f, 0.9f, 1f);
@@ -48,8 +61,10 @@ namespace TieuTienKy.Gameplay
             BuildHazardObstacle(new Vector3(5.5f, 1f, 0f));
             BuildArenaBoundaries(ground);
 
+            ArenaBounds arenaBounds = ArenaBounds.FromGroundBounds(ground.GetComponent<Collider>().bounds, ArenaUsableMargin);
+
             AttachPlayerFollowCamera(player);
-            AttachRunDirector(player, waterZone);
+            AttachRunDirector(player, waterZone, arenaBounds);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             AttachDiagnosticOverlay(ground, player);
@@ -63,10 +78,11 @@ namespace TieuTienKy.Gameplay
         /// run from here on; this bootstrap builds only the static arena +
         /// player once.
         /// </summary>
-        static void AttachRunDirector(GameObject player, WaterZone waterZone)
+        static void AttachRunDirector(GameObject player, WaterZone waterZone, ArenaBounds arenaBounds)
         {
             var runHud = new GameObject("P0A_RunHud").AddComponent<RunHud>();
             var blessingHud = new GameObject("P0A_BlessingChoiceHud").AddComponent<BlessingChoiceHud>();
+            var onboardingHud = new GameObject("P0A_OnboardingHud").AddComponent<OnboardingHud>();
 
             var arenaEvents = new GameObject("P0A_ArenaEventDirector").AddComponent<ArenaEventDirector>();
             arenaEvents.Initialize(waterZone, waterZone.transform, WaterZonePositions);
@@ -77,10 +93,13 @@ namespace TieuTienKy.Gameplay
                 player.GetComponent<Combatant>(),
                 player.GetComponent<PlayerController>(),
                 player.GetComponent<BasicAttack>(),
+                player.GetComponent<PlayerBlessingPresentation>(),
                 PlayerMaxHealth,
                 blessingHud,
                 runHud,
-                arenaEvents);
+                arenaEvents,
+                arenaBounds,
+                onboardingHud);
 
             runHud.Initialize(director, player.GetComponent<Combatant>());
         }
@@ -160,6 +179,8 @@ namespace TieuTienKy.Gameplay
 
             var swordView = player.AddComponent<SwordAttackView>();
             swordView.Initialize(basicAttack, view.WeaponSocket);
+
+            player.AddComponent<PlayerBlessingPresentation>();
 
             return player;
         }

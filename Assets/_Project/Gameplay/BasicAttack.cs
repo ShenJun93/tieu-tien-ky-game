@@ -25,10 +25,14 @@ namespace TieuTienKy.Gameplay
         [SerializeField] float hitStopTimeScale = 0.05f;
         [SerializeField] float conductiveKnockbackMultiplier = 2.5f;
 
+        /// <summary>Distinct from Conductive Burst's cyan: this is the sword/attack's own Lôi Kiếm impact flash, present on every landed hit (even at 0 stacks) and never gated on Water.</summary>
+        static readonly Color LightningImpactFlashColor = new Color(1f, 0.95f, 0.4f, 1f);
+
         TouchInputReader inputReader;
         Combatant selfCombatant;
         AttackSequencer sequencer;
         float recoveryMultiplier = 1f;
+        int thunderStacks;
 
         public event System.Action AttackStarted;
         public event System.Action AttackImpacted;
@@ -72,6 +76,12 @@ namespace TieuTienKy.Gameplay
             }
         }
 
+        /// <summary>Lôi Kiếm stack level driving this attack's own impact-flash size/duration (BlessingPresentationMath). Never affects whether Conductive Burst fires - that stays Water-gated in Combatant/ElementalReaction.</summary>
+        public void SetLightningStacks(int newThunderStacks)
+        {
+            thunderStacks = Mathf.Max(0, newThunderStacks);
+        }
+
         void PerformAttack()
         {
             Vector3 origin = transform.position + transform.forward * (rangeMeters * 0.5f);
@@ -99,6 +109,11 @@ namespace TieuTienKy.Gameplay
             if (landedAnyHit)
             {
                 StartCoroutine(HitStop.Routine(hitStopSeconds, hitStopTimeScale));
+                PrimitiveBurstVFX.SpawnAt(
+                    origin,
+                    BlessingPresentationMath.LightningFlashPeakRadius(thunderStacks),
+                    BlessingPresentationMath.LightningFlashLifetimeSeconds(thunderStacks),
+                    LightningImpactFlashColor);
             }
         }
     }
