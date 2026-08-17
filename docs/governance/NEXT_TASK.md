@@ -40,13 +40,16 @@ Humans may read the summary below. Hooks read the JSON block.
 
 This task is intentionally **not ACTIVE yet**.
 
+The local P0A checkpoint safety gate is satisfied at:
+
+`feat/p0a-local-microfun-spike@77f4599fce4844a106827ed79d8b0aa7357a95e4`
+
 Before changing `status` to `ACTIVE`:
 
-1. checkpoint-commit and push the operator's current local P0A worktree without reset/clean/stash/revert;
-2. review/merge the Fun-First Rebaseline PR to `main` under Human/Game Director authority;
-3. synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` baseline without discarding the P0A checkpoint;
-4. record the resulting exact P0A HEAD/baseline in evidence;
-5. then explicitly activate this task.
+1. independently review and Human-merge the Fun-First Rebaseline PR to `main`;
+2. synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` baseline without discarding checkpoint `77f4599f...`;
+3. record the resulting exact P0A HEAD/baseline in evidence;
+4. then explicitly activate this task.
 
 Until those steps are complete, agents must not treat this file as authorization to start the Playable Core Loop.
 
