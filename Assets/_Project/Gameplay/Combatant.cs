@@ -3,34 +3,36 @@ using UnityEngine;
 namespace TieuTienKy.Gameplay
 {
     /// <summary>
-    /// Simple dummy target: idle, takes a hit, gets knocked back, tracks whether
-    /// it is standing in a WaterZone, and respawns at its start position.
-    /// No production AI.
+    /// Reusable Unity-facing combat foundation shared by the player and every
+    /// enemy: health/defeat state, Water membership, the existing Water +
+    /// Lightning reaction, and knockback. Does not self-respawn — run
+    /// ownership (when/whether to reset a defeated actor) belongs to
+    /// ArenaRunDirector, not this component.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(KnockbackReceiver))]
-    public sealed class DummyTarget : MonoBehaviour, IWaterZoneAware
+    public sealed class Combatant : MonoBehaviour, IWaterZoneAware
     {
         [SerializeField] int maxHealth = 3;
-        [SerializeField] float respawnDelaySeconds = 2f;
         [SerializeField] Color hitFlashColor = Color.white;
         [SerializeField] float hitFlashSeconds = 0.1f;
         [SerializeField] float conductiveBurstPeakRadius = 1.25f;
         [SerializeField] float conductiveBurstLifetimeSeconds = 0.35f;
         [SerializeField] Color conductiveBurstColor = new Color(0.4f, 0.8f, 1f, 1f);
-        [SerializeField] float conductiveKnockbackMultiplier = 2.5f;
 
-        int currentHealth;
-        Vector3 spawnPosition;
+        ActorHealth health;
         Renderer cachedRenderer;
         KnockbackReceiver knockbackReceiver;
         CharacterController controller;
 
-        public bool IsInWaterZone { get; private set; }
-        public bool IsDefeated => currentHealth <= 0;
-
-        /// <summary>Fired the moment this target's health reaches zero (before the respawn delay). KillScoreHud subscribes; no other coupling.</summary>
+        public event System.Action<int, int> Damaged; // current, max
         public event System.Action Defeated;
+
+        public bool IsDefeated => health != null && health.IsDefeated;
+        public bool IsInWaterZone { get; private set; }
+        public float HealthNormalized => health == null ? 0f : (float)health.CurrentHealth / health.MaxHealth;
+        public int CurrentHealth => health?.CurrentHealth ?? 0;
+        public int MaxHealth => health?.MaxHealth ?? maxHealth;
 
         /// <summary>Device-visible P0A diagnostic state for the Water+Lightning boundary (P0ADiagnosticOverlay reads these). Not gameplay state.</summary>
         public DamageElement? LastHitElement { get; private set; }
@@ -39,11 +41,30 @@ namespace TieuTienKy.Gameplay
 
         void Awake()
         {
-            cachedRenderer = GetComponent<Renderer>();
-            knockbackReceiver = GetComponent<KnockbackReceiver>();
             controller = GetComponent<CharacterController>();
-            spawnPosition = transform.position;
-            currentHealth = maxHealth;
+            knockbackReceiver = GetComponent<KnockbackReceiver>();
+            cachedRenderer = GetComponentInChildren<Renderer>();
+            EnsureHealth();
+        }
+
+        void EnsureHealth()
+        {
+            if (health == null)
+            {
+                health = new ActorHealth(maxHealth);
+            }
+        }
+
+        public void ConfigureMaxHealth(int value)
+        {
+            maxHealth = value;
+            EnsureHealth();
+            health.SetMaxHealthAndRestore(value);
+        }
+
+        public void SetMaxHealthAndRestore(int value)
+        {
+            ConfigureMaxHealth(value);
         }
 
         public void SetInWaterZone(bool inWaterZone)
@@ -53,12 +74,13 @@ namespace TieuTienKy.Gameplay
 
         public void TakeHit(HitInfo hit)
         {
+            EnsureHealth();
             if (IsDefeated)
             {
                 return;
             }
 
-            currentHealth -= hit.Damage;
+            bool justDefeated = health.ApplyDamage(hit.Damage);
 
             bool burstTriggered = ElementalReaction.TryTriggerConductiveBurst(IsInWaterZone, hit.Element);
             LastHitElement = hit.Element;
@@ -67,7 +89,7 @@ namespace TieuTienKy.Gameplay
             Debug.Log($"[P0A_WATER] TAKE_HIT isInWaterZone={IsInWaterZone} element={hit.Element} burstTriggered={burstTriggered}");
 #endif
 
-            Vector3 appliedImpulse = KnockbackCalculator.ApplyReactionMultiplier(hit.KnockbackImpulse, burstTriggered, conductiveKnockbackMultiplier);
+            Vector3 appliedImpulse = KnockbackCalculator.ApplyReactionMultiplier(hit.KnockbackImpulse, burstTriggered, hit.ConductiveKnockbackMultiplier);
             knockbackReceiver.ApplyKnockback(appliedImpulse);
 
             if (cachedRenderer != null)
@@ -84,30 +106,36 @@ namespace TieuTienKy.Gameplay
 #endif
             }
 
-            if (IsDefeated)
+            Damaged?.Invoke(CurrentHealth, MaxHealth);
+
+            if (justDefeated)
             {
                 Defeated?.Invoke();
-                Invoke(nameof(Respawn), respawnDelaySeconds);
             }
         }
 
-        void Respawn()
+        /// <summary>Restores full health and repositions without a self-respawn timer; the caller (ArenaRunDirector) decides when.</summary>
+        public void ResetCombatant(Vector3 position)
         {
-            currentHealth = maxHealth;
-            controller.enabled = false;
-            transform.position = spawnPosition;
-            controller.enabled = true;
-        }
+            EnsureHealth();
+            health.RestoreToFull();
+            IsInWaterZone = false;
+            LastHitElement = null;
+            LastReactionTriggered = false;
+            BurstSpawnCount = 0;
 
-        void OnControllerColliderHit(ControllerColliderHit hit)
-        {
-            if (!knockbackReceiver.IsBeingKnockedBack)
+            if (controller != null)
             {
-                return;
+                controller.enabled = false;
+                transform.position = position;
+                controller.enabled = true;
+            }
+            else
+            {
+                transform.position = position;
             }
 
-            var hazard = hit.collider.GetComponent<HazardObstacle>();
-            hazard?.OnImpact(GetComponent<Combatant>(), hit.point);
+            Damaged?.Invoke(CurrentHealth, MaxHealth);
         }
     }
 }

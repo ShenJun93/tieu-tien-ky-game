@@ -3,7 +3,7 @@ using UnityEngine;
 namespace TieuTienKy.Gameplay
 {
     /// <summary>
-    /// Simple obstacle/hazard. A DummyTarget being knocked back into this
+    /// Simple obstacle/hazard. A Combatant being knocked back into this
     /// reports the impact via OnImpact for a primitive, readable reaction.
     /// </summary>
     public sealed class HazardObstacle : MonoBehaviour
@@ -18,7 +18,7 @@ namespace TieuTienKy.Gameplay
             cachedRenderer = GetComponent<Renderer>();
         }
 
-        public void OnImpact(DummyTarget source, Vector3 hitPoint)
+        public void OnImpact(Combatant source, Vector3 hitPoint)
         {
             if (cachedRenderer != null)
             {

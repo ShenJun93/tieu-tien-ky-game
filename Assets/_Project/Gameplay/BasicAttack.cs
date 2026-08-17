@@ -23,26 +23,52 @@ namespace TieuTienKy.Gameplay
         [SerializeField] LayerMask hittableLayers = ~0;
         [SerializeField] float hitStopSeconds = 0.05f;
         [SerializeField] float hitStopTimeScale = 0.05f;
+        [SerializeField] float conductiveKnockbackMultiplier = 2.5f;
 
         TouchInputReader inputReader;
+        Combatant selfCombatant;
         AttackSequencer sequencer;
+        float recoveryMultiplier = 1f;
+
+        public event System.Action AttackStarted;
+        public event System.Action AttackImpacted;
+        public event System.Action AttackRecovered;
 
         void Awake()
         {
             inputReader = GetComponent<TouchInputReader>();
+            selfCombatant = GetComponent<Combatant>();
             sequencer = new AttackSequencer(anticipationSeconds, recoverySeconds);
         }
 
         void Update()
         {
-            if (inputReader.AttackTriggeredThisFrame)
+            if (inputReader.AttackTriggeredThisFrame && sequencer.TryBeginAttack(Time.time))
             {
-                sequencer.TryBeginAttack(Time.time);
+                AttackStarted?.Invoke();
             }
 
-            if (sequencer.Tick(Time.time, out _))
+            if (sequencer.Tick(Time.time, out bool recoveryEnded))
             {
                 PerformAttack();
+                AttackImpacted?.Invoke();
+            }
+
+            if (recoveryEnded)
+            {
+                AttackRecovered?.Invoke();
+            }
+        }
+
+        /// <summary>Sets the run-blessing-driven attack recovery/Conductive strength. Recreates the sequencer only while Idle, so an in-flight swing is never disrupted.</summary>
+        public void SetRunModifiers(float newRecoveryMultiplier, float newConductiveMultiplier)
+        {
+            recoveryMultiplier = newRecoveryMultiplier;
+            conductiveKnockbackMultiplier = newConductiveMultiplier;
+
+            if (sequencer.Phase == AttackPhase.Idle)
+            {
+                sequencer = new AttackSequencer(anticipationSeconds, recoverySeconds * recoveryMultiplier);
             }
         }
 
@@ -55,8 +81,8 @@ namespace TieuTienKy.Gameplay
 
             foreach (Collider hitCollider in hits)
             {
-                var target = hitCollider.GetComponentInParent<DummyTarget>();
-                if (target == null || target.IsDefeated)
+                var target = hitCollider.GetComponentInParent<Combatant>();
+                if (target == null || target == selfCombatant || target.IsDefeated)
                 {
                     continue;
                 }
@@ -65,7 +91,7 @@ namespace TieuTienKy.Gameplay
                 knockDirection.y = 0f;
                 knockDirection = knockDirection.sqrMagnitude > 0.0001f ? knockDirection.normalized : transform.forward;
 
-                var hit = new HitInfo(damage, DamageElement.Lightning, knockDirection * knockbackImpulseMagnitude);
+                var hit = new HitInfo(damage, DamageElement.Lightning, knockDirection * knockbackImpulseMagnitude, conductiveKnockbackMultiplier);
                 target.TakeHit(hit);
                 landedAnyHit = true;
             }

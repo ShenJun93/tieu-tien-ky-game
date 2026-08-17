@@ -30,7 +30,7 @@ namespace TieuTienKy.Diagnostics
         Collider groundCollider;
         CharacterController playerController;
         TouchInputReader inputReader;
-        DummyTarget dummyTarget;
+        Combatant dummyCombatant;
 
         int outOfBoundsEventCount;
         BoundarySide lastSide = BoundarySide.None;
@@ -51,7 +51,7 @@ namespace TieuTienKy.Diagnostics
             groundCollider = ground != null ? ground.GetComponent<Collider>() : null;
             playerController = player != null ? player.GetComponent<CharacterController>() : null;
             inputReader = player != null ? player.GetComponent<TouchInputReader>() : null;
-            dummyTarget = dummy != null ? dummy.GetComponent<DummyTarget>() : null;
+            dummyCombatant = dummy != null ? dummy.GetComponent<Combatant>() : null;
         }
 
         void Update()
@@ -129,12 +129,12 @@ namespace TieuTienKy.Diagnostics
             textBuilder.AppendLine($"Out-of-bounds events: {outOfBoundsEventCount}");
             textBuilder.AppendLine();
             textBuilder.AppendLine("WATER DIAG V2");
-            if (dummyTarget != null)
+            if (dummyCombatant != null)
             {
-                textBuilder.AppendLine($"DummyInWater: {(dummyTarget.IsInWaterZone ? "YES" : "NO")}");
-                textBuilder.AppendLine($"LastElement: {(dummyTarget.LastHitElement.HasValue ? dummyTarget.LastHitElement.Value.ToString() : "NONE")}");
-                textBuilder.AppendLine($"ReactionTriggered: {(dummyTarget.LastReactionTriggered ? "YES" : "NO")}");
-                textBuilder.AppendLine($"BurstSpawnCount: {dummyTarget.BurstSpawnCount}");
+                textBuilder.AppendLine($"DummyInWater: {(dummyCombatant.IsInWaterZone ? "YES" : "NO")}");
+                textBuilder.AppendLine($"LastElement: {(dummyCombatant.LastHitElement.HasValue ? dummyCombatant.LastHitElement.Value.ToString() : "NONE")}");
+                textBuilder.AppendLine($"ReactionTriggered: {(dummyCombatant.LastReactionTriggered ? "YES" : "NO")}");
+                textBuilder.AppendLine($"BurstSpawnCount: {dummyCombatant.BurstSpawnCount}");
             }
 
             GUI.Box(new Rect(10, 10, PanelWidth, PanelHeight), string.Empty);

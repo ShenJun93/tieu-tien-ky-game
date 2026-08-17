@@ -7,29 +7,31 @@ namespace TieuTienKy.Gameplay.Tests
 {
     /// <summary>
     /// Exercises the actual failed integration boundary end to end: WaterZone
-    /// membership -> DummyTarget.IsInWaterZone -> a Lightning hit via
-    /// DummyTarget.TakeHit -> whether a Conductive Burst primitive is
+    /// membership -> Combatant.IsInWaterZone -> a Lightning hit via
+    /// Combatant.TakeHit -> whether a Conductive Burst primitive is
     /// actually spawned. A test that only calls
     /// ElementalReaction.TryTriggerConductiveBurst(true, Lightning) does not
     /// cover this: it can't catch a membership flag that was never set, or
-    /// one that got stuck true after the Dummy left the zone. Membership is
+    /// one that got stuck true after the actor left the zone. Membership is
     /// driven via WaterZone.ApplyMembership directly (this project's
     /// EditMode batch harness cannot run live PhysX trigger simulation - see
     /// WaterZoneMembershipTests), but TakeHit and PrimitiveBurstVFX run for
     /// real, so a genuine burst GameObject is asserted to exist or not.
     ///
-    /// DummyTarget.Awake() is invoked explicitly via reflection after
+    /// Combatant.Awake() is invoked explicitly via reflection after
     /// AddComponent: outside Play Mode, a plain MonoBehaviour (no
     /// [ExecuteAlways]) never gets Awake called automatically by this
-    /// project's EditMode batch harness, which left currentHealth at C#'s
-    /// default 0 and made every TakeHit() call silently no-op through its
+    /// project's EditMode batch harness, which left health uninitialized and
+    /// made every TakeHit() call silently no-op through its
     /// "if (IsDefeated) return;" guard - a test-harness gap that produced
     /// two false-positive "no burst" passes before a DIAGNOSTIC assertion
-    /// caught it. Play Mode / the real device always calls Awake normally.
+    /// caught it (originally against DummyTarget). Play Mode / the real
+    /// device always calls Awake normally.
     /// </summary>
     public class WaterZoneLightningIntegrationTests
     {
         const string BurstName = "ConductiveBurstVFX_Primitive";
+        const float ConductiveKnockbackMultiplier = 2.5f;
 
         GameObject zoneObject;
         GameObject dummyObject;
@@ -54,7 +56,7 @@ namespace TieuTienKy.Gameplay.Tests
             }
         }
 
-        static DummyTarget BuildDummy()
+        static Combatant BuildDummy()
         {
             GameObject dummyObj = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             Object.DestroyImmediate(dummyObj.GetComponent<CapsuleCollider>());
@@ -63,10 +65,10 @@ namespace TieuTienKy.Gameplay.Tests
             controller.height = 2f;
             controller.radius = 0.5f;
             dummyObj.AddComponent<KnockbackReceiver>();
-            DummyTarget dummy = dummyObj.AddComponent<DummyTarget>();
+            Combatant dummy = dummyObj.AddComponent<Combatant>();
 
             InvokeAwake(dummy);
-            Assert.IsFalse(dummy.IsDefeated, "sanity: a freshly built, Awake-initialized dummy must not start defeated");
+            Assert.IsFalse(dummy.IsDefeated, "sanity: a freshly built, Awake-initialized combatant must not start defeated");
 
             return dummy;
         }
@@ -90,7 +92,7 @@ namespace TieuTienKy.Gameplay.Tests
         /// Unity's own docs recommend for EditMode tests that exercise real
         /// MonoBehaviour code paths.
         /// </summary>
-        static void TakeHitExpectingEditorMaterialWarning(DummyTarget dummy, HitInfo hit)
+        static void TakeHitExpectingEditorMaterialWarning(Combatant dummy, HitInfo hit)
         {
             LogAssert.Expect(LogType.Error, MaterialLeakWarning);
             dummy.TakeHit(hit);
@@ -102,7 +104,7 @@ namespace TieuTienKy.Gameplay.Tests
             zoneObject = new GameObject("Zone");
             WaterZone zone = zoneObject.AddComponent<WaterZone>();
 
-            DummyTarget dummy = BuildDummy();
+            Combatant dummy = BuildDummy();
             dummyObject = dummy.gameObject;
 
             zone.ApplyMembership(new[] { dummyObject.GetComponent<Collider>() });
@@ -121,7 +123,7 @@ namespace TieuTienKy.Gameplay.Tests
             // burst's collider-destroy warning.
             LogAssert.Expect(LogType.Error, MaterialLeakWarning);
             LogAssert.Expect(LogType.Error, DestroyInEditModeWarning);
-            dummy.TakeHit(new HitInfo(1, DamageElement.Lightning, Vector3.zero));
+            dummy.TakeHit(new HitInfo(1, DamageElement.Lightning, Vector3.zero, ConductiveKnockbackMultiplier));
 
             Assert.IsNotNull(GameObject.Find(BurstName), "Lightning hit inside the WaterZone must spawn a Conductive Burst");
         }
@@ -132,13 +134,13 @@ namespace TieuTienKy.Gameplay.Tests
             zoneObject = new GameObject("Zone");
             WaterZone zone = zoneObject.AddComponent<WaterZone>();
 
-            DummyTarget dummy = BuildDummy();
+            Combatant dummy = BuildDummy();
             dummyObject = dummy.gameObject;
 
             zone.ApplyMembership(System.Array.Empty<Collider>());
             Assert.IsFalse(dummy.IsInWaterZone, "sanity: never entered");
 
-            TakeHitExpectingEditorMaterialWarning(dummy, new HitInfo(1, DamageElement.Lightning, Vector3.zero));
+            TakeHitExpectingEditorMaterialWarning(dummy, new HitInfo(1, DamageElement.Lightning, Vector3.zero, ConductiveKnockbackMultiplier));
 
             Assert.IsNull(GameObject.Find(BurstName), "Lightning hit outside the WaterZone must NOT spawn a Conductive Burst");
         }
@@ -149,7 +151,7 @@ namespace TieuTienKy.Gameplay.Tests
             zoneObject = new GameObject("Zone");
             WaterZone zone = zoneObject.AddComponent<WaterZone>();
 
-            DummyTarget dummy = BuildDummy();
+            Combatant dummy = BuildDummy();
             dummyObject = dummy.gameObject;
             Collider dummyCollider = dummyObject.GetComponent<Collider>();
 
@@ -159,11 +161,11 @@ namespace TieuTienKy.Gameplay.Tests
             zone.ApplyMembership(System.Array.Empty<Collider>());
             Assert.IsFalse(dummy.IsInWaterZone, "sanity: exited zone");
 
-            TakeHitExpectingEditorMaterialWarning(dummy, new HitInfo(1, DamageElement.Lightning, Vector3.zero));
+            TakeHitExpectingEditorMaterialWarning(dummy, new HitInfo(1, DamageElement.Lightning, Vector3.zero, ConductiveKnockbackMultiplier));
 
             Assert.IsNull(
                 GameObject.Find(BurstName),
-                "Regression guard: a Dummy that left the WaterZone must not spawn a Conductive Burst - this is exactly the false-positive risk of a one-time 'set true, never clear' overlap check");
+                "Regression guard: an actor that left the WaterZone must not spawn a Conductive Burst - this is exactly the false-positive risk of a one-time 'set true, never clear' overlap check");
         }
     }
 }
