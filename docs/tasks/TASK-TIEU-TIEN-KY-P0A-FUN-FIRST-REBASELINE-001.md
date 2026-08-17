@@ -30,44 +30,48 @@ No gameplay code, Unity scene, package, PlayerSettings, build artifact or P0A lo
 11. `.utmp/` is ignored as generated agent/test scratch.
 12. Historical P0A technical-spike task remains audit history but is superseded as current execution authority.
 
-## Safety gate — mandatory before merge
+## Safety gate — SATISFIED
 
-The remote P0A branch `feat/p0a-local-microfun-spike` at `54e90701c9172b1d7cef658c80b77261b22fa22c` is known to lag the operator's current local physically-tested worktree.
+The local physically-tested P0A worktree has been safely checkpointed and pushed normally:
 
-Before this rebaseline can merge to `main`:
+- Previous remote HEAD: `54e90701c9172b1d7cef658c80b77261b22fa22c`
+- Checkpoint HEAD: `77f4599fce4844a106827ed79d8b0aa7357a95e4`
+- Branch: `feat/p0a-local-microfun-spike`
+- Ancestry verified: checkpoint is exactly one commit ahead of the previous remote HEAD.
+- 37 intentional project files were committed.
+- Generated/recovery/ambiguous local files were left uncommitted and were not discarded.
+- Push completed without force.
 
-- STOP any old active executor task;
-- preserve the current local P0A worktree exactly;
-- inspect generated/temp files;
-- checkpoint-commit all intentional P0A source/config/evidence work on the P0A branch;
-- do not reset/clean/stash/revert;
-- push the checkpoint;
-- record exact checkpoint HEAD;
-- then review this rebaseline PR.
+No reset, clean, stash, revert, rebase or force-update was used for the checkpoint.
 
-This branch must not attempt that local checkpoint itself.
+The checkpoint's evidence report remains non-PASS: Human/Game Director acceptance of the overall micro-fun/core loop is still pending and P0B remains NOT AUTHORIZED.
+
+## Remaining merge gate
+
+Because this rebaseline changes repository-wide authority/canon, **independent read-only review is still required before merge**.
+
+Human/Game Director remains the only merge authority. No auto-merge.
 
 ## Activation gate after merge
 
 After Human merge of this rebaseline:
 
-1. synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` without discarding the P0A checkpoint;
-2. reconcile `docs/evidence/P0A_EVIDENCE_REPORT.md` to current physical truth;
+1. synchronize `feat/p0a-local-microfun-spike` to the accepted new `origin/main` without discarding checkpoint `77f4599f...`;
+2. reconcile `docs/evidence/P0A_EVIDENCE_REPORT.md` only if the synchronization changes recorded truth;
 3. update `docs/governance/NEXT_TASK.md` status from `PENDING_REBASELINE_MERGE` to `ACTIVE` only when the synchronized P0A branch is ready;
 4. execute `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`.
 
 ## Review
 
-Because this changes repository-wide authority/canon, use independent read-only review before merge.
-
-Review must check:
+Independent review must check:
 - no accidental P0B authorization;
-- no gameplay/code mutation on this branch;
+- no gameplay/code mutation on this rebaseline branch;
 - no contradiction between `AGENTS`, `WORKFLOW`, `CURRENT_STATE`, `NEXT_TASK`, canonical baseline, Master Plan and the new Playable Core Loop task;
 - landscape-only and Built-in-RP-for-P0A decisions are consistently represented;
 - hard Human Gate semantics are consistent;
+- checkpoint/activation sequencing cannot discard the P0A checkpoint;
 - no automatic merge.
 
 ## Final outcome
 
-This task is complete only when the branch contains a coherent candidate rebaseline and a Draft PR is open. Human/Game Director decides merge after the local P0A checkpoint safety gate is satisfied.
+This task is merge-ready only after independent review returns an acceptable verdict. Human/Game Director decides merge. After merge, the P0A implementation branch must be synchronized and the new Playable Core Loop task explicitly activated; merge itself is not task activation.
