@@ -4,6 +4,9 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_Project/Scenes/P0A_Greybox.unity
+    guid: 698c34f64d6f8529ecd647a2dc7935d8
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

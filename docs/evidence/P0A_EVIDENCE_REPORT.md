@@ -21,6 +21,55 @@ See **Remediation Update** below for what changed: the Unity toolchain was found
 installed and used directly, so `automated_tests` now reflects a real, executed batch-mode
 result instead of the original unverified/blocked source-only draft.
 
+## Remediation Update — 2026-08-17 (P0A local checkpoint reconciliation)
+
+This is a **checkpoint reconciliation**, not a new verification pass. No tests or builds
+were re-run to produce this update; it summarizes toolchain/device evidence already
+obtained earlier in this session's local work on `feat/p0a-local-microfun-spike`. The
+underlying test/build artifacts are timestamped 2026-08-17 in `.utmp/` (untracked
+build/test scratch output — not part of this checkpoint commit).
+
+- **Automated tests**: **43/43 PASS**, 0 failed, 0 inconclusive, 0 skipped (up from the
+  19/19 recorded in the update below), per `.utmp/edittest-results.xml` (run at
+  2026-08-17 07:58:35Z). New coverage added since that update: arena boundary
+  containment (`GreyboxArenaBoundaryTests`, `BoundaryClassifierTests`), an IL2CPP
+  primitive-stripping regression check (`GreyboxPrimitiveStrippingTests`), player
+  follow-camera math (`PlayerFollowCameraMathTests`), and a `WaterZone` Enter/Exit
+  lifecycle rewrite with its own membership/integration coverage
+  (`WaterZoneMembershipTests`, `WaterZoneLightningIntegrationTests`).
+- **Android build**: reproducible build succeeds — `.utmp/androidbuild-log.txt` records
+  "P0A Android build SUCCEEDED" / "Build Finished, Result: Success" with 0 errors. The
+  one-off build helper script used to produce it (`Assets/Editor/P0AAndroidBuild.cs`) was
+  a temporary debugging tool and has since been removed; it is not present in the working
+  tree and is not part of this checkpoint.
+- **Physical Android gates already observed (prior build/install cycle, same session)**:
+  an earlier APK build was installed on a real device (vivo V2250, Android 15) and the
+  on-screen diagnostic overlay (`P0ADiagnosticOverlay`) was confirmed actually rendering,
+  after an initial "invisible overlay" symptom was root-caused to a stale installed APK
+  rather than a rendering defect.
+- **Water + Lightning technical reaction evidence already observed**: using the
+  overlay's water/element diagnostic counters (`DummyInWater`, `LastElement`,
+  `ReactionTriggered`, `BurstSpawnCount`), the conductive-burst reaction was observed
+  firing on-device in that same prior install cycle.
+- **Current placeholder/demo quality, unchanged**: the scene is still built entirely from
+  Unity primitives with runtime-assigned materials (see Assets/Licenses below); the
+  diagnostic overlay is a debug IMGUI HUD, not shipped UI.
+- **Not yet re-verified on a physical device**: code changes made after that prior
+  install cycle — the `WaterZone` Enter/Exit lifecycle rewrite, the
+  `PrimitiveBurstVFX` Sphere→Cube/shader fix (for IL2CPP `SphereCollider` stripping under
+  the Standard shader), and the new `PlayerFollowCamera` — have so far only been
+  validated via EditMode tests (batch-mode Editor, no real device), not by installing and
+  running the latest build on the vivo device. `adb`/USB device access was blocked in the
+  most recent local session; that is why this reconciliation does not claim a fresh
+  install/run pass. This gap is recorded here as deferred technical debt for the next
+  physical verification pass, not as a reopened regression.
+- **Human/Game Director acceptance**: still **not obtained**. No human playtest has been
+  run (tester count remains 0), and no Director judgment on whether the micro-loop is
+  "promising" has been made.
+- **P0B remains NOT AUTHORIZED.** This reconciliation does not change the Final Verdict
+  below: still **FAIL** — the human-playtest and Director-acceptance gates are required
+  for `PASS` or `PASS_WITH_REMEDIATION`, and neither has occurred.
+
 ## Remediation Update — 2026-08-16 (touch multi-touch input fix)
 
 This is a follow-up remediation pass on top of the source-only draft below. Scope was

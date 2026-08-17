@@ -28,6 +28,11 @@ namespace TieuTienKy.Gameplay
         public bool IsInWaterZone { get; private set; }
         public bool IsDefeated => currentHealth <= 0;
 
+        /// <summary>Device-visible P0A diagnostic state for the Water+Lightning boundary (P0ADiagnosticOverlay reads these). Not gameplay state.</summary>
+        public DamageElement? LastHitElement { get; private set; }
+        public bool LastReactionTriggered { get; private set; }
+        public int BurstSpawnCount { get; private set; }
+
         void Awake()
         {
             cachedRenderer = GetComponent<Renderer>();
@@ -57,9 +62,19 @@ namespace TieuTienKy.Gameplay
                 StartCoroutine(HitFeedbackFlash.FlashRoutine(cachedRenderer, hitFlashColor, hitFlashSeconds));
             }
 
-            if (ElementalReaction.TryTriggerConductiveBurst(IsInWaterZone, hit.Element))
+            bool burstTriggered = ElementalReaction.TryTriggerConductiveBurst(IsInWaterZone, hit.Element);
+            LastHitElement = hit.Element;
+            LastReactionTriggered = burstTriggered;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"[P0A_WATER] TAKE_HIT isInWaterZone={IsInWaterZone} element={hit.Element} burstTriggered={burstTriggered}");
+#endif
+            if (burstTriggered)
             {
                 PrimitiveBurstVFX.SpawnAt(transform.position, conductiveBurstPeakRadius, conductiveBurstLifetimeSeconds, conductiveBurstColor);
+                BurstSpawnCount++;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                Debug.Log($"[P0A_WATER] BURST_SPAWNED count={BurstSpawnCount}");
+#endif
             }
 
             if (IsDefeated)
