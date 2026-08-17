@@ -1,8 +1,21 @@
 # TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001
 
-Status: **PENDING ACTIVATION AFTER FUN-FIRST REBASELINE MERGE + P0A CHECKPOINT SYNC**  
+Status: **AUTHORIZED AFTER FUN-FIRST REBASELINE MERGE + P0A SYNC**  
 Project: **TIỂU TIÊN KÝ**  
 Execution branch: `feat/p0a-local-microfun-spike`
+
+## Activation condition
+
+Do not execute from the pre-rebaseline P0A branch state.
+
+This task becomes executable only when:
+
+1. the Fun-First rebaseline has been Human-merged to `main` after acceptable independent review;
+2. `feat/p0a-local-microfun-spike` has been explicitly synchronized to that accepted `origin/main` without discarding checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`;
+3. both checkpoint `77f4599f...` and accepted `origin/main` are ancestors of the resulting P0A HEAD;
+4. the normal repository task guard passes.
+
+No separate governance activation task is required after synchronization.
 
 ## Mission
 
