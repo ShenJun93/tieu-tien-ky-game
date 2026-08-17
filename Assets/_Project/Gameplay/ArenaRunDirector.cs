@@ -36,6 +36,9 @@ namespace TieuTienKy.Gameplay
 
         BlessingChoiceHud blessingHud;
         RunHud runHud;
+        ArenaEventDirector arenaEvents;
+
+        static readonly Vector3 SpiritWindImpulse = new Vector3(7f, 0f, 0f);
 
         readonly RunBlessingState blessings = new RunBlessingState();
         readonly ArenaRunProgression progression = new ArenaRunProgression();
@@ -58,7 +61,8 @@ namespace TieuTienKy.Gameplay
             BasicAttack playerAttackRef,
             int baseMaxHealth,
             BlessingChoiceHud blessingChoiceHud,
-            RunHud hud)
+            RunHud hud,
+            ArenaEventDirector arenaEventDirector)
         {
             playerRoot = playerRootTransform;
             playerCombatant = playerCombatantRef;
@@ -68,6 +72,7 @@ namespace TieuTienKy.Gameplay
             playerBaseMaxHealth = baseMaxHealth;
             blessingHud = blessingChoiceHud;
             runHud = hud;
+            arenaEvents = arenaEventDirector;
 
             playerCombatant.Defeated += HandlePlayerDefeated;
 
@@ -87,6 +92,7 @@ namespace TieuTienKy.Gameplay
 
             ClearActiveEnemies();
             blessingHud.Hide();
+            arenaEvents?.ResetEvents();
 
             playerCombatant.ResetCombatant(playerSpawnPosition);
             playerCombatant.ConfigureMaxHealth(playerBaseMaxHealth);
@@ -163,6 +169,8 @@ namespace TieuTienKy.Gameplay
             SpawnEnemy(EnemyCombatProfile.Pursuer(), PursuerColor, PursuerMaxHealth, SpawnOffset(4f, 2f));
             SpawnEnemy(EnemyCombatProfile.Lancer(), LancerColor, LancerMaxHealth, SpawnOffset(-4f, -2f));
 
+            StartCoroutine(DelayedWaterShift(3.5f));
+
             while (activeEnemies.Count >= startCount && !defeated)
             {
                 yield return null;
@@ -187,6 +195,9 @@ namespace TieuTienKy.Gameplay
         {
             SpawnEnemy(EnemyCombatProfile.Pursuer(chaseSpeedMultiplier: 1.15f), PursuerColor, EliteMaxHealth, SpawnOffset(5f, 0f));
             SpawnEnemy(EnemyCombatProfile.Lancer(chaseSpeedMultiplier: 1.1f), LancerColor, EliteMaxHealth, SpawnOffset(-5f, 0f));
+
+            StartCoroutine(DelayedSpiritWind(2f));
+            StartCoroutine(DelayedWaterShiftIfWaveStillActive(6f));
 
             yield return WaitForEnemiesCleared();
             if (defeated)
@@ -256,6 +267,52 @@ namespace TieuTienKy.Gameplay
             playerCombatant.SetMaxHealthAndRestore(playerBaseMaxHealth + modifiers.MaxHealthBonus);
         }
 
+        IEnumerator DelayedWaterShift(float delaySeconds)
+        {
+            yield return new WaitForSeconds(delaySeconds);
+            if (defeated || arenaEvents == null)
+            {
+                yield break;
+            }
+
+            yield return arenaEvents.PlayWaterShift();
+        }
+
+        IEnumerator DelayedWaterShiftIfWaveStillActive(float delaySeconds)
+        {
+            yield return new WaitForSeconds(delaySeconds);
+            if (defeated || arenaEvents == null || activeEnemies.Count == 0)
+            {
+                yield break;
+            }
+
+            yield return arenaEvents.PlayWaterShift();
+        }
+
+        IEnumerator DelayedSpiritWind(float delaySeconds)
+        {
+            yield return new WaitForSeconds(delaySeconds);
+            if (defeated || arenaEvents == null)
+            {
+                yield break;
+            }
+
+            yield return arenaEvents.PlaySpiritWind(CollectActors(), SpiritWindLane(), SpiritWindImpulse);
+        }
+
+        List<Combatant> CollectActors()
+        {
+            var actors = new List<Combatant>(activeEnemies);
+            if (playerCombatant != null)
+            {
+                actors.Add(playerCombatant);
+            }
+
+            return actors;
+        }
+
+        Bounds SpiritWindLane() => new Bounds(playerSpawnPosition, new Vector3(3f, 4f, 20f));
+
         IEnumerator WaitForEnemiesCleared()
         {
             while (activeEnemies.Count > 0 && !defeated)
@@ -279,6 +336,7 @@ namespace TieuTienKy.Gameplay
             Time.timeScale = 1f;
             blessingHud.Hide();
             ClearActiveEnemies();
+            arenaEvents?.ResetEvents();
             progression.MarkDefeat();
         }
 

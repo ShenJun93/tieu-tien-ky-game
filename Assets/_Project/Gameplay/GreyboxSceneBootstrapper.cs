@@ -32,17 +32,24 @@ namespace TieuTienKy.Gameplay
 
         static Material s_PrimitiveMaterial;
 
+        static readonly Vector3[] WaterZonePositions =
+        {
+            new Vector3(3f, 0.5f, 0f),
+            new Vector3(-3f, 0.5f, 3f),
+            new Vector3(3f, 0.5f, -4f)
+        };
+
         void Awake()
         {
             GameObject ground = BuildGround();
             GameObject player = BuildPlayer(new Vector3(0f, 1f, 0f));
 
-            BuildWaterZone(new Vector3(3f, 0.5f, 0f), new Vector3(3f, 1f, 3f));
+            WaterZone waterZone = BuildWaterZone(WaterZonePositions[0], new Vector3(3f, 1f, 3f));
             BuildHazardObstacle(new Vector3(5.5f, 1f, 0f));
             BuildArenaBoundaries(ground);
 
             AttachPlayerFollowCamera(player);
-            AttachRunDirector(player);
+            AttachRunDirector(player, waterZone);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             AttachDiagnosticOverlay(ground, player);
@@ -50,15 +57,19 @@ namespace TieuTienKy.Gameplay
         }
 
         /// <summary>
-        /// Wires the reusable run/wave/blessing owner and its two temporary
-        /// presentation shells (RunHud, BlessingChoiceHud). ArenaRunDirector
-        /// spawns and owns all enemies for the run from here on; this
-        /// bootstrap builds only the static arena + player once.
+        /// Wires the reusable run/wave/blessing/arena-event owner and its
+        /// two temporary presentation shells (RunHud, BlessingChoiceHud).
+        /// ArenaRunDirector spawns and owns all enemies and events for the
+        /// run from here on; this bootstrap builds only the static arena +
+        /// player once.
         /// </summary>
-        static void AttachRunDirector(GameObject player)
+        static void AttachRunDirector(GameObject player, WaterZone waterZone)
         {
             var runHud = new GameObject("P0A_RunHud").AddComponent<RunHud>();
             var blessingHud = new GameObject("P0A_BlessingChoiceHud").AddComponent<BlessingChoiceHud>();
+
+            var arenaEvents = new GameObject("P0A_ArenaEventDirector").AddComponent<ArenaEventDirector>();
+            arenaEvents.Initialize(waterZone, waterZone.transform, WaterZonePositions);
 
             var director = new GameObject("P0A_ArenaRunDirector").AddComponent<ArenaRunDirector>();
             director.Initialize(
@@ -68,7 +79,8 @@ namespace TieuTienKy.Gameplay
                 player.GetComponent<BasicAttack>(),
                 PlayerMaxHealth,
                 blessingHud,
-                runHud);
+                runHud,
+                arenaEvents);
 
             runHud.Initialize(director, player.GetComponent<Combatant>());
         }
@@ -152,7 +164,7 @@ namespace TieuTienKy.Gameplay
             return player;
         }
 
-        static void BuildWaterZone(Vector3 position, Vector3 size)
+        static WaterZone BuildWaterZone(Vector3 position, Vector3 size)
         {
             GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
             zone.name = "WaterZone";
@@ -163,7 +175,7 @@ namespace TieuTienKy.Gameplay
             var boxCollider = zone.GetComponent<BoxCollider>();
             boxCollider.isTrigger = true;
 
-            zone.AddComponent<WaterZone>();
+            return zone.AddComponent<WaterZone>();
         }
 
         static void BuildHazardObstacle(Vector3 position)
