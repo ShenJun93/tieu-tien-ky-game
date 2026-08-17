@@ -6,7 +6,11 @@ Execution branch: `feat/p0a-local-microfun-spike`
 
 ## Mission
 
-Turn the current technically-working P0A greybox into **one bounded playable local combat loop** that the Human/Game Director can play continuously for roughly **2–3 minutes** on Android and meaningfully judge as a game.
+Turn the checkpointed P0A greybox into **one bounded playable local combat loop** that the Human/Game Director can play continuously for roughly **2–3 minutes** on Android and meaningfully judge as a game.
+
+Checkpoint anchor before rebaseline integration:
+
+`77f4599fce4844a106827ed79d8b0aa7357a95e4`
 
 This task exists because isolated technical micro-remediation produced too little player-perceptible value for the credits/time spent.
 
@@ -42,7 +46,7 @@ Do not silently change Unity patch version.
 
 ## Preserve current proven core
 
-After activation, inspect the synchronized local P0A checkpoint first and preserve working behavior unless the current slice directly requires local tuning/repair:
+After activation, inspect the synchronized P0A branch beginning from checkpoint `77f4599f...` plus the accepted rebaseline integration. Preserve working behavior unless the current slice directly requires local tuning/repair:
 
 - mobile movement;
 - multitouch movement + Basic Attack;
