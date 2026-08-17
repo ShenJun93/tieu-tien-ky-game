@@ -24,6 +24,7 @@ namespace TieuTienKy.Gameplay
 
         static readonly Color GroundColor = new Color(0.55f, 0.55f, 0.55f);
         static readonly Color PlayerColor = new Color(0.9f, 0.75f, 0.2f);
+        static readonly Color PlayerAccentColor = new Color(0.65f, 0.9f, 1f);
         static readonly Color DummyColor = new Color(0.8f, 0.3f, 0.3f);
         static readonly Color WaterZoneColor = new Color(0.2f, 0.5f, 0.9f, 0.6f);
         static readonly Color HazardColor = new Color(0.3f, 0.3f, 0.3f);
@@ -102,19 +103,33 @@ namespace TieuTienKy.Gameplay
             return ground;
         }
 
+        /// <summary>
+        /// Empty gameplay root (no root Renderer/collider primitive) with a
+        /// replaceable PrimitiveCharacterView child. Gameplay components
+        /// live only on this root; a future imported character model can
+        /// replace CharacterView without touching combat/run logic.
+        /// </summary>
         static GameObject BuildPlayer(Vector3 position)
         {
-            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            player.name = "Player";
+            var player = new GameObject("Player");
             player.transform.position = position;
-            Tint(player, PlayerColor);
 
-            ReplaceWithCharacterController(player);
+            var controller = player.AddComponent<CharacterController>();
+            controller.center = Vector3.zero;
+            controller.height = 2f;
+            controller.radius = 0.5f;
 
             player.AddComponent<KnockbackReceiver>();
+            player.AddComponent<Combatant>();
             player.AddComponent<TouchInputReader>();
             player.AddComponent<PlayerController>();
-            player.AddComponent<BasicAttack>();
+            var basicAttack = player.AddComponent<BasicAttack>();
+
+            var view = player.AddComponent<PrimitiveCharacterView>();
+            view.Build(PlayerColor, PlayerAccentColor, armed: true, visualScale: 1f);
+
+            var swordView = player.AddComponent<SwordAttackView>();
+            swordView.Initialize(basicAttack, view.WeaponSocket);
 
             return player;
         }
