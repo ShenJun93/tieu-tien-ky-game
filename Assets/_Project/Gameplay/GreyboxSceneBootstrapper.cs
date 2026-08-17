@@ -25,14 +25,10 @@ namespace TieuTienKy.Gameplay
         static readonly Color GroundColor = new Color(0.55f, 0.55f, 0.55f);
         static readonly Color PlayerColor = new Color(0.9f, 0.75f, 0.2f);
         static readonly Color PlayerAccentColor = new Color(0.65f, 0.9f, 1f);
-        static readonly Color PursuerColor = new Color(0.8f, 0.3f, 0.3f);
-        static readonly Color LancerColor = new Color(0.55f, 0.25f, 0.65f);
         static readonly Color WaterZoneColor = new Color(0.2f, 0.5f, 0.9f, 0.6f);
         static readonly Color HazardColor = new Color(0.3f, 0.3f, 0.3f);
 
         const int PlayerMaxHealth = 5;
-        const int PursuerMaxHealth = 2;
-        const int LancerMaxHealth = 3;
 
         static Material s_PrimitiveMaterial;
 
@@ -40,24 +36,41 @@ namespace TieuTienKy.Gameplay
         {
             GameObject ground = BuildGround();
             GameObject player = BuildPlayer(new Vector3(0f, 1f, 0f));
-            player.GetComponent<Combatant>().ConfigureMaxHealth(PlayerMaxHealth);
-
-            var killHud = new GameObject("P0A_KillScoreHud").AddComponent<KillScoreHud>();
-
-            GameObject pursuer = BuildEnemy(EnemyCombatProfile.Pursuer(), new Vector3(3f, 1f, 0f), player.transform, PursuerColor, PursuerMaxHealth, killHud);
-            BuildEnemy(EnemyCombatProfile.Lancer(), new Vector3(-3f, 1f, 2f), player.transform, LancerColor, LancerMaxHealth, killHud);
 
             BuildWaterZone(new Vector3(3f, 0.5f, 0f), new Vector3(3f, 1f, 3f));
             BuildHazardObstacle(new Vector3(5.5f, 1f, 0f));
             BuildArenaBoundaries(ground);
 
-            player.transform.LookAt(pursuer.transform.position);
-
             AttachPlayerFollowCamera(player);
+            AttachRunDirector(player);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            AttachDiagnosticOverlay(ground, player, pursuer);
+            AttachDiagnosticOverlay(ground, player);
 #endif
+        }
+
+        /// <summary>
+        /// Wires the reusable run/wave/blessing owner and its two temporary
+        /// presentation shells (RunHud, BlessingChoiceHud). ArenaRunDirector
+        /// spawns and owns all enemies for the run from here on; this
+        /// bootstrap builds only the static arena + player once.
+        /// </summary>
+        static void AttachRunDirector(GameObject player)
+        {
+            var runHud = new GameObject("P0A_RunHud").AddComponent<RunHud>();
+            var blessingHud = new GameObject("P0A_BlessingChoiceHud").AddComponent<BlessingChoiceHud>();
+
+            var director = new GameObject("P0A_ArenaRunDirector").AddComponent<ArenaRunDirector>();
+            director.Initialize(
+                player.transform,
+                player.GetComponent<Combatant>(),
+                player.GetComponent<PlayerController>(),
+                player.GetComponent<BasicAttack>(),
+                PlayerMaxHealth,
+                blessingHud,
+                runHud);
+
+            runHud.Initialize(director, player.GetComponent<Combatant>());
         }
 
         /// <summary>
@@ -85,14 +98,17 @@ namespace TieuTienKy.Gameplay
         /// Dev/Editor-only P0A diagnostic overlay (player/arena/input/perf
         /// readout, mini-map, RESET TEST). Attached here - rather than via
         /// Find-based resolution inside the overlay itself - so it receives
-        /// the exact Ground/Player/enemy instances this bootstrap just
-        /// built, with no change to their behavior.
+        /// the exact Ground/Player instances this bootstrap just built, with
+        /// no change to their behavior. Enemies are now dynamically
+        /// spawned/despawned per wave by ArenaRunDirector, so there is no
+        /// single persistent instance left to track for the Water diagnostic
+        /// section; it stays null-safe and simply shows nothing there.
         /// </summary>
-        static void AttachDiagnosticOverlay(GameObject ground, GameObject player, GameObject trackedEnemy)
+        static void AttachDiagnosticOverlay(GameObject ground, GameObject player)
         {
             Debug.Log("[P0A_DIAG] ATTACH");
             var overlay = new GameObject("P0A_DiagnosticOverlay").AddComponent<P0ADiagnosticOverlay>();
-            overlay.Initialize(ground, player, trackedEnemy);
+            overlay.Initialize(ground, player, null);
         }
 #endif
 
@@ -134,38 +150,6 @@ namespace TieuTienKy.Gameplay
             swordView.Initialize(basicAttack, view.WeaponSocket);
 
             return player;
-        }
-
-        /// <summary>
-        /// Same empty-root + replaceable-view split as BuildPlayer. This is
-        /// an intermediate integration only - permanent wave/spawn ownership
-        /// moves to ArenaRunDirector.
-        /// </summary>
-        static GameObject BuildEnemy(EnemyCombatProfile profile, Vector3 position, Transform playerTransform, Color tint, int maxHealth, KillScoreHud killHud)
-        {
-            var enemy = new GameObject(profile.Archetype == EnemyArchetype.Lancer ? "Lancer" : "Pursuer");
-            enemy.transform.position = position;
-
-            var controller = enemy.AddComponent<CharacterController>();
-            controller.center = Vector3.zero;
-            controller.height = 2f;
-            controller.radius = 0.5f;
-
-            enemy.AddComponent<KnockbackReceiver>();
-            var combatant = enemy.AddComponent<Combatant>();
-            combatant.ConfigureMaxHealth(maxHealth);
-
-            var view = enemy.AddComponent<PrimitiveCharacterView>();
-            view.Build(tint, tint, armed: false, visualScale: 1f);
-
-            enemy.AddComponent<PrimitiveTelegraphVFX>();
-
-            var combatController = enemy.AddComponent<EnemyCombatController>();
-            combatController.Initialize(playerTransform, playerTransform.GetComponent<Combatant>(), profile);
-
-            combatant.Defeated += killHud.RegisterKill;
-
-            return enemy;
         }
 
         static void BuildWaterZone(Vector3 position, Vector3 size)
