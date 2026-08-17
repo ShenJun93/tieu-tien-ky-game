@@ -34,7 +34,7 @@ namespace TieuTienKy.Gameplay
         {
             GameObject ground = BuildGround();
             GameObject player = BuildPlayer(new Vector3(0f, 1f, 0f));
-            GameObject dummy = BuildDummyTarget(new Vector3(3f, 1f, 0f));
+            GameObject dummy = BuildDummyTarget(new Vector3(3f, 1f, 0f), player.transform);
             BuildWaterZone(new Vector3(3f, 0.5f, 0f), new Vector3(3f, 1f, 3f));
             BuildHazardObstacle(new Vector3(5.5f, 1f, 0f));
             BuildArenaBoundaries(ground);
@@ -42,6 +42,7 @@ namespace TieuTienKy.Gameplay
             player.transform.LookAt(dummy.transform.position);
 
             AttachPlayerFollowCamera(player);
+            AttachKillScoreHud(dummy);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             AttachDiagnosticOverlay(ground, player, dummy);
@@ -66,6 +67,14 @@ namespace TieuTienKy.Gameplay
 
             var follow = mainCamera.gameObject.AddComponent<PlayerFollowCamera>();
             follow.Initialize(player.transform);
+        }
+
+        /// <summary>Minimal Human-playtest readability: kill count increments whenever the DummyTarget it is wired to is defeated. No other coupling between UI and gameplay.</summary>
+        static void AttachKillScoreHud(GameObject dummy)
+        {
+            var hud = new GameObject("P0A_KillScoreHud").AddComponent<KillScoreHud>();
+            DummyTarget dummyTarget = dummy.GetComponent<DummyTarget>();
+            dummyTarget.Defeated += hud.RegisterKill;
         }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -110,7 +119,7 @@ namespace TieuTienKy.Gameplay
             return player;
         }
 
-        static GameObject BuildDummyTarget(Vector3 position)
+        static GameObject BuildDummyTarget(Vector3 position, Transform chaseTarget)
         {
             GameObject dummy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             dummy.name = "DummyTarget";
@@ -121,6 +130,9 @@ namespace TieuTienKy.Gameplay
 
             dummy.AddComponent<KnockbackReceiver>();
             dummy.AddComponent<DummyTarget>();
+
+            var pressure = dummy.AddComponent<EnemyPressure>();
+            pressure.Initialize(chaseTarget);
 
             return dummy;
         }

@@ -62,5 +62,36 @@ namespace TieuTienKy.Gameplay.Tests
 
             Assert.AreEqual(0f, clamped.magnitude, 0.0001f);
         }
+
+        [Test]
+        public void ApplyReactionMultiplier_ReactionNotTriggered_ReturnsBaseImpulseUnchanged()
+        {
+            Vector3 baseImpulse = new Vector3(6f, 0f, 0f);
+
+            Vector3 result = KnockbackCalculator.ApplyReactionMultiplier(baseImpulse, reactionTriggered: false, multiplier: 2.5f);
+
+            Assert.AreEqual(baseImpulse, result);
+        }
+
+        [Test]
+        public void ApplyReactionMultiplier_ReactionTriggered_ScalesImpulseByMultiplier()
+        {
+            Vector3 baseImpulse = new Vector3(6f, 0f, 0f);
+
+            Vector3 result = KnockbackCalculator.ApplyReactionMultiplier(baseImpulse, reactionTriggered: true, multiplier: 2.5f);
+
+            Assert.AreEqual(baseImpulse * 2.5f, result);
+        }
+
+        [Test]
+        public void ApplyReactionMultiplier_ReactionTriggered_ProducesStrongerMagnitudeThanNormalHit()
+        {
+            Vector3 baseImpulse = new Vector3(0f, 0f, 6f);
+
+            Vector3 normal = KnockbackCalculator.ApplyReactionMultiplier(baseImpulse, reactionTriggered: false, multiplier: 2.5f);
+            Vector3 conductive = KnockbackCalculator.ApplyReactionMultiplier(baseImpulse, reactionTriggered: true, multiplier: 2.5f);
+
+            Assert.Greater(conductive.magnitude, normal.magnitude);
+        }
     }
 }

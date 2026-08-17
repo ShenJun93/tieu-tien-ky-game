@@ -1,4 +1,3 @@
-using TieuTienKy.Core;
 using TieuTienKy.Input;
 using UnityEngine;
 
@@ -8,40 +7,43 @@ namespace TieuTienKy.Gameplay
     /// The single P0A attack: a short-range lightning palm strike. Its element
     /// is always Lightning so the same action can, in context, produce a plain
     /// hit, a knockback-into-hazard, or (inside a WaterZone) a Conductive Burst.
-    /// No combo tree/progression.
+    /// Sequenced as anticipation -> impact -> recovery via AttackSequencer so
+    /// it reads as a fast arcade swing instead of an instantaneous debug
+    /// trigger. No combo tree/progression.
     /// </summary>
     [RequireComponent(typeof(TouchInputReader))]
     public sealed class BasicAttack : MonoBehaviour
     {
-        [SerializeField] float cooldownSeconds = 0.6f;
+        [SerializeField] float anticipationSeconds = 0.12f;
+        [SerializeField] float recoverySeconds = 0.28f;
         [SerializeField] float rangeMeters = 1.75f;
         [SerializeField] float radiusMeters = 0.9f;
         [SerializeField] int damage = 1;
         [SerializeField] float knockbackImpulseMagnitude = 6f;
         [SerializeField] LayerMask hittableLayers = ~0;
+        [SerializeField] float hitStopSeconds = 0.05f;
+        [SerializeField] float hitStopTimeScale = 0.05f;
 
         TouchInputReader inputReader;
-        Cooldown cooldown;
+        AttackSequencer sequencer;
 
         void Awake()
         {
             inputReader = GetComponent<TouchInputReader>();
-            cooldown = new Cooldown(cooldownSeconds);
+            sequencer = new AttackSequencer(anticipationSeconds, recoverySeconds);
         }
 
         void Update()
         {
-            if (!inputReader.AttackTriggeredThisFrame)
+            if (inputReader.AttackTriggeredThisFrame)
             {
-                return;
+                sequencer.TryBeginAttack(Time.time);
             }
 
-            if (!cooldown.TryUse(Time.time))
+            if (sequencer.Tick(Time.time, out _))
             {
-                return;
+                PerformAttack();
             }
-
-            PerformAttack();
         }
 
         void PerformAttack()
@@ -49,10 +51,12 @@ namespace TieuTienKy.Gameplay
             Vector3 origin = transform.position + transform.forward * (rangeMeters * 0.5f);
             Collider[] hits = Physics.OverlapSphere(origin, radiusMeters, hittableLayers);
 
+            bool landedAnyHit = false;
+
             foreach (Collider hitCollider in hits)
             {
                 var target = hitCollider.GetComponentInParent<DummyTarget>();
-                if (target == null)
+                if (target == null || target.IsDefeated)
                 {
                     continue;
                 }
@@ -63,6 +67,12 @@ namespace TieuTienKy.Gameplay
 
                 var hit = new HitInfo(damage, DamageElement.Lightning, knockDirection * knockbackImpulseMagnitude);
                 target.TakeHit(hit);
+                landedAnyHit = true;
+            }
+
+            if (landedAnyHit)
+            {
+                StartCoroutine(HitStop.Routine(hitStopSeconds, hitStopTimeScale));
             }
         }
     }

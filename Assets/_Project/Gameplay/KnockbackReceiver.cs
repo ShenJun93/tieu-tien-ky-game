@@ -9,7 +9,7 @@ namespace TieuTienKy.Gameplay
     [RequireComponent(typeof(CharacterController))]
     public sealed class KnockbackReceiver : MonoBehaviour
     {
-        [SerializeField] float maxKnockbackMagnitude = 12f;
+        [SerializeField] float maxKnockbackMagnitude = 16f;
         [SerializeField] float decayPerSecond = 18f;
 
         CharacterController controller;

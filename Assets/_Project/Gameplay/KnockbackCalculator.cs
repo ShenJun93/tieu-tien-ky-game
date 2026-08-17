@@ -20,5 +20,11 @@ namespace TieuTienKy.Gameplay
 
             return rawImpulse * (maxMagnitude / magnitude);
         }
+
+        /// <summary>Scales a knockback impulse when an elemental reaction (e.g. Conductive Burst) triggered, so the reaction reads as clearly stronger than a normal hit.</summary>
+        public static Vector3 ApplyReactionMultiplier(Vector3 baseImpulse, bool reactionTriggered, float multiplier)
+        {
+            return reactionTriggered ? baseImpulse * multiplier : baseImpulse;
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace TieuTienKy.Gameplay
         [SerializeField] float conductiveBurstPeakRadius = 1.25f;
         [SerializeField] float conductiveBurstLifetimeSeconds = 0.35f;
         [SerializeField] Color conductiveBurstColor = new Color(0.4f, 0.8f, 1f, 1f);
+        [SerializeField] float conductiveKnockbackMultiplier = 2.5f;
 
         int currentHealth;
         Vector3 spawnPosition;
@@ -27,6 +28,9 @@ namespace TieuTienKy.Gameplay
 
         public bool IsInWaterZone { get; private set; }
         public bool IsDefeated => currentHealth <= 0;
+
+        /// <summary>Fired the moment this target's health reaches zero (before the respawn delay). KillScoreHud subscribes; no other coupling.</summary>
+        public event System.Action Defeated;
 
         /// <summary>Device-visible P0A diagnostic state for the Water+Lightning boundary (P0ADiagnosticOverlay reads these). Not gameplay state.</summary>
         public DamageElement? LastHitElement { get; private set; }
@@ -55,12 +59,6 @@ namespace TieuTienKy.Gameplay
             }
 
             currentHealth -= hit.Damage;
-            knockbackReceiver.ApplyKnockback(hit.KnockbackImpulse);
-
-            if (cachedRenderer != null)
-            {
-                StartCoroutine(HitFeedbackFlash.FlashRoutine(cachedRenderer, hitFlashColor, hitFlashSeconds));
-            }
 
             bool burstTriggered = ElementalReaction.TryTriggerConductiveBurst(IsInWaterZone, hit.Element);
             LastHitElement = hit.Element;
@@ -68,6 +66,15 @@ namespace TieuTienKy.Gameplay
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[P0A_WATER] TAKE_HIT isInWaterZone={IsInWaterZone} element={hit.Element} burstTriggered={burstTriggered}");
 #endif
+
+            Vector3 appliedImpulse = KnockbackCalculator.ApplyReactionMultiplier(hit.KnockbackImpulse, burstTriggered, conductiveKnockbackMultiplier);
+            knockbackReceiver.ApplyKnockback(appliedImpulse);
+
+            if (cachedRenderer != null)
+            {
+                StartCoroutine(HitFeedbackFlash.FlashRoutine(cachedRenderer, hitFlashColor, hitFlashSeconds));
+            }
+
             if (burstTriggered)
             {
                 PrimitiveBurstVFX.SpawnAt(transform.position, conductiveBurstPeakRadius, conductiveBurstLifetimeSeconds, conductiveBurstColor);
@@ -79,6 +86,7 @@ namespace TieuTienKy.Gameplay
 
             if (IsDefeated)
             {
+                Defeated?.Invoke();
                 Invoke(nameof(Respawn), respawnDelaySeconds);
             }
         }
