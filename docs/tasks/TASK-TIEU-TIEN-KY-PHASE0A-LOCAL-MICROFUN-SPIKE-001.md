@@ -1,71 +1,311 @@
 # TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001
 
-Status: **SUPERSEDED AS EXECUTION AUTHORITY — HISTORICAL P0A TECHNICAL SPIKE RECORD**  
+> **HISTORICAL / SUPERSEDED AS EXECUTION AUTHORITY (2026-08-17).**  
+> This file is preserved as the original P0A technical-spike contract for audit history. Do **not** execute it as the current task. Current machine-readable authority is `docs/governance/NEXT_TASK.md`; after the Fun-First rebaseline is activated, execution moves to `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`.
+>
+> The original contract below is intentionally preserved rather than rewritten so earlier evidence remains interpretable in its original scope.
+
+---
+
+## Original contract snapshot
+
+Status: **AUTHORIZED FOR DESIGN + IMPLEMENTATION**  
 Project: **TIỂU TIÊN KÝ**  
-Historical branch: `feat/p0a-local-microfun-spike`
+Branch: `feat/p0a-local-microfun-spike`
 
-## Why this task was superseded
+## Objective
 
-This task successfully established the first technical P0A proof surface: Unity project boot, mobile touch movement, Basic Attack, knockback/environment interaction, Water × Lightning reaction, Android physical-device testing and cheap deterministic tests.
+Build the smallest playable technical spike that answers only:
 
-However, repeated isolated technical remediation cycles produced too little player-perceptible value for the time/agent-credit spent. The Human/Game Director explicitly rebaselined P0A on 2026-08-17 toward a **FUN-FIRST, credit-efficient Playable Core Loop**.
+1. Does touch movement feel responsive enough to continue?
+2. Does a basic attack/hit have readable feedback?
+3. Does one force/environment interaction create interesting spatial play?
+4. Does one simple elemental interaction create a plausible memorable moment?
+5. Can the gameplay structure later fit Photon Fusion's client-server model without rewriting core gameplay?
+6. Can the project build and run on a real Android device at acceptable prototype performance?
 
-Do not use this historical task as current execution authority.
+This is **not** a vertical slice and **not** a production foundation.
 
-Current execution authority after rebaseline activation is:
+## Capacity envelope
 
-`docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md`
+Before implementation record:
+- operator capacity;
+- executor/agent;
+- maximum active workstreams: **1**;
+- cloud spend: **0 unless explicitly authorized**;
+- paid asset spend: **0 unless explicitly authorized**;
+- stop/re-scope condition.
 
-Machine-readable authority remains:
+## Toolchain lock
 
-`docs/governance/NEXT_TASK.md`
+- Unity: **6000.3.21f1**.
+- C#.
+- URP recommended.
+- Unity Input System.
+- Android Build Support + SDK/NDK/OpenJDK through Unity Hub where supported.
+- Do not silently change Unity version.
 
-## Historical objective
+If a blocking known issue requires a different patch, stop and report evidence before changing versions.
 
-The original task asked whether a tiny technical mobile interaction could work at all:
+## Allowed dependencies
 
+Only the smallest required set:
+- Unity packages needed for render/input/tests.
+- Photon Fusion 2 only if needed to prove local/single-simulation compatibility.
+
+Forbidden in P0A:
+- Nakama;
+- PostgreSQL;
+- Firebase;
+- GameLift;
+- Edgegap;
+- IAP/ads;
+- production backend;
+- large controller/combat frameworks;
+- runtime AI SDKs.
+
+## Minimum project structure
+
+```text
+Assets/
+  _Project/
+    Core/
+    Gameplay/
+    Input/
+    Presentation/
+    Scenes/
+    Tests/
+  ThirdParty/
+Packages/
+ProjectSettings/
+docs/
+  tasks/
+  evidence/
+ASSET_SOURCES.csv
+README.md
+```
+
+Do not create backend/server/liveops/economy architecture in P0A.
+
+## Playable scope
+
+Exactly one greybox scene.
+
+### Player
+- primitive/capsule character;
 - touch movement;
-- one Basic Attack;
-- one force/environment interaction;
-- one Water Zone + Lightning Hit → Conductive Burst reaction;
-- Android build/run;
-- minimal deterministic tests;
-- Human playtest signal;
-- no architecture debt blocking later authoritative multiplayer.
+- readable facing/aiming;
+- no production character art;
+- no animation requirement.
 
-## Historical constraints retained by the new task
+### Basic attack
+Exactly one attack:
+- clear action;
+- hit detection;
+- visible hit feedback;
+- simple cooldown/rate limit;
+- no combo tree/progression.
 
-The following principles remain valid:
+### Force/environment interaction
+Exactly one interaction.
 
-- Unity `6000.3.21f1` exact P0A lock;
-- C# + Unity Input System;
-- Android physical-device evidence;
-- no backend/cloud/economy/iOS release pipeline in P0A;
-- no generic ability/reaction/physics framework;
-- no production art pipeline;
-- no P0B without accepted P0A evidence;
-- simple deletion-friendly code;
-- Human/Game Director is merge authority.
+Recommended baseline:
+> short impact/palm attack knocks a target into a simple obstacle or hazard.
 
-## Decisions changed by the 2026-08-17 rebaseline
+Purpose:
+- positional consequence;
+- spatial comedy;
+- mobile readability.
 
-The following original assumptions are no longer current execution rules:
+Do not build a general physics-combat framework.
 
-- P0A is no longer limited to a passive `DummyTarget` technical demonstration.
-- P0A may add **one simple pressure enemy** and a minimal defeat/reset/score loop when needed to make a 2–3 minute playable core loop.
-- P0A work should not be split into many tiny remediation tasks for non-blocking issues.
-- One product slice should normally hand off one final APK.
-- Human/device gates are hard STOP points; no active polling or automatic resume.
-- Independent review is risk-based for low-risk prototype iterations, while high-risk work and aggregate merge gates retain independent review expectations.
-- Built-in Render Pipeline is allowed for P0A; URP is not a P0A blocker.
-- Gameplay orientation is landscape-only.
+### Elemental micro-reaction
+Exactly one deliberately simple reaction:
 
-## Historical evidence
+> **Water Zone + Lightning Hit → Conductive Burst**
 
-Do not rewrite or erase existing evidence/history generated under this task. Reconcile it into `docs/evidence/P0A_EVIDENCE_REPORT.md` after the operator's local P0A checkpoint is committed/pushed and the Fun-First rebaseline is synchronized.
+Minimum behavior:
+1. water zone has a clear state/tag;
+2. target inside receives lightning;
+3. zone creates one secondary spatially readable effect;
+4. presentation is primitive but unmistakable.
+
+Do not build a generic reaction graph.
+
+### Opponents
+Simple dummy targets only:
+- idle or trivial movement;
+- simple health if needed;
+- simple respawn.
+
+No production AI.
+
+## Fusion compatibility
+
+P0A does **not** prove online multiplayer.
+
+If Fusion is installed, allowed:
+- `GameMode.Single`;
+- local simulation;
+- thin state/input boundary.
+
+Do not:
+- connect Photon Cloud;
+- create matchmaking/lobbies;
+- build a dedicated online server;
+- claim multiplayer feasibility.
+
+P0B owns authoritative multiplayer proof.
+
+## Android build evidence
+
+Must create a reproducible Android development build and record:
+- device model;
+- Android version;
+- SoC/RAM if known;
+- screen resolution;
+- graphics API;
+- build architecture;
+- package identifier;
+- FPS/frame-time observation;
+- obvious memory/GC issues;
+- repeated-run thermal behavior.
+
+P0A does not lock final minimum device support.
+
+## Asset provenance
+
+External assets require an entry in `ASSET_SOURCES.csv` with:
+
+```text
+path_or_asset,source,license,commercial_use,attribution_required,date_acquired,notes
+```
+
+Use Unity primitives and self-created placeholders by default.
+
+Do not build provenance software.
+
+## Minimum automated tests
+
+Only cheap deterministic logic:
+- attack cooldown/rate limit;
+- Water + Lightning reaction triggers;
+- no reaction outside water;
+- knockback magnitude stays within expected bound.
+
+Do not create a large test harness.
+
+## Human playtest
+
+On a real Android device observe:
+1. Can tester move without explanation?
+2. Can tester attack without explanation?
+3. Do they understand the environmental knockback consequence?
+4. Do they notice Water + Lightning?
+5. Is there any spontaneous positive reaction or desire to reproduce a moment?
+6. What causes confusion?
+7. Would they voluntarily play another short round if more content existed?
+
+Observe behavior; do not rely only on opinion questions.
+
+## PASS gate
+
+All must be true:
+- project opens cleanly in Unity 6000.3.21f1;
+- Android build is reproducible;
+- build runs on a real Android device;
+- touch movement is usable;
+- basic attack/hit is readable;
+- one force/environment interaction works;
+- one elemental micro-reaction works;
+- no backend/cloud/economy scope leaked in;
+- gameplay core is not coupled to Android APIs;
+- if Fusion is used, local state/input structure does not obviously block P0B;
+- `ASSET_SOURCES.csv` exists;
+- evidence report contains device/performance/playtest observations;
+- Human/Game Director judges the micro-loop worth continuing.
+
+## PASS WITH REMEDIATION
+
+Allowed only if:
+- micro-loop is promising;
+- blocker is local/bounded;
+- no architecture rewrite is required.
+
+Create exactly one remediation task.
+
+## FAIL
+
+Examples:
+- touch feel remains poor after reasonable iteration;
+- interactions are unreadable/uninteresting;
+- primitive Android prototype already performs badly;
+- Fusion/client-server compatibility implies core rewrite;
+- task balloons into infrastructure work;
+- no credible continuation signal from playtest.
+
+If FAIL, do not open P0B automatically.
+
+## Forbidden scope
+
+Do not implement:
+- iOS/TestFlight;
+- dedicated online server;
+- Photon Cloud matchmaking;
+- Nakama/PostgreSQL/Firebase;
+- account/cross-progression;
+- shop/IAP/economy;
+- inventory/cosmetics/meta progression;
+- guild/chat;
+- smart Thiên Đạo;
+- production Nhân Quả/Hồn Phách;
+- replay/highlights;
+- full Content Compiler;
+- production character/VFX/UI/audio;
+- procedural world;
+- liveops;
+- large bot farm.
+
+## Required evidence report
+
+Create `docs/evidence/P0A_EVIDENCE_REPORT.md` with:
+- exact branch + starting/final HEAD;
+- Unity/package versions;
+- changed files;
+- Android device/build evidence;
+- tests and results;
+- playtest observations;
+- performance observations;
+- known issues;
+- scope deviations;
+- assets/licenses;
+- `PASS / PASS WITH REMEDIATION / FAIL`;
+- recommendation.
+
+No evidence → no acceptance.
+
+## Governance
+
+- no unrelated cleanup;
+- no direct work on `main`;
+- small intentional commits;
+- human operator is merge authority;
+- no automatic P0B execution.
+
+## Next task policy
+
+Only after accepted P0A may the project create:
+
+`TASK-TIEU-TIEN-KY-PHASE0B-AUTHORITATIVE-MOBILE-FEASIBILITY-001`
+
+P0B will prove:
+- Fusion `GameMode.Server`;
+- headless authoritative state;
+- Android + iOS;
+- same server/protocol;
+- 2 → 6 → 8 → 12 actor stress;
+- network/build/performance/cost evidence.
 
 ## Final directive
 
-This file is retained for audit/history only.
-
-Do not restart this task. Do not use it to force the project back into isolated technical micro-remediation.
+> Success is not “we built a foundation.” Success is a primitive mobile interaction loop on a real Android device that feels promising enough to justify multiplayer investment and does not create architecture debt that blocks P0B.
