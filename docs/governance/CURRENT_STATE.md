@@ -45,7 +45,19 @@ Governance task: `#6 — P0A Fun-First Rebaseline & Playable Core Loop Authority
 
 Branch: `chore/p0a-fun-first-rebaseline-001`
 
-Safety gate: the remote P0A implementation branch at `54e90701c9172b1d7cef658c80b77261b22fa22c` is known to lag the operator's local physically-tested worktree. **Do not merge the rebaseline to `main` until that local P0A state is checkpoint-committed and pushed without reset/clean/stash/revert.**
+### Local P0A checkpoint gate — SATISFIED
+
+The previously dirty, physically-tested P0A worktree was checkpointed without reset/clean/stash/revert and pushed normally to:
+
+`feat/p0a-local-microfun-spike@77f4599fce4844a106827ed79d8b0aa7357a95e4`
+
+Verified remote ancestry:
+
+`54e90701c9172b1d7cef658c80b77261b22fa22c → 77f4599fce4844a106827ed79d8b0aa7357a95e4`
+
+The checkpoint contains 37 intentional project files under `Assets/_Project/`, `ProjectSettings/`, and `docs/evidence/`. Generated/recovery/ambiguous local files were conservatively left uncommitted rather than discarded.
+
+The rebaseline PR may now proceed to **independent read-only review**. It must still not merge automatically; Human/Game Director remains merge authority.
 
 ## Locked operating decisions
 
@@ -58,9 +70,9 @@ Safety gate: the remote P0A implementation branch at `54e90701c9172b1d7cef658c80
 - Built-in Render Pipeline is allowed for P0A. URP remains a later production direction and is not a P0A blocker.
 - Portrait is not a supported gameplay orientation for the current product direction.
 
-## Current physical evidence already obtained
+## Current physical/evidence checkpoint
 
-The local P0A work has already produced real Android physical-device evidence for movement, multitouch attack, camera follow, arena containment, knockback/environment interaction and the Water + Lightning reaction path. Those local changes/evidence have not all been reconciled to the remote branch yet, so this document intentionally does not invent an exact final local HEAD.
+Checkpoint `77f4599f...` preserves the current P0A technical state and reconciled evidence. The evidence records real Unity/Android/device progress but does **not** claim overall P0A PASS or Human/Game Director micro-fun acceptance. P0B remains NOT AUTHORIZED.
 
 ## Next product execution after rebaseline
 
