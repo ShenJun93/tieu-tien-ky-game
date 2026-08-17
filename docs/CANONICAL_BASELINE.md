@@ -1,7 +1,7 @@
 # TIỂU TIÊN KÝ — CANONICAL BASELINE
 
 Version: **v0.1.5 Fun-First Rebaseline**  
-Status: **Pre-production / P0A authorized, Playable-Core execution pending activation**
+Status: **Pre-production / P0A authorized; Playable-Core authority effective after accepted rebaseline is synchronized into the P0A branch**
 
 ## Product identity
 
