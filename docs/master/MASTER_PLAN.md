@@ -293,6 +293,14 @@ If F2P later:
 
 ## 14. Roadmap and gates
 
+**Release-track amendment (2026-08-18):** the Stage order, mandatory
+Player-Visible Delta gate, production baseline ratchet, durable naming,
+bounded player-count config, artifact identity, and compact handoff for all
+work after P0A/Vertical Slice v0.1 are now governed by
+`docs/master/RELEASE_TRACK.md`. The P0B/Phase1-8 prose below remains the
+historical record of the prior framing and is not rewritten; where the two
+conflict on post-P0A stage naming, `RELEASE_TRACK.md` is authoritative.
+
 ### P0A — Local Playable Core / Micro-Fun Validation — ACTIVE PHASE
 Goal: prove a tiny local mobile interaction loop is promising before network/backend spend.
 

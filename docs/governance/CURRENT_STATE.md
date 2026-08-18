@@ -87,3 +87,11 @@ Retry/Menu, ~4-6 minute run — by extending proven P0A systems rather than rebu
 them, hand off one exact APK, then obtain a Human playtest verdict.
 
 No accepted Vertical Slice v0.1 evidence → no P0B authorization.
+
+## Post-Vertical-Slice-v0.1 release track
+
+Once this task reaches an accepted Human Gate, subsequent macro-slice order
+and product gates (Stage A → Stage B → Human Product/Fun Gate → Stage C →
+Stage D → Playable Production Alpha Candidate) are governed by
+`docs/master/RELEASE_TRACK.md`. This does not change the scope or gate of
+the currently active task above.
