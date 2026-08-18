@@ -14,7 +14,126 @@ Fill this block before running `node scripts/hooks/pre-finish.mjs` on the activa
 }
 ```
 
-Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`. `PASS` is not claimed here: the PASS gate requires `android_install_run: PASS` and `human_playtest: RECORDED`, neither of which exist yet. `PASS_WITH_REMEDIATION` is not claimed either, since that verdict requires a Human/Game Director judgement this executor cannot self-certify. Per the established convention in this report (see history below), incomplete gate evidence is recorded as `FAIL`, not invented as a fourth state — this does not imply the implementation is judged bad, only that required evidence is not yet complete.
+Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`. `PASS` is not claimed here: the PASS gate requires `android_install_run: PASS` and `human_playtest: RECORDED`, neither of which exist yet for the current APK (built 2026-08-18 06:27, superseding the 2026-08-17 23:27 artifact the prior human playtest evidence below was recorded against). `PASS_WITH_REMEDIATION` is not claimed either, since that verdict requires a Human/Game Director judgement this executor cannot self-certify. Per the established convention in this report (see history below), incomplete gate evidence is recorded as `FAIL`, not invented as a fourth state — this does not imply the implementation is judged bad, only that required evidence is not yet complete. See **P0A+ Human-Gate Remediation 01** immediately below for what changed in this pass.
+
+## P0A+ Human-Gate Remediation 01 — 2026-08-18 (arena integrity + boss completion + blessing readability, pending Human Gate)
+
+Executed as one inline remediation macro-task per explicit Human/Game Director authorization, directly on top of the P0A+ Mini Arena Run update below, in response to the first physical playtest of that build (recorded in full under **Human Playtest That Motivated This Remediation** below). The core loop itself was rated promising (dodge/counter loop, archetype distinction, Water Shift + Spirit Wind all confirmed fun); this remediation intentionally did not touch that combat feel.
+
+- **Starting HEAD**: `a47cf78c0ba7d6a02591c8c3582ba63c1a6c6d9b`.
+- **Implementation HEAD**: `0a3c807ec2e7f085de83e50c3d3f1baaf017a99c` — `fix(p0a+): root-cause boss/arena stranding + blessing presentation + HUD readability`.
+- **Follow-up HEAD (this evidence commit's parent)**: `289b81d` — `test(p0a): assert onboarding HUD and blessing presentation wiring in smoke test`.
+
+### Human playtest that motivated this remediation
+
+Physical device, prior APK (`P0A.apk` built 2026-08-17 23:27, see the P0A+ Mini Arena Run update below):
+
+1. Want to continue after 1–2 min: **YES**
+2. Dodge telegraph → counterattack: **YES**
+3. Pursuer vs Lancer feels different: **YES**
+4. Blessings feel meaningfully stronger/different: **NOT CLEAR ENOUGH**
+5. Water Shift + Spirit Wind: **FUN**
+6. Boss culmination: **BLOCKED** — boss appeared to become stuck/outside usable arena; player could not reach/hit boss and boss did not reach/hit player; run could not terminate.
+7. Full-body sword character: direction clearer, actions still look demo-like.
+
+Additional observations: best part was the first ~1m30; at ~2 min the boss bug removed all motivation (no completable objective); new-player attack/skill control unclear; boss had no visible HP; the visible grey/white ground looked larger than the area the Human could actually use, and the Human explicitly flagged this as a **hypothesis**, not a confirmed root cause, for the boss issue.
+
+### Root cause investigation (systematic debugging, Phase 1–3)
+
+Followed `superpowers:systematic-debugging`. Static code review of `GreyboxSceneBootstrapper`, `ArenaRunDirector`, `MiniBossController`, `KnockbackReceiver`, `BasicAttack`, and `EnemyCombatController` found no CharacterController tunneling risk (Unity's swept collision handles the boss's 3.2m Charge lunge correctly against the 1m-thick perimeter walls) and no permanent-freeze path (knockback decays in <1s regardless of collision). The Human's own "ground looks bigger than usable" hypothesis was checked against `GreyboxArenaBoundaryTests` (already-passing, confirms wall inner faces sit flush with the Ground's actual collider bounds) — so containment itself was not defective.
+
+**Evidence-gathering step**: rather than guess further, a throwaway EditMode probe (`GameObject.CreatePrimitive(PrimitiveType.Plane)` at the bootstrap's exact `localScale (2,1,2)`, collider bounds logged) empirically measured the Ground's real bounds:
+
+```text
+[P0A_PROBE] min=(-5.000, 0.000, -5.000) max=(5.000, 0.000, 5.000) size=(10.000, 0.000, 10.000)
+```
+
+**Confirmed root cause**: the Ground is a **10×10 area (±5 on X/Z)**, not the ±10 the original per-stage spawn offsets were implicitly authored against. The Boss stage's fixed spawn offset `SpawnOffset(0f, 6f)` alone exceeds the Ground's own Z half-extent (5) — with the perimeter wall's inner face flush at `z=5` and 1m thick, `z=6` sits at/past the wall's **outer** face, so the boss spawned embedded in or beyond the north wall. Every other stage's offsets (`(4,2)`, `(-4,-2)`, `(0,5)`, `(5,0)`, `(-5,0)`) were also at-or-past the ±5 real bound, just less severely — plausibly why Waves 1/2/Elite read as fine (regular enemies merely spawned hugging a wall) while the Boss stage broke outright (embedded past it). Compounding this, every spawn offset was anchored to the **frozen run-start player position**, not the player's current position, so after several waves of drift the boss could additionally land off the follow-camera's view.
+
+The smallest reproduction was a PlayMode test asserting the pre-fix `SpawnOffset` math against a player deliberately moved away from spawn — analytically, pre-fix `SpawnOffset(0f, 6f)` always returns `(playerSpawnPosition.x, playerSpawnPosition.y, playerSpawnPosition.z + 6)` regardless of the player's actual position, which is RED by construction; `Assets/_Project/Tests/PlayMode/ArenaSpawnIntegrationTests.cs` pins the fixed (GREEN, post-fix) behavior instead.
+
+### Fix
+
+- `ArenaBounds` (`Assets/_Project/Gameplay/ArenaBounds.cs`, pure, unit-tested) — the arena's usable interior, derived once from the Ground's actual collider bounds minus a margin sized to the largest actor (the boss, radius ~0.675).
+- `ArenaSpawnPlanner` (pure, unit-tested) — offsets a spawn from a supplied anchor and clamps into `ArenaBounds`.
+- `GreyboxSceneBootstrapper` computes `ArenaBounds` once from the real Ground bounds and passes it to `ArenaRunDirector`.
+- `ArenaRunDirector.SpawnOffset` now anchors to `playerRoot.position` (current) instead of the frozen `playerSpawnPosition`, clamped via `ArenaSpawnPlanner` — applies uniformly to every wave/elite/boss spawn, not a boss-only patch.
+- `MiniBossController` gets an `ArenaBounds`-based defense-in-depth clamp after a Charge lunge (`ClampIntoArenaIfOutside`), snapping the boss back inside the usable interior in the unlikely event it ever ends up outside it, so the encounter cannot be permanently stranded.
+- This was **not** a symptom patch (no spawn-coordinate hand-edit, no collider/attack-radius enlargement, no boss speed/teleport hack) — it replaces the arena-geometry assumption every spawn site was independently guessing at with one narrow reusable source of truth, per the task's own instruction.
+
+### Arena/playable-area change
+
+No change to the Ground, walls, or CharacterController radii — `GreyboxArenaBoundaryTests` already proved perimeter containment matches the visible Ground exactly, so the Human's "ground looks bigger than usable" hypothesis did not require a geometry fix, only the spawn-anchoring fix above (which was the actual, evidenced cause of the boss symptom). Usable arena interior is now explicit: `ArenaBounds` derived from real Ground bounds (±5) minus a 0.75 margin ≈ ±4.25 on X/Z.
+
+### Boss fix regression coverage
+
+- `ArenaBoundsTests`, `ArenaSpawnPlannerTests` (EditMode, pure) — margin inset, per-axis clamping, clamping never increases distance from anchor.
+- `ArenaSpawnIntegrationTests` (PlayMode, real bootstrapped object graph) — a spawn offset tracks the player's current (drifted) position, not the frozen run-start anchor; a spawn near the arena edge never lands outside `ArenaBounds`; `MiniBossController.ClampIntoArenaIfOutside` snaps a forced-outside boss back in bounds.
+- `BossLifecycleIntegrationTests` (PlayMode) — boss damage reduces HP without early defeat; lethal damage registers defeat, clears `CurrentBoss`/`ActiveEnemyCount`, and actually destroys the boss GameObject; `RestartRun` clears `CurrentBoss` and resets all three blessing stacks to 0.
+
+### Boss HP bar + arrival cue
+
+`RunHud` now renders a top-center "MINI BOSS" bar + `current/max` text while `Stage == Boss` and the boss is alive (reads `ArenaRunDirector.CurrentBoss`/`Combatant.CurrentHealth`/`MaxHealth`; owns no health state itself), and a brief fading "MINI BOSS" arrival flash triggered by `ArenaRunDirector` at the exact moment `SpawnBoss` runs.
+
+### Lôi Kiếm (gameplay + visual)
+
+- `SwordAttackView.SetLightningStacks` retints/rescales the Sword primitive itself (base tint unchanged at 0 stacks — identical to the prior always-on accent color, so no regression to the already-"YES"-rated early loop) — visibly more electric-purple and larger at higher stacks.
+- `BasicAttack` now spawns its own small lightning-impact flash (`PrimitiveBurstVFX`, distinct warm yellow-white color) on every landed hit, present even at 0 stacks (baseline attack-contact readability per section 10) and escalating in radius/lifetime with stacks (`BlessingPresentationMath`).
+- Kept structurally distinct from Conductive Burst: the flash fires on every hit regardless of Water; Conductive Burst still only fires via `ElementalReaction.TryTriggerConductiveBurst(IsInWaterZone, hit.Element)`, unchanged and still covered by the existing `WaterLightningReactionTests`/`WaterZoneLightningIntegrationTests`.
+
+### Phong Hành (gameplay + visual)
+
+`PlayerBlessingPresentation` builds a rotating flattened-Cube wind-accent ring at the player's feet, hidden at 0 stacks, visible and growing at stacks I–III (`BlessingPresentationMath.WindRingScale`). Movement-speed/attack-recovery gameplay modifiers are unchanged (`RunBlessingState`).
+
+### Hộ Thể (gameplay + visual)
+
+`PlayerBlessingPresentation` builds a translucent Capsule ward aura around the body, hidden at 0 stacks, visible and growing at stacks I–III, plus a brief white flash on the aura (distinct from the existing on-body hit-flash) whenever `Combatant.Damaged` fires while any Ward stacks are held. Max-health gameplay modifier is unchanged (`RunBlessingState`).
+
+### Blessing stack readability
+
+`RunHud` gained a compact current-build line (e.g. `Lôi Kiếm II   Hộ Thể I`, only acquired blessings shown). `BlessingChoiceHud.Choose` now shows a ~1s title+flavor confirmation (e.g. "LÔI KIẾM — Kiếm lôi được cường hóa") before invoking the run-resuming callback, using `WaitForSecondsRealtime` since the blessing gate pauses `Time.timeScale`.
+
+### Attack onboarding/readability change
+
+New `OnboardingHud`: a subtle left-side move hint, a clearly-labeled right-side `[⚔] LÔI KIẾM` attack hint, and two lines of Vietnamese instructional text, all fading out over the first ~4.5s of every run/restart. Purely visual — never reads or intercepts touch input; `TouchInputReader`'s left-half/right-half zones are untouched.
+
+### Objective HUD change
+
+`RunHud`'s stage line now reads `Wave 2   Enemies: 2` during Wave1/Wave2/EliteWave (live `ArenaRunDirector.ActiveEnemyCount`), `ELITE` during the Elite Wave, and `MINI BOSS` during the Boss stage (also the arrival-cue text), matching the task's example progression text.
+
+### Final EditMode result
+
+**121/121 PASS**, 0 failed, 0 inconclusive, 0 skipped, 0 compile errors, run fresh after the Android build (not reused from an earlier pass). Same locked `Unity 6000.3.21f1` batch harness, `-runTests -testPlatform EditMode`, never combined with `-quit`. 17 new tests this remediation: `ArenaBoundsTests` (6), `ArenaSpawnPlannerTests` (4), `BlessingPresentationMathTests` (7).
+
+### Final PlayMode result
+
+**9/9 PASS** (2 additional skipped test cases are pre-existing, unrelated `Unity.InputSystem.IntegrationTests` Windows-only cases gated by their own `[Ignore]`, not part of this project), 0 failed, run fresh after the Android build. New this remediation: `ArenaSpawnIntegrationTests` (3), `BossLifecycleIntegrationTests` (3); `GreyboxIntegrationSmokeTests` extended with two more wiring assertions (`PlayerBlessingPresentation`, `P0A_OnboardingHud`).
+
+### Android build result
+
+**PASS** — `BuildPipeline.BuildPlayer` (temporary one-shot `Assets/Editor/P0APlusRemediationBuildScript.cs`, removed after use) reported `result=Succeeded totalErrors=0 totalWarnings=1` (same non-blocking unresolved-warning-text class as every prior P0A/P0A+ build; not re-investigated here as it has never corresponded to an observed device symptom). Build settings unchanged: Android, ARM64, OpenGLES3 explicit, package `com.shenjun93.tieutienky.p0a`, landscape-only orientation unchanged in `ProjectSettings.asset`.
+
+**Known gotcha hit during this pass**: the build was invoked via `-executeMethod` without `-quit`, so the Unity Editor process kept running idle after the build actually completed (confirmed via the batch log's `[P0APLUS_BUILD] result=Succeeded ...` line, timestamped well before the process was still observed alive). This blocked a subsequent batch Editor invocation ("another Unity instance is running with this project open") until the idle process was explicitly closed (with the operator's explicit permission, since process termination is not an auto-approved action in this environment). Not a build defect; recorded here so a future `-executeMethod` build invocation includes `-quit`.
+
+- **Output APK**: `E:\GameDev\tieu-tien-ky-game\Builds\Android\P0A.apk`
+- **File size**: 16,661,952 bytes (~15.9 MB)
+- **Build timestamp**: 2026-08-18 06:27 (overwrites the prior P0A+ Mini Arena Run APK built 2026-08-17 23:27 at the same path)
+- **Physical device install/run and Human playtest: not attempted.** Per the Hard Human Gate, no `adb` install, launch, or device polling was performed for this artifact. This is the stop point.
+
+### Deferred nonblocking debt
+
+- Android build's single reported warning is still not resolved to readable text in the captured batch log (unchanged, pre-existing class across every P0A/P0A+ build).
+- Boss/enemy tuning numbers (HP, timings, pacing) are unchanged from the approved P0A+ plan values — per the task's explicit instruction not to pad duration/difficulty in this remediation pending physical evidence past minute 2.
+- `PlayerBlessingPresentation`'s wind ring/ward aura are flattened-Cube/Capsule primitives (project's established Android-safe-primitive convention), not a particle/VFX-Graph system; visual shell may be replaced later without touching gameplay.
+- Onboarding overlay is time-based only (fades after ~4.5s regardless of whether the player has actually moved/attacked yet); acceptable per the task's explicit "not a tutorial framework" scope limit, but a future pass could dismiss it early on first real input instead.
+
+### Scope deviations
+
+None beyond what the remediation task itself specifies. All changes stayed within `Assets/`, `docs/evidence/`; no networking, backend, economy, save/progression, or production-art work; no new enemy archetypes; no pacing/duration changes; no P0B.
+
+### Next action — exactly one
+
+`BLOCKED_ON_HUMAN_GATE` — Human installs the exact final APK (`E:\GameDev\tieu-tien-ky-game\Builds\Android\P0A.apk`) and plays through to (at minimum) the Boss stage, then reports evidence against this remediation's specific fixes: does the boss reliably spawn reachable/visible, can it be damaged/defeated to reach Victory, is its HP bar readable, do the three blessings now visibly feel different, is the first-run onboarding clear. Only after that evidence exists can this report's verdict be finalized. Do not auto-authorize or start P0B.
 
 ## P0A+ Mini Arena Run Update — 2026-08-17 (reusable foundation slice, pending Human Gate)
 
