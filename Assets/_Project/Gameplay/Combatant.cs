@@ -24,6 +24,7 @@ namespace TieuTienKy.Gameplay
         Renderer cachedRenderer;
         KnockbackReceiver knockbackReceiver;
         CharacterController controller;
+        float damageMitigationMultiplier = 1f;
 
         public event System.Action<int, int> Damaged; // current, max
         public event System.Action Defeated;
@@ -72,6 +73,12 @@ namespace TieuTienKy.Gameplay
             IsInWaterZone = inWaterZone;
         }
 
+        /// <summary>Hộ Thể's active defensive window drives this: 0 = fully block incoming damage, 1 (default) = no mitigation. Knockback is unaffected - the ward stops damage, not positioning consequences.</summary>
+        public void SetDamageMitigation(float multiplier01)
+        {
+            damageMitigationMultiplier = Mathf.Clamp01(multiplier01);
+        }
+
         public void TakeHit(HitInfo hit)
         {
             EnsureHealth();
@@ -80,7 +87,8 @@ namespace TieuTienKy.Gameplay
                 return;
             }
 
-            bool justDefeated = health.ApplyDamage(hit.Damage);
+            int mitigatedDamage = DamageMitigation.Apply(hit.Damage, damageMitigationMultiplier);
+            bool justDefeated = health.ApplyDamage(mitigatedDamage);
 
             bool burstTriggered = ElementalReaction.TryTriggerConductiveBurst(IsInWaterZone, hit.Element);
             LastHitElement = hit.Element;
