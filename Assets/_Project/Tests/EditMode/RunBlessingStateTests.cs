@@ -83,6 +83,42 @@ namespace TieuTienKy.Gameplay.Tests
         }
 
         [Test]
+        public void WindStride_OneStack_ReducesPhongBoCooldownMultiplier()
+        {
+            var state = new RunBlessingState();
+            state.Apply(BlessingId.WindStride);
+
+            Assert.AreEqual(0.85f, state.CurrentModifiers.PhongBoCooldownMultiplier, Tolerance);
+        }
+
+        [Test]
+        public void WindStride_NoStacks_PhongBoCooldownMultiplierIsOne()
+        {
+            var state = new RunBlessingState();
+            Assert.AreEqual(1f, state.CurrentModifiers.PhongBoCooldownMultiplier, Tolerance);
+        }
+
+        [Test]
+        public void BodyWard_OneStack_AddsHoTheWindowBonus()
+        {
+            var state = new RunBlessingState();
+            state.Apply(BlessingId.BodyWard);
+
+            Assert.AreEqual(0.15f, state.CurrentModifiers.HoTheWindowBonusSeconds, Tolerance);
+        }
+
+        [Test]
+        public void BodyWard_ThreeStacks_AddsHoTheWindowBonusLinearly()
+        {
+            var state = new RunBlessingState();
+            state.Apply(BlessingId.BodyWard);
+            state.Apply(BlessingId.BodyWard);
+            state.Apply(BlessingId.BodyWard);
+
+            Assert.AreEqual(0.45f, state.CurrentModifiers.HoTheWindowBonusSeconds, Tolerance);
+        }
+
+        [Test]
         public void BodyWard_ThreeStacks_AddsSixMaxHealth()
         {
             var state = new RunBlessingState();

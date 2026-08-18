@@ -16,13 +16,17 @@ namespace TieuTienKy.Gameplay
         public readonly float MoveSpeedMultiplier;
         public readonly float AttackRecoveryMultiplier;
         public readonly int MaxHealthBonus;
+        public readonly float PhongBoCooldownMultiplier;
+        public readonly float HoTheWindowBonusSeconds;
 
-        public RunCombatModifiers(float conductiveMultiplier, float moveSpeedMultiplier, float attackRecoveryMultiplier, int maxHealthBonus)
+        public RunCombatModifiers(float conductiveMultiplier, float moveSpeedMultiplier, float attackRecoveryMultiplier, int maxHealthBonus, float phongBoCooldownMultiplier, float hoTheWindowBonusSeconds)
         {
             ConductiveMultiplier = conductiveMultiplier;
             MoveSpeedMultiplier = moveSpeedMultiplier;
             AttackRecoveryMultiplier = attackRecoveryMultiplier;
             MaxHealthBonus = maxHealthBonus;
+            PhongBoCooldownMultiplier = phongBoCooldownMultiplier;
+            HoTheWindowBonusSeconds = hoTheWindowBonusSeconds;
         }
     }
 
@@ -37,7 +41,9 @@ namespace TieuTienKy.Gameplay
         const float ThunderSwordConductiveBonusPerStack = 0.75f;
         const float WindStrideMoveSpeedMultiplierPerStack = 1.12f;
         const float WindStrideRecoveryMultiplierPerStack = 0.92f;
+        const float WindStridePhongBoCooldownMultiplierPerStack = 0.85f;
         const int BodyWardMaxHealthBonusPerStack = 2;
+        const float BodyWardHoTheWindowBonusSecondsPerStack = 0.15f;
         const int MaxStacksPerBlessing = 3;
 
         readonly Dictionary<BlessingId, int> stacks = new Dictionary<BlessingId, int>
@@ -66,8 +72,10 @@ namespace TieuTienKy.Gameplay
                 float moveSpeedMultiplier = Mathf.Pow(WindStrideMoveSpeedMultiplierPerStack, windStacks);
                 float attackRecoveryMultiplier = Mathf.Pow(WindStrideRecoveryMultiplierPerStack, windStacks);
                 int maxHealthBonus = wardStacks * BodyWardMaxHealthBonusPerStack;
+                float phongBoCooldownMultiplier = Mathf.Pow(WindStridePhongBoCooldownMultiplierPerStack, windStacks);
+                float hoTheWindowBonusSeconds = wardStacks * BodyWardHoTheWindowBonusSecondsPerStack;
 
-                return new RunCombatModifiers(conductiveMultiplier, moveSpeedMultiplier, attackRecoveryMultiplier, maxHealthBonus);
+                return new RunCombatModifiers(conductiveMultiplier, moveSpeedMultiplier, attackRecoveryMultiplier, maxHealthBonus, phongBoCooldownMultiplier, hoTheWindowBonusSeconds);
             }
         }
 

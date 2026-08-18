@@ -20,6 +20,7 @@ namespace TieuTienKy.Gameplay
         Cooldown cooldown;
         ArenaBounds bounds;
         bool boundsConfigured;
+        float baseCooldownSeconds;
 
         /// <summary>Fires on every successful activation - presentation binds PlayMobility here.</summary>
         public event System.Action Activated;
@@ -27,10 +28,12 @@ namespace TieuTienKy.Gameplay
         void Awake()
         {
             controller = GetComponent<CharacterController>();
+            baseCooldownSeconds = cooldownSeconds;
             cooldown = new Cooldown(cooldownSeconds);
         }
 
         public float CooldownDuration => cooldown?.Duration ?? cooldownSeconds;
+        public float BaseCooldownSeconds => baseCooldownSeconds;
         public bool IsReady(float currentTime) => cooldown != null && cooldown.IsReady(currentTime);
 
         public void SetArenaBounds(ArenaBounds arenaBounds)
@@ -39,7 +42,7 @@ namespace TieuTienKy.Gameplay
             boundsConfigured = true;
         }
 
-        /// <summary>Run-blessing-driven cooldown reduction (Phong Hành). Only takes effect immediately if currently ready, so an in-flight cooldown is never disrupted.</summary>
+        /// <summary>Run-blessing-driven cooldown reduction (Phong Hành). Callers compute the target duration from BaseCooldownSeconds so repeated blessing picks never compound. Only takes effect immediately if currently ready, so an in-flight cooldown is never disrupted.</summary>
         public void SetCooldownDuration(float seconds, float currentTime)
         {
             float clamped = Mathf.Max(0.1f, seconds);

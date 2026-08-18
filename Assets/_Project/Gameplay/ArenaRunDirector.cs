@@ -46,6 +46,8 @@ namespace TieuTienKy.Gameplay
         PlayerController playerController;
         BasicAttack playerAttack;
         PlayerBlessingPresentation playerBlessingPresentation;
+        PlayerSkillController playerSkillController;
+        CharacterPresentation playerPresentation;
         Vector3 playerSpawnPosition;
         int playerBaseMaxHealth;
         ArenaBounds arenaBounds;
@@ -90,13 +92,17 @@ namespace TieuTienKy.Gameplay
             RunHud hud,
             ArenaEventDirector arenaEventDirector,
             ArenaBounds arenaUsableBounds,
-            OnboardingHud onboardingHudRef)
+            OnboardingHud onboardingHudRef,
+            PlayerSkillController playerSkillControllerRef = null,
+            CharacterPresentation playerPresentationRef = null)
         {
             playerRoot = playerRootTransform;
             playerCombatant = playerCombatantRef;
             playerController = playerControllerRef;
             playerAttack = playerAttackRef;
             playerBlessingPresentation = playerBlessingPresentationRef;
+            playerSkillController = playerSkillControllerRef;
+            playerPresentation = playerPresentationRef;
             playerSpawnPosition = playerRootTransform.position;
             playerBaseMaxHealth = baseMaxHealth;
             blessingHud = blessingChoiceHud;
@@ -106,6 +112,16 @@ namespace TieuTienKy.Gameplay
             onboardingHud = onboardingHudRef;
 
             playerCombatant.Defeated += HandlePlayerDefeated;
+            if (playerPresentation != null)
+            {
+                playerCombatant.Damaged += (_, __) => playerPresentation.PlayHit();
+                playerCombatant.Defeated += playerPresentation.PlayDeath;
+            }
+
+            if (playerSkillController != null)
+            {
+                playerSkillController.PhongBo.SetArenaBounds(arenaBounds);
+            }
 
             StartRun();
         }
@@ -138,6 +154,13 @@ namespace TieuTienKy.Gameplay
             playerController.SetRunMoveSpeedMultiplier(1f);
             playerAttack.SetRunModifiers(1f, RunBlessingState.BaseConductiveMultiplier);
             playerBlessingPresentation?.ApplyStacks(0, 0, 0);
+            if (playerSkillController != null)
+            {
+                playerSkillController.LoiTram.SetConductiveMultiplier(RunBlessingState.BaseConductiveMultiplier);
+                playerSkillController.PhongBo.SetCooldownDuration(playerSkillController.PhongBo.BaseCooldownSeconds, Time.time);
+                playerSkillController.HoThe.SetWindowDuration(playerSkillController.HoThe.BaseWindowDurationSeconds);
+            }
+            playerPresentation?.SetBlessingVisual(Color.white, 0f);
             onboardingHud?.Show();
 
             running = true;
@@ -302,11 +325,35 @@ namespace TieuTienKy.Gameplay
             playerAttack.SetRunModifiers(modifiers.AttackRecoveryMultiplier, modifiers.ConductiveMultiplier);
             playerCombatant.SetMaxHealthAndRestore(playerBaseMaxHealth + modifiers.MaxHealthBonus);
 
+            if (playerSkillController != null)
+            {
+                playerSkillController.LoiTram.SetConductiveMultiplier(modifiers.ConductiveMultiplier);
+                playerSkillController.PhongBo.SetCooldownDuration(
+                    playerSkillController.PhongBo.BaseCooldownSeconds * modifiers.PhongBoCooldownMultiplier,
+                    Time.time);
+                playerSkillController.HoThe.SetWindowDuration(
+                    playerSkillController.HoThe.BaseWindowDurationSeconds + modifiers.HoTheWindowBonusSeconds);
+            }
+
             playerBlessingPresentation?.ApplyStacks(
                 blessings.StackCount(BlessingId.ThunderSword),
                 blessings.StackCount(BlessingId.WindStride),
                 blessings.StackCount(BlessingId.BodyWard));
+
+            if (playerPresentation != null)
+            {
+                int totalStacks = blessings.StackCount(BlessingId.ThunderSword) + blessings.StackCount(BlessingId.WindStride) + blessings.StackCount(BlessingId.BodyWard);
+                playerPresentation.SetBlessingVisual(BlessingTintColor(id), Mathf.Clamp01(totalStacks / 9f));
+            }
         }
+
+        static Color BlessingTintColor(BlessingId id) => id switch
+        {
+            BlessingId.ThunderSword => new Color(0.75f, 0.55f, 1f),
+            BlessingId.WindStride => new Color(0.75f, 0.95f, 0.85f),
+            BlessingId.BodyWard => new Color(0.9f, 0.85f, 0.35f),
+            _ => Color.white
+        };
 
         IEnumerator DelayedWaterShift(float delaySeconds)
         {

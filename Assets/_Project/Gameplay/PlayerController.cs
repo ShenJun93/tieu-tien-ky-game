@@ -19,6 +19,9 @@ namespace TieuTienKy.Gameplay
         float verticalVelocity;
         float runMoveSpeedMultiplier = 1f;
 
+        /// <summary>0..1 input-driven move intensity this frame, for CharacterPresentation.SetMovement (Idle/Run blend). Presentation-facing only - never drives gameplay motion itself.</summary>
+        public float NormalizedMoveSpeed { get; private set; }
+
         void Awake()
         {
             controller = GetComponent<CharacterController>();
@@ -36,6 +39,7 @@ namespace TieuTienKy.Gameplay
         {
             Vector2 moveInput = inputReader.MoveInput;
             Vector3 moveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
+            NormalizedMoveSpeed = Mathf.Clamp01(moveInput.magnitude);
 
             if (!knockbackReceiver.IsBeingKnockedBack && moveDirection.sqrMagnitude > 0.0001f)
             {

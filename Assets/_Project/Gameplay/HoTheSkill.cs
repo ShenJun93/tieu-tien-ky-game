@@ -21,6 +21,7 @@ namespace TieuTienKy.Gameplay
         Cooldown cooldown;
         HoTheWindow activeWindow;
         bool windowOpen;
+        float baseWindowDurationSeconds;
 
         /// <summary>Fires on every successful activation - presentation binds PlayCast/SetBlessingVisual-style ward feedback here.</summary>
         public event System.Action Activated;
@@ -29,14 +30,16 @@ namespace TieuTienKy.Gameplay
         void Awake()
         {
             selfCombatant = GetComponent<Combatant>();
+            baseWindowDurationSeconds = windowDurationSeconds;
             cooldown = new Cooldown(cooldownSeconds);
         }
 
         public float CooldownDuration => cooldown?.Duration ?? cooldownSeconds;
+        public float BaseWindowDurationSeconds => baseWindowDurationSeconds;
         public bool IsReady(float currentTime) => cooldown != null && cooldown.IsReady(currentTime);
         public bool IsWindowActive(float currentTime) => windowOpen && activeWindow.IsActive(currentTime);
 
-        /// <summary>Run-blessing-driven window extension (Hộ Thể stacks). Takes effect on the next activation.</summary>
+        /// <summary>Run-blessing-driven window extension (Hộ Thể stacks). Callers compute the target duration from BaseWindowDurationSeconds so repeated blessing picks never compound. Takes effect on the next activation.</summary>
         public void SetWindowDuration(float seconds) => windowDurationSeconds = Mathf.Max(0.05f, seconds);
 
         public bool TryActivate(float currentTime)
