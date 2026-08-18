@@ -1,6 +1,6 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-POST-MERGE-RECONCILIATION-001
 
-Status: **IMPLEMENT** — bounded governance reconciliation only.
+Status: **COMPLETE / CLOSED** — governance reconciliation content complete; no successor authority granted.
 
 Project: **TIỂU TIÊN KÝ**
 
@@ -12,23 +12,24 @@ Human/Game Director instruction:
 
 `APPROVE PRODUCT FOUNDATION POST-MERGE RECONCILIATION`
 
-This live instruction authorizes only the minimum repository-canon cleanup required after PR #9 merged the accepted Product Foundation into `main`.
+This live instruction authorized only the minimum repository-canon cleanup required after PR #9 merged the accepted Product Foundation into `main`.
 
 ## Exact baseline
 
 - Canonical `main` HEAD at task start: `ae03480376d9563b39820184d41cdb36bfdd2a71`.
 - That commit is `Merge PR #9: canonicalize accepted TTK Product Foundation`.
 - Task branch: `chore/product-foundation-post-merge-reconciliation`.
+- Authority bootstrap commit: `36f5dcdff8c172274886ff47bb5ad822f1bb4f2d`.
 
 ## Mission
 
-Reconcile stale pre-merge wording that still describes Product Foundation integration as future work, now that PR #9 has already merged.
+Reconcile stale pre-merge wording that still described Product Foundation integration as future work after PR #9 had already merged.
 
-Record the live truth:
+Persist the live truth:
 
 `PRODUCT_FOUNDATION = ACCEPTED / CANONICAL / INTEGRATED INTO MAIN`
 
-while preserving `DISCOVERY` as the final machine-readable authority and granting zero successor implementation authority.
+while returning machine-readable authority to `DISCOVERY` and granting zero successor implementation authority.
 
 ## Allowed paths
 
@@ -40,40 +41,41 @@ docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-POST-MERGE-RECONCILIATION-001.md
 docs/evidence/PRODUCT_FOUNDATION_POST_MERGE_RECONCILIATION_REPORT.md
 ```
 
-Everything else is out of scope.
+Everything else was out of scope.
 
-## Forbidden actions
+## Result
 
-- any `Assets/`, `Packages/`, `ProjectSettings/`, Unity, runtime, scene, prefab, package, backend, networking, economy, shop, live-ops, or build mutation;
-- any mutation of the original quarantined R1 worktree;
-- Product Proof implementation;
-- R1 salvage/resumption;
-- R2-R6 start;
-- Stage C authorization;
-- co-op or PvP implementation;
-- any successor task authorization.
+- `CURRENT_STATE.md` records PR #9 / merge commit `ae03480376d9563b39820184d41cdb36bfdd2a71` as completed canonical integration.
+- `PRODUCT_FOUNDATION.md` states **ACCEPTED / CANONICAL** and no longer describes integration as pending.
+- `MASTER_PLAN.md` was inspected and intentionally left untouched because its Product Foundation amendment already pointed to `PRODUCT_FOUNDATION.md` as **ACCEPTED canon**.
+- `NEXT_TASK.md` returns to `state: DISCOVERY`, with null task/branch/baseline/task/evidence fields and empty path lists.
+- Final stop condition is `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+- The roadmap's R1-R6 Salvage Review remains only a candidate next decision, **NOT AUTHORIZED**.
 
-## Acceptance criteria
+## Preserved authority boundaries
 
-1. `CURRENT_STATE.md` records PR #9 / merge commit `ae03480376d9563b39820184d41cdb36bfdd2a71` as completed canonical integration.
-2. `PRODUCT_FOUNDATION.md` no longer says integration is pending/future; it states the foundation is accepted and canonical on `main`.
-3. `NEXT_TASK.md` final state is `DISCOVERY`, with null task/branch/baseline/task/evidence fields and empty path lists.
-4. Final `NEXT_TASK.md` grants no implementation authority and requires a fresh Human/Game Director decision before any successor authority.
-5. `PRODUCT_EXECUTION = FROZEN`, `PRODUCT_FEEL_REMEDIATION_01 = PAUSED`, R1 stays `QUARANTINED`, R2-R6 stay `NOT STARTED`, Stage C stays `NOT AUTHORIZED`, `HUMAN_PVP_FUN = NOT PROVEN`.
-6. No Product Foundation content/category distinction is changed: `ACCEPTED DIRECTION`, `TESTABLE HYPOTHESIS`, `DEFERRED` remain intact.
-7. This task closes as governance-only cleanup and stops for Human merge approval.
+```text
+PRODUCT_EXECUTION            = FROZEN
+PRODUCT_FEEL_REMEDIATION_01 = PAUSED
+R1                           = QUARANTINED
+R2-R6                        = NOT STARTED
+STAGE_C                      = NOT AUTHORIZED
+HUMAN_PVP_FUN                = NOT PROVEN
+```
 
-## Verification
+No Product Proof, R1 salvage/resumption, R2-R6, Stage C, co-op/PvP, Unity/runtime/package, or other product implementation authority was granted.
 
-Use remote/live GitHub evidence for this connector-executed task:
+## Verification model
 
-- confirm `main` still points to `ae03480376d9563b39820184d41cdb36bfdd2a71` before mutation;
-- compare branch against baseline and verify only allowed paths changed;
-- fetch final `NEXT_TASK.md`, `CURRENT_STATE.md`, and `PRODUCT_FOUNDATION.md` from the branch;
-- confirm no successor authority is present.
+This task was executed through the connected GitHub API rather than a local checkout. Verification therefore uses live remote evidence:
 
-No Unity/APK/device verification is relevant to this governance-only task.
+- `main` verified at the exact baseline before mutation;
+- branch/base comparison verifies changed paths;
+- final branch files are fetched back and inspected;
+- no file outside the allowed path list is changed.
+
+Repository-local Node hook tests were **not executed in this connector-only execution surface**. This task does not claim otherwise. No hook implementation was changed.
 
 ## STOP
 
-`PRODUCT_FOUNDATION_POST_MERGE_RECONCILIATION_READY_FOR_HUMAN_MERGE_APPROVAL`
+Task content is complete. Human/Game Director remains merge authority for this reconciliation branch. Merging this administrative cleanup grants no successor authority.
