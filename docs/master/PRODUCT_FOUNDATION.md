@@ -1,10 +1,6 @@
 # TIỂU TIÊN KÝ — PRODUCT FOUNDATION
 
-Status: **ACCEPTED** — accepted canon (independent review `PASS`,
-explicit Human/Game Director acceptance); ready for canonical integration,
-which completes once the Human/Game Director merges
-`chore/product-foundation-canon` into `main`
-(`docs/governance/CURRENT_STATE.md`, `docs/governance/NEXT_TASK.md`).
+Status: **ACCEPTED / CANONICAL** — independently reviewed (`PASS`), explicitly accepted by the Human/Game Director, and integrated into repository `main` by PR #9, merge commit `ae03480376d9563b39820184d41cdb36bfdd2a71`.
 
 Authored: 2026-08-19, by
 `TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`, persisting a revised
