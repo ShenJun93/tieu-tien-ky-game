@@ -337,6 +337,24 @@ EXTENDING/ADAPTING these foundations, not rebuilding them:
   definitions (already flagged in the migration map) remains a clean,
   additive next step, not a rethink.
 
+## Governance guard note
+
+`node scripts/hooks/pre-finish.mjs` reports `PRE-FINISH BLOCKED` against the
+full `origin/main...HEAD` diff, flagging exactly 3 files:
+`docs/governance/CURRENT_STATE.md`, `docs/governance/NEXT_TASK.md`,
+`docs/tasks/TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001.md` — all three from
+checkpoint 1 (`d56abe7`), the Human-authorized governance amendment that
+established this task's own authority. `docs/governance/` is (correctly)
+forbidden for ordinary task execution, and `docs/tasks/` is not in
+`allowed_paths` either, so the hook cannot distinguish "the one explicitly-
+authorized bootstrapping commit" from an unauthorized governance edit — this
+is an inherent consequence of amending governance in-branch (the lightweight
+option the Human chose) rather than via a separate governance branch (the
+heavier process used for the prior Fun-First rebaseline). All commits after
+checkpoint 1 stay strictly within `allowed_paths`. Not bypassed; reported
+here per "do not bypass a guard unless the operator explicitly authorizes
+the exception."
+
 ## Human playtest checklist
 
 Install the exact APK above (`Builds/Android/P0A.apk`, built 2026-08-18
