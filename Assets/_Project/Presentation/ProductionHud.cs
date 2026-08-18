@@ -35,6 +35,7 @@ namespace TieuTienKy.Gameplay
         Combatant playerCombatant;
         PlayerSkillController skillController;
         TieuTienKy.Input.TouchInputReader inputReader;
+        IPlayerActionGateway actionGateway;
 
         float bossArrivalCueTimer;
         bool paused;
@@ -78,6 +79,9 @@ namespace TieuTienKy.Gameplay
         }
 
         public void ShowBossArrivalCue() => bossArrivalCueTimer = BossArrivalCueSeconds;
+
+        /// <summary>Task B1: skill buttons emit intent through this gateway, not directly into PlayerSkillController, so the same HUD works unchanged against LocalPlayerActionGateway (solo) or NetworkPlayerActionGateway (Task B2).</summary>
+        public void SetActionGateway(IPlayerActionGateway gateway) => actionGateway = gateway;
 
         void Awake()
         {
@@ -355,7 +359,7 @@ namespace TieuTienKy.Gameplay
 
         void ActivateSkill(int index)
         {
-            if (skillController == null)
+            if (actionGateway == null)
             {
                 return;
             }
@@ -363,13 +367,13 @@ namespace TieuTienKy.Gameplay
             switch (index)
             {
                 case 0:
-                    skillController.TryActivateLoiTram();
+                    actionGateway.RequestLoiTram();
                     break;
                 case 1:
-                    skillController.TryActivatePhongBo();
+                    actionGateway.RequestPhongBo();
                     break;
                 case 2:
-                    skillController.TryActivateHoThe();
+                    actionGateway.RequestHoThe();
                     break;
             }
         }

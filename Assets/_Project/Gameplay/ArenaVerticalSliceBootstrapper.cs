@@ -109,6 +109,9 @@ namespace TieuTienKy.Gameplay
             var skillController = player.AddComponent<PlayerSkillController>();
             player.AddComponent<PlayerBlessingPresentation>();
 
+            var executor = new PlayerActionExecutor(basicAttack, skillController);
+            player.AddComponent<LocalPlayerActionGateway>().Initialize(executor);
+
             CharacterPresentation presentation = null;
             if (cultivatorProxyPrefab != null)
             {
@@ -165,6 +168,7 @@ namespace TieuTienKy.Gameplay
                 presentation);
 
             hud.Initialize(director, player.GetComponent<Combatant>(), skillController, player.GetComponent<TouchInputReader>());
+            hud.SetActionGateway(player.GetComponent<LocalPlayerActionGateway>());
         }
 
         Vector3[] BuildWaterPositions()

@@ -50,10 +50,9 @@ namespace TieuTienKy.Gameplay
 
         void Update()
         {
-            if (inputReader.AttackTriggeredThisFrame && sequencer.TryBeginAttack(Time.time))
+            if (inputReader.AttackTriggeredThisFrame)
             {
-                CombatAudio.Play("BasicSwing", transform.position);
-                AttackStarted?.Invoke();
+                TryActivate(Time.time);
             }
 
             if (sequencer.Tick(Time.time, out bool recoveryEnded))
@@ -66,6 +65,26 @@ namespace TieuTienKy.Gameplay
             {
                 AttackRecovered?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// Explicit activation entry point (Task B1's shared action-gateway
+        /// seam): Update() calls this from local touch input exactly as
+        /// before; PlayerActionExecutor calls the same method from either
+        /// LocalPlayerActionGateway or (server-side, on the authoritative
+        /// copy) NetworkPlayerActionGateway, so local and network play
+        /// resolve through this one method - never a second attack path.
+        /// </summary>
+        public bool TryActivate(float currentTime)
+        {
+            if (!sequencer.TryBeginAttack(currentTime))
+            {
+                return false;
+            }
+
+            CombatAudio.Play("BasicSwing", transform.position);
+            AttackStarted?.Invoke();
+            return true;
         }
 
         /// <summary>Sets the run-blessing-driven attack recovery/Conductive strength. Recreates the sequencer only while Idle, so an in-flight swing is never disrupted.</summary>
