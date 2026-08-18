@@ -2,8 +2,41 @@
 
 `TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
 
+Status: **ACCEPTED / CLOSED**. See `HUMAN_ACCEPTANCE` below.
+
 Type: **governance / product-canon persistence** (not a gameplay/product
 implementation task).
+
+## HUMAN_ACCEPTANCE
+
+- Implementation candidate HEAD: `46f0460721b19239def355d0f8d312799df1575f`.
+- Independent review verdict: **PASS**. P0 blockers: 0. P1 blockers: 0.
+  P2 non-blocking notes: 2.
+- Explicit Human/Game Director acceptance: **APPROVE PRODUCT FOUNDATION
+  CANON ACCEPTANCE**.
+- P2 notes are recorded as **DISPOSED / NON-BLOCKING**:
+  - **P2-A**: this report's "Verification performed" section below
+    captured `git diff --name-only`/`--stat` after the bootstrap commit
+    (`5c4a772`) rather than the final candidate. Independent remote
+    comparison subsequently verified the final candidate is exactly 2
+    commits ahead of baseline and changes exactly the 7 allowed paths —
+    **non-blocking, closed by review evidence**.
+  - **P2-B**: `docs/governance/CURRENT_STATE.md`'s wording,
+    "`PRODUCT_FOUNDATION_CANON` implementation has not started," was
+    ambiguous because this canon-persistence task itself had completed.
+    Corrected in this same acceptance to state plainly that Product
+    Proof/gameplay implementation has not started — no remediation task
+    opened.
+- This acceptance grants **no successor product implementation
+  authority**: `docs/governance/NEXT_TASK.md` `state` transitions
+  `REVIEW` → `DISCOVERY` (read-only/research; no repository mutation),
+  not `IMPLEMENT`. It does not reactivate `PRODUCT-FEEL-REMEDIATION-01`,
+  does not reopen R1, and does not infer R2-R6 or Stage C authority.
+- Repository-`main` canonical integration is **not** claimed complete by
+  this acceptance: the Product Foundation is **ACCEPTED** and **READY
+  FOR CANONICAL INTEGRATION**; integration completes only once the
+  Human/Game Director merges `chore/product-foundation-canon` into
+  `main`.
 
 ## Identity
 
@@ -185,23 +218,25 @@ this task.
 
 ## Final candidate HEAD
 
-The final commit on `chore/product-foundation-canon` after this evidence
-report is committed is the final candidate HEAD for independent review.
-(Exact SHA is reported in the task's final structured report, produced
-after this commit lands — this file does not self-quote a HEAD that
-includes its own commit.)
+`46f0460721b19239def355d0f8d312799df1575f` — this is the implementation
+candidate HEAD that was independently reviewed (verdict `PASS`) and
+explicitly accepted by the Human/Game Director. See `HUMAN_ACCEPTANCE`
+above.
 
-## Required independent review
+## Independent review and acceptance (closed)
 
-This candidate is **not** repository-`main` canon. Per
+This candidate was independently reviewed against
 `docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md`'s STOP
-condition, `docs/governance/NEXT_TASK.md` `state` transitions to
-`REVIEW` immediately after this commit; the writer performs no further
-mutation on this branch. An independent reviewer must review this diff,
-the hook-test run above, and this evidence report before any
-acceptance, `main` merge, or successor authority exists. This task does
-not authorize itself, a reviewer, or any other agent to self-accept this
-work, resume `PRODUCT-FEEL-REMEDIATION-01`, start R1 salvage, begin
-R2-R6, authorize Stage C, or begin Product Proof implementation.
+condition (`docs/governance/NEXT_TASK.md` `state: REVIEW`, writer
+execution blocked): verdict **PASS**, P0=0, P1=0, P2=2 non-blocking notes
+(disposed in `HUMAN_ACCEPTANCE` above). The Human/Game Director then
+explicitly approved acceptance (**APPROVE PRODUCT FOUNDATION CANON
+ACCEPTANCE**). `docs/governance/NEXT_TASK.md` `state` has transitioned
+`REVIEW` → `DISCOVERY`; no successor implementation authority is granted
+— `PRODUCT-FEEL-REMEDIATION-01` resumption, R1 salvage, R2-R6, Stage C,
+and Product Proof implementation all remain unauthorized. This candidate
+is **ACCEPTED** and **READY FOR CANONICAL INTEGRATION**; repository-`main`
+integration completes only once the Human/Game Director merges
+`chore/product-foundation-canon` into `main`.
 
-**STOP:** `PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED`
+**STOP:** `PRODUCT_FOUNDATION_CANON_READY_FOR_HUMAN_MERGE_APPROVAL`

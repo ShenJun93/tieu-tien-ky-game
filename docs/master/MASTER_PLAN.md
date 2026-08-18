@@ -12,11 +12,11 @@ This file is the repository operational source of truth for decisions agents nee
 **Product-foundation amendment (2026-08-19):** current stable
 product-level authority for accepted direction, audience/mode hypotheses,
 the three product bets, and deferred decisions is
-`docs/master/PRODUCT_FOUNDATION.md` (persisted candidate, pending
-independent review — `docs/governance/CURRENT_STATE.md`). Where §1's
-product-identity/audience prose below conflicts with that file,
-`PRODUCT_FOUNDATION.md` is authoritative; this file's historical framing
-is preserved below, not rewritten.
+`docs/master/PRODUCT_FOUNDATION.md` (**ACCEPTED** canon —
+`docs/governance/CURRENT_STATE.md`). Where §1's product-identity/audience
+prose below conflicts with that file, `PRODUCT_FOUNDATION.md` is
+authoritative; this file's historical framing is preserved below, not
+rewritten.
 
 ## 1. Product identity
 

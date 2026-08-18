@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (product foundation candidate persistence)
+Updated: 2026-08-19 (product foundation canon acceptance)
 
 ## Repository
 
@@ -17,7 +17,7 @@ Updated: 2026-08-19 (product foundation candidate persistence)
 - Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
 - Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
-- Full canon: `docs/master/MASTER_PLAN.md`. Product-level foundation (accepted direction/hypotheses/deferred): `docs/master/PRODUCT_FOUNDATION.md` (persisted candidate, pending independent review). Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
+- Full canon: `docs/master/MASTER_PLAN.md`. Product-level foundation (accepted direction/hypotheses/deferred): `docs/master/PRODUCT_FOUNDATION.md` (**ACCEPTED** canon; ready for canonical integration into `main` pending Human/Game Director merge — see below). Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
 
 ## Audited baseline
 
@@ -28,7 +28,7 @@ Updated: 2026-08-19 (product foundation candidate persistence)
 ```text
 FOUNDATION_V2                     = ACCEPTED
 SYSTEMIC_PREPRODUCTION_FOUNDATION = ACCEPTED / ACTIVE BASIS FOR FUTURE DECISIONS
-PRODUCT_FOUNDATION           = HUMAN_APPROVED / PERSISTED CANDIDATE
+PRODUCT_FOUNDATION           = ACCEPTED / READY FOR CANONICAL INTEGRATION
 PRIMARY_PRODUCT_PROOF         = PvE-FIRST
 STAGE_AB_TECHNICAL_GATE      = GREEN
 STAGE_AB_PRODUCT_GATE        = RED
@@ -41,24 +41,33 @@ STAGE_C                      = NOT AUTHORIZED
 HUMAN_PVP_FUN                = NOT PROVEN
 ```
 
-`PRODUCT_FOUNDATION = HUMAN_APPROVED / PERSISTED CANDIDATE` basis: the
-Human/Game Director explicitly approved a revised Product Foundation
-after multiple discovery, market-research, adversarial-review, and
-reconciliation rounds; it is persisted at
-`docs/master/PRODUCT_FOUNDATION.md` and
-`docs/decisions/001-product-foundation.md` by
-`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
-(`docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md`). This is a
-**persisted candidate**, not yet independent-reviewed or
-repository-`main` canonized — `docs/governance/NEXT_TASK.md`
-transitions to `state: REVIEW` on completion of that task, and
-independent review plus explicit Human/Game Director action are still
-required before canonical integration is complete. Persisting this
-candidate does **not** itself: unfreeze `PRODUCT_EXECUTION`, reactivate
-`PRODUCT_FEEL_REMEDIATION_01`, reopen R1, start R2-R6, or authorize
-Stage C — each still requires its own separate explicit Human/Game
-Director instruction. `PRODUCT_FOUNDATION_CANON` implementation has
-**not** started; only the governance canon persisting its direction has.
+`PRODUCT_FOUNDATION = ACCEPTED / READY FOR CANONICAL INTEGRATION` basis:
+implementation candidate HEAD `46f0460721b19239def355d0f8d312799df1575f`
+on `chore/product-foundation-canon`; independent review verdict `PASS`
+(P0=0, P1=0, P2=2 non-blocking notes, recorded as closed/deferred in
+`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md` and
+`docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md`); explicit Human/Game
+Director acceptance (**APPROVE PRODUCT FOUNDATION CANON ACCEPTANCE**). The
+two P2 notes: **P2-A** — the evidence report's captured `diff
+--name-only`/`--stat` reflected the state after the bootstrap commit
+rather than the final candidate; independent remote comparison
+subsequently verified the final candidate is exactly 2 commits ahead of
+baseline and changes exactly the 7 allowed paths — **non-blocking, closed
+by review evidence**. **P2-B** — this file's own prior wording, "the
+`PRODUCT_FOUNDATION_CANON` implementation has not started," was ambiguous
+because the canon-persistence task itself had completed; corrected here to
+state plainly that **Product Proof/gameplay implementation has not
+started** — only the governance canon persisting the approved direction
+has. Neither note opened a remediation task.
+
+Acceptance of this governance/canon-persistence work does **not** itself:
+unfreeze `PRODUCT_EXECUTION`, reactivate `PRODUCT_FEEL_REMEDIATION_01`,
+reopen R1, start R2-R6, or authorize Stage C — each still requires its own
+separate explicit Human/Game Director instruction. It also does **not**
+by itself complete repository-`main` canonical integration: the Product
+Foundation is **ACCEPTED** and **READY FOR CANONICAL INTEGRATION**;
+integration completes only once the Human/Game Director merges
+`chore/product-foundation-canon` into `main`.
 
 `FOUNDATION_V2 = ACCEPTED` basis: implementation candidate HEAD
 `5891da081ee09ca3f61f2d0a28f2597ae9273486` on
@@ -104,14 +113,19 @@ adversarial-review, and reconciliation rounds outside repository
 mutation, and authorized a bounded governance/canon-persistence task,
 `TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
 (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md`), to
-persist it. That task's implementation is complete and local verification
-has run; `docs/governance/NEXT_TASK.md` `state` transitions to `REVIEW`
-on this task's completion — independent review and explicit Human/Game
-Director action are still required before repository-`main` canonical
-integration of `docs/master/PRODUCT_FOUNDATION.md` and
-`docs/decisions/001-product-foundation.md` is complete. This persistence
-task does **not** authorize Product Proof implementation, reopen R1,
-start R2-R6, or authorize Stage C.
+persist it. That task is **ACCEPTED / CLOSED**: independent review
+verdict `PASS` (P0=0, P1=0, P2=2 non-blocking notes, disposed above) plus
+explicit Human/Game Director acceptance (**APPROVE PRODUCT FOUNDATION
+CANON ACCEPTANCE**). Machine-readable authority has transitioned to
+`docs/governance/NEXT_TASK.md` (`state: DISCOVERY`) — read-only
+research/compare authority, no active task, no repository mutation
+authorized. The Product Foundation is **ACCEPTED** and **READY FOR
+CANONICAL INTEGRATION**; repository-`main` integration of
+`docs/master/PRODUCT_FOUNDATION.md` and
+`docs/decisions/001-product-foundation.md` completes only once the
+Human/Game Director merges `chore/product-foundation-canon` into `main`.
+This acceptance does **not** authorize Product Proof implementation,
+reopen R1, start R2-R6, or authorize Stage C.
 
 PRODUCT FEEL REMEDIATION 01
 (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
@@ -124,15 +138,15 @@ reactivates it.
 
 ## One next action
 
-Obtain independent review of
-`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
-(`docs/governance/NEXT_TASK.md` `state: REVIEW` —
-writer execution blocked) and, if accepted, explicit Human/Game Director
-canonical integration of `docs/master/PRODUCT_FOUNDATION.md` into
-repository `main`. This does not authorize a Product Proof implementation
-successor, does not reopen R1, and does not infer R2-R6 or Stage C
-authority. Stop condition:
-`PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED` —
+Human/Game Director canonical integration: merge
+`chore/product-foundation-canon` into repository `main`. The Product
+Foundation is **ACCEPTED** (independent review `PASS`, explicit Human/Game
+Director acceptance); no active governance task exists and
+`docs/governance/NEXT_TASK.md` `state` is `DISCOVERY` (read-only, no
+mutation authority). This does not authorize a Product Proof
+implementation successor, does not reopen R1, and does not infer R2-R6 or
+Stage C authority. Stop condition:
+`PRODUCT_FOUNDATION_CANON_READY_FOR_HUMAN_MERGE_APPROVAL` —
 implementation authority for any successor task (`state: IMPLEMENT`/
 bounded `SPIKE`) requires its own fresh, explicit Human/Game Director
 instruction.

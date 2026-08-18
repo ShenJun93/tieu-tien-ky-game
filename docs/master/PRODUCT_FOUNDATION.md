@@ -1,9 +1,10 @@
 # TIỂU TIÊN KÝ — PRODUCT FOUNDATION
 
-Status: **HUMAN_APPROVED / PERSISTED CANDIDATE** — persisted candidate
-canon, pending independent review before repository-`main` canonical
-integration is complete (`docs/governance/CURRENT_STATE.md`,
-`docs/governance/NEXT_TASK.md`).
+Status: **ACCEPTED** — accepted canon (independent review `PASS`,
+explicit Human/Game Director acceptance); ready for canonical integration,
+which completes once the Human/Game Director merges
+`chore/product-foundation-canon` into `main`
+(`docs/governance/CURRENT_STATE.md`, `docs/governance/NEXT_TASK.md`).
 
 Authored: 2026-08-19, by
 `TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`, persisting a revised

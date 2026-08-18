@@ -1,9 +1,46 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001
 
+Status: **ACCEPTED / CLOSED** (see `docs/governance/NEXT_TASK.md`,
+`state: DISCOVERY`).
+
 Project: **TIỂU TIÊN KÝ**
 
 Type: **governance / product-canon persistence** (NOT a gameplay/product
 implementation task).
+
+## Acceptance record
+
+- Implementation candidate HEAD: `46f0460721b19239def355d0f8d312799df1575f`
+  on `chore/product-foundation-canon`.
+- Independent review verdict: **PASS**. P0 blockers: 0. P1 blockers: 0.
+  P2 non-blocking notes: 2 (disposed below).
+- Explicit Human/Game Director acceptance: **APPROVE PRODUCT FOUNDATION
+  CANON ACCEPTANCE**.
+- No successor implementation authority is granted by this acceptance.
+  `docs/governance/NEXT_TASK.md` `state` transitions to `DISCOVERY`
+  (read-only/research; no repository mutation) — not `IMPLEMENT`, and not
+  a reopening of `PRODUCT-FEEL-REMEDIATION-01`, R1, R2-R6, or Stage C.
+- The Product Foundation is **ACCEPTED** and **READY FOR CANONICAL
+  INTEGRATION**; repository-`main` integration completes only once the
+  Human/Game Director merges `chore/product-foundation-canon` into `main`
+  — that merge is a separate explicit Human/Game Director action.
+
+### P2 notes — disposed, non-blocking
+
+- **P2-A**: the persisted evidence report
+  (`docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md`) captured
+  `git diff --name-only`/`--stat` after the bootstrap commit rather than
+  the final candidate. Independent remote comparison subsequently
+  verified the final candidate is exactly 2 commits ahead of baseline and
+  changes exactly the 7 allowed paths. **Non-blocking / closed by review
+  evidence.**
+- **P2-B**: `docs/governance/CURRENT_STATE.md` wording, "`PRODUCT_FOUNDATION_CANON`
+  implementation has not started," was ambiguous because the
+  canon-persistence task itself had completed. Corrected in this same
+  acceptance to state plainly that Product Proof/gameplay implementation
+  has not started. No remediation task opened.
+
+Both notes are disposed by this acceptance; neither opens further work.
 
 ## Explicit Human scope override
 
