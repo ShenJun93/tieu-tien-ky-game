@@ -110,10 +110,12 @@ namespace TieuTienKy.EditorTools
             networkManager.NetworkConfig.PlayerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(NetworkPlayerPrefabPath);
 
             var sessionDirectorGO = new GameObject("NetworkArenaSessionDirector");
+            sessionDirectorGO.AddComponent<NetworkObject>();
             var sessionDirector = sessionDirectorGO.AddComponent<NetworkArenaSessionDirector>();
 
             var bootstrapGO = new GameObject("NetworkArenaSceneBootstrap");
             var bootstrap = bootstrapGO.AddComponent<NetworkArenaSceneBootstrap>();
+            bootstrapGO.AddComponent<NetworkSmokeTestDriver>();
 
             var so = new SerializedObject(bootstrap);
             SerializedProperty spawnPointsProp = so.FindProperty("spawnPoints");
@@ -132,6 +134,22 @@ namespace TieuTienKy.EditorTools
         {
             BuildNetworkPlayerPrefab();
             BuildNetworkArenaScene();
+        }
+
+        [MenuItem("Tools/Stage AB/Build Windows Smoke Test Player (B6)")]
+        public static void BuildWindowsSmokeTestPlayer()
+        {
+            var options = new BuildPlayerOptions
+            {
+                scenes = new[] { NetworkArenaScenePath },
+                locationPathName = "Builds/Windows/NetworkSmokeTest.exe",
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.None
+            };
+
+            UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(options);
+            UnityEditor.Build.Reporting.BuildSummary summary = report.summary;
+            Debug.Log($"[STAGE_AB_B6_BUILD] result={summary.result} totalErrors={summary.totalErrors} totalWarnings={summary.totalWarnings} outputPath={summary.outputPath}");
         }
 
         static void BuildCamera()

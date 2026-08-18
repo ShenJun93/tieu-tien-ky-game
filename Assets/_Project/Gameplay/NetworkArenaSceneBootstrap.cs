@@ -24,11 +24,7 @@ namespace TieuTienKy.Gameplay
             }
 
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-
-            if (NetworkManager.Singleton.IsServer)
-            {
-                sessionDirector.Initialize(spawnPoints);
-            }
+            NetworkManager.Singleton.OnServerStarted += OnServerStarted;
         }
 
         void OnDestroy()
@@ -36,7 +32,22 @@ namespace TieuTienKy.Gameplay
             if (NetworkManager.Singleton != null)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+                NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
             }
+        }
+
+        /// <summary>
+        /// Fires exactly when hosting/serving actually begins - unlike a
+        /// synchronous IsServer check in Start(), this is not racing
+        /// whichever other component's Start() actually calls StartHost().
+        /// NetworkArenaSessionDirector is itself a NetworkBehaviour and must
+        /// be spawned (it has no in-scene NetworkObject auto-spawn wiring)
+        /// before RegisterPlayer's IsServer check can ever be true.
+        /// </summary>
+        void OnServerStarted()
+        {
+            sessionDirector.GetComponent<NetworkObject>().Spawn();
+            sessionDirector.Initialize(spawnPoints);
         }
 
         void OnClientConnected(ulong clientId)
