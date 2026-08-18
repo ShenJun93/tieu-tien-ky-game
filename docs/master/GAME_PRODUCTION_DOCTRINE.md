@@ -1,16 +1,18 @@
 # TIỂU TIÊN KÝ — GAME PRODUCTION DOCTRINE v1
 
-Status: **CANDIDATE / PENDING INDEPENDENT REVIEW.** Authored 2026-08-18 as a
-proposed Human-authorized governance transition, after the Stage A+B
-physical Human Product/Fun Gate. An independent review of the original
-candidate returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); this file
-is not yet accepted as canonical/governing. It amends
+Status: **CANONICAL / ACCEPTED.** Authored 2026-08-18 as a proposed
+Human-authorized governance transition, after the Stage A+B physical Human
+Product/Fun Gate. An independent review of the original candidate returned
+**FAIL / RECONCILIATION_REQUIRED** (2026-08-18); the reconciled candidate was
+then independently re-reviewed and accepted with four closing findings
+(F1-F4, evidence classification / atomic activation / maturity-state
+precision / baseline terminology), all closed in the acceptance patch at
+`FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD = 4feb9f4d70e332404edad6295724c38fd02b19cb`
+(`FOUNDATION_REVIEW = PASS_WITH_REMEDIATION_CLOSED`). It amends
 `docs/master/MASTER_PLAN.md` minimally: it does not delete or invalidate
-P0A/P0B/Phase history or `docs/master/RELEASE_TRACK.md`'s stage order. Once
-accepted, where this file and prior prose conflict on craft/quality
-standards, this file is authoritative; until acceptance, see
-`docs/governance/NEXT_TASK.md`, "Governance reconciliation gate", for the
-current authority state.
+P0A/P0B/Phase history or `docs/master/RELEASE_TRACK.md`'s stage order. Where
+this file and prior prose conflict on craft/quality standards, this file is
+authoritative.
 
 This file exists because Stage A+B proved a recurring failure mode: work can
 be technically GREEN — compiles, tests pass, builds run — while a physical

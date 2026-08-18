@@ -1,13 +1,12 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01
 
-Status: **HUMAN AUTHORIZED / AUTHORED — NOT CURRENTLY EXECUTABLE
-(`docs/governance/NEXT_TASK.md` `status` = `BLOCKED_PENDING_FOUNDATION_REVIEW`
-as of 2026-08-18; blocked pending independent review of the TTK Production
-Foundation v1 candidate this task relies on, per `docs/master/
-GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md`).**
-This task file and its scope below are unchanged and remain the intended
-next macro-task once that review accepts the foundation and
-`docs/governance/NEXT_TASK.md` `status` returns to `ACTIVE`.
+Status: **ACTIVE / AUTHORIZED TO EXECUTE**
+(`docs/governance/NEXT_TASK.md` `status` = `ACTIVE` as of 2026-08-18; the TTK
+Production Foundation v1 this task relies on, per `docs/master/
+GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md`, is
+`CANONICAL / ACCEPTED`, `FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD =
+4feb9f4d70e332404edad6295724c38fd02b19cb`). This task file and its scope
+below are unchanged.
 Project: **TIỂU TIÊN KÝ**
 Program: **PLAYABLE PRODUCTION ALPHA**
 Macro-slice: **PRODUCT FEEL REMEDIATION 01**

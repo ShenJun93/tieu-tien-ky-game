@@ -12,8 +12,8 @@ been implemented and completed
 (`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001`, historical; complete)
 with a physical Human Gate 1 outcome (§5 below). Current execution
 authority is always `docs/governance/NEXT_TASK.md`, whose `status` as of
-2026-08-18 is `BLOCKED_PENDING_FOUNDATION_REVIEW` pending independent
-review of the TTK Production Foundation v1 candidate.
+2026-08-18 is `ACTIVE` (TTK Production Foundation v1 accepted; PRODUCT FEEL
+REMEDIATION 01 is the current authorized execution task).
 
 Relationship to prior roadmap naming: **Stage A (Playable Product
 Foundation)** absorbs and extends P0A + the Vertical Slice v0.1 work.
@@ -118,11 +118,22 @@ Every final macro-slice report must include: `PLAYER_VISIBLE_DELTA`,
 
 ```text
 verified foundation
-→ accepted Stage A+B baseline
-→ verified Real Internet baseline
-→ verified 6-player Alpha Candidate
+→ accepted Stage A+B technical/architectural foundation
+→ Human-accepted Stage A+B product baseline (after Product Feel
+  Remediation + Human Gate 02 GO)
+→ Stage C Real Internet Foundation
+→ 6-player Alpha Candidate
 → Human-accepted Playable Production Alpha
 ```
+
+**Technical vs. product baseline.** The **accepted Stage A+B
+technical/architectural foundation** (seams, tests, architecture — currently
+`GREEN`) and the **Human-accepted Stage A+B product baseline** are distinct
+claims and must not be conflated. The product baseline is **NOT accepted**
+while `STAGE_AB_PRODUCT_GATE=RED`; it becomes accepted only after PRODUCT
+FEEL REMEDIATION 01 closes the carried-forward blockers and Human Gate 02
+returns an explicit `GO` (§5). Stage C opens only after that Human `GO` —
+this ratchet does not itself authorize Stage C.
 
 Each accepted baseline binds: exact HEAD, fresh tests, exact Human artifact,
 Human/product verdict.

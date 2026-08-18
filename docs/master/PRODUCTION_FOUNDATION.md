@@ -1,13 +1,16 @@
 # TIỂU TIÊN KÝ — PRODUCTION FOUNDATION v1
 
-Status: **CANDIDATE / PENDING INDEPENDENT REVIEW.** Authored 2026-08-18
-alongside `docs/master/GAME_PRODUCTION_DOCTRINE.md`, as part of the same
-proposed governance transition. An independent review of the original
-candidate returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); this file
-is not yet accepted as canonical/governing — see `docs/governance/
-NEXT_TASK.md`, "Governance reconciliation gate", for the current authority
-state. This file holds the proposed maturity model, promotion rule,
-player-facing Definition of Done, and Approved Production Kit v1 contract.
+Status: **CANONICAL / ACCEPTED.** Authored 2026-08-18 alongside
+`docs/master/GAME_PRODUCTION_DOCTRINE.md`, as part of the same governance
+transition. An independent review of the original candidate returned
+**FAIL / RECONCILIATION_REQUIRED** (2026-08-18); the reconciled candidate was
+then independently re-reviewed and accepted with four closing findings
+(F1-F4, evidence classification / atomic activation / maturity-state
+precision / baseline terminology), all closed in the acceptance patch at
+`FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD = 4feb9f4d70e332404edad6295724c38fd02b19cb`
+(`FOUNDATION_REVIEW = PASS_WITH_REMEDIATION_CLOSED`). This file holds the
+accepted maturity model, promotion rule, player-facing Definition of Done,
+and Approved Production Kit v1 contract.
 
 ## 1. Production maturity model
 
@@ -63,7 +66,7 @@ this table as itself authoritative — the linked evidence is authoritative.
 | Production Canvas/uGUI (Main Menu/HUD/Cơ Duyên/pause/boss/result) | PROVEN — technical PASS, product `NO`/UI_FEELS_LIKE_GAME_UI=NO | `STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md` Human Gate outcome |
 | Combat SFX (14 procedural clips) | EXPERIMENT — `AUDIO_SUPPORTS_ACTION=NO` | same |
 | Mobile skill-button ergonomics | EXPERIMENT — `FOUR_ACTIONS_READABLE=YES_WITH_UX_GAP` | same |
-| Human-vs-Human PvP fun | UNTESTED — `HUMAN_VS_HUMAN_IS_MORE_FUN=NOT_TESTED` | same |
+| Human-vs-Human PvP fun | EXPERIMENT — UNTESTED; `HUMAN_VS_HUMAN_IS_MORE_FUN=NOT_TESTED` | same |
 
 **Baseline precision — technical vs. Human-accepted product.** "Stage A+B"
 names two distinct claims that must not be conflated. The
@@ -128,7 +131,13 @@ final assets, and it does **not** authorize bulk asset acquisition ahead of
 evidence. Categories are populated progressively as each domain earns
 PRODUCTION_KEPT status through the maturity model above.
 
-Minimum categories future production work should progressively populate:
+Minimum categories future production work should progressively populate,
+grouped by the kind of evidence that actually proves them (§1's rule 13,
+"automated evidence proves correctness; physical Human evidence proves
+perception/fun", applies per category rather than uniformly):
+
+**Player-perceptual** — approval requires physical Human evidence where
+perception/feel is material, in addition to any supporting automated checks:
 
 ```text
 approved player presentation target
@@ -141,19 +150,32 @@ typography
 VFX hierarchy / elemental language
 combat SFX language
 UI SFX language
-minimal mixer hierarchy
 haptic hierarchy
-animation/retarget workflow
 arena material/prop/environment language
+```
+
+**Technical / process** — approval requires appropriate automated, technical,
+process, audit, or measured evidence; physical Human perceptual evidence is
+not required to approve the category itself:
+
+```text
 asset provenance
-physical-device reference captures
 quality/performance reference
 reusable tuning workflow
+animation/retarget workflow
+```
+
+**Mixed** — approval requires both technical and physical Human evidence
+where each is relevant to what the category claims:
+
+```text
+minimal mixer hierarchy
+physical-device reference captures
 ```
 
 Each category is approved independently, when a domain reaches
-PRODUCTION_KEPT with physical Human evidence backing it — not in bulk, and
-not ahead of gameplay/product evidence.
+PRODUCTION_KEPT with the evidence appropriate to its group above — not in
+bulk, and not ahead of gameplay/product evidence.
 
 Preserved rule (`MASTER_PLAN.md` §9):
 

@@ -108,39 +108,46 @@ tested.
 `TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` is complete and preserved
 as history; it is no longer active write authority.
 
-## Production doctrine (authored 2026-08-18; CANDIDATE / PENDING INDEPENDENT REVIEW)
+## Production doctrine (authored 2026-08-18; CANONICAL / ACCEPTED)
 
 `docs/master/GAME_PRODUCTION_DOCTRINE.md` (core doctrine, anti-demo rules,
 certainty×reuse decision model, TTK Combat Promise) and
 `docs/master/PRODUCTION_FOUNDATION.md` (EXPERIMENT → PROVEN →
 PRODUCTION_KEPT → SCALE_READY maturity model, player-facing Definition of
 Done, Approved Production Kit v1 contract) were authored 2026-08-18 as a
-proposed governance transition. An independent review of that candidate
-returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); both files carry
-**Status: CANDIDATE / PENDING INDEPENDENT REVIEW** and do not yet govern as
-accepted canon — see `docs/governance/NEXT_TASK.md`, "Governance
-reconciliation gate". Eight small project-local craft skills live under
-`.agents/skills/ttk-*/SKILL.md` and remain authored/available; their
-existence is not itself evidence that the doctrine they support is
-accepted.
+proposed governance transition. An independent review of the original
+candidate returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); a second
+independent review of the reconciled HEAD returned **PASS_WITH_REMEDIATION**
+with four closing findings (F1-F4), all closed in the acceptance/activation
+patch. Both files now carry **Status: CANONICAL / ACCEPTED**,
+`FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD = 4feb9f4d70e332404edad6295724c38fd02b19cb`,
+`FOUNDATION_REVIEW = PASS_WITH_REMEDIATION_CLOSED` — see
+`docs/governance/NEXT_TASK.md`, "Governance reconciliation gate — closed".
+Eight small project-local craft skills live under
+`.agents/skills/ttk-*/SKILL.md` and remain authored/available.
 
-## Program state (blocked pending foundation review)
+## Program state — foundation accepted, remediation task active
 
-Program-level authorization **PRODUCT FEEL REMEDIATION 01**
-(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is fully
-authored — it stays on the accepted Stage A+B production-kept
-technical/architectural foundation and closes the six carried-forward
-player-facing blockers above, ending on a second exact SHA-bound Android
-artifact and a physical Human Gate 02 (bounded LAN 2-device PvP included).
-It is **not currently executable**:
-`docs/governance/NEXT_TASK.md` `status` is
-`BLOCKED_PENDING_FOUNDATION_REVIEW`, and `scripts/hooks/pre-task.mjs`
-blocks any task execution while `status != ACTIVE`. Execution resumes only
-after independent review accepts the TTK Production Foundation v1
-candidate and an operator/reviewer explicitly returns `status` to
-`ACTIVE`. Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**
-regardless of this review's outcome, and will still require Human Gate 02
-to return an explicit Human `GO` after that.
+TTK Production Foundation v1 is accepted (above). Program-level
+authorization **PRODUCT FEEL REMEDIATION 01**
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is the
+**current authorized execution task** — it stays on the accepted Stage A+B
+production-kept technical/architectural foundation and closes the six
+carried-forward player-facing blockers above, ending on a second exact
+SHA-bound Android artifact and a physical Human Gate 02 (bounded LAN
+2-device PvP included). `docs/governance/NEXT_TASK.md` `status` is
+`ACTIVE` and `scripts/hooks/pre-task.mjs` passes for it.
+
+Precision on what "accepted" means here: the **Stage A+B
+technical/architectural foundation** (seams, tests, architecture) remains
+accepted and `GREEN`. The **Stage A+B Human product baseline** remains
+**NOT accepted** — `STAGE_AB_PRODUCT_GATE=RED` — until PRODUCT FEEL
+REMEDIATION 01 closes the carried-forward blockers and Human Gate 02
+returns an explicit `GO` (`docs/master/RELEASE_TRACK.md` §5, §7).
+
+Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**. Activating
+PRODUCT FEEL REMEDIATION 01 does not authorize Stage C; only an explicit
+Human Gate 02 `GO` does.
 
 Machine-readable authority:
 
@@ -148,13 +155,11 @@ Machine-readable authority:
 
 ## Current product goal
 
-Once the TTK Production Foundation v1 reconciliation is independently
-accepted and `docs/governance/NEXT_TASK.md` `status` returns to `ACTIVE`,
-the goal is: close the six Stage A+B product-gate blockers via PRODUCT
-FEEL REMEDIATION 01's R1–R6 domains (mobile controls, UI product pass,
-combat signature, audio/haptics, micro-replayability, real Human LAN PvP
-gate), then reach Human Gate 02. Stage C (Real Internet Foundation) may
-not open until that gate returns `GO`.
+Close the six Stage A+B product-gate blockers via PRODUCT FEEL REMEDIATION
+01's R1–R6 domains (mobile controls, UI product pass, combat signature,
+audio/haptics, micro-replayability, real Human LAN PvP gate), then reach
+Human Gate 02. Stage C (Real Internet Foundation) may not open until that
+gate returns `GO`.
 
 ## Release track
 

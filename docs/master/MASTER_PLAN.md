@@ -437,7 +437,7 @@ Since then, `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`,
 `TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` have all completed and
 are no longer active write authority; see `docs/governance/NEXT_TASK.md`
 and `docs/governance/CURRENT_STATE.md` for current program state (as of
-2026-08-18: `BLOCKED_PENDING_FOUNDATION_REVIEW`).
+2026-08-18: `ACTIVE`, task `TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01`).
 
 P0B, as originally scoped below (Photon Fusion `GameMode.Server`), remains
 NOT AUTHORIZED; its Stage-B successor (NGO + Unity Transport, 2-player
