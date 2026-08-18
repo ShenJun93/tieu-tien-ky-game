@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 
 ## Repository
 
@@ -17,150 +17,67 @@ Updated: 2026-08-18
 - Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
 - Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
-- Built-in Render Pipeline is allowed during P0A; URP is a later production direction, not a P0A blocker.
+- Full canon: `docs/master/MASTER_PLAN.md`. Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
 
-## Completed foundation phase (P0A + Vertical Slice v0.1)
+## Audited baseline
 
-**P0A — Local Playable Core / Micro-Fun Validation** (historical target)
+`3b9264196bb941033f4c16bc3a68341a9dc7d785` (branch `feat/p0a-local-microfun-spike`, commit "docs(governance): accept TTK production foundation v1") is the audited clean-commit reference this reconciliation started from. Program history up to that commit (P0A → Vertical Slice v0.1 → Stage A+B → TTK Production Foundation v1 acceptance → PRODUCT FEEL REMEDIATION 01 activation) is preserved in full in `docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`, `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, and the historical task files under `docs/tasks/`; it is not restated here.
 
-P0A remained local/offline and Android-first for evidence. The operating goal was one bounded playable core loop that could be played continuously for roughly 2–3 minutes and judged as a game.
-
-```text
-move
-→ enemy pressure
-→ one basic attack
-→ readable impact + knockback
-→ environment / Water × Lightning consequence
-→ enemy defeat/reset
-→ continue playing
-```
-
-This was a prototype, not production architecture. `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` then converted P0A's proven systems into the first production-oriented foundation (game flow, four-action skill kit, prefab enemies/boss, authored arena, blessing builds, production HUD).
-
-**Human Gate outcome (physical, 2026-08-18):** the Human/Game Director installed and played the exact recorded APK. Result — **foundation ACCEPTED as the production baseline; product-likeness NOT YET PASSED**. Full detail: `docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`, "Human Gate — physical outcome". Three concrete blockers are carried forward rather than spun into a standalone remediation task:
-
-1. Visible intended arena is larger than the actual reachable arena.
-2. Weak floor/arena visual hierarchy (arena reads as a test plane, not a level/location).
-3. Player-facing experience still feels too demo-like overall.
-
-Both `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` and its superseded predecessor `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001` are complete and preserved as history; neither is active write authority.
-
-## Preserved implementation checkpoint
-
-The previously dirty, physically-tested P0A worktree was safely checkpointed and pushed normally to:
-
-`feat/p0a-local-microfun-spike@77f4599fce4844a106827ed79d8b0aa7357a95e4`
-
-Verified remote ancestry:
-
-`54e90701c9172b1d7cef658c80b77261b22fa22c → 77f4599fce4844a106827ed79d8b0aa7357a95e4`
-
-The checkpoint contains 37 intentional project files under `Assets/_Project/`, `ProjectSettings/`, and `docs/evidence/`. Generated/recovery/ambiguous local files were conservatively left uncommitted rather than discarded.
-
-## Locked operating decisions
-
-- One active write workstream.
-- One meaningful product slice should normally produce one final human-facing APK.
-- Human/device gate is a hard STOP: no adb polling, scheduled retries, device monitoring, auto-install, auto-launch or USB-triggered resume.
-- Non-blocking technical debt is recorded and deferred when safe.
-- Independent review is risk-based; high-risk changes still require it, and aggregate/canonical integration should normally receive independent review.
-- A task-branch commit is a checkpoint, not acceptance or merge.
-- Portrait is not a supported gameplay orientation for the current product direction.
-- Repeated failure after one deliberate bounded remediation triggers design rethink instead of endless technical patching.
-- Player-facing product shortcomings identified at a Human Gate are carried into the next authorized macro-task rather than spawning a separate remediation task, per `docs/master/RELEASE_TRACK.md`.
-
-## Stage A+B — completed, physical Human Gate outcome (2026-08-18)
-
-`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` closed with a fully GREEN
-technical gate and a physical Human Product/Fun Gate on a Samsung Galaxy
-A15, exact APK `Builds/Android/TieuTienKy-StageAB-0065a18.apk`
-(BUILD_HEAD `0065a18d9cfa901f03f228171681bf707ead23af`):
+## Gate status (current truth)
 
 ```text
-STAGE_AB_TECHNICAL_GATE = GREEN
-STAGE_AB_PRODUCT_GATE   = RED
-PRODUCT_DIRECTION       = VALIDATED / PROMISING
-STAGE_C                 = NOT_AUTHORIZED
-HUMAN_PVP_FUN           = NOT_PROVEN
+STAGE_AB_TECHNICAL_GATE      = GREEN
+STAGE_AB_PRODUCT_GATE        = RED
+PRODUCT_DIRECTION            = VALIDATED / PROMISING
+PRODUCT_FEEL_REMEDIATION_01  = PAUSED
+R1 (mobile controls)         = PARTIAL, UNCOMMITTED, QUARANTINED (see below)
+R2-R6                        = NOT STARTED
+STAGE_C                      = NOT AUTHORIZED
 ```
 
-Human verdict (verbatim intent preserved, not reinterpreted as pass/fail):
-`LOOKS_LIKE_A_GAME=YES` ("Bắt đầu ổn hơn rồi"),
-`COMBAT_HAS_WEIGHT=YES_WITH_GAP` (skills + animation not satisfying enough,
-still demo-like), `CHARACTERS_FEEL_ALIVE=YES` (above demo level),
-`ARENA_FEELS_LIKE_A_LEVEL=YES_WITH_POLISH_GAP`,
-`UI_FEELS_LIKE_GAME_UI=NO` (still feels cheap / "phèn"),
-`AUDIO_SUPPORTS_ACTION=NO`,
-`FOUR_ACTIONS_READABLE=YES_WITH_UX_GAP` (skill control positions/sizes need
-redesign), `RUN_HAS_CLIMAX=YES_WITH_DEPTH_GAP` (feels like a 1–2 minute
-mini-game, not a compelling full run),
-`HUMAN_VS_HUMAN_IS_MORE_FUN=NOT_TESTED` (physical APK only exposed
-solo/NPC play), `WANT_TO_REPLAY=WEAK_YES` (would become boring after ~2
-runs). Full detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
-"Human Gate outcome (2026-08-18)".
+Full gate detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
+"Human Gate outcome (2026-08-18)". Carried-forward blockers and the R1-R6
+scope PRODUCT FEEL REMEDIATION 01 is paused on:
+`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`.
 
-Primary player-facing blockers carried into the next macro-task: (1) mobile
-controls / skill-button ergonomics; (2) UI visual/product quality; (3)
-combat skill + animation signature; (4) audio perceptual effectiveness; (5)
-insufficient run/build decision depth; (6) Human-vs-Human fun not yet
-tested.
+## Quarantined R1 specimen
 
-`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` is complete and preserved
-as history; it is no longer active write authority.
+The original P0A worktree (`E:\GameDev\tieu-tien-ky-game`) carries
+uncommitted R1 (mobile-controls) work-in-progress on top of the audited
+baseline above: modified `Assets/_Project/Core/Cooldown.cs`,
+`Assets/_Project/Gameplay/BasicAttack.cs`, `HoTheSkill.cs`,
+`LoiTramSkill.cs`, `PhongBoSkill.cs`, `Assets/_Project/Input/TouchInputReader.cs`,
+plus five new untracked EditMode/PlayMode test files. This is a partial,
+evidence-incomplete specimen. It is preserved exactly as found — not reset,
+committed, staged, or discarded — pending explicit Human/Game Director
+direction. Full inventory:
+`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`,
+`ORIGINAL_R1_DIRTY_INVENTORY`.
 
-## Production doctrine (authored 2026-08-18; CANONICAL / ACCEPTED)
+## Current activity
 
-`docs/master/GAME_PRODUCTION_DOCTRINE.md` (core doctrine, anti-demo rules,
-certainty×reuse decision model, TTK Combat Promise) and
-`docs/master/PRODUCTION_FOUNDATION.md` (EXPERIMENT → PROVEN →
-PRODUCTION_KEPT → SCALE_READY maturity model, player-facing Definition of
-Done, Approved Production Kit v1 contract) were authored 2026-08-18 as a
-proposed governance transition. An independent review of the original
-candidate returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); a second
-independent review of the reconciled HEAD returned **PASS_WITH_REMEDIATION**
-with four closing findings (F1-F4), all closed in the acceptance/activation
-patch. Both files now carry **Status: CANONICAL / ACCEPTED**,
-`FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD = 4feb9f4d70e332404edad6295724c38fd02b19cb`,
-`FOUNDATION_REVIEW = PASS_WITH_REMEDIATION_CLOSED` — see
-`docs/governance/NEXT_TASK.md`, "Governance reconciliation gate — closed".
-Eight small project-local craft skills live under
-`.agents/skills/ttk-*/SKILL.md` and remain authored/available.
+Systemic pre-production / foundation governance reconciliation
+(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`), executed on an
+isolated worktree/branch (`chore/foundation-v2-reconciliation`) under a
+Human-authorized, task-scoped exception to the prior
+`docs/governance/`/`docs/master/`/`docs/tasks/`/`.agents/`/`AGENTS.md`
+write-forbid. This is a governance/control-plane task only — it is not a
+resumption of PRODUCT FEEL REMEDIATION 01, not R1 salvage, and not any form
+of gameplay/Unity/package/URP work. Machine-readable authority:
+`docs/governance/NEXT_TASK.md` (`state: REVIEW`).
 
-## Program state — foundation accepted, remediation task active
+PRODUCT FEEL REMEDIATION 01
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
+**PAUSED**, not cancelled or superseded: its task contract, allowed/forbidden
+paths and R1-R6 scope stand unchanged and resume verbatim once an explicit
+Human/Game Director instruction reactivates it via a fresh
+`docs/governance/NEXT_TASK.md` authority.
 
-TTK Production Foundation v1 is accepted (above). Program-level
-authorization **PRODUCT FEEL REMEDIATION 01**
-(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is the
-**current authorized execution task** — it stays on the accepted Stage A+B
-production-kept technical/architectural foundation and closes the six
-carried-forward player-facing blockers above, ending on a second exact
-SHA-bound Android artifact and a physical Human Gate 02 (bounded LAN
-2-device PvP included). `docs/governance/NEXT_TASK.md` `status` is
-`ACTIVE` and `scripts/hooks/pre-task.mjs` passes for it.
+## One next action
 
-Precision on what "accepted" means here: the **Stage A+B
-technical/architectural foundation** (seams, tests, architecture) remains
-accepted and `GREEN`. The **Stage A+B Human product baseline** remains
-**NOT accepted** — `STAGE_AB_PRODUCT_GATE=RED` — until PRODUCT FEEL
-REMEDIATION 01 closes the carried-forward blockers and Human Gate 02
-returns an explicit `GO` (`docs/master/RELEASE_TRACK.md` §5, §7).
-
-Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**. Activating
-PRODUCT FEEL REMEDIATION 01 does not authorize Stage C; only an explicit
-Human Gate 02 `GO` does.
-
-Machine-readable authority:
-
-`docs/governance/NEXT_TASK.md`
-
-## Current product goal
-
-Close the six Stage A+B product-gate blockers via PRODUCT FEEL REMEDIATION
-01's R1–R6 domains (mobile controls, UI product pass, combat signature,
-audio/haptics, micro-replayability, real Human LAN PvP gate), then reach
-Human Gate 02. Stage C (Real Internet Foundation) may not open until that
-gate returns `GO`.
-
-## Release track
-
-Post-Vertical-Slice-v0.1 macro-slice order and product gates (Stage A → Stage B → Human Product/Fun Gate → Stage C → Stage D → Playable Production Alpha Candidate) are governed by `docs/master/RELEASE_TRACK.md`. Craft/quality standards within each stage are governed by `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md`.
+Independent review of branch `chore/foundation-v2-reconciliation` against
+`docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md` and
+`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`. No successor task
+may execute, and PRODUCT FEEL REMEDIATION 01 may not resume, until that
+review completes and the Human/Game Director explicitly authorizes the next
+state transition.

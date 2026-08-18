@@ -1,12 +1,17 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01
 
-Status: **ACTIVE / AUTHORIZED TO EXECUTE**
-(`docs/governance/NEXT_TASK.md` `status` = `ACTIVE` as of 2026-08-18; the TTK
-Production Foundation v1 this task relies on, per `docs/master/
-GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md`, is
-`CANONICAL / ACCEPTED`, `FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD =
-4feb9f4d70e332404edad6295724c38fd02b19cb`). This task file and its scope
-below are unchanged.
+Status: **PAUSED** (as of 2026-08-19; see `docs/governance/CURRENT_STATE.md`
+and `docs/governance/NEXT_TASK.md`). This task was `ACTIVE` from 2026-08-18
+until superseded governance authority was reconciled
+(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`); it is paused, not
+cancelled or superseded — its scope, allowed/forbidden paths and R1-R6
+contract below are unchanged and stand ready to resume verbatim once an
+explicit Human/Game Director instruction reactivates it via a fresh
+`docs/governance/NEXT_TASK.md` authority. The TTK Production Foundation v1
+this task relies on, per `docs/master/GAME_PRODUCTION_DOCTRINE.md` and
+`docs/master/PRODUCTION_FOUNDATION.md`, remains `CANONICAL / ACCEPTED`,
+`FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD =
+4feb9f4d70e332404edad6295724c38fd02b19cb`.
 Project: **TIỂU TIÊN KÝ**
 Program: **PLAYABLE PRODUCTION ALPHA**
 Macro-slice: **PRODUCT FEEL REMEDIATION 01**

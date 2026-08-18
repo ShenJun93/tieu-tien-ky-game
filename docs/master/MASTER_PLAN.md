@@ -425,8 +425,9 @@ Machine-readable authority:
 `docs/governance/NEXT_TASK.md`
 
 `docs/governance/NEXT_TASK.md` is the sole current execution authority; its
-`status` field governs whether any task may execute. The task pointer
-below is historical (preserved, not current):
+`state` field (`PAUSED`/`DISCOVERY`/`SPIKE`/`IMPLEMENT`/`REVIEW`/
+`HUMAN_GATE`/`CLOSED` — see `AGENTS.md`) governs whether any task may
+execute. The task pointer below is historical (preserved, not current):
 
 Historical: the next P0A product task after rebaseline activation was
 `docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md`. The

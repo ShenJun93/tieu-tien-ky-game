@@ -50,6 +50,47 @@ recorded in the relevant task/evidence doc. There is no automatic promotion
 by survival: *"it survived several tasks, therefore it is production"* is
 not a valid promotion rationale on its own.
 
+### PRODUCTION_KEPT is default-preserve, not immutable
+
+`PRODUCTION_KEPT` means: default-preserve this domain's implementation/
+presentation contract while the assumptions and supporting evidence behind
+it remain valid. It does **not** mean the decision is immutable or exempt
+from reconsideration.
+
+Reopen a `PRODUCTION_KEPT` decision only on evidence-backed triggers such
+as:
+
+- new Human/Game Director evidence (a fresh playtest, a physical Human
+  Gate verdict) that contradicts the original acceptance;
+- a materially changed product requirement;
+- a platform/dependency/engine constraint that invalidates the original
+  implementation;
+- a significant external alternative (technology, package, workflow) that
+  changes the certainty×reuse calculus behind the original decision
+  (`docs/master/GAME_PRODUCTION_DOCTRINE.md` §4);
+- repeated production pain directly attributable to the kept decision;
+- an assumption the original decision relied on turning out to be invalid.
+
+Reopening is itself a significant decision: record it per
+`docs/decisions/README.md` when it changes accepted canon, rather than
+silently re-litigating the domain inside an unrelated task.
+
+### Learning build vs. acceptance artifact; existence vs. ship eligibility
+
+**LEARNING BUILD != ACCEPTANCE ARTIFACT.** A learning build (e.g. inside a
+`SPIKE`, or an intermediate build during `IMPLEMENT`) exists to prove a
+mechanic/feel works or to surface a question; it is disposable and is not
+itself the artifact a Human Gate evaluates for acceptance. The acceptance
+artifact is the exact, SHA-bound build/evidence produced once technical
+verification is complete and handed to a Human Gate.
+
+**EXISTENCE != SHIP ELIGIBILITY.** A domain, asset, or feature existing
+in the repository (even functioning, even `PRODUCTION_KEPT`) is not by
+itself a claim that it is eligible to ship — provenance
+(`ASSET_SOURCES.csv`, "no provenance record → no ship", §3 below),
+platform/legal gates, and the player-facing Definition of Done (§2) are
+independent, still-required conditions.
+
 ### Current domain maturity snapshot (informational, as of 2026-08-18)
 
 Recorded here for continuity; update per macro-slice rather than treating
