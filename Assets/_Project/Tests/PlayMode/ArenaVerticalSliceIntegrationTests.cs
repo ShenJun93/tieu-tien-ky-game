@@ -68,6 +68,32 @@ namespace TieuTienKy.Gameplay.Tests
         }
 
         [UnityTest]
+        public IEnumerator ArenaScene_BoundaryWalls_AreFlushWithVisibleGameplaySurface()
+        {
+            // Regression for the Human-reported "visible arena larger than
+            // reachable arena" blocker: ArenaWall_* must physically contain
+            // exactly the visible GameplaySurface extent, no smaller. Mirrors
+            // GreyboxArenaBoundaryTests' flush-wall invariant, but against the
+            // authored production scene instead of the runtime-built Greybox.
+            const float FloatTolerance = 1e-3f;
+
+            yield return SceneManager.LoadSceneAsync("Arena_VerticalSlice_01");
+            yield return null;
+            yield return null;
+
+            Bounds surfaceBounds = GameObject.Find("GameplaySurface").GetComponent<Collider>().bounds;
+            Bounds north = GameObject.Find("ArenaWall_North").GetComponent<BoxCollider>().bounds;
+            Bounds south = GameObject.Find("ArenaWall_South").GetComponent<BoxCollider>().bounds;
+            Bounds east = GameObject.Find("ArenaWall_East").GetComponent<BoxCollider>().bounds;
+            Bounds west = GameObject.Find("ArenaWall_West").GetComponent<BoxCollider>().bounds;
+
+            Assert.AreEqual(surfaceBounds.max.z, north.min.z, FloatTolerance, "North wall's inner face must sit flush with the visible GameplaySurface's +Z edge, not clamp movement to a smaller area.");
+            Assert.AreEqual(surfaceBounds.min.z, south.max.z, FloatTolerance, "South wall's inner face must sit flush with the visible GameplaySurface's -Z edge.");
+            Assert.AreEqual(surfaceBounds.max.x, east.min.x, FloatTolerance, "East wall's inner face must sit flush with the visible GameplaySurface's +X edge.");
+            Assert.AreEqual(surfaceBounds.min.x, west.max.x, FloatTolerance, "West wall's inner face must sit flush with the visible GameplaySurface's -X edge.");
+        }
+
+        [UnityTest]
         public IEnumerator ArenaScene_FullRunToVictory_ReachesResultAndRetryResetsRun()
         {
             yield return SceneManager.LoadSceneAsync("Arena_VerticalSlice_01");
