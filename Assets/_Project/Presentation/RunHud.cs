@@ -11,7 +11,7 @@ namespace TieuTienKy.Gameplay
     /// ever performs is calling ArenaRunDirector.RestartRun() from the
     /// RESTART button. Not a production HUD framework.
     /// </summary>
-    public sealed class RunHud : MonoBehaviour
+    public sealed class RunHud : MonoBehaviour, IBossArrivalCueDisplay
     {
         const float BossArrivalCueSeconds = 1.6f;
 

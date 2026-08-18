@@ -2,7 +2,9 @@ using System.Linq;
 using TieuTienKy.Gameplay;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TieuTienKy.Gameplay.EditorTools
 {
@@ -401,6 +403,250 @@ namespace TieuTienKy.Gameplay.EditorTools
             exit.exitTime = 0.95f;
             exit.hasFixedDuration = true;
             exit.duration = 0.1f;
+        }
+
+        // ------------------------------------------------------------------
+        // Work Package 1 / 5: production game-flow scenes + authored arena.
+        // ------------------------------------------------------------------
+
+        const string ScenesDir = "Assets/_Project/Scenes";
+        const string BootScenePath = ScenesDir + "/Boot.unity";
+        const string MainMenuScenePath = ScenesDir + "/MainMenu.unity";
+        const string ArenaScenePath = ScenesDir + "/Arena_VerticalSlice_01.unity";
+
+        static readonly Color GroundColor = new Color(0.5f, 0.62f, 0.5f);
+        static readonly Color WaterZoneColor = new Color(0.2f, 0.5f, 0.9f, 0.6f);
+        static readonly Color HazardColor = new Color(0.3f, 0.3f, 0.3f);
+        static readonly Color SpawnMarkerColor = new Color(1f, 0.4f, 0.4f, 0.5f);
+        static readonly Color BossMarkerColor = new Color(0.9f, 0.7f, 0.1f, 0.6f);
+
+        const float ArenaWallHeight = 4f;
+        const float ArenaWallThickness = 1f;
+        const float ArenaWallBelowGroundMargin = 1f;
+
+        [MenuItem("Tools/Vertical Slice/Build All Production Content")]
+        public static void BuildAllProductionContent()
+        {
+            BuildCultivatorProxy();
+            BuildEnemyPrefabs();
+            BuildBootScene();
+            BuildMainMenuScene();
+            BuildArenaVerticalSliceScene();
+            RegisterProductionBuildSettings();
+            Debug.Log("[VerticalSliceContentBuilder] All production content built.");
+        }
+
+        [MenuItem("Tools/Vertical Slice/Build Boot Scene")]
+        public static void BuildBootScene()
+        {
+            EnsureFolder(ScenesDir);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            BuildCamera();
+            BuildLight();
+
+            new GameObject("BootLoader").AddComponent<BootLoader>();
+
+            EditorSceneManager.SaveScene(scene, BootScenePath);
+        }
+
+        [MenuItem("Tools/Vertical Slice/Build Main Menu Scene")]
+        public static void BuildMainMenuScene()
+        {
+            EnsureFolder(ScenesDir);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            BuildCamera();
+            BuildLight();
+
+            new GameObject("MainMenuController").AddComponent<MainMenuController>();
+
+            EditorSceneManager.SaveScene(scene, MainMenuScenePath);
+        }
+
+        [MenuItem("Tools/Vertical Slice/Build Arena Vertical Slice Scene")]
+        public static void BuildArenaVerticalSliceScene()
+        {
+            EnsureFolder(ScenesDir);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            BuildCamera(new Vector3(0f, 9f, -7f), Quaternion.Euler(52f, 0f, 0f));
+            BuildLight();
+
+            GameObject ground = BuildGround();
+            BuildArenaBoundaries(ground);
+
+            Transform playerSpawn = CreateMarker("PlayerSpawn", new Vector3(0f, 1f, -2f), SpawnMarkerColor, buildVisual: false);
+
+            Transform waterMarkerA = CreateMarker("WaterZonePosition_A", new Vector3(3f, 0.5f, 0f), WaterZoneColor, buildVisual: false);
+            Transform waterMarkerB = CreateMarker("WaterZonePosition_B", new Vector3(-3f, 0.5f, 3f), WaterZoneColor, buildVisual: false);
+            Transform waterMarkerC = CreateMarker("WaterZonePosition_C", new Vector3(3f, 0.5f, -4f), WaterZoneColor, buildVisual: false);
+            WaterZone waterZone = BuildWaterZone(waterMarkerA.position, new Vector3(3f, 1f, 3f));
+
+            BuildHazardObstacle(new Vector3(5.5f, 1f, 0f));
+
+            Transform wave1Zone = CreateMarker("EnemySpawnZone_Wave1", new Vector3(4f, 0.1f, 2f), SpawnMarkerColor, buildVisual: true);
+            Transform wave2ZoneA = CreateMarker("EnemySpawnZone_Wave2_A", new Vector3(4f, 0.1f, 4f), SpawnMarkerColor, buildVisual: true);
+            Transform wave2ZoneB = CreateMarker("EnemySpawnZone_Wave2_B", new Vector3(-4f, 0.1f, -2f), SpawnMarkerColor, buildVisual: true);
+            Transform eliteZone = CreateMarker("EnemySpawnZone_Elite", new Vector3(-5f, 0.1f, 3f), SpawnMarkerColor, buildVisual: true);
+            Transform bossZone = CreateMarker("BossSpawnZone", new Vector3(0f, 0.1f, 6f), BossMarkerColor, buildVisual: true);
+            Transform cameraBoundsMarker = CreateMarker("CameraBounds", Vector3.zero, Color.clear, buildVisual: false);
+            cameraBoundsMarker.localScale = new Vector3(10f, 1f, 10f);
+            _ = new[] { wave1Zone, wave2ZoneA, wave2ZoneB, eliteZone, bossZone };
+
+            var bootstrapper = new GameObject("ArenaVerticalSliceBootstrapper").AddComponent<ArenaVerticalSliceBootstrapper>();
+
+            GameObject cultivatorProxy = AssetDatabase.LoadAssetAtPath<GameObject>(CharactersDir + "/CultivatorProxy.prefab");
+            GameObject pursuer = AssetDatabase.LoadAssetAtPath<GameObject>(EnemiesDir + "/Pursuer.prefab");
+            GameObject lancer = AssetDatabase.LoadAssetAtPath<GameObject>(EnemiesDir + "/Lancer.prefab");
+            GameObject boss = AssetDatabase.LoadAssetAtPath<GameObject>(EnemiesDir + "/MiniBoss.prefab");
+
+            bootstrapper.ConfigureAuthoring(
+                ground.transform,
+                playerSpawn,
+                waterZone,
+                new[] { waterMarkerA, waterMarkerB, waterMarkerC },
+                cultivatorProxy,
+                pursuer,
+                lancer,
+                boss);
+
+            EditorSceneManager.SaveScene(scene, ArenaScenePath);
+        }
+
+        [MenuItem("Tools/Vertical Slice/Register Production Build Settings")]
+        public static void RegisterProductionBuildSettings()
+        {
+            EditorBuildSettings.scenes = new[]
+            {
+                new EditorBuildSettingsScene(BootScenePath, true),
+                new EditorBuildSettingsScene(MainMenuScenePath, true),
+                new EditorBuildSettingsScene(ArenaScenePath, true)
+            };
+        }
+
+        static void BuildCamera() => BuildCamera(new Vector3(0f, 8f, -6f), Quaternion.Euler(50f, 0f, 0f));
+
+        static void BuildCamera(Vector3 position, Quaternion rotation)
+        {
+            var cameraGO = new GameObject("Main Camera");
+            cameraGO.tag = "MainCamera";
+            cameraGO.transform.position = position;
+            cameraGO.transform.rotation = rotation;
+            var camera = cameraGO.AddComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.1f, 0.1f, 0.12f);
+        }
+
+        static void BuildLight()
+        {
+            var lightGO = new GameObject("Directional Light");
+            lightGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+            var light = lightGO.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 1f;
+        }
+
+        static GameObject BuildGround()
+        {
+            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            ground.name = "GameplaySurface";
+            ground.transform.localScale = new Vector3(2f, 1f, 2f);
+            TintPrimitive(ground, GroundColor);
+            return ground;
+        }
+
+        static void BuildArenaBoundaries(GameObject ground)
+        {
+            var boundariesRoot = new GameObject("Boundaries");
+            Bounds groundBounds = ground.GetComponent<Collider>().bounds;
+            float halfThickness = ArenaWallThickness * 0.5f;
+            float wallBottomY = ground.transform.position.y - ArenaWallBelowGroundMargin;
+            float centerY = wallBottomY + ArenaWallHeight * 0.5f;
+
+            BuildArenaWall(boundariesRoot.transform, "ArenaWall_North",
+                new Vector3(groundBounds.center.x, centerY, groundBounds.max.z + halfThickness),
+                new Vector3(groundBounds.size.x + ArenaWallThickness * 2f, ArenaWallHeight, ArenaWallThickness));
+
+            BuildArenaWall(boundariesRoot.transform, "ArenaWall_South",
+                new Vector3(groundBounds.center.x, centerY, groundBounds.min.z - halfThickness),
+                new Vector3(groundBounds.size.x + ArenaWallThickness * 2f, ArenaWallHeight, ArenaWallThickness));
+
+            BuildArenaWall(boundariesRoot.transform, "ArenaWall_East",
+                new Vector3(groundBounds.max.x + halfThickness, centerY, groundBounds.center.z),
+                new Vector3(ArenaWallThickness, ArenaWallHeight, groundBounds.size.z));
+
+            BuildArenaWall(boundariesRoot.transform, "ArenaWall_West",
+                new Vector3(groundBounds.min.x - halfThickness, centerY, groundBounds.center.z),
+                new Vector3(ArenaWallThickness, ArenaWallHeight, groundBounds.size.z));
+        }
+
+        static void BuildArenaWall(Transform parent, string name, Vector3 center, Vector3 size)
+        {
+            var wall = new GameObject(name);
+            wall.transform.SetParent(parent, true);
+            wall.transform.position = center;
+
+            var collider = wall.AddComponent<BoxCollider>();
+            collider.size = size;
+        }
+
+        static WaterZone BuildWaterZone(Vector3 position, Vector3 size)
+        {
+            GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            zone.name = "WaterZone";
+            zone.transform.position = position;
+            zone.transform.localScale = size;
+            TintPrimitive(zone, WaterZoneColor);
+
+            var boxCollider = zone.GetComponent<BoxCollider>();
+            boxCollider.isTrigger = true;
+
+            return zone.AddComponent<WaterZone>();
+        }
+
+        static void BuildHazardObstacle(Vector3 position)
+        {
+            GameObject hazard = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            hazard.name = "HazardObstacle";
+            hazard.transform.position = position;
+            hazard.transform.localScale = new Vector3(1f, 2f, 3f);
+            TintPrimitive(hazard, HazardColor);
+
+            hazard.AddComponent<HazardObstacle>();
+        }
+
+        static Transform CreateMarker(string name, Vector3 position, Color color, bool buildVisual)
+        {
+            if (!buildVisual)
+            {
+                var empty = new GameObject(name);
+                empty.transform.position = position;
+                return empty.transform;
+            }
+
+            GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            marker.name = name;
+            marker.transform.position = position;
+            marker.transform.localScale = new Vector3(1f, 0.05f, 1f);
+            Object.DestroyImmediate(marker.GetComponent<Collider>());
+            TintPrimitive(marker, color);
+            return marker.transform;
+        }
+
+        static void TintPrimitive(GameObject go, Color color)
+        {
+            var renderer = go.GetComponent<Renderer>();
+            if (renderer == null)
+            {
+                return;
+            }
+
+            renderer.sharedMaterial = LoadPrimitiveMaterial();
+            var block = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(block);
+            block.SetColor(TintColorPropertyId, color);
+            renderer.SetPropertyBlock(block);
         }
     }
 }

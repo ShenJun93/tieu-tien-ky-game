@@ -53,7 +53,7 @@ namespace TieuTienKy.Gameplay
         ArenaBounds arenaBounds;
 
         BlessingChoiceHud blessingHud;
-        RunHud runHud;
+        IBossArrivalCueDisplay runHud;
         ArenaEventDirector arenaEvents;
         OnboardingHud onboardingHud;
 
@@ -89,7 +89,7 @@ namespace TieuTienKy.Gameplay
             PlayerBlessingPresentation playerBlessingPresentationRef,
             int baseMaxHealth,
             BlessingChoiceHud blessingChoiceHud,
-            RunHud hud,
+            IBossArrivalCueDisplay hud,
             ArenaEventDirector arenaEventDirector,
             ArenaBounds arenaUsableBounds,
             OnboardingHud onboardingHudRef,
