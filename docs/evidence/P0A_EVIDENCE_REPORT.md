@@ -16,6 +16,21 @@ Fill this block before running `node scripts/hooks/pre-finish.mjs` on the activa
 
 Allowed verdicts: `PASS`, `PASS_WITH_REMEDIATION`, `FAIL`. `PASS` is not claimed here: the PASS gate requires `android_install_run: PASS` and `human_playtest: RECORDED`, neither of which exist yet for the current APK (built 2026-08-18 06:27, superseding the 2026-08-17 23:27 artifact the prior human playtest evidence below was recorded against). `PASS_WITH_REMEDIATION` is not claimed either, since that verdict requires a Human/Game Director judgement this executor cannot self-certify. Per the established convention in this report (see history below), incomplete gate evidence is recorded as `FAIL`, not invented as a fourth state — this does not imply the implementation is judged bad, only that required evidence is not yet complete. See **P0A+ Human-Gate Remediation 01** immediately below for what changed in this pass.
 
+## Superseded by Vertical Slice v0.1 — 2026-08-18
+
+The Human/Game Director reviewed the P0A+ Human-Gate Remediation 01 pending
+gate below (and its physical playtest evidence) and directly authorized the
+next milestone in-session: `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`,
+superseding `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001` as active
+execution authority (`docs/governance/NEXT_TASK.md`, checkpoint `d56abe7`).
+
+This file's history below remains the authoritative P0A/P0A+ record and is
+preserved unmodified. Current execution evidence lives in a new, dedicated
+report: **`docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`** (Task 0
+migration map in `docs/evidence/VERTICAL_SLICE_V0.1_MIGRATION_MAP.md`).
+`pre-finish.mjs` now reads that file as `evidence_file` per the amended
+`NEXT_TASK.md`, not this one.
+
 ## P0A+ Human-Gate Remediation 01 — 2026-08-18 (arena integrity + boss completion + blessing readability, pending Human Gate)
 
 Executed as one inline remediation macro-task per explicit Human/Game Director authorization, directly on top of the P0A+ Mini Arena Run update below, in response to the first physical playtest of that build (recorded in full under **Human Playtest That Motivated This Remediation** below). The core loop itself was rated promising (dodge/counter loop, archetype distinction, Water Shift + Spirit Wind all confirmed fun); this remediation intentionally did not touch that combat feel.
