@@ -20,6 +20,7 @@ namespace TieuTienKy.Gameplay
 
         static readonly Color PursuerColor = new Color(0.8f, 0.3f, 0.3f);
         static readonly Color LancerColor = new Color(0.55f, 0.25f, 0.65f);
+
         static readonly Color BossColor = new Color(0.85f, 0.65f, 0.15f);
         static readonly Color BossAccentColor = new Color(1f, 0.9f, 0.4f);
 
@@ -28,6 +29,17 @@ namespace TieuTienKy.Gameplay
         const int EliteMaxHealth = 4;
         const int BossMaxHealth = 18;
         const float BossVisualScale = 1.35f;
+
+        /// <summary>
+        /// Authored reusable prefabs (Work Package 4). Optional: when unset
+        /// (e.g. the P0A_Greybox regression sandbox, which never assigns
+        /// these), SpawnEnemy/SpawnBoss fall back to the original inline
+        /// primitive construction so the existing sandbox/tests keep working
+        /// unmodified.
+        /// </summary>
+        [SerializeField] GameObject pursuerPrefab;
+        [SerializeField] GameObject lancerPrefab;
+        [SerializeField] GameObject bossPrefab;
 
         Transform playerRoot;
         Combatant playerCombatant;
@@ -96,6 +108,14 @@ namespace TieuTienKy.Gameplay
             playerCombatant.Defeated += HandlePlayerDefeated;
 
             StartRun();
+        }
+
+        /// <summary>Wires the authored enemy/boss prefabs (Work Package 4). Optional - unset means SpawnEnemy/SpawnBoss build inline primitives exactly as before.</summary>
+        public void SetEnemyPrefabs(GameObject pursuer, GameObject lancer, GameObject boss)
+        {
+            pursuerPrefab = pursuer;
+            lancerPrefab = lancer;
+            bossPrefab = boss;
         }
 
         public void RestartRun() => StartRun();
@@ -373,8 +393,31 @@ namespace TieuTienKy.Gameplay
 
         void SpawnEnemy(EnemyCombatProfile profile, Color tint, int maxHealth, Vector3 position)
         {
-            var enemy = new GameObject(profile.Archetype == EnemyArchetype.Lancer ? "Lancer" : "Pursuer");
+            bool isLancer = profile.Archetype == EnemyArchetype.Lancer;
+            GameObject prefab = isLancer ? lancerPrefab : pursuerPrefab;
+
+            GameObject enemy = prefab != null
+                ? Instantiate(prefab, position, Quaternion.identity)
+                : BuildEnemyInline(isLancer ? "Lancer" : "Pursuer", tint);
+
             enemy.transform.position = position;
+            enemy.name = isLancer ? "Lancer" : "Pursuer";
+
+            var combatant = enemy.GetComponent<Combatant>();
+            combatant.ConfigureMaxHealth(maxHealth);
+
+            var combatController = enemy.GetComponent<EnemyCombatController>();
+            combatController.Initialize(playerRoot, playerCombatant, profile);
+
+            activeEnemies.Add(combatant);
+            activeEnemyObjects.Add(enemy);
+            combatant.Defeated += () => HandleEnemyDefeated(combatant, enemy);
+        }
+
+        /// <summary>Fallback used only when no authored prefab is wired (e.g. the P0A_Greybox regression sandbox) - identical to the original inline construction.</summary>
+        static GameObject BuildEnemyInline(string name, Color tint)
+        {
+            var enemy = new GameObject(name);
 
             var controller = enemy.AddComponent<CharacterController>();
             controller.center = Vector3.zero;
@@ -382,20 +425,15 @@ namespace TieuTienKy.Gameplay
             controller.radius = 0.5f;
 
             enemy.AddComponent<KnockbackReceiver>();
-            var combatant = enemy.AddComponent<Combatant>();
-            combatant.ConfigureMaxHealth(maxHealth);
+            enemy.AddComponent<Combatant>();
 
             var view = enemy.AddComponent<PrimitiveCharacterView>();
             view.Build(tint, tint, armed: false, visualScale: 1f);
 
             enemy.AddComponent<PrimitiveTelegraphVFX>();
+            enemy.AddComponent<EnemyCombatController>();
 
-            var combatController = enemy.AddComponent<EnemyCombatController>();
-            combatController.Initialize(playerRoot, playerCombatant, profile);
-
-            activeEnemies.Add(combatant);
-            activeEnemyObjects.Add(enemy);
-            combatant.Defeated += () => HandleEnemyDefeated(combatant, enemy);
+            return enemy;
         }
 
         /// <summary>
@@ -406,8 +444,29 @@ namespace TieuTienKy.Gameplay
         /// </summary>
         void SpawnBoss(Vector3 position)
         {
-            var boss = new GameObject("MiniBoss");
+            GameObject boss = bossPrefab != null
+                ? Instantiate(bossPrefab, position, Quaternion.identity)
+                : BuildBossInline();
+
             boss.transform.position = position;
+            boss.name = "MiniBoss";
+
+            var combatant = boss.GetComponent<Combatant>();
+            combatant.ConfigureMaxHealth(BossMaxHealth);
+
+            var bossController = boss.GetComponent<MiniBossController>();
+            bossController.Initialize(playerRoot, playerCombatant, arenaBounds);
+
+            activeEnemies.Add(combatant);
+            activeEnemyObjects.Add(boss);
+            CurrentBoss = combatant;
+            combatant.Defeated += () => HandleEnemyDefeated(combatant, boss);
+        }
+
+        /// <summary>Fallback used only when no authored boss prefab is wired - identical to the original inline construction.</summary>
+        static GameObject BuildBossInline()
+        {
+            var boss = new GameObject("MiniBoss");
 
             var controller = boss.AddComponent<CharacterController>();
             controller.center = Vector3.zero;
@@ -415,21 +474,15 @@ namespace TieuTienKy.Gameplay
             controller.radius = 0.5f * BossVisualScale;
 
             boss.AddComponent<KnockbackReceiver>();
-            var combatant = boss.AddComponent<Combatant>();
-            combatant.ConfigureMaxHealth(BossMaxHealth);
+            boss.AddComponent<Combatant>();
 
             var view = boss.AddComponent<PrimitiveCharacterView>();
             view.Build(BossColor, BossAccentColor, armed: true, visualScale: BossVisualScale);
 
             boss.AddComponent<PrimitiveTelegraphVFX>();
+            boss.AddComponent<MiniBossController>();
 
-            var bossController = boss.AddComponent<MiniBossController>();
-            bossController.Initialize(playerRoot, playerCombatant, arenaBounds);
-
-            activeEnemies.Add(combatant);
-            activeEnemyObjects.Add(boss);
-            CurrentBoss = combatant;
-            combatant.Defeated += () => HandleEnemyDefeated(combatant, boss);
+            return boss;
         }
 
         void HandleEnemyDefeated(Combatant combatant, GameObject enemyObject)

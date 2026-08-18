@@ -23,6 +23,84 @@ namespace TieuTienKy.Gameplay.EditorTools
         static readonly Color BodyColor = new Color(0.55f, 0.75f, 0.95f);
         static readonly Color AccentColor = new Color(1f, 0.95f, 0.4f);
 
+        const string EnemiesDir = "Assets/_Project/Prefabs/Enemies";
+
+        static readonly Color PursuerColor = new Color(0.8f, 0.3f, 0.3f);
+        static readonly Color LancerColor = new Color(0.55f, 0.25f, 0.65f);
+        static readonly Color BossColor = new Color(0.85f, 0.65f, 0.15f);
+        static readonly Color BossAccentColor = new Color(1f, 0.9f, 0.4f);
+        const float BossVisualScale = 1.35f;
+
+        /// <summary>
+        /// Authored reusable prefabs for Pursuer/Lancer/MiniBoss, replacing
+        /// ArenaRunDirector's inline new GameObject()+AddComponent() chain
+        /// (Work Package 4/migration map: MIGRATE spawn construction). Each
+        /// prefab holds every component ArenaRunDirector previously built
+        /// inline except archetype-Initialize(), which still requires a live
+        /// player reference supplied at spawn time.
+        /// </summary>
+        [MenuItem("Tools/Vertical Slice/Build Enemy Prefabs")]
+        public static void BuildEnemyPrefabs()
+        {
+            EnsureFolder(EnemiesDir);
+
+            BuildEnemyPrefab("Pursuer", PursuerColor, addEnemyController: true);
+            BuildEnemyPrefab("Lancer", LancerColor, addEnemyController: true);
+            BuildBossPrefab();
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("[VerticalSliceContentBuilder] Enemy/boss prefabs built at " + EnemiesDir);
+        }
+
+        static void BuildEnemyPrefab(string name, Color tint, bool addEnemyController)
+        {
+            var enemy = new GameObject(name);
+            var controller = enemy.AddComponent<CharacterController>();
+            controller.center = Vector3.zero;
+            controller.height = 2f;
+            controller.radius = 0.5f;
+
+            enemy.AddComponent<KnockbackReceiver>();
+            enemy.AddComponent<Combatant>();
+
+            var view = enemy.AddComponent<PrimitiveCharacterView>();
+            view.Build(tint, tint, armed: false, visualScale: 1f);
+
+            enemy.AddComponent<PrimitiveTelegraphVFX>();
+
+            if (addEnemyController)
+            {
+                enemy.AddComponent<EnemyCombatController>();
+            }
+
+            string path = EnemiesDir + "/" + name + ".prefab";
+            PrefabUtility.SaveAsPrefabAsset(enemy, path);
+            Object.DestroyImmediate(enemy);
+        }
+
+        static void BuildBossPrefab()
+        {
+            var boss = new GameObject("MiniBoss");
+            var controller = boss.AddComponent<CharacterController>();
+            controller.center = Vector3.zero;
+            controller.height = 2f * BossVisualScale;
+            controller.radius = 0.5f * BossVisualScale;
+
+            boss.AddComponent<KnockbackReceiver>();
+            boss.AddComponent<Combatant>();
+
+            var view = boss.AddComponent<PrimitiveCharacterView>();
+            view.Build(BossColor, BossAccentColor, armed: true, visualScale: BossVisualScale);
+
+            boss.AddComponent<PrimitiveTelegraphVFX>();
+            boss.AddComponent<MiniBossController>();
+
+            string path = EnemiesDir + "/MiniBoss.prefab";
+            PrefabUtility.SaveAsPrefabAsset(boss, path);
+            Object.DestroyImmediate(boss);
+        }
+
         [MenuItem("Tools/Vertical Slice/Build Cultivator Proxy")]
         public static void BuildCultivatorProxy()
         {
