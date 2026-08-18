@@ -5,37 +5,62 @@ semantics: `AGENTS.md` and `docs/governance/WORKFLOW.md`.
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_IMPLEMENTATION"
+  "state": "IMPLEMENT",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001",
+  "branch": "chore/product-foundation-canon",
+  "baseline_ref": "refs/remotes/origin/main",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md",
+  "evidence_file": "docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md",
+  "allowed_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/CURRENT_STATE.md",
+    "docs/master/PRODUCT_FOUNDATION.md",
+    "docs/master/MASTER_PLAN.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md",
+    "docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md",
+    "docs/decisions/001-product-foundation.md"
+  ],
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Builds/",
+    "backend/",
+    "server/",
+    "liveops/",
+    "economy/",
+    "shop/"
+  ],
+  "stop_condition": "PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED"
 }
 ```
 
 ## Current authority
 
-`state` is `DISCOVERY`: there is no active task and no active branch
-authority. `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001` was
-independently reviewed (verdict `PASS`, P0=0, P1=0, P2=2 non-blocking notes)
-and explicitly **ACCEPTED** by the Human/Game Director — see
+`state` is `IMPLEMENT`, bounded to
+`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
+(governance / product-canon persistence only — see the task file). This is
+an explicit, bounded live Human/Game Director scope override reconciling
+the prior `DISCOVERY` state (below, preserved for record) into a scoped
+`IMPLEMENT` authority limited to the exact `allowed_paths` above, per
+`AGENTS.md` "Live operator precedence". It does **not** authorize product
+implementation, `PRODUCT-FEEL-REMEDIATION-01` resumption, R1
+resumption/salvage, R2-R6, Stage C, or Product Proof implementation. On
+completion this file transitions to `state: REVIEW`
+(`stop_condition: PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED`);
+independent review and explicit Human/Game Director action are required
+before repository-`main` canonization or any successor authority.
+
+Prior to this bootstrap, `state` was `DISCOVERY`: no active task, no
+active branch authority. `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`
+was independently reviewed (verdict `PASS`, P0=0, P1=0, P2=2 non-blocking
+notes) and explicitly **ACCEPTED** by the Human/Game Director — see
 `docs/governance/CURRENT_STATE.md` and
 `docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md`
-(`ACCEPTED / CLOSED`). `DISCOVERY` is read-only research/compare authority
-only: `scripts/hooks/pre-task.mjs`, `scripts/hooks/scope-gate.mjs`, and
-`scripts/hooks/pre-finish.mjs` all fail closed for this state, so it does
-**not** authorize repository mutation. No successor task may execute; this
-state does **not** authorize product implementation,
-`PRODUCT-FEEL-REMEDIATION-01`, R1 resumption, R2-R6, or Stage C. The next
-action is to select and investigate ONE highest-leverage unresolved systemic
-pre-production decision before any further product implementation; that
-investigation does not by itself authorize implementation — a fresh,
-explicit Human/Game Director instruction and a new `state: IMPLEMENT` (or
-bounded `SPIKE`) authority here are required first.
+(`ACCEPTED / CLOSED`). That `DISCOVERY` state's own next-action note (select
+and investigate one systemic pre-production decision) is superseded for
+this turn only by the live Human instruction that authorized this task;
+it is not otherwise invalidated.
 
 ## Live operator precedence
 
