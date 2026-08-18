@@ -88,6 +88,20 @@ describes the build as "Unity demo, just prettier," Stage A+B is
 product feel; perform the smallest evidence-backed correction to the
 player-facing bottleneck instead.
 
+**Outcome, physical Gate 1 (2026-08-18):** `TECHNICAL_GATE=GREEN`,
+`PRODUCT_GATE=RED` — `NO-GO` for Stage C. Full verdict:
+`docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, "Human Gate
+outcome (2026-08-18)". Per the NO-GO rule above, the correction lands as
+**PRODUCT FEEL REMEDIATION 01**
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) — a bounded
+player-facing correction on the existing Stage A+B foundation, not a scale-up
+into Stage C. That task ends on a second physical evaluation, **Human Gate
+02**, using an expanded dimension set (first-30-seconds read, control
+ergonomics, per-skill signature, audio/haptic perceptual help,
+run-to-run variety, and — for the first time — an actual two-device
+Human-vs-Human LAN PvP session). Stage C opens only after Human Gate 02
+returns an explicit Human `GO`.
+
 ## 6. Player-visible evidence in reports
 
 Every final macro-slice report must include: `PLAYER_VISIBLE_DELTA`,

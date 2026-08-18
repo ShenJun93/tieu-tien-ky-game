@@ -301,6 +301,17 @@ work after P0A/Vertical Slice v0.1 are now governed by
 historical record of the prior framing and is not rewritten; where the two
 conflict on post-P0A stage naming, `RELEASE_TRACK.md` is authoritative.
 
+**Governance amendment (2026-08-18):** craft/quality standards — the
+production maturity model (EXPERIMENT → PROVEN → PRODUCTION_KEPT →
+SCALE_READY), the player-facing Definition of Done, the certainty×reuse
+decision model, the Approved Production Kit v1 contract, and the TTK Combat
+Promise — are now governed by `docs/master/GAME_PRODUCTION_DOCTRINE.md` and
+`docs/master/PRODUCTION_FOUNDATION.md`. Both amend this file minimally and
+do not weaken §2's "prefer deletion-friendly implementation over
+speculative frameworks" rule; see `GAME_PRODUCTION_DOCTRINE.md` §4 for the
+explicit reconciliation between that rule and building strong foundations
+where certainty and reuse are both high.
+
 ### P0A — Local Playable Core / Micro-Fun Validation — ACTIVE PHASE
 Goal: prove a tiny local mobile interaction loop is promising before network/backend spend.
 

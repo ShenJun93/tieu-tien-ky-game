@@ -11,7 +11,7 @@ Before changing files:
 3. the task file referenced by `NEXT_TASK.md`
 4. only the code/docs needed for that task
 
-Read `docs/master/MASTER_PLAN.md` only when the task needs a canon/architecture decision.
+Read `docs/master/MASTER_PLAN.md` only when the task needs a canon/architecture decision. Read `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md` only when the task needs a craft/quality-standard decision (maturity level, Definition of Done, certainty×reuse call, Approved Production Kit).
 
 ## Core rules
 
@@ -96,6 +96,25 @@ Use the smallest matching skill:
 - `.agents/skills/execute-task/SKILL.md` — authorized implementation/product slice.
 - `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it.
 - `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority.
+
+## Craft skills
+
+Small project-local craft skills, one per player-facing craft domain. Load
+only the smallest relevant skill(s) for the work at hand; they do not
+replace or duplicate the process skills above, Unity documentation, or
+generic software-engineering rules.
+
+- `.agents/skills/ttk-eastern-combat-direction/SKILL.md`
+- `.agents/skills/ttk-mobile-action-controls/SKILL.md`
+- `.agents/skills/ttk-game-ui-art-direction/SKILL.md`
+- `.agents/skills/ttk-combat-animation-rhythm/SKILL.md`
+- `.agents/skills/ttk-audio-haptic-direction/SKILL.md`
+- `.agents/skills/ttk-build-identity-replayability/SKILL.md`
+- `.agents/skills/ttk-level-encounter-presentation/SKILL.md`
+- `.agents/skills/ttk-human-product-gate/SKILL.md`
+
+Governing doctrine for all eight: `docs/master/GAME_PRODUCTION_DOCTRINE.md`,
+`docs/master/PRODUCTION_FOUNDATION.md`.
 
 ## Required final report
 

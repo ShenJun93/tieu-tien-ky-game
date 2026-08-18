@@ -69,11 +69,65 @@ The checkpoint contains 37 intentional project files under `Assets/_Project/`, `
 - Repeated failure after one deliberate bounded remediation triggers design rethink instead of endless technical patching.
 - Player-facing product shortcomings identified at a Human Gate are carried into the next authorized macro-task rather than spawning a separate remediation task, per `docs/master/RELEASE_TRACK.md`.
 
+## Stage A+B — completed, physical Human Gate outcome (2026-08-18)
+
+`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` closed with a fully GREEN
+technical gate and a physical Human Product/Fun Gate on a Samsung Galaxy
+A15, exact APK `Builds/Android/TieuTienKy-StageAB-0065a18.apk`
+(BUILD_HEAD `0065a18d9cfa901f03f228171681bf707ead23af`):
+
+```text
+STAGE_AB_TECHNICAL_GATE = GREEN
+STAGE_AB_PRODUCT_GATE   = RED
+PRODUCT_DIRECTION       = VALIDATED / PROMISING
+STAGE_C                 = NOT_AUTHORIZED
+HUMAN_PVP_FUN           = NOT_PROVEN
+```
+
+Human verdict (verbatim intent preserved, not reinterpreted as pass/fail):
+`LOOKS_LIKE_A_GAME=YES` ("Bắt đầu ổn hơn rồi"),
+`COMBAT_HAS_WEIGHT=YES_WITH_GAP` (skills + animation not satisfying enough,
+still demo-like), `CHARACTERS_FEEL_ALIVE=YES` (above demo level),
+`ARENA_FEELS_LIKE_A_LEVEL=YES_WITH_POLISH_GAP`,
+`UI_FEELS_LIKE_GAME_UI=NO` (still feels cheap / "phèn"),
+`AUDIO_SUPPORTS_ACTION=NO`,
+`FOUR_ACTIONS_READABLE=YES_WITH_UX_GAP` (skill control positions/sizes need
+redesign), `RUN_HAS_CLIMAX=YES_WITH_DEPTH_GAP` (feels like a 1–2 minute
+mini-game, not a compelling full run),
+`HUMAN_VS_HUMAN_IS_MORE_FUN=NOT_TESTED` (physical APK only exposed
+solo/NPC play), `WANT_TO_REPLAY=WEAK_YES` (would become boring after ~2
+runs). Full detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
+"Human Gate outcome (2026-08-18)".
+
+Primary player-facing blockers carried into the next macro-task: (1) mobile
+controls / skill-button ergonomics; (2) UI visual/product quality; (3)
+combat skill + animation signature; (4) audio perceptual effectiveness; (5)
+insufficient run/build decision depth; (6) Human-vs-Human fun not yet
+tested.
+
+`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` is complete and preserved
+as history; it is no longer active write authority.
+
+## Production doctrine (landed 2026-08-18)
+
+`docs/master/GAME_PRODUCTION_DOCTRINE.md` (core doctrine, anti-demo rules,
+certainty×reuse decision model, TTK Combat Promise) and
+`docs/master/PRODUCTION_FOUNDATION.md` (EXPERIMENT → PROVEN →
+PRODUCTION_KEPT → SCALE_READY maturity model, player-facing Definition of
+Done, Approved Production Kit v1 contract) now govern craft/quality
+standards for all subsequent work. Eight small project-local craft skills
+live under `.agents/skills/ttk-*/SKILL.md`.
+
 ## Active phase
 
-Program-level authorization: **PLAYABLE PRODUCTION ALPHA — STAGE A+B** (Playable Product Foundation + 2-Player Network Foundation), per `docs/master/RELEASE_TRACK.md`. Stage A exists specifically to resolve the three carried-forward product blockers above — no standalone remediation task was created for them.
-
-No dedicated Stage A+B task packet/work-breakdown has been authored yet. Authoring that packet and beginning execution is a separate, future step, not part of this governance transition.
+Program-level authorization: **PRODUCT FEEL REMEDIATION 01**, per
+`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`. This task
+stays on the accepted Stage A+B production-kept foundation and closes the
+six carried-forward player-facing blockers above, ending on a second
+exact SHA-bound Android artifact and a physical Human Gate 02 (bounded LAN
+2-device PvP included, so `HUMAN_VS_HUMAN_IS_MORE_FUN` finally becomes
+testable). Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**
+until Human Gate 02 returns an explicit Human `GO`.
 
 Machine-readable authority:
 
@@ -81,8 +135,12 @@ Machine-readable authority:
 
 ## Current product goal
 
-Close Stage A+B's Player-Visible Delta gate (`docs/master/RELEASE_TRACK.md` §§2–5) by extending the accepted Vertical Slice v0.1 foundation, then reach the Quick Human Product/Fun Gate. Stage C (Real Internet Foundation) may not open until that gate passes.
+Close the six Stage A+B product-gate blockers via PRODUCT FEEL REMEDIATION
+01's R1–R6 domains (mobile controls, UI product pass, combat signature,
+audio/haptics, micro-replayability, real Human LAN PvP gate), then reach
+Human Gate 02. Stage C (Real Internet Foundation) may not open until that
+gate returns `GO`.
 
 ## Release track
 
-Post-Vertical-Slice-v0.1 macro-slice order and product gates (Stage A → Stage B → Human Product/Fun Gate → Stage C → Stage D → Playable Production Alpha Candidate) are governed by `docs/master/RELEASE_TRACK.md`.
+Post-Vertical-Slice-v0.1 macro-slice order and product gates (Stage A → Stage B → Human Product/Fun Gate → Stage C → Stage D → Playable Production Alpha Candidate) are governed by `docs/master/RELEASE_TRACK.md`. Craft/quality standards within each stage are governed by `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md`.

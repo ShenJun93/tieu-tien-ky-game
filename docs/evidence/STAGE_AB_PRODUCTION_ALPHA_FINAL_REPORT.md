@@ -313,3 +313,77 @@ WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
 
 After the Human returns evidence, append a new dated Human outcome section.
 Do not rewrite historical pre-Human evidence.
+
+## Human Gate outcome (physical, 2026-08-18)
+
+```json
+{
+  "device": "Samsung Galaxy A15",
+  "apk": "Builds/Android/TieuTienKy-StageAB-0065a18.apk",
+  "build_head": "0065a18d9cfa901f03f228171681bf707ead23af",
+  "looks_like_a_game": "YES",
+  "looks_like_a_game_comment": "Bat dau on hon roi.",
+  "combat_has_weight": "YES_WITH_GAP",
+  "combat_has_weight_comment": "Combat has weight, but skills + animation are still not satisfying enough and still feel demo-like.",
+  "characters_feel_alive": "YES",
+  "characters_feel_alive_comment": "Above demo level.",
+  "arena_feels_like_a_level": "YES_WITH_POLISH_GAP",
+  "arena_feels_like_a_level_comment": "Clearly improved but not exceptional yet.",
+  "ui_feels_like_game_ui": "NO",
+  "ui_feels_like_game_ui_comment": "UI still feels cheap / phen.",
+  "audio_supports_action": "NO",
+  "four_actions_readable": "YES_WITH_UX_GAP",
+  "four_actions_readable_comment": "Skill control positions and sizes need redesign.",
+  "run_has_climax": "YES_WITH_DEPTH_GAP",
+  "run_has_climax_comment": "Feels more like a 1-2 minute mini-game than a compelling full run.",
+  "human_vs_human_is_more_fun": "NOT_TESTED",
+  "human_vs_human_is_more_fun_reason": "The physical APK exposes solo/NPC play; Human did not actually play PvP against another Human.",
+  "want_to_replay": "WEAK_YES",
+  "want_to_replay_comment": "Would replay, but in current form would become boring after roughly two runs."
+}
+```
+
+This does **not** retroactively change the machine-readable process gate
+block at the top of this report, which correctly recorded the pre-playtest
+state (`android_install_run: BLOCKED_NOT_RUN`, `human_playtest:
+BLOCKED_NOT_RUN`) at the moment this report was first written — that record
+is preserved as history, not overwritten.
+
+### Canonical synthesis
+
+```text
+STAGE_AB_TECHNICAL_GATE = GREEN
+STAGE_AB_PRODUCT_GATE   = RED
+PRODUCT_DIRECTION       = VALIDATED / PROMISING
+STAGE_C                 = NOT_AUTHORIZED
+HUMAN_PVP_FUN           = NOT_PROVEN
+```
+
+`STAGE_AB_TECHNICAL_GATE = GREEN` reflects the fully passing automated
+evidence recorded above (EditMode, PlayMode, solo regression, Stage A gate,
+two-process smoke, Android build). `STAGE_AB_PRODUCT_GATE = RED` reflects
+the Human's own verdict — two dimensions are outright `NO`
+(`UI_FEELS_LIKE_GAME_UI`, `AUDIO_SUPPORTS_ACTION`) and four more carry an
+explicit gap (`COMBAT_HAS_WEIGHT`, `ARENA_FEELS_LIKE_A_LEVEL`,
+`FOUR_ACTIONS_READABLE`, `RUN_HAS_CLIMAX`). Per
+`docs/master/GAME_PRODUCTION_DOCTRINE.md` §3, none of these `NO`/`_GAP`
+verdicts are reinterpreted as a technical pass merely because every
+underlying component exists and functions — component existence is not
+product pass.
+
+Primary player-facing blockers carried into the next authorized macro-task:
+
+1. mobile controls / skill-button ergonomics;
+2. UI visual/product quality;
+3. combat skill + animation signature;
+4. audio perceptual effectiveness;
+5. insufficient run/build decision depth;
+6. Human-vs-Human fun has not actually been tested.
+
+This report's original `FAIL` process-gate verdict is not rewritten to
+`PASS`. Governance authority has moved on: this task is no longer active
+write authority (see `docs/governance/NEXT_TASK.md` and
+`docs/governance/CURRENT_STATE.md`); its technically-GREEN, product-RED
+foundation is accepted as the baseline for the next authorized macro-task,
+**PRODUCT FEEL REMEDIATION 01**
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`).
