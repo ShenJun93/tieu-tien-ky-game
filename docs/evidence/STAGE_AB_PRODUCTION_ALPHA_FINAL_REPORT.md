@@ -387,3 +387,35 @@ write authority (see `docs/governance/NEXT_TASK.md` and
 foundation is accepted as the baseline for the next authorized macro-task,
 **PRODUCT FEEL REMEDIATION 01**
 (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`).
+
+### Human verbatim wording (source quotes, Vietnamese, 2026-08-18)
+
+The normalized/translated structured verdict above (`Human Gate outcome
+(physical, 2026-08-18)`) is a machine-readable synthesis and is not
+rewritten by this addition. Appended here, preserved verbatim and not
+reinterpreted, is the Human's own Vietnamese wording from that same
+2026-08-18 gate:
+
+> "TRÔNG GIỐNG MỘT TRÒ CHƠI: CÓ. Bắt đầu ổn hơn rồi"
+>
+> "CHIẾN ĐẤU CÓ CẢM GIÁC SỨC NẶNG: CÓ. Nhưng skill + hoạt ảnh chưa phê
+> vẫn còn là demo"
+>
+> "NHÂN VẬT CÓ CẢM GIÁC SỐNG ĐỘNG: CÓ. mình đánh giá trên mức demo"
+>
+> "ĐẤU TRƯỜNG CÓ CẢM GIÁC NHƯ MỘT MÀN CHƠI: CÓ. Ổn hơn nhưng chưa đủ
+> để gọi là xuất sắc"
+>
+> "GIAO DIỆN (UI) MANG ĐÚNG CHẤT TRÒ CHƠI: KHÔNG. Giao diện thì hơn phèn"
+>
+> "ÂM THANH HỖ TRỢ HÀNH ĐỘNG: KHÔNG"
+>
+> "BỐN HÀNH ĐỘNG DỄ NHẬN BIẾT: CÓ nhưng vẫn chưa chuẩn phím skill nên
+> chỉnh lại vị trí và kích thước"
+>
+> "LƯỢT CHƠI CÓ CAO TRÀO: CÓ. nhưng cũng chỉ là 1 mini game có thể chơi
+> dc 1-2p"
+>
+> "ĐẤU NGƯỜI-VỚI-NGƯỜI THÚ VỊ HƠN: Đây là đang đấu vs NPC mà"
+>
+> "MUỐN CHƠI LẠI: có nhưng nếu đơn giản như vậy thì chỉ chơi 2 lần là chán"

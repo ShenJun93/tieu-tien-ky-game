@@ -1,10 +1,13 @@
 # TIỂU TIÊN KÝ — PRODUCTION FOUNDATION v1
 
-Status: **Canonical / governs promotion and Definition of Done.** Landed
-2026-08-18 alongside `docs/master/GAME_PRODUCTION_DOCTRINE.md`, as part of
-the same Human-authorized one-time governance transition. This file holds
-the maturity model, the promotion rule, the player-facing Definition of
-Done, and the Approved Production Kit v1 contract.
+Status: **CANDIDATE / PENDING INDEPENDENT REVIEW.** Authored 2026-08-18
+alongside `docs/master/GAME_PRODUCTION_DOCTRINE.md`, as part of the same
+proposed governance transition. An independent review of the original
+candidate returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); this file
+is not yet accepted as canonical/governing — see `docs/governance/
+NEXT_TASK.md`, "Governance reconciliation gate", for the current authority
+state. This file holds the proposed maturity model, promotion rule,
+player-facing Definition of Done, and Approved Production Kit v1 contract.
 
 ## 1. Production maturity model
 
@@ -53,13 +56,27 @@ this table as itself authoritative — the linked evidence is authoritative.
 |---|---|---|
 | `IPlayerActionGateway` / `PlayerActionExecutor` | PRODUCTION_KEPT | `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md` |
 | `CharacterPresentation` boundary | PRODUCTION_KEPT | same |
-| `RunBlessingState` / Cơ Duyên build paths | PRODUCTION_KEPT | same |
+| `RunBlessingState` runtime/state boundary (seam only) | PRODUCTION_KEPT | same |
+| Lôi/Phong/Hộ build-path differentiation/replayability (current content on that seam) | PROVEN — not PRODUCTION_KEPT; `WANT_TO_REPLAY=WEAK_YES`; requires PRODUCT FEEL REMEDIATION 01 R5 evidence before promotion | same |
 | Arena flush-wall invariant | PRODUCTION_KEPT | same |
 | Server-authoritative network combat (localhost, 2-player) | PROVEN (technical) | same |
 | Production Canvas/uGUI (Main Menu/HUD/Cơ Duyên/pause/boss/result) | PROVEN — technical PASS, product `NO`/UI_FEELS_LIKE_GAME_UI=NO | `STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md` Human Gate outcome |
 | Combat SFX (14 procedural clips) | EXPERIMENT — `AUDIO_SUPPORTS_ACTION=NO` | same |
 | Mobile skill-button ergonomics | EXPERIMENT — `FOUR_ACTIONS_READABLE=YES_WITH_UX_GAP` | same |
 | Human-vs-Human PvP fun | UNTESTED — `HUMAN_VS_HUMAN_IS_MORE_FUN=NOT_TESTED` | same |
+
+**Baseline precision — technical vs. Human-accepted product.** "Stage A+B"
+names two distinct claims that must not be conflated. The
+**technical/architectural remediation baseline** — the seams, tests, and
+architecture Stage A+B landed (rows marked `PRODUCTION_KEPT` above) — is
+accepted and `GREEN`; subsequent work may build on those seams. The
+**Human-accepted Stage A+B *product* baseline** is a separate claim and is
+**NOT accepted** while `STAGE_AB_PRODUCT_GATE=RED`
+(`docs/governance/NEXT_TASK.md`,
+`docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`). A domain marked
+`PRODUCTION_KEPT` above is an architecturally durable seam; that status is
+not itself a claim that the current player-facing content/feel built on
+that seam has passed Human product acceptance.
 
 ## 2. Player-facing Definition of Done
 

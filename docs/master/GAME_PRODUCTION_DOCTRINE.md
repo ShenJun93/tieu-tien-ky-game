@@ -1,11 +1,16 @@
 # TIỂU TIÊN KÝ — GAME PRODUCTION DOCTRINE v1
 
-Status: **Canonical / governs craft quality standards.** Landed 2026-08-18 as
-a Human-authorized one-time governance transition, after the Stage A+B
-physical Human Product/Fun Gate. Amends `docs/master/MASTER_PLAN.md`
-minimally: it does not delete or invalidate P0A/P0B/Phase history or
-`docs/master/RELEASE_TRACK.md`'s stage order. Where this file and prior prose
-conflict on craft/quality standards, this file is authoritative.
+Status: **CANDIDATE / PENDING INDEPENDENT REVIEW.** Authored 2026-08-18 as a
+proposed Human-authorized governance transition, after the Stage A+B
+physical Human Product/Fun Gate. An independent review of the original
+candidate returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); this file
+is not yet accepted as canonical/governing. It amends
+`docs/master/MASTER_PLAN.md` minimally: it does not delete or invalidate
+P0A/P0B/Phase history or `docs/master/RELEASE_TRACK.md`'s stage order. Once
+accepted, where this file and prior prose conflict on craft/quality
+standards, this file is authoritative; until acceptance, see
+`docs/governance/NEXT_TASK.md`, "Governance reconciliation gate", for the
+current authority state.
 
 This file exists because Stage A+B proved a recurring failure mode: work can
 be technically GREEN — compiles, tests pass, builds run — while a physical
@@ -58,7 +63,19 @@ and proven only by physical Human play.
 14. **Every domain progresses independently through EXPERIMENT → PROVEN →
     PRODUCTION_KEPT → SCALE_READY.** See `PRODUCTION_FOUNDATION.md`.
 15. **Scale only accepted production foundations.** Do not extend a domain
-    still at EXPERIMENT or PROVEN into broader scope.
+    still at EXPERIMENT or PROVEN into broader scope. Broad scaling —
+    additional player counts, new environments/systems, or Stage C
+    Internet/service work — is forbidden before an accepted foundation.
+    This does not forbid a **bounded promotion experiment**: a domain
+    already at PROVEN may be extended only as far as strictly necessary to
+    obtain the evidence required for its own next maturity level, and no
+    further. Example: a 2-player localhost network technical proof
+    (PROVEN) extending to a bounded two-device LAN Human proof is a
+    promotion experiment aimed at PRODUCTION_KEPT evidence for that same
+    domain — it is not Stage C scaling, and it does not by itself
+    authorize Stage C, additional players, or new infrastructure. This
+    clarification narrows nothing else in this rule and does not weaken
+    the anti-overengineering/certainty×reuse model in §4.
 
 ## 3. Anti-demo rules
 

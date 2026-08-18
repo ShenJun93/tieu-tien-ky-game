@@ -4,10 +4,16 @@ Status: **Program/execution authority — documentation only. Landed 2026-08-18.
 
 This file is the authoritative post-P0A macro-slice order and product-quality
 gate. It amends `docs/master/MASTER_PLAN.md` §14 (Roadmap and gates)
-minimally: it does not delete or invalidate P0A/P0B/Phase history, it defines
-how work after the current active task (`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`,
-see `docs/governance/NEXT_TASK.md`) is staged and evaluated once that task
-reaches its own Human Gate.
+minimally: it does not delete or invalidate P0A/P0B/Phase history. It
+originally defined how work after `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`
+(historical; complete) would be staged and evaluated once that task reached
+its own Human Gate — which it did. Since then, Stage A and Stage B have both
+been implemented and completed
+(`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001`, historical; complete)
+with a physical Human Gate 1 outcome (§5 below). Current execution
+authority is always `docs/governance/NEXT_TASK.md`, whose `status` as of
+2026-08-18 is `BLOCKED_PENDING_FOUNDATION_REVIEW` pending independent
+review of the TTK Production Foundation v1 candidate.
 
 Relationship to prior roadmap naming: **Stage A (Playable Product
 Foundation)** absorbs and extends P0A + the Vertical Slice v0.1 work.
@@ -166,11 +172,15 @@ framework, rollback/prediction framework, anti-cheat platform, broad
 backend, inventory/equipment, shop/gacha, permanent progression, live ops,
 or generic ability/modifier/event/DI frameworks.
 
-## 13. Entry condition
+## 13. Entry condition (historical; satisfied)
 
-Stage A execution begins only after the currently active task
-(`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`) reaches its own Human Gate and
-is accepted, per `docs/governance/NEXT_TASK.md` and
-`docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`. This file establishes
-program order and gates; it does not itself authorize or start Stage A/B/C/D
-execution.
+Stage A execution began only after `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`
+reached its own Human Gate and was accepted, per
+`docs/governance/NEXT_TASK.md` and
+`docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md` — that condition is
+satisfied and historical. Stage A and Stage B have both since been
+implemented and completed, with a physical Human Gate 1 outcome
+(`STAGE_AB_TECHNICAL_GATE=GREEN`, `STAGE_AB_PRODUCT_GATE=RED`; §5). This
+file establishes program order and gates; it does not itself authorize
+Stage C/D execution, and current execution authority for any new work
+remains `docs/governance/NEXT_TASK.md`.

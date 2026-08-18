@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block.
 
 ```json
 {
-  "status": "ACTIVE",
+  "status": "BLOCKED_PENDING_FOUNDATION_REVIEW",
   "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01",
   "branch": "feat/p0a-local-microfun-spike",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md",
@@ -39,17 +39,43 @@ Humans may read the summary below. Hooks read the JSON block.
   "predecessor_task_id": "TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001",
   "predecessor_human_gate": "COMPLETED",
   "predecessor_technical_gate": "GREEN",
-  "predecessor_product_gate": "RED"
+  "predecessor_product_gate": "RED",
+  "blocked_reason": "TTK Production Foundation v1 (doctrine_file/foundation_file above) is CANDIDATE / PENDING INDEPENDENT REVIEW, not accepted canon; see 'Governance reconciliation gate' below.",
+  "reactivation_condition": "Independent review accepts docs/master/GAME_PRODUCTION_DOCTRINE.md and docs/master/PRODUCTION_FOUNDATION.md as canonical; an operator/reviewer then explicitly returns status to ACTIVE."
 }
 ```
 
-`status` is now `ACTIVE`: `TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01`
-is the live write-scope task. `task_file` and `evidence_file` above are the
-real landed paths; `allowed_paths`/`forbidden_paths` bound what
-`scripts/hooks/scope-gate.mjs` permits during execution. Governance/master/
-task/`.agents`/`AGENTS.md` paths are forbidden again under this task's normal
-write scope — the one-time exception that landed this governance transition
-does not carry forward into task execution.
+`status` is `BLOCKED_PENDING_FOUNDATION_REVIEW`:
+`TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01` remains the intended next
+write-scope task and is fully authored, but `scripts/hooks/pre-task.mjs`
+blocks execution while `status != ACTIVE` — that hook's existing behavior
+is unchanged by this reconciliation. Execution stays blocked until
+independent review accepts the TTK Production Foundation v1 candidate
+(`docs/master/GAME_PRODUCTION_DOCTRINE.md`,
+`docs/master/PRODUCTION_FOUNDATION.md`) as canonical and `status` is
+explicitly returned to `ACTIVE`. `task_file` and `evidence_file` above are
+the real landed paths; `allowed_paths`/`forbidden_paths` describe what
+`scripts/hooks/scope-gate.mjs` will permit once execution resumes.
+Governance/master/task/`.agents`/`AGENTS.md` paths remain forbidden under
+this task's normal write scope once reactivated.
+
+## Governance reconciliation gate (2026-08-18)
+
+Independent review verdict on the TTK Production Foundation v1 candidate
+(`docs/master/GAME_PRODUCTION_DOCTRINE.md`,
+`docs/master/PRODUCTION_FOUNDATION.md`, and the governance docs that
+pointed to them as already-accepted) was **FAIL / RECONCILIATION_REQUIRED**.
+This commit repairs the identified authority/canon inconsistencies without
+reverting the substantive foundation work landed at
+`86e91738b433e47d3dd448d171b67867de899a6a`. Until an independent reviewer
+accepts the reconciled state:
+
+- `GAME_PRODUCTION_DOCTRINE.md` and `PRODUCTION_FOUNDATION.md` remain
+  **CANDIDATE / PENDING INDEPENDENT REVIEW**, not accepted canon;
+- this file's `status` remains a non-`ACTIVE` value and
+  `PRODUCT-FEEL-REMEDIATION-01` is authored but not executable;
+- Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**;
+- no new macro-task may be authored or activated.
 
 ## Predecessor task history (superseded, preserved)
 
@@ -90,19 +116,21 @@ Full detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
 `docs/tasks/TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001.md`. This task
 is no longer active write authority.
 
-## Product summary — next authorized macro-task
+## Product summary — next macro-task (authored, blocked pending review)
 
-Per this Human-authorized governance transition (`docs/master/
-GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`), the
-one next authorized macro-task is **PRODUCT FEEL REMEDIATION 01**
-(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`), which
-remains on the existing production-kept Stage A+B foundation and closes the
-six primary player-facing blockers named above (mobile controls, UI
-product quality, combat signature, audio/haptics, micro-replayability, and
-a bounded real-Human LAN PvP gate to finally test
-`HUMAN_VS_HUMAN_IS_MORE_FUN`).
+Per the proposed governance transition (`docs/master/
+GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md` — both
+CANDIDATE / PENDING INDEPENDENT REVIEW, see "Governance reconciliation
+gate" above), the intended next macro-task is **PRODUCT FEEL REMEDIATION
+01** (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`), which
+would remain on the existing production-kept Stage A+B technical
+foundation and close the six primary player-facing blockers named above
+(mobile controls, UI product quality, combat signature, audio/haptics,
+micro-replayability, and a bounded real-Human LAN PvP gate to finally test
+`HUMAN_VS_HUMAN_IS_MORE_FUN`). It is not executable while `status !=
+ACTIVE`.
 
 Stage C (Real Internet Foundation), 6-player PvPvE, backend, economy, live
-ops, and broad architecture/generic-framework work remain forbidden until
-Human Gate 02 (defined in the task file above) returns an explicit Human
-`GO`.
+ops, and broad architecture/generic-framework work remain forbidden
+regardless of this review's outcome, until Human Gate 02 (defined in the
+task file above) separately returns an explicit Human `GO`.

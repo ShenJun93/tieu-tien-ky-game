@@ -108,26 +108,39 @@ tested.
 `TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` is complete and preserved
 as history; it is no longer active write authority.
 
-## Production doctrine (landed 2026-08-18)
+## Production doctrine (authored 2026-08-18; CANDIDATE / PENDING INDEPENDENT REVIEW)
 
 `docs/master/GAME_PRODUCTION_DOCTRINE.md` (core doctrine, anti-demo rules,
 certainty×reuse decision model, TTK Combat Promise) and
 `docs/master/PRODUCTION_FOUNDATION.md` (EXPERIMENT → PROVEN →
 PRODUCTION_KEPT → SCALE_READY maturity model, player-facing Definition of
-Done, Approved Production Kit v1 contract) now govern craft/quality
-standards for all subsequent work. Eight small project-local craft skills
-live under `.agents/skills/ttk-*/SKILL.md`.
+Done, Approved Production Kit v1 contract) were authored 2026-08-18 as a
+proposed governance transition. An independent review of that candidate
+returned **FAIL / RECONCILIATION_REQUIRED** (2026-08-18); both files carry
+**Status: CANDIDATE / PENDING INDEPENDENT REVIEW** and do not yet govern as
+accepted canon — see `docs/governance/NEXT_TASK.md`, "Governance
+reconciliation gate". Eight small project-local craft skills live under
+`.agents/skills/ttk-*/SKILL.md` and remain authored/available; their
+existence is not itself evidence that the doctrine they support is
+accepted.
 
-## Active phase
+## Program state (blocked pending foundation review)
 
-Program-level authorization: **PRODUCT FEEL REMEDIATION 01**, per
-`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`. This task
-stays on the accepted Stage A+B production-kept foundation and closes the
-six carried-forward player-facing blockers above, ending on a second
-exact SHA-bound Android artifact and a physical Human Gate 02 (bounded LAN
-2-device PvP included, so `HUMAN_VS_HUMAN_IS_MORE_FUN` finally becomes
-testable). Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**
-until Human Gate 02 returns an explicit Human `GO`.
+Program-level authorization **PRODUCT FEEL REMEDIATION 01**
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is fully
+authored — it stays on the accepted Stage A+B production-kept
+technical/architectural foundation and closes the six carried-forward
+player-facing blockers above, ending on a second exact SHA-bound Android
+artifact and a physical Human Gate 02 (bounded LAN 2-device PvP included).
+It is **not currently executable**:
+`docs/governance/NEXT_TASK.md` `status` is
+`BLOCKED_PENDING_FOUNDATION_REVIEW`, and `scripts/hooks/pre-task.mjs`
+blocks any task execution while `status != ACTIVE`. Execution resumes only
+after independent review accepts the TTK Production Foundation v1
+candidate and an operator/reviewer explicitly returns `status` to
+`ACTIVE`. Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**
+regardless of this review's outcome, and will still require Human Gate 02
+to return an explicit Human `GO` after that.
 
 Machine-readable authority:
 
@@ -135,11 +148,13 @@ Machine-readable authority:
 
 ## Current product goal
 
-Close the six Stage A+B product-gate blockers via PRODUCT FEEL REMEDIATION
-01's R1–R6 domains (mobile controls, UI product pass, combat signature,
-audio/haptics, micro-replayability, real Human LAN PvP gate), then reach
-Human Gate 02. Stage C (Real Internet Foundation) may not open until that
-gate returns `GO`.
+Once the TTK Production Foundation v1 reconciliation is independently
+accepted and `docs/governance/NEXT_TASK.md` `status` returns to `ACTIVE`,
+the goal is: close the six Stage A+B product-gate blockers via PRODUCT
+FEEL REMEDIATION 01's R1–R6 domains (mobile controls, UI product pass,
+combat signature, audio/haptics, micro-replayability, real Human LAN PvP
+gate), then reach Human Gate 02. Stage C (Real Internet Foundation) may
+not open until that gate returns `GO`.
 
 ## Release track
 
