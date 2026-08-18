@@ -33,6 +33,7 @@ namespace TieuTienKy.Gameplay
         AttackSequencer sequencer;
         float recoveryMultiplier = 1f;
         int thunderStacks;
+        bool networkDriven;
 
         public event System.Action AttackStarted;
         public event System.Action AttackImpacted;
@@ -48,9 +49,19 @@ namespace TieuTienKy.Gameplay
             sequencer = new AttackSequencer(anticipationSeconds, recoverySeconds);
         }
 
+        /// <summary>
+        /// Task B2/B3: in network mode, only the server ever resolves an
+        /// attack, and triggering always comes from the shared
+        /// PlayerActionExecutor (via NetworkPlayerActionGateway's ServerRpc),
+        /// never from a peer's own local TouchInputReader - so a remote
+        /// observer's copy of this player can never grant itself damage.
+        /// Solo play never calls this (networkDriven stays false).
+        /// </summary>
+        public void SetNetworkDriven(bool value) => networkDriven = value;
+
         void Update()
         {
-            if (inputReader.AttackTriggeredThisFrame)
+            if (!networkDriven && inputReader.AttackTriggeredThisFrame)
             {
                 TryActivate(Time.time);
             }

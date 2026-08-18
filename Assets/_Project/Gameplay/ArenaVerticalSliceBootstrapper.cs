@@ -109,7 +109,7 @@ namespace TieuTienKy.Gameplay
             var skillController = player.AddComponent<PlayerSkillController>();
             player.AddComponent<PlayerBlessingPresentation>();
 
-            var executor = new PlayerActionExecutor(basicAttack, skillController);
+            var executor = new PlayerActionExecutor(basicAttack, skillController, player.GetComponent<Combatant>());
             player.AddComponent<LocalPlayerActionGateway>().Initialize(executor);
 
             CharacterPresentation presentation = null;

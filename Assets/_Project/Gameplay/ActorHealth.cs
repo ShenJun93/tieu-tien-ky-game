@@ -33,5 +33,11 @@ namespace TieuTienKy.Gameplay
         {
             CurrentHealth = MaxHealth;
         }
+
+        /// <summary>Directly sets CurrentHealth to an already-resolved value (clamped to [0, MaxHealth]) - a state mirror for network sync, not a damage formula. The authority that actually computed the value (ApplyDamage) is unaffected.</summary>
+        public void SetCurrentHealth(int value)
+        {
+            CurrentHealth = System.Math.Clamp(value, 0, MaxHealth);
+        }
     }
 }

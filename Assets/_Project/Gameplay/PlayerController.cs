@@ -37,17 +37,30 @@ namespace TieuTienKy.Gameplay
 
         void Update()
         {
-            Vector2 moveInput = inputReader.MoveInput;
+            ApplyMove(inputReader.MoveInput, Time.deltaTime);
+        }
+
+        /// <summary>
+        /// The actual movement application, decoupled from where the input
+        /// came from (Task B2). Update() calls this with local
+        /// TouchInputReader input exactly as before - zero behavior change
+        /// for solo play. NetworkPlayerMovement calls the same method
+        /// server-side with whatever input the owning client last sent, so
+        /// network and solo movement share one implementation, never a
+        /// duplicated movement formula.
+        /// </summary>
+        public void ApplyMove(Vector2 moveInput, float deltaTime)
+        {
             Vector3 moveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
             NormalizedMoveSpeed = Mathf.Clamp01(moveInput.magnitude);
 
             if (!knockbackReceiver.IsBeingKnockedBack && moveDirection.sqrMagnitude > 0.0001f)
             {
-                Vector3 motion = moveDirection * moveSpeed * runMoveSpeedMultiplier * Time.deltaTime;
+                Vector3 motion = moveDirection * moveSpeed * runMoveSpeedMultiplier * deltaTime;
                 controller.Move(motion);
 
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeedDegreesPerSecond * Time.deltaTime);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeedDegreesPerSecond * deltaTime);
             }
 
             if (controller.isGrounded && verticalVelocity < 0f)
@@ -56,10 +69,10 @@ namespace TieuTienKy.Gameplay
             }
             else
             {
-                verticalVelocity += gravity * Time.deltaTime;
+                verticalVelocity += gravity * deltaTime;
             }
 
-            controller.Move(new Vector3(0f, verticalVelocity * Time.deltaTime, 0f));
+            controller.Move(new Vector3(0f, verticalVelocity * deltaTime, 0f));
         }
     }
 }

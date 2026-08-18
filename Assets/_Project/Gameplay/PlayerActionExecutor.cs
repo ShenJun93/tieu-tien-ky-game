@@ -16,16 +16,21 @@ namespace TieuTienKy.Gameplay
     {
         readonly BasicAttack basicAttack;
         readonly PlayerSkillController skillController;
+        readonly Combatant combatant;
 
-        public PlayerActionExecutor(BasicAttack basicAttack, PlayerSkillController skillController)
+        public PlayerActionExecutor(BasicAttack basicAttack, PlayerSkillController skillController, Combatant combatant = null)
         {
             this.basicAttack = basicAttack;
             this.skillController = skillController;
+            this.combatant = combatant;
         }
 
-        public bool ExecuteBasicAttack() => basicAttack != null && basicAttack.TryActivate(Time.time);
-        public bool ExecuteLoiTram() => skillController != null && skillController.TryActivateLoiTram();
-        public bool ExecutePhongBo() => skillController != null && skillController.TryActivatePhongBo();
-        public bool ExecuteHoThe() => skillController != null && skillController.TryActivateHoThe();
+        /// <summary>Task B5: a defeated player (network death lifecycle, awaiting respawn) can request nothing until full gameplay control is restored. Solo play is unaffected - a defeated solo run has already ended.</summary>
+        bool IsDefeated => combatant != null && combatant.IsDefeated;
+
+        public bool ExecuteBasicAttack() => !IsDefeated && basicAttack != null && basicAttack.TryActivate(Time.time);
+        public bool ExecuteLoiTram() => !IsDefeated && skillController != null && skillController.TryActivateLoiTram();
+        public bool ExecutePhongBo() => !IsDefeated && skillController != null && skillController.TryActivatePhongBo();
+        public bool ExecuteHoThe() => !IsDefeated && skillController != null && skillController.TryActivateHoThe();
     }
 }

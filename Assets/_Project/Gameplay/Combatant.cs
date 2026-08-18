@@ -145,5 +145,32 @@ namespace TieuTienKy.Gameplay
 
             Damaged?.Invoke(CurrentHealth, MaxHealth);
         }
+
+        /// <summary>
+        /// Applies an already-server-resolved health value on a
+        /// non-authoritative network observer (Task B3/B4) - mirrors state
+        /// only, never recomputes damage/mitigation/knockback (those already
+        /// happened once, on the server, via the normal TakeHit path).
+        /// Fires the same Damaged/Defeated events so presentation/audio/HUD
+        /// react identically to a locally-resolved hit.
+        /// </summary>
+        public void ApplySyncedHealth(int newCurrentHealth, int newMaxHealth)
+        {
+            EnsureHealth();
+            if (newMaxHealth != health.MaxHealth)
+            {
+                health.SetMaxHealthAndRestore(newMaxHealth);
+            }
+
+            bool wasDefeated = health.IsDefeated;
+            health.SetCurrentHealth(newCurrentHealth);
+
+            Damaged?.Invoke(CurrentHealth, MaxHealth);
+
+            if (!wasDefeated && health.IsDefeated)
+            {
+                Defeated?.Invoke();
+            }
+        }
     }
 }
