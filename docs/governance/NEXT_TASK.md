@@ -4,11 +4,36 @@ Humans may read the summary below. Hooks read the JSON block.
 
 ```json
 {
-  "status": "AUTHORIZED_PENDING_TASK_PACKET",
+  "status": "ACTIVE",
   "task_id": "TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001",
   "branch": "feat/p0a-local-microfun-spike",
-  "baseline_ref": "refs/remotes/origin/main",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001.md",
+  "evidence_file": "docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md",
+  "baseline_ref": "refs/remotes/origin/feat/p0a-local-microfun-spike",
   "release_track_file": "docs/master/RELEASE_TRACK.md",
+  "allowed_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "scripts/",
+    "docs/evidence/",
+    "ASSET_SOURCES.csv"
+  ],
+  "forbidden_paths": [
+    "backend/",
+    "server/",
+    "liveops/",
+    "economy/",
+    "shop/",
+    "ios/",
+    ".github/workflows/",
+    "docs/governance/",
+    "docs/master/",
+    "docs/tasks/",
+    ".agents/",
+    "AGENTS.md"
+  ],
+  "next_task_if_pass": "HUMAN_GO_REQUIRED_BEFORE_STAGE-C-REAL-INTERNET-FOUNDATION",
   "predecessor_task_id": "TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001",
   "predecessor_human_gate": "COMPLETED",
   "predecessor_foundation_verdict": "ACCEPTED_AS_PRODUCTION_FOUNDATION",
@@ -16,16 +41,10 @@ Humans may read the summary below. Hooks read the JSON block.
 }
 ```
 
-`status` is intentionally not `ACTIVE`: `scripts/hooks/pre-task.mjs`,
-`scripts/hooks/scope-gate.mjs`, and `scripts/hooks/pre-finish.mjs` all fail
-fast on any non-`ACTIVE` status before reading `task_file`/`evidence_file`/
-`allowed_paths`/`forbidden_paths`, so there is deliberately no live
-write-scope task right now — Stage A+B is authorized at the program level
-(see `docs/master/RELEASE_TRACK.md`) but has no task packet/work-breakdown
-yet. A future session authors that packet (mirroring how
-`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` was activated) and flips
-`status` to `ACTIVE` with real `task_file`/`evidence_file`/`allowed_paths`/
-`forbidden_paths` values at that time.
+`status` is now `ACTIVE`: `TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001`
+is the live write-scope task. `task_file` and `evidence_file` above are the
+real landed paths; `allowed_paths`/`forbidden_paths` bound what
+`scripts/hooks/scope-gate.mjs` permits during execution.
 
 ## Predecessor task history (superseded, preserved)
 
