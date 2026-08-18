@@ -3,36 +3,27 @@ using UnityEngine.SceneManagement;
 
 namespace TieuTienKy.Gameplay
 {
-    /// <summary>Main Menu: one Start affordance into the production arena. No settings/account framework.</summary>
+    /// <summary>Main Menu: one Start affordance into the production arena. No settings/account framework. Canvas/uGUI (Task A5) - production play no longer depends on debug-style IMGUI.</summary>
     public sealed class MainMenuController : MonoBehaviour
     {
         [SerializeField] string arenaSceneName = "Arena_VerticalSlice_01";
         [SerializeField] string title = "TIỂU TIÊN KÝ";
 
-        void OnGUI()
+        static readonly Color BackdropColor = new Color(0.08f, 0.09f, 0.11f, 1f);
+        static readonly Color ButtonColor = new Color(0.85f, 0.74f, 0.35f, 1f);
+
+        void Awake()
         {
-            var titleStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(Screen.height * 0.09f),
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = Color.white }
-            };
-            GUI.Label(new Rect(0f, Screen.height * 0.28f, Screen.width, Screen.height * 0.16f), title, titleStyle);
+            Canvas canvas = UiBuilder.CreateCanvas("MainMenuCanvas", sortOrder: 0);
 
-            var buttonStyle = new GUIStyle(GUI.skin.button)
-            {
-                fontSize = Mathf.RoundToInt(Screen.height * 0.07f),
-                fontStyle = FontStyle.Bold
-            };
-            float buttonWidth = Screen.width * 0.32f;
-            float buttonHeight = Screen.height * 0.14f;
-            var buttonRect = new Rect((Screen.width - buttonWidth) * 0.5f, Screen.height * 0.56f, buttonWidth, buttonHeight);
+            UiBuilder.CreatePanel(canvas.transform, "Backdrop", BackdropColor, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            if (GUI.Button(buttonRect, "START", buttonStyle))
-            {
-                SceneManager.LoadScene(arenaSceneName);
-            }
+            UiBuilder.CreateText(canvas.transform, "Title", title, 96, TextAnchor.MiddleCenter, Color.white,
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -260f), new Vector2(0f, 160f));
+
+            var startButton = UiBuilder.CreateButton(canvas.transform, "StartButton", "START", 48, ButtonColor,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(420f, 150f), out _);
+            startButton.onClick.AddListener(() => SceneManager.LoadScene(arenaSceneName));
         }
     }
 }

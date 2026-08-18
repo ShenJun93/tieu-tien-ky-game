@@ -1,10 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TieuTienKy.Gameplay
 {
     /// <summary>
-    /// Temporary touchable IMGUI Cơ Duyên selection shell. Owns no run
+    /// Touchable Canvas/uGUI (Task A5) Cơ Duyên selection shell. Owns no run
     /// state - it only reports the chosen BlessingId back through the
     /// callback passed to Show, after a brief on-screen confirmation so the
     /// Human sees "I just became stronger" without needing source code or
@@ -21,16 +22,33 @@ namespace TieuTienKy.Gameplay
             ("HỘ THỂ", "Hộ thể vững chắc hơn")
         };
 
+        static readonly Color BackdropColor = new Color(0f, 0f, 0f, 0.75f);
+        static readonly Color ButtonColor = new Color(0.9f, 0.9f, 0.92f, 1f);
+
         System.Action<BlessingId> onChosen;
         BlessingId? confirmingId;
 
+        GameObject canvasRoot;
+        GameObject choicePanel;
+        GameObject confirmPanel;
+        Text confirmTitleText;
+        Text confirmFlavorText;
+
         public bool IsVisible { get; private set; }
+
+        void Awake()
+        {
+            Build();
+        }
 
         public void Show(System.Action<BlessingId> callback)
         {
             onChosen = callback;
             confirmingId = null;
             IsVisible = true;
+            canvasRoot.SetActive(true);
+            choicePanel.SetActive(true);
+            confirmPanel.SetActive(false);
         }
 
         public void Hide()
@@ -39,83 +57,57 @@ namespace TieuTienKy.Gameplay
             onChosen = null;
             confirmingId = null;
             StopAllCoroutines();
-        }
-
-        void OnGUI()
-        {
-            if (!IsVisible)
+            if (canvasRoot != null)
             {
-                return;
-            }
-
-            GUI.Box(new Rect(0f, 0f, Screen.width, Screen.height), string.Empty);
-
-            if (confirmingId.HasValue)
-            {
-                DrawConfirmation(confirmingId.Value);
-                return;
-            }
-
-            float width = Screen.width * 0.24f;
-            float height = Screen.height * 0.55f;
-            float gap = Screen.width * 0.03f;
-            float totalWidth = width * 3f + gap * 2f;
-            float startX = (Screen.width - totalWidth) * 0.5f;
-            float y = (Screen.height - height) * 0.5f;
-
-            var titleStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(Screen.height * 0.06f),
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.UpperCenter,
-                normal = { textColor = Color.white }
-            };
-            GUI.Label(new Rect(0f, y - Screen.height * 0.09f, Screen.width, Screen.height * 0.08f), "CHỌN CƠ DUYÊN", titleStyle);
-
-            var buttonStyle = new GUIStyle(GUI.skin.button)
-            {
-                fontSize = Mathf.RoundToInt(Screen.height * 0.032f),
-                fontStyle = FontStyle.Bold,
-                wordWrap = true
-            };
-
-            if (GUI.Button(new Rect(startX, y, width, height), "LÔI KIẾM\n\nStronger Water x Lightning launch", buttonStyle))
-            {
-                Choose(BlessingId.ThunderSword);
-            }
-
-            if (GUI.Button(new Rect(startX + width + gap, y, width, height), "PHONG HÀNH\n\nFaster movement, shorter recovery", buttonStyle))
-            {
-                Choose(BlessingId.WindStride);
-            }
-
-            if (GUI.Button(new Rect(startX + (width + gap) * 2f, y, width, height), "HỘ THỂ\n\nMore max health", buttonStyle))
-            {
-                Choose(BlessingId.BodyWard);
+                canvasRoot.SetActive(false);
             }
         }
 
-        void DrawConfirmation(BlessingId id)
+        void Build()
         {
-            (string title, string flavor) = ConfirmationText[(int)id];
+            Canvas canvas = UiBuilder.CreateCanvas("BlessingChoiceCanvas", sortOrder: 10);
+            canvasRoot = canvas.gameObject;
 
-            var titleStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(Screen.height * 0.09f),
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = new Color(1f, 0.85f, 0.3f) }
-            };
-            GUI.Label(new Rect(0f, Screen.height * 0.38f, Screen.width, Screen.height * 0.14f), title, titleStyle);
+            UiBuilder.CreatePanel(canvas.transform, "Backdrop", BackdropColor, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            var flavorStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(Screen.height * 0.045f),
-                fontStyle = FontStyle.Italic,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = Color.white }
-            };
-            GUI.Label(new Rect(0f, Screen.height * 0.52f, Screen.width, Screen.height * 0.08f), flavor, flavorStyle);
+            UiBuilder.CreateText(canvas.transform, "Title", "CHỌN CƠ DUYÊN", 56, TextAnchor.MiddleCenter, Color.white,
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -140f), new Vector2(0f, 100f));
+
+            choicePanel = new GameObject("ChoicePanel", typeof(RectTransform));
+            RectTransform choiceRect = (RectTransform)choicePanel.transform;
+            choiceRect.SetParent(canvas.transform, false);
+            choiceRect.anchorMin = new Vector2(0.5f, 0.5f);
+            choiceRect.anchorMax = new Vector2(0.5f, 0.5f);
+            choiceRect.anchoredPosition = Vector2.zero;
+            choiceRect.sizeDelta = new Vector2(1500f, 560f);
+
+            BuildChoiceButton(choicePanel.transform, -520f, "LÔI KIẾM\n\nStronger Water x Lightning launch", () => Choose(BlessingId.ThunderSword));
+            BuildChoiceButton(choicePanel.transform, 0f, "PHONG HÀNH\n\nFaster movement, shorter recovery", () => Choose(BlessingId.WindStride));
+            BuildChoiceButton(choicePanel.transform, 520f, "HỘ THỂ\n\nMore max health", () => Choose(BlessingId.BodyWard));
+
+            confirmPanel = new GameObject("ConfirmPanel", typeof(RectTransform));
+            RectTransform confirmRect = (RectTransform)confirmPanel.transform;
+            confirmRect.SetParent(canvas.transform, false);
+            confirmRect.anchorMin = new Vector2(0.5f, 0.5f);
+            confirmRect.anchorMax = new Vector2(0.5f, 0.5f);
+            confirmRect.anchoredPosition = Vector2.zero;
+            confirmRect.sizeDelta = new Vector2(1200f, 300f);
+
+            confirmTitleText = UiBuilder.CreateText(confirmPanel.transform, "ConfirmTitle", string.Empty, 88, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.3f),
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -80f), new Vector2(0f, 140f));
+
+            confirmFlavorText = UiBuilder.CreateText(confirmPanel.transform, "ConfirmFlavor", string.Empty, 40, TextAnchor.MiddleCenter, Color.white,
+                new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 90f), new Vector2(0f, 80f));
+
+            canvasRoot.SetActive(false);
+        }
+
+        void BuildChoiceButton(Transform parent, float x, string label, UnityEngine.Events.UnityAction onClick)
+        {
+            Button button = UiBuilder.CreateButton(parent, "ChoiceButton", label, 32, ButtonColor,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(x, 0f), new Vector2(440f, 560f), out Text labelText);
+            labelText.color = Color.black;
+            button.onClick.AddListener(onClick);
         }
 
         /// <summary>
@@ -128,6 +120,13 @@ namespace TieuTienKy.Gameplay
         {
             confirmingId = id;
             CombatAudio.Play("UIConfirm", transform.position);
+
+            (string title, string flavor) = ConfirmationText[(int)id];
+            confirmTitleText.text = title;
+            confirmFlavorText.text = flavor;
+            choicePanel.SetActive(false);
+            confirmPanel.SetActive(true);
+
             StartCoroutine(ConfirmThenInvoke(id));
         }
 
