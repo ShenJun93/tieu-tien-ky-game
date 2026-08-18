@@ -15,6 +15,7 @@ namespace TieuTienKy.Gameplay
         [SerializeField] float cooldownSeconds = 2.5f;
         [SerializeField] float dashDistanceMeters = 3f;
         [SerializeField] float dashDurationSeconds = 0.15f;
+        [SerializeField] Color windTrailColor = new Color(0.55f, 0.9f, 0.75f, 1f);
 
         CharacterController controller;
         Cooldown cooldown;
@@ -68,6 +69,9 @@ namespace TieuTienKy.Gameplay
             Vector3 destination = boundsConfigured
                 ? PhongBoMotion.ComputeDestination(transform.position, transform.forward, dashDistanceMeters, bounds)
                 : transform.position + transform.forward * dashDistanceMeters;
+
+            PrimitiveBurstVFX.SpawnAt(transform.position, 0.7f, 0.25f, windTrailColor);
+            CombatAudio.Play("PhongBoMove", transform.position);
 
             StartCoroutine(DashRoutine(destination));
             Activated?.Invoke();

@@ -50,5 +50,27 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.AreEqual(6.5f, desiredLow.y, 1e-5f);
             Assert.AreEqual(6.5f, desiredHigh.y, 1e-5f);
         }
+
+        [Test]
+        public void ComputeImpulseFalloff_IsFullAtZeroElapsed_AndZeroAtOrPastDuration()
+        {
+            Assert.AreEqual(1f, PlayerFollowCameraMath.ComputeImpulseFalloff(0f, 0.2f), 1e-5f);
+            Assert.AreEqual(0f, PlayerFollowCameraMath.ComputeImpulseFalloff(0.2f, 0.2f), 1e-5f);
+            Assert.AreEqual(0f, PlayerFollowCameraMath.ComputeImpulseFalloff(5f, 0.2f), 1e-5f);
+        }
+
+        [Test]
+        public void ComputeImpulseFalloff_NeverNegative_NeverExceedsOne()
+        {
+            Assert.AreEqual(0.5f, PlayerFollowCameraMath.ComputeImpulseFalloff(0.1f, 0.2f), 1e-5f);
+            Assert.GreaterOrEqual(PlayerFollowCameraMath.ComputeImpulseFalloff(-1f, 0.2f), 0f);
+            Assert.LessOrEqual(PlayerFollowCameraMath.ComputeImpulseFalloff(-1f, 0.2f), 1f);
+        }
+
+        [Test]
+        public void ComputeImpulseFalloff_ZeroDuration_ReturnsZero()
+        {
+            Assert.AreEqual(0f, PlayerFollowCameraMath.ComputeImpulseFalloff(0f, 0f), 1e-5f);
+        }
     }
 }

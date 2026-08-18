@@ -53,6 +53,7 @@ namespace TieuTienKy.Gameplay
             windowOpen = true;
             selfCombatant.SetDamageMitigation(0f);
             PrimitiveBurstVFX.SpawnAt(transform.position, wardPeakRadius, windowDurationSeconds, wardColor);
+            CombatAudio.Play("HoTheActivate", transform.position);
 
             Activated?.Invoke();
             return true;

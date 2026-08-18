@@ -55,8 +55,17 @@ namespace TieuTienKy.Gameplay
             selfCombatant.Defeated += OnDefeated;
         }
 
-        void OnDamaged(int current, int max) => presentation?.PlayHit();
-        void OnDefeated() => presentation?.PlayDeath();
+        void OnDamaged(int current, int max)
+        {
+            presentation?.PlayHit();
+            CombatAudio.Play("EnemyHit", transform.position);
+        }
+
+        void OnDefeated()
+        {
+            presentation?.PlayDeath();
+            CombatAudio.Play("EnemyDeath", transform.position);
+        }
 
         void Update()
         {
@@ -100,6 +109,7 @@ namespace TieuTienKy.Gameplay
                 cycle.TryBeginTelegraph(Time.time);
                 telegraphVfx?.Show(profile.Archetype, transform, lockedForward);
                 presentation?.PlayBasicAttack();
+                CombatAudio.Play("EnemyTelegraph", transform.position);
                 return;
             }
 

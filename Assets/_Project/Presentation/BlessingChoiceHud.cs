@@ -127,6 +127,7 @@ namespace TieuTienKy.Gameplay
         void Choose(BlessingId id)
         {
             confirmingId = id;
+            CombatAudio.Play("UIConfirm", transform.position);
             StartCoroutine(ConfirmThenInvoke(id));
         }
 

@@ -55,8 +55,37 @@ namespace TieuTienKy.Gameplay
             Bounds groundBounds = groundTransform.GetComponent<Collider>().bounds;
             ArenaBounds arenaBounds = ArenaBounds.FromGroundBounds(groundBounds, ArenaUsableMargin);
 
-            AttachPlayerFollowCamera(player);
+            PlayerFollowCamera follow = AttachPlayerFollowCamera(player);
+            WireCameraImpulse(player, follow);
             AttachRunDirector(player, arenaBounds);
+        }
+
+        /// <summary>Bounded one-shot camera dip on meaningful player-side impact (Task A4): a landed Basic/Lôi Trảm hit gives a small dip, the player taking damage gives a larger one. Never wired to a whiff or to enemy-on-enemy events.</summary>
+        static void WireCameraImpulse(GameObject player, PlayerFollowCamera follow)
+        {
+            if (follow == null)
+            {
+                return;
+            }
+
+            var basicAttack = player.GetComponent<BasicAttack>();
+            var loiTram = player.GetComponent<LoiTramSkill>();
+            var combatant = player.GetComponent<Combatant>();
+
+            if (basicAttack != null)
+            {
+                basicAttack.HitLanded += () => follow.ApplyImpulse(0.08f);
+            }
+
+            if (loiTram != null)
+            {
+                loiTram.HitLanded += () => follow.ApplyImpulse(0.12f);
+            }
+
+            if (combatant != null)
+            {
+                combatant.Damaged += (_, __) => follow.ApplyImpulse(0.18f);
+            }
         }
 
         GameObject BuildPlayer(Vector3 position)
@@ -154,16 +183,17 @@ namespace TieuTienKy.Gameplay
             return positions;
         }
 
-        static void AttachPlayerFollowCamera(GameObject player)
+        static PlayerFollowCamera AttachPlayerFollowCamera(GameObject player)
         {
             Camera mainCamera = Camera.main;
             if (mainCamera == null)
             {
-                return;
+                return null;
             }
 
             var follow = mainCamera.gameObject.AddComponent<PlayerFollowCamera>();
             follow.Initialize(player.transform);
+            return follow;
         }
     }
 }

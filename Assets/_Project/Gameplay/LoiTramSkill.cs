@@ -30,6 +30,9 @@ namespace TieuTienKy.Gameplay
         /// <summary>Fires on every successful activation (cooldown consumed), whether or not a hit landed - presentation binds PlayCast here.</summary>
         public event System.Action Activated;
 
+        /// <summary>Fires only when a hit actually landed - presentation binds bounded camera impulse here, never on a whiff.</summary>
+        public event System.Action HitLanded;
+
         void Awake()
         {
             selfCombatant = GetComponent<Combatant>();
@@ -48,6 +51,8 @@ namespace TieuTienKy.Gameplay
             {
                 return false;
             }
+
+            CombatAudio.Play("LoiTramCast", transform.position);
 
             Vector3 origin = transform.position + transform.forward * (rangeMeters * 0.5f);
             Collider[] hits = Physics.OverlapSphere(origin, radiusMeters, hittableLayers);
@@ -74,6 +79,8 @@ namespace TieuTienKy.Gameplay
             {
                 StartCoroutine(HitStop.Routine(hitStopSeconds, hitStopTimeScale));
                 PrimitiveBurstVFX.SpawnAt(origin, radiusMeters, 0.3f, ImpactFlashColor);
+                CombatAudio.Play("LoiTramImpact", origin);
+                HitLanded?.Invoke();
             }
 
             Activated?.Invoke();

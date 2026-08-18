@@ -80,8 +80,17 @@ namespace TieuTienKy.Gameplay
             selfCombatant.Defeated += OnDefeated;
         }
 
-        void OnDamaged(int current, int max) => presentation?.PlayHit();
-        void OnDefeated() => presentation?.PlayDeath();
+        void OnDamaged(int current, int max)
+        {
+            presentation?.PlayHit();
+            CombatAudio.Play("EnemyHit", transform.position);
+        }
+
+        void OnDefeated()
+        {
+            presentation?.PlayDeath();
+            CombatAudio.Play("EnemyDeath", transform.position);
+        }
 
         void Update()
         {
@@ -138,6 +147,7 @@ namespace TieuTienKy.Gameplay
                 transform.rotation = Quaternion.LookRotation(lockedForward, Vector3.up);
                 timingCycle.TryBeginTelegraph(Time.time);
                 telegraphVfx?.Show(patternCycle.CurrentPattern == BossPattern.Charge ? EnemyArchetype.Lancer : EnemyArchetype.Pursuer, transform, lockedForward);
+                CombatAudio.Play("EnemyTelegraph", transform.position);
 
                 if (patternCycle.CurrentPattern == BossPattern.Charge)
                 {

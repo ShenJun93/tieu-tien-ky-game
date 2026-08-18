@@ -24,5 +24,22 @@ namespace TieuTienKy.Gameplay
                 cameraHeight,
                 playerPosition.z + horizontalOffset.y);
         }
+
+        /// <summary>
+        /// Linear 1-to-0 falloff for a bounded camera impulse (a small dip in
+        /// camera height on meaningful impact). Never negative, never exceeds
+        /// 1, so an impulse always decays to exactly no effect - it can only
+        /// ever subtract a small amount from the tracked height, never add
+        /// lateral shake, which is what keeps it from becoming disorienting.
+        /// </summary>
+        public static float ComputeImpulseFalloff(float elapsedSeconds, float durationSeconds)
+        {
+            if (durationSeconds <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Clamp01(1f - elapsedSeconds / durationSeconds);
+        }
     }
 }

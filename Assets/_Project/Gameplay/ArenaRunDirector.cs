@@ -112,6 +112,7 @@ namespace TieuTienKy.Gameplay
             onboardingHud = onboardingHudRef;
 
             playerCombatant.Defeated += HandlePlayerDefeated;
+            playerCombatant.Damaged += (_, __) => CombatAudio.Play("PlayerHit", playerRoot.position);
             if (playerPresentation != null)
             {
                 playerCombatant.Damaged += (_, __) => playerPresentation.PlayHit();
@@ -204,6 +205,11 @@ namespace TieuTienKy.Gameplay
                     yield break;
                 }
             }
+
+            if (progression.Stage == ArenaRunStage.Victory)
+            {
+                CombatAudio.Play("Victory", playerRoot.position);
+            }
         }
 
         IEnumerator RunWave1()
@@ -276,6 +282,8 @@ namespace TieuTienKy.Gameplay
         {
             SpawnBoss(SpawnOffset(0f, 6f));
             runHud.ShowBossArrivalCue();
+            CombatAudio.Play("BossArrival", playerRoot.position);
+            Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(0.3f);
 
             yield return WaitForEnemiesCleared();
             if (defeated)
@@ -426,6 +434,7 @@ namespace TieuTienKy.Gameplay
             ClearActiveEnemies();
             arenaEvents?.ResetEvents();
             progression.MarkDefeat();
+            CombatAudio.Play("Defeat", playerRoot.position);
         }
 
         /// <summary>

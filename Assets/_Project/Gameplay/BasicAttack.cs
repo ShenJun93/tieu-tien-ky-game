@@ -38,6 +38,9 @@ namespace TieuTienKy.Gameplay
         public event System.Action AttackImpacted;
         public event System.Action AttackRecovered;
 
+        /// <summary>Fires only when a hit actually landed (unlike AttackImpacted, which fires on every swing resolution) - presentation binds bounded camera impulse here, never on a whiff.</summary>
+        public event System.Action HitLanded;
+
         void Awake()
         {
             inputReader = GetComponent<TouchInputReader>();
@@ -49,6 +52,7 @@ namespace TieuTienKy.Gameplay
         {
             if (inputReader.AttackTriggeredThisFrame && sequencer.TryBeginAttack(Time.time))
             {
+                CombatAudio.Play("BasicSwing", transform.position);
                 AttackStarted?.Invoke();
             }
 
@@ -114,6 +118,8 @@ namespace TieuTienKy.Gameplay
                     BlessingPresentationMath.LightningFlashPeakRadius(thunderStacks),
                     BlessingPresentationMath.LightningFlashLifetimeSeconds(thunderStacks),
                     LightningImpactFlashColor);
+                CombatAudio.Play("BasicHit", origin);
+                HitLanded?.Invoke();
             }
         }
     }
