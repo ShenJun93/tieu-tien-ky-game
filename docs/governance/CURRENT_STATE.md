@@ -65,21 +65,25 @@ Checkpoint evidence records real Unity/Android/device progress but does **not** 
 
 ## Current execution authority
 
-`TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`
+`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` (superseded prior authority:
+`TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`, preserved as history — its Human Gate
+recorded a promising but evidence-incomplete playtest; see
+`docs/evidence/P0A_EVIDENCE_REPORT.md`).
 
 Machine-readable authority:
 
 `docs/governance/NEXT_TASK.md`
 
-The task is executable on `feat/p0a-local-microfun-spike` only after that branch contains both:
-
-1. checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`; and
-2. the accepted current `origin/main` containing this Fun-First rebaseline.
-
-The repository baseline-ancestry guard is the execution gate.
+The prior task's activation gate (checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`
++ accepted `origin/main` rebaseline both ancestors of HEAD) was satisfied before the
+Human/Game Director directly authorized the current task in-session on 2026-08-18 from
+HEAD `408dae4af21d7c17b47a13f52980be19d80f6071`.
 
 ## Current product goal
 
-Produce one credit-efficient gameplay step that feels materially more like a game, hand off one exact APK, then obtain a 2–3 minute Human playtest verdict.
+Ship the first production-oriented vertical slice — Main Menu → authored arena →
+animated cultivator → waves/Cơ Duyên/Elite/Mini Boss → Victory/Defeat → Result →
+Retry/Menu, ~4-6 minute run — by extending proven P0A systems rather than rebuilding
+them, hand off one exact APK, then obtain a Human playtest verdict.
 
-No accepted P0A evidence → no P0B authorization.
+No accepted Vertical Slice v0.1 evidence → no P0B authorization.
