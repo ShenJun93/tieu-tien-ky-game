@@ -153,3 +153,16 @@ authorizes continuation.
 
 Push the authorized branch after verified commits. Do not merge, do not open a PR
 unless explicitly requested, do not start P0B/network work after completion.
+
+## Closure note (2026-08-18)
+
+The Hard Human Gate above completed physically: the Human/Game Director
+installed and played the exact recorded APK (see
+`docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`, "Human Gate — physical
+outcome"). Outcome: foundation **accepted** as the production baseline;
+product-likeness **not yet passed** (arena reachable-vs-visible mismatch,
+weak floor/arena visual hierarchy, overall demo-like feel). This task is no
+longer active write authority — see `docs/governance/NEXT_TASK.md`. The
+carried-forward blockers are addressed inside the next authorized
+macro-task, `PLAYABLE PRODUCTION ALPHA — STAGE A+B` per
+`docs/master/RELEASE_TRACK.md`, not a standalone remediation task.

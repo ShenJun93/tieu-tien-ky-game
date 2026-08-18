@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-17
+Updated: 2026-08-18
 
 ## Repository
 
@@ -18,13 +18,12 @@ Updated: 2026-08-17
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
 - Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
 - Built-in Render Pipeline is allowed during P0A; URP is a later production direction, not a P0A blocker.
-- P0B remains NOT AUTHORIZED.
 
-## Active phase
+## Completed foundation phase (P0A + Vertical Slice v0.1)
 
-**P0A — Local Playable Core / Micro-Fun Validation**
+**P0A — Local Playable Core / Micro-Fun Validation** (historical target)
 
-P0A remains local/offline and Android-first for evidence. The operating goal is one bounded playable core loop that can be played continuously for roughly 2–3 minutes and judged as a game.
+P0A remained local/offline and Android-first for evidence. The operating goal was one bounded playable core loop that could be played continuously for roughly 2–3 minutes and judged as a game.
 
 ```text
 move
@@ -36,7 +35,15 @@ move
 → continue playing
 ```
 
-This is still a prototype, not production architecture and not P0B.
+This was a prototype, not production architecture. `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` then converted P0A's proven systems into the first production-oriented foundation (game flow, four-action skill kit, prefab enemies/boss, authored arena, blessing builds, production HUD).
+
+**Human Gate outcome (physical, 2026-08-18):** the Human/Game Director installed and played the exact recorded APK. Result — **foundation ACCEPTED as the production baseline; product-likeness NOT YET PASSED**. Full detail: `docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`, "Human Gate — physical outcome". Three concrete blockers are carried forward rather than spun into a standalone remediation task:
+
+1. Visible intended arena is larger than the actual reachable arena.
+2. Weak floor/arena visual hierarchy (arena reads as a test plane, not a level/location).
+3. Player-facing experience still feels too demo-like overall.
+
+Both `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` and its superseded predecessor `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001` are complete and preserved as history; neither is active write authority.
 
 ## Preserved implementation checkpoint
 
@@ -50,48 +57,32 @@ Verified remote ancestry:
 
 The checkpoint contains 37 intentional project files under `Assets/_Project/`, `ProjectSettings/`, and `docs/evidence/`. Generated/recovery/ambiguous local files were conservatively left uncommitted rather than discarded.
 
-Checkpoint evidence records real Unity/Android/device progress but does **not** claim overall P0A PASS or Human/Game Director micro-fun acceptance.
-
 ## Locked operating decisions
 
 - One active write workstream.
 - One meaningful product slice should normally produce one final human-facing APK.
 - Human/device gate is a hard STOP: no adb polling, scheduled retries, device monitoring, auto-install, auto-launch or USB-triggered resume.
 - Non-blocking technical debt is recorded and deferred when safe.
-- Independent review is risk-based; high-risk changes still require it, and aggregate/canonical P0A integration should normally receive independent review.
+- Independent review is risk-based; high-risk changes still require it, and aggregate/canonical integration should normally receive independent review.
 - A task-branch commit is a checkpoint, not acceptance or merge.
 - Portrait is not a supported gameplay orientation for the current product direction.
 - Repeated failure after one deliberate bounded remediation triggers design rethink instead of endless technical patching.
+- Player-facing product shortcomings identified at a Human Gate are carried into the next authorized macro-task rather than spawning a separate remediation task, per `docs/master/RELEASE_TRACK.md`.
 
-## Current execution authority
+## Active phase
 
-`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001` (superseded prior authority:
-`TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`, preserved as history — its Human Gate
-recorded a promising but evidence-incomplete playtest; see
-`docs/evidence/P0A_EVIDENCE_REPORT.md`).
+Program-level authorization: **PLAYABLE PRODUCTION ALPHA — STAGE A+B** (Playable Product Foundation + 2-Player Network Foundation), per `docs/master/RELEASE_TRACK.md`. Stage A exists specifically to resolve the three carried-forward product blockers above — no standalone remediation task was created for them.
+
+No dedicated Stage A+B task packet/work-breakdown has been authored yet. Authoring that packet and beginning execution is a separate, future step, not part of this governance transition.
 
 Machine-readable authority:
 
 `docs/governance/NEXT_TASK.md`
 
-The prior task's activation gate (checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`
-+ accepted `origin/main` rebaseline both ancestors of HEAD) was satisfied before the
-Human/Game Director directly authorized the current task in-session on 2026-08-18 from
-HEAD `408dae4af21d7c17b47a13f52980be19d80f6071`.
-
 ## Current product goal
 
-Ship the first production-oriented vertical slice — Main Menu → authored arena →
-animated cultivator → waves/Cơ Duyên/Elite/Mini Boss → Victory/Defeat → Result →
-Retry/Menu, ~4-6 minute run — by extending proven P0A systems rather than rebuilding
-them, hand off one exact APK, then obtain a Human playtest verdict.
+Close Stage A+B's Player-Visible Delta gate (`docs/master/RELEASE_TRACK.md` §§2–5) by extending the accepted Vertical Slice v0.1 foundation, then reach the Quick Human Product/Fun Gate. Stage C (Real Internet Foundation) may not open until that gate passes.
 
-No accepted Vertical Slice v0.1 evidence → no P0B authorization.
+## Release track
 
-## Post-Vertical-Slice-v0.1 release track
-
-Once this task reaches an accepted Human Gate, subsequent macro-slice order
-and product gates (Stage A → Stage B → Human Product/Fun Gate → Stage C →
-Stage D → Playable Production Alpha Candidate) are governed by
-`docs/master/RELEASE_TRACK.md`. This does not change the scope or gate of
-the currently active task above.
+Post-Vertical-Slice-v0.1 macro-slice order and product gates (Stage A → Stage B → Human Product/Fun Gate → Stage C → Stage D → Playable Production Alpha Candidate) are governed by `docs/master/RELEASE_TRACK.md`.

@@ -381,3 +381,49 @@ then report:
    mid-run?
 
 Do not install/launch automatically. This is the Human's step.
+
+## Human Gate — physical outcome (recorded 2026-08-18, post-build)
+
+```json
+{
+  "human_gate_status": "COMPLETED",
+  "foundation_verdict": "ACCEPTED_AS_PRODUCTION_FOUNDATION",
+  "product_verdict": "NOT_YET_PASSED",
+  "carried_forward_blockers": [
+    "visible intended arena larger than actual reachable arena",
+    "weak floor/arena visual hierarchy",
+    "player-facing experience still feels too demo-like"
+  ]
+}
+```
+
+The Human/Game Director physically installed and played the exact APK
+recorded above (`Builds/Android/P0A.apk`, built 2026-08-18 10:42) and
+reported a completed Human Gate. This does **not** retroactively change the
+machine-readable gate block at the top of this report, which correctly
+recorded the pre-playtest state (`android_install_run: BLOCKED_NOT_RUN`,
+`human_playtest: BLOCKED_NOT_RUN`) at the moment this report was first
+written — that record is preserved as history, not overwritten.
+
+Outcome: the technical/architectural foundation built in this slice (game
+flow, four-action skill kit, prefab enemies/boss, authored arena, blessing
+builds, production HUD — see "Architectural Ratchet verdict" above) is
+**accepted as the production foundation** going forward. The **product does
+not yet read as a finished game** — it still reads too close to a Unity
+demo. Three concrete blockers are carried forward into the next authorized
+macro-task rather than remediated as a standalone task, per
+`docs/master/RELEASE_TRACK.md`'s Stage structure (Stage A exists
+specifically to close product-likeness gaps like these):
+
+1. Visible intended arena is larger than the actual reachable arena.
+2. Weak floor/arena visual hierarchy (arena reads as a test plane, not a
+   level/location).
+3. Player-facing experience still feels too demo-like overall.
+
+This report's original `FAIL` verdict is not rewritten to `PASS` — the gate
+required `android_install_run: PASS` and `human_playtest: RECORDED` with a
+positive product verdict, and product-likeness was explicitly not achieved.
+Governance authority has moved on regardless: this task is no longer active
+write authority (see `docs/governance/NEXT_TASK.md` and
+`docs/governance/CURRENT_STATE.md`), and its foundation is accepted as the
+baseline for `PLAYABLE PRODUCTION ALPHA — STAGE A+B`.
