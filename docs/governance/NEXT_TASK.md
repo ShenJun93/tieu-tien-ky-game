@@ -5,7 +5,7 @@ semantics: `AGENTS.md` and `docs/governance/WORKFLOW.md`.
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "REVIEW",
   "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001",
   "branch": "chore/product-foundation-canon",
   "baseline_ref": "refs/remotes/origin/main",
@@ -37,19 +37,29 @@ semantics: `AGENTS.md` and `docs/governance/WORKFLOW.md`.
 
 ## Current authority
 
-`state` is `IMPLEMENT`, bounded to
-`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
-(governance / product-canon persistence only — see the task file). This is
-an explicit, bounded live Human/Game Director scope override reconciling
+`state` is `REVIEW`: independent/read-only review only — writer execution
+is blocked (`scripts/hooks/pre-task.mjs` fails closed for `REVIEW`).
+`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001` (governance /
+product-canon persistence, see the task file) completed implementation
+and local verification on `chore/product-foundation-canon`, persisting
+the Human-approved Product Foundation at
+`docs/master/PRODUCT_FOUNDATION.md` and
+`docs/decisions/001-product-foundation.md`
+(`docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md`). This was an
+explicit, bounded live Human/Game Director scope override reconciling
 the prior `DISCOVERY` state (below, preserved for record) into a scoped
 `IMPLEMENT` authority limited to the exact `allowed_paths` above, per
-`AGENTS.md` "Live operator precedence". It does **not** authorize product
+`AGENTS.md` "Live operator precedence"; it did **not** authorize product
 implementation, `PRODUCT-FEEL-REMEDIATION-01` resumption, R1
-resumption/salvage, R2-R6, Stage C, or Product Proof implementation. On
-completion this file transitions to `state: REVIEW`
-(`stop_condition: PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED`);
-independent review and explicit Human/Game Director action are required
-before repository-`main` canonization or any successor authority.
+resumption/salvage, R2-R6, Stage C, or Product Proof implementation, and
+still does not. **No writer mutation may occur on this branch while
+`state` is `REVIEW`.** An independent reviewer must review the diff, the
+`node --test scripts/hooks/hooks.test.mjs` run, and the evidence report
+before any acceptance, repository-`main` canonization, or successor
+authority exists — this task does not authorize itself, a reviewer, or
+any other agent to self-accept this work.
+
+Stop condition: `PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED`.
 
 Prior to this bootstrap, `state` was `DISCOVERY`: no active task, no
 active branch authority. `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`

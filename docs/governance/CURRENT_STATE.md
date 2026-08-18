@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19
+Updated: 2026-08-19 (product foundation candidate persistence)
 
 ## Repository
 
@@ -17,7 +17,7 @@ Updated: 2026-08-19
 - Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
 - Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
-- Full canon: `docs/master/MASTER_PLAN.md`. Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
+- Full canon: `docs/master/MASTER_PLAN.md`. Product-level foundation (accepted direction/hypotheses/deferred): `docs/master/PRODUCT_FOUNDATION.md` (persisted candidate, pending independent review). Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
 
 ## Audited baseline
 
@@ -28,6 +28,8 @@ Updated: 2026-08-19
 ```text
 FOUNDATION_V2                     = ACCEPTED
 SYSTEMIC_PREPRODUCTION_FOUNDATION = ACCEPTED / ACTIVE BASIS FOR FUTURE DECISIONS
+PRODUCT_FOUNDATION           = HUMAN_APPROVED / PERSISTED CANDIDATE
+PRIMARY_PRODUCT_PROOF         = PvE-FIRST
 STAGE_AB_TECHNICAL_GATE      = GREEN
 STAGE_AB_PRODUCT_GATE        = RED
 PRODUCT_DIRECTION            = VALIDATED / PROMISING
@@ -38,6 +40,25 @@ R2-R6                        = NOT STARTED
 STAGE_C                      = NOT AUTHORIZED
 HUMAN_PVP_FUN                = NOT PROVEN
 ```
+
+`PRODUCT_FOUNDATION = HUMAN_APPROVED / PERSISTED CANDIDATE` basis: the
+Human/Game Director explicitly approved a revised Product Foundation
+after multiple discovery, market-research, adversarial-review, and
+reconciliation rounds; it is persisted at
+`docs/master/PRODUCT_FOUNDATION.md` and
+`docs/decisions/001-product-foundation.md` by
+`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
+(`docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md`). This is a
+**persisted candidate**, not yet independent-reviewed or
+repository-`main` canonized — `docs/governance/NEXT_TASK.md`
+transitions to `state: REVIEW` on completion of that task, and
+independent review plus explicit Human/Game Director action are still
+required before canonical integration is complete. Persisting this
+candidate does **not** itself: unfreeze `PRODUCT_EXECUTION`, reactivate
+`PRODUCT_FEEL_REMEDIATION_01`, reopen R1, start R2-R6, or authorize
+Stage C — each still requires its own separate explicit Human/Game
+Director instruction. `PRODUCT_FOUNDATION_CANON` implementation has
+**not** started; only the governance canon persisting its direction has.
 
 `FOUNDATION_V2 = ACCEPTED` basis: implementation candidate HEAD
 `5891da081ee09ca3f61f2d0a28f2597ae9273486` on
@@ -75,27 +96,43 @@ Systemic pre-production / foundation governance reconciliation
 (`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`) is **ACCEPTED /
 CLOSED**: independent review verdict `PASS` (P0=0, P1=0, P2=2 non-blocking
 notes) plus explicit Human/Game Director acceptance. Its accepted
-implementation is now the active systemic pre-production governance basis.
-Machine-readable authority has transitioned to
-`docs/governance/NEXT_TASK.md` (`state: DISCOVERY`) — read-only
-research/compare authority, no active task, no repository mutation
-authorized.
+implementation is the active systemic pre-production governance basis.
+
+Following that, the Human/Game Director explicitly approved a revised
+Product Foundation after multiple discovery, market-research,
+adversarial-review, and reconciliation rounds outside repository
+mutation, and authorized a bounded governance/canon-persistence task,
+`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md`), to
+persist it. That task's implementation is complete and local verification
+has run; `docs/governance/NEXT_TASK.md` `state` transitions to `REVIEW`
+on this task's completion — independent review and explicit Human/Game
+Director action are still required before repository-`main` canonical
+integration of `docs/master/PRODUCT_FOUNDATION.md` and
+`docs/decisions/001-product-foundation.md` is complete. This persistence
+task does **not** authorize Product Proof implementation, reopen R1,
+start R2-R6, or authorize Stage C.
 
 PRODUCT FEEL REMEDIATION 01
 (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
 **PAUSED**, not cancelled or superseded: its task contract, allowed/forbidden
 paths and R1-R6 scope stand unchanged and resume verbatim only once an
 explicit Human/Game Director instruction reactivates it via a fresh
-`docs/governance/NEXT_TASK.md` `state: IMPLEMENT` authority. Foundation v2
-acceptance does not itself reactivate it.
+`docs/governance/NEXT_TASK.md` `state: IMPLEMENT` authority. Neither
+Foundation v2 acceptance nor this product-foundation persistence
+reactivates it.
 
 ## One next action
 
-Select and investigate ONE highest-leverage unresolved systemic
-pre-production decision (`DISCOVERY`, read-only/research authority — no
-repository mutation) before any further product implementation. This does
-not authorize a product implementation successor, does not reopen R1, and
-does not infer R2-R6 or Stage C authority. Stop condition:
-`HUMAN_DECISION_REQUIRED_BEFORE_IMPLEMENTATION` — implementation-authority
-(`state: IMPLEMENT`/bounded `SPIKE`) requires a fresh, explicit Human/Game
-Director instruction.
+Obtain independent review of
+`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`
+(`docs/governance/NEXT_TASK.md` `state: REVIEW` —
+writer execution blocked) and, if accepted, explicit Human/Game Director
+canonical integration of `docs/master/PRODUCT_FOUNDATION.md` into
+repository `main`. This does not authorize a Product Proof implementation
+successor, does not reopen R1, and does not infer R2-R6 or Stage C
+authority. Stop condition:
+`PRODUCT_FOUNDATION_CANON_INDEPENDENT_REVIEW_REQUIRED` —
+implementation authority for any successor task (`state: IMPLEMENT`/
+bounded `SPIKE`) requires its own fresh, explicit Human/Game Director
+instruction.
