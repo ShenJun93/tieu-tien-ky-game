@@ -9,6 +9,15 @@ Updated: **2026-08-17** (status line and §14/§15 pointers reconciled
 
 This file is the repository operational source of truth for decisions agents need to execute the project. Historical research/reviewer rationale may live elsewhere but cannot override this file without an explicit canon change. Where this file's P0A/P0B/Phase roadmap prose (§14) conflicts with the current program state, `docs/governance/NEXT_TASK.md` and `docs/master/RELEASE_TRACK.md` are authoritative — see the amendment notes in §14.
 
+**Product-foundation amendment (2026-08-19):** current stable
+product-level authority for accepted direction, audience/mode hypotheses,
+the three product bets, and deferred decisions is
+`docs/master/PRODUCT_FOUNDATION.md` (**ACCEPTED** canon —
+`docs/governance/CURRENT_STATE.md`). Where §1's product-identity/audience
+prose below conflicts with that file, `PRODUCT_FOUNDATION.md` is
+authoritative; this file's historical framing is preserved below, not
+rewritten.
+
 ## 1. Product identity
 
 **Tiểu Tiên Ký** is a standalone mobile-first chibi cultivation PvPvE arena playground/IP.
