@@ -1,11 +1,37 @@
 # TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001
 
-Status: **IMPLEMENTED — INDEPENDENT REVIEW REQUIRED** (see
-`docs/governance/NEXT_TASK.md`, `state: REVIEW`).
+Status: **ACCEPTED / CLOSED** (see `docs/governance/NEXT_TASK.md`,
+`state: DISCOVERY`).
 
 Project: **TIỂU TIÊN KÝ**
 Type: **governance / control-plane reconciliation** (not a product/gameplay
 task).
+
+## Acceptance record
+
+- Implementation candidate HEAD:
+  `5891da081ee09ca3f61f2d0a28f2597ae9273486` on
+  `chore/foundation-v2-reconciliation`.
+- Independent review verdict: **PASS**. P0 blockers: 0. P1 blockers: 0.
+  P2 non-blocking notes: 2 (recorded below as deferred, not fixed).
+- Explicit Human/Game Director acceptance: **APPROVE FOUNDATION V2
+  ACCEPTANCE**.
+- No successor product implementation authority is granted by this
+  acceptance. `docs/governance/NEXT_TASK.md` `state` transitions to
+  `DISCOVERY` (read-only/research; no repository mutation) — not
+  `IMPLEMENT`, and not a reopening of `PRODUCT-FEEL-REMEDIATION-01`, R1,
+  R2-R6, or Stage C.
+
+### P2 notes — deferred, non-blocking (not fixed)
+
+- **P2-A**: the `SPIKE` forbidden-path test currently proves
+  out-of-allowed-path blocking rather than directly asserting the literal
+  `forbidden_paths` branch in `scripts/hooks/scope-gate.mjs`.
+- **P2-B**: unknown-state fail-closed has direct test coverage in
+  `pre-task.mjs`'s tests but lacks symmetric direct unknown-state test
+  cases for `scope-gate.mjs`/`pre-finish.mjs`.
+
+Both notes are deferred; no remediation work is opened by this acceptance.
 
 ## Exact starting SHA
 

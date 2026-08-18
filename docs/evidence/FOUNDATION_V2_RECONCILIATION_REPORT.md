@@ -2,6 +2,29 @@
 
 Task: `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`
 
+Status: **ACCEPTED / CLOSED**. See `HUMAN_ACCEPTANCE` below.
+
+## HUMAN_ACCEPTANCE
+
+- Implementation candidate HEAD: `5891da081ee09ca3f61f2d0a28f2597ae9273486`.
+- Independent review verdict: **PASS**. P0 blockers: 0. P1 blockers: 0.
+  P2 non-blocking notes: 2.
+- Explicit Human/Game Director acceptance: **APPROVE FOUNDATION V2
+  ACCEPTANCE**.
+- P2 notes are recorded as **DEFERRED / NON-BLOCKING** — not remediated by
+  this acceptance:
+  - **P2-A**: the `SPIKE` forbidden-path test currently proves
+    out-of-allowed-path blocking rather than directly asserting the literal
+    `forbidden_paths` branch.
+  - **P2-B**: unknown-state fail-closed has direct tests in `pre-task.mjs`
+    but not symmetric direct unknown-state cases for
+    `scope-gate.mjs`/`pre-finish.mjs`.
+- This acceptance grants **no successor product implementation authority**:
+  `docs/governance/NEXT_TASK.md` `state` transitions `REVIEW` →
+  `DISCOVERY` (read-only/research; no repository mutation), not
+  `IMPLEMENT`. It does not reactivate `PRODUCT-FEEL-REMEDIATION-01`, does
+  not reopen R1, and does not infer R2-R6 or Stage C authority.
+
 ## STARTING_HEAD
 
 `3b9264196bb941033f4c16bc3a68341a9dc7d785`

@@ -26,14 +26,29 @@ Updated: 2026-08-19
 ## Gate status (current truth)
 
 ```text
+FOUNDATION_V2                     = ACCEPTED
+SYSTEMIC_PREPRODUCTION_FOUNDATION = ACCEPTED / ACTIVE BASIS FOR FUTURE DECISIONS
 STAGE_AB_TECHNICAL_GATE      = GREEN
 STAGE_AB_PRODUCT_GATE        = RED
 PRODUCT_DIRECTION            = VALIDATED / PROMISING
+PRODUCT_EXECUTION            = FROZEN
 PRODUCT_FEEL_REMEDIATION_01  = PAUSED
-R1 (mobile controls)         = PARTIAL, UNCOMMITTED, QUARANTINED (see below)
+R1 (mobile controls)         = QUARANTINED, PARTIAL, UNCOMMITTED (see below)
 R2-R6                        = NOT STARTED
 STAGE_C                      = NOT AUTHORIZED
+HUMAN_PVP_FUN                = NOT PROVEN
 ```
+
+`FOUNDATION_V2 = ACCEPTED` basis: implementation candidate HEAD
+`5891da081ee09ca3f61f2d0a28f2597ae9273486` on
+`chore/foundation-v2-reconciliation`; independent review verdict `PASS`
+(P0=0, P1=0, P2=2 non-blocking test-coverage notes, recorded as deferred in
+`docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md` and
+`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`); explicit
+Human/Game Director acceptance. Acceptance of the governance/control-plane
+foundation does **not** unfreeze `PRODUCT_EXECUTION`, reactivate
+`PRODUCT_FEEL_REMEDIATION_01`, reopen R1, start R2-R6, or authorize Stage C
+— each requires its own separate explicit Human/Game Director instruction.
 
 Full gate detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
 "Human Gate outcome (2026-08-18)". Carried-forward blockers and the R1-R6
@@ -57,27 +72,30 @@ direction. Full inventory:
 ## Current activity
 
 Systemic pre-production / foundation governance reconciliation
-(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`), executed on an
-isolated worktree/branch (`chore/foundation-v2-reconciliation`) under a
-Human-authorized, task-scoped exception to the prior
-`docs/governance/`/`docs/master/`/`docs/tasks/`/`.agents/`/`AGENTS.md`
-write-forbid. This is a governance/control-plane task only — it is not a
-resumption of PRODUCT FEEL REMEDIATION 01, not R1 salvage, and not any form
-of gameplay/Unity/package/URP work. Machine-readable authority:
-`docs/governance/NEXT_TASK.md` (`state: REVIEW`).
+(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`) is **ACCEPTED /
+CLOSED**: independent review verdict `PASS` (P0=0, P1=0, P2=2 non-blocking
+notes) plus explicit Human/Game Director acceptance. Its accepted
+implementation is now the active systemic pre-production governance basis.
+Machine-readable authority has transitioned to
+`docs/governance/NEXT_TASK.md` (`state: DISCOVERY`) — read-only
+research/compare authority, no active task, no repository mutation
+authorized.
 
 PRODUCT FEEL REMEDIATION 01
 (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
 **PAUSED**, not cancelled or superseded: its task contract, allowed/forbidden
-paths and R1-R6 scope stand unchanged and resume verbatim once an explicit
-Human/Game Director instruction reactivates it via a fresh
-`docs/governance/NEXT_TASK.md` authority.
+paths and R1-R6 scope stand unchanged and resume verbatim only once an
+explicit Human/Game Director instruction reactivates it via a fresh
+`docs/governance/NEXT_TASK.md` `state: IMPLEMENT` authority. Foundation v2
+acceptance does not itself reactivate it.
 
 ## One next action
 
-Independent review of branch `chore/foundation-v2-reconciliation` against
-`docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md` and
-`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`. No successor task
-may execute, and PRODUCT FEEL REMEDIATION 01 may not resume, until that
-review completes and the Human/Game Director explicitly authorizes the next
-state transition.
+Select and investigate ONE highest-leverage unresolved systemic
+pre-production decision (`DISCOVERY`, read-only/research authority — no
+repository mutation) before any further product implementation. This does
+not authorize a product implementation successor, does not reopen R1, and
+does not infer R2-R6 or Stage C authority. Stop condition:
+`HUMAN_DECISION_REQUIRED_BEFORE_IMPLEMENTATION` — implementation-authority
+(`state: IMPLEMENT`/bounded `SPIKE`) requires a fresh, explicit Human/Game
+Director instruction.

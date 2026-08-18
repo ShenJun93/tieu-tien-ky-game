@@ -5,47 +5,37 @@ semantics: `AGENTS.md` and `docs/governance/WORKFLOW.md`.
 
 ```json
 {
-  "state": "REVIEW",
-  "task_id": "TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001",
-  "branch": "chore/foundation-v2-reconciliation",
-  "baseline_ref": "3b9264196bb941033f4c16bc3a68341a9dc7d785",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md",
-  "evidence_file": "docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md",
-  "allowed_paths": [
-    "docs/governance/",
-    "docs/master/",
-    "docs/tasks/",
-    "docs/evidence/",
-    "docs/decisions/",
-    "scripts/hooks/",
-    ".agents/",
-    "AGENTS.md",
-    "docs/CANONICAL_BASELINE.md"
-  ],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Builds/",
-    "backend/",
-    "server/",
-    "liveops/",
-    "economy/",
-    "shop/"
-  ],
-  "stop_condition": "FOUNDATION_V2_RECONCILIATION_REVIEW_REQUIRED"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_IMPLEMENTATION"
 }
 ```
 
 ## Current authority
 
-`state` is `REVIEW`: `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001` is
-implemented on `chore/foundation-v2-reconciliation` and awaiting independent
-review. `REVIEW` blocks writer execution (`scripts/hooks/pre-task.mjs`,
-`scripts/hooks/scope-gate.mjs`, `scripts/hooks/pre-finish.mjs` all fail
-closed for this state) — no successor task may execute, and this state does
-**not** authorize product implementation, `PRODUCT-FEEL-REMEDIATION-01`,
-R2-R6, or Stage C.
+`state` is `DISCOVERY`: there is no active task and no active branch
+authority. `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001` was
+independently reviewed (verdict `PASS`, P0=0, P1=0, P2=2 non-blocking notes)
+and explicitly **ACCEPTED** by the Human/Game Director — see
+`docs/governance/CURRENT_STATE.md` and
+`docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md`
+(`ACCEPTED / CLOSED`). `DISCOVERY` is read-only research/compare authority
+only: `scripts/hooks/pre-task.mjs`, `scripts/hooks/scope-gate.mjs`, and
+`scripts/hooks/pre-finish.mjs` all fail closed for this state, so it does
+**not** authorize repository mutation. No successor task may execute; this
+state does **not** authorize product implementation,
+`PRODUCT-FEEL-REMEDIATION-01`, R1 resumption, R2-R6, or Stage C. The next
+action is to select and investigate ONE highest-leverage unresolved systemic
+pre-production decision before any further product implementation; that
+investigation does not by itself authorize implementation — a fresh,
+explicit Human/Game Director instruction and a new `state: IMPLEMENT` (or
+bounded `SPIKE`) authority here are required first.
 
 ## Live operator precedence
 
@@ -69,20 +59,24 @@ themselves, and nothing here should be read as claiming otherwise.
 
 ## Product execution status
 
-`PRODUCT-FEEL-REMEDIATION-01` (`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`)
-is **PAUSED**, not cancelled or superseded — see
+`PRODUCT_EXECUTION` is **FROZEN**. `PRODUCT-FEEL-REMEDIATION-01`
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
+**PAUSED**, not cancelled or superseded — see
 `docs/governance/CURRENT_STATE.md`. Its task contract, allowed/forbidden
-paths and R1-R6 scope are unchanged and resume verbatim only after this
-reconciliation is reviewed/accepted and an explicit Human/Game Director
-instruction reactivates it through a fresh `state: IMPLEMENT` authority
-here. Stage C (Real Internet Foundation) remains **NOT AUTHORIZED**
-regardless of this task's outcome; only an explicit Human Gate 02 `GO`
-(`docs/master/RELEASE_TRACK.md` §5, §7) can authorize it.
+paths and R1-R6 scope are unchanged and resume verbatim only after an
+explicit Human/Game Director instruction reactivates it through a fresh
+`state: IMPLEMENT` authority here. R1 remains **QUARANTINED** (untouched,
+unmerged); R2-R6 remain **NOT STARTED**. Stage C (Real Internet Foundation)
+remains **NOT AUTHORIZED**; only an explicit Human Gate 02 `GO`
+(`docs/master/RELEASE_TRACK.md` §5, §7) can authorize it. Foundation v2
+acceptance does not itself authorize any of the above.
 
 ## History
 
-Full program history through the audited baseline above (P0A → Vertical
-Slice v0.1 → Stage A+B → TTK Production Foundation v1 acceptance →
-PRODUCT-FEEL-REMEDIATION-01 activation) is preserved in
-`docs/governance/CURRENT_STATE.md` and the evidence/task files it points
-to. This file intentionally does not restate that history.
+Full program history, including `TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`'s
+independent review and Human acceptance (P0A → Vertical Slice v0.1 →
+Stage A+B → TTK Production Foundation v1 acceptance →
+PRODUCT-FEEL-REMEDIATION-01 activation → Foundation v2 reconciliation →
+acceptance), is preserved in `docs/governance/CURRENT_STATE.md` and the
+evidence/task files it points to. This file intentionally does not restate
+that history.
