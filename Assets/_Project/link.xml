@@ -1,0 +1,20 @@
+<linker>
+  <!--
+    GameObject.CreatePrimitive (used by GreyboxSceneBootstrapper) adds these
+    component types internally via native engine code, with no static C#
+    reference the managed stripper can see for MeshFilter/MeshRenderer/
+    MeshCollider. Under IL2CPP + Android stripping this produced runtime
+    failures such as "Can't add component because class 'MeshCollider'
+    doesn't exist!". Preserve exactly the primitive-dependency types P0A
+    creates (Plane, Capsule, Cube) - nothing broader.
+  -->
+  <assembly fullname="UnityEngine.CoreModule">
+    <type fullname="UnityEngine.MeshFilter" preserve="all" />
+    <type fullname="UnityEngine.MeshRenderer" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.MeshCollider" preserve="all" />
+    <type fullname="UnityEngine.BoxCollider" preserve="all" />
+    <type fullname="UnityEngine.CapsuleCollider" preserve="all" />
+  </assembly>
+</linker>

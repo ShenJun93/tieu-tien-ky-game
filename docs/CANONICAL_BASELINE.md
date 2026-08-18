@@ -1,7 +1,21 @@
 # TIỂU TIÊN KÝ — CANONICAL BASELINE
 
+> **HISTORICAL / SUPERSEDED — NOT CURRENT EXECUTION AUTHORITY.**
+>
+> This document is preserved as history. Its P0A/P0B roadmap, Photon
+> Fusion 2 network direction, and exact Unity-version lock are materially
+> stale — e.g. Photon Fusion 2 was never implemented; the current
+> evidence-backed realtime stack is Netcode for GameObjects + Unity
+> Transport (`docs/master/MASTER_PLAN.md` §7's network canon
+> reconciliation). Do not treat any statement below as current authority.
+>
+> Current execution authority: `docs/governance/CURRENT_STATE.md`,
+> `docs/governance/NEXT_TASK.md`. Current product/craft canon:
+> `docs/master/MASTER_PLAN.md`, `docs/master/GAME_PRODUCTION_DOCTRINE.md`,
+> `docs/master/PRODUCTION_FOUNDATION.md`, `docs/master/RELEASE_TRACK.md`.
+
 Version: **v0.1.5 Fun-First Rebaseline**  
-Status: **Pre-production / P0A authorized; Playable-Core authority effective after accepted rebaseline is synchronized into the P0A branch**
+Status: **HISTORICAL / SUPERSEDED** (was: "Pre-production / P0A authorized; Playable-Core authority effective after accepted rebaseline is synchronized into the P0A branch")
 
 ## Product identity
 

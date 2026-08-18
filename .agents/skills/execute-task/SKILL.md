@@ -1,6 +1,14 @@
 # execute-task
 
-Use this skill for an authorized implementation/product task.
+Use this skill for an authorized implementation/product task, i.e. when
+`docs/governance/NEXT_TASK.md` `state` is `IMPLEMENT`.
+
+`SPIKE` may use this skill only for its explicitly bounded, disposable
+scope; a `SPIKE` run may not promote production maturity or claim
+production completion (`scripts/hooks/pre-finish.mjs` fails closed for it).
+
+Do not invoke this skill's implementation steps at all when `state` is
+`DISCOVERY` — discovery is research/read/compare only.
 
 ## Procedure
 

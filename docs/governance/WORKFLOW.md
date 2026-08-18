@@ -26,9 +26,53 @@ Human / Game Director
 
 Independent review is inserted when risk warrants it, not mechanically after every low-risk prototype iteration.
 
+## Authority state
+
+Repository write authority is one field, `state`, in
+`docs/governance/NEXT_TASK.md` (full semantics: `AGENTS.md`):
+
+```text
+PAUSED      — no mutation authority; recovery/read-only work only.
+DISCOVERY   — research/read/compare; repository mutation forbidden by default.
+SPIKE       — explicitly bounded, disposable mutation; cannot promote
+              production maturity or claim production completion.
+IMPLEMENT   — mutation allowed only inside the explicit scope.
+REVIEW      — independent/read-only review; writer execution blocked.
+HUMAN_GATE  — absolute command stop until explicit Human continuation.
+CLOSED      — authority terminated.
+```
+
+An unknown or missing state fails closed (BLOCK) everywhere it is checked.
+This single field replaces any independent status/mode/readiness/decision-gate
+boolean; do not reintroduce one.
+
+## Discovery → Spike → Implement lifecycle
+
+```text
+material uncertainty
+→ DISCOVERY (research/read/compare; no mutation)
+→ optional bounded SPIKE (disposable; cannot promote maturity or claim
+  production completion)
+→ decision (record per docs/decisions/README.md if it is significant)
+→ IMPLEMENT (mutation inside explicit scope)
+→ technical verification
+→ optional LEARNING BUILD (proves a mechanic/feel works; not itself
+  shippable — see docs/master/PRODUCTION_FOUNDATION.md)
+→ ACCEPTANCE ARTIFACT (the exact build/evidence a Human Gate evaluates)
+→ HUMAN GATE
+→ maturity promotion (EXPERIMENT → PROVEN → PRODUCTION_KEPT → SCALE_READY)
+```
+
+Research/DISCOVERY depth must be proportional to:
+
+> **uncertainty × irreversibility × downstream cost × product impact.**
+
+Trivial, local, reversible work does not require a DISCOVERY phase, a SPIKE,
+or a decision record — do not manufacture process for it.
+
 ## One-write-task rule
 
-Only one primary write task may be `ACTIVE` unless explicit independent parallelism is authorized. Two writers must not mutate the same Unity worktree concurrently.
+Only one primary write task may be in a mutating state (`IMPLEMENT` or `SPIKE`) unless explicit independent parallelism is authorized. Two writers must not mutate the same Unity worktree concurrently.
 
 Read-only review/research may run separately when useful.
 

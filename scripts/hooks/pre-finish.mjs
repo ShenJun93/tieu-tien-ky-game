@@ -7,6 +7,11 @@ import { execFileSync } from 'node:child_process';
 const run = (cmd, args = []) => execFileSync(cmd, args, { encoding: 'utf8' }).trim();
 const fail = (message) => { console.error(`PRE-FINISH BLOCKED: ${message}`); process.exit(1); };
 
+// Only IMPLEMENT may claim implementation completion. SPIKE is explicitly
+// bounded/disposable and can never claim production completion; every other
+// state (including unknown/missing state) fails closed (BLOCK).
+const COMPLETABLE_STATES = new Set(['IMPLEMENT']);
+
 function normalizeRepoPath(value) {
   const raw = String(value ?? '').trim().replaceAll('\\', '/');
   if (!raw) fail('empty path in task authority');
@@ -36,7 +41,8 @@ process.chdir(root);
 
 const authorityFile = path.join(root, 'docs/governance/NEXT_TASK.md');
 const { data: authority } = readJsonBlock(authorityFile, 'NEXT_TASK.md');
-if (authority.status !== 'ACTIVE') fail(`task status is ${authority.status}, expected ACTIVE`);
+const state = authority.state;
+if (!COMPLETABLE_STATES.has(state)) fail(`state ${state ?? '(unset)'} cannot claim implementation completion; only IMPLEMENT may`);
 
 const branch = run('git', ['branch', '--show-current']);
 if (branch !== authority.branch) fail(`branch ${branch || '(detached)'} does not match ${authority.branch}`);

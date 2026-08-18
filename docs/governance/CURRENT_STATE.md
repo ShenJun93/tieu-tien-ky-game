@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-17
+Updated: 2026-08-19
 
 ## Repository
 
@@ -17,69 +17,85 @@ Updated: 2026-08-17
 - Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
 - Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
-- Built-in Render Pipeline is allowed during P0A; URP is a later production direction, not a P0A blocker.
-- P0B remains NOT AUTHORIZED.
+- Full canon: `docs/master/MASTER_PLAN.md`. Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
 
-## Active phase
+## Audited baseline
 
-**P0A — Local Playable Core / Micro-Fun Validation**
+`3b9264196bb941033f4c16bc3a68341a9dc7d785` (branch `feat/p0a-local-microfun-spike`, commit "docs(governance): accept TTK production foundation v1") is the audited clean-commit reference this reconciliation started from. Program history up to that commit (P0A → Vertical Slice v0.1 → Stage A+B → TTK Production Foundation v1 acceptance → PRODUCT FEEL REMEDIATION 01 activation) is preserved in full in `docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`, `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, and the historical task files under `docs/tasks/`; it is not restated here.
 
-P0A remains local/offline and Android-first for evidence. The operating goal is one bounded playable core loop that can be played continuously for roughly 2–3 minutes and judged as a game.
+## Gate status (current truth)
 
 ```text
-move
-→ enemy pressure
-→ one basic attack
-→ readable impact + knockback
-→ environment / Water × Lightning consequence
-→ enemy defeat/reset
-→ continue playing
+FOUNDATION_V2                     = ACCEPTED
+SYSTEMIC_PREPRODUCTION_FOUNDATION = ACCEPTED / ACTIVE BASIS FOR FUTURE DECISIONS
+STAGE_AB_TECHNICAL_GATE      = GREEN
+STAGE_AB_PRODUCT_GATE        = RED
+PRODUCT_DIRECTION            = VALIDATED / PROMISING
+PRODUCT_EXECUTION            = FROZEN
+PRODUCT_FEEL_REMEDIATION_01  = PAUSED
+R1 (mobile controls)         = QUARANTINED, PARTIAL, UNCOMMITTED (see below)
+R2-R6                        = NOT STARTED
+STAGE_C                      = NOT AUTHORIZED
+HUMAN_PVP_FUN                = NOT PROVEN
 ```
 
-This is still a prototype, not production architecture and not P0B.
+`FOUNDATION_V2 = ACCEPTED` basis: implementation candidate HEAD
+`5891da081ee09ca3f61f2d0a28f2597ae9273486` on
+`chore/foundation-v2-reconciliation`; independent review verdict `PASS`
+(P0=0, P1=0, P2=2 non-blocking test-coverage notes, recorded as deferred in
+`docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md` and
+`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`); explicit
+Human/Game Director acceptance. Acceptance of the governance/control-plane
+foundation does **not** unfreeze `PRODUCT_EXECUTION`, reactivate
+`PRODUCT_FEEL_REMEDIATION_01`, reopen R1, start R2-R6, or authorize Stage C
+— each requires its own separate explicit Human/Game Director instruction.
 
-## Preserved implementation checkpoint
+Full gate detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
+"Human Gate outcome (2026-08-18)". Carried-forward blockers and the R1-R6
+scope PRODUCT FEEL REMEDIATION 01 is paused on:
+`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`.
 
-The previously dirty, physically-tested P0A worktree was safely checkpointed and pushed normally to:
+## Quarantined R1 specimen
 
-`feat/p0a-local-microfun-spike@77f4599fce4844a106827ed79d8b0aa7357a95e4`
+The original P0A worktree (`E:\GameDev\tieu-tien-ky-game`) carries
+uncommitted R1 (mobile-controls) work-in-progress on top of the audited
+baseline above: modified `Assets/_Project/Core/Cooldown.cs`,
+`Assets/_Project/Gameplay/BasicAttack.cs`, `HoTheSkill.cs`,
+`LoiTramSkill.cs`, `PhongBoSkill.cs`, `Assets/_Project/Input/TouchInputReader.cs`,
+plus five new untracked EditMode/PlayMode test files. This is a partial,
+evidence-incomplete specimen. It is preserved exactly as found — not reset,
+committed, staged, or discarded — pending explicit Human/Game Director
+direction. Full inventory:
+`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`,
+`ORIGINAL_R1_DIRTY_INVENTORY`.
 
-Verified remote ancestry:
+## Current activity
 
-`54e90701c9172b1d7cef658c80b77261b22fa22c → 77f4599fce4844a106827ed79d8b0aa7357a95e4`
+Systemic pre-production / foundation governance reconciliation
+(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`) is **ACCEPTED /
+CLOSED**: independent review verdict `PASS` (P0=0, P1=0, P2=2 non-blocking
+notes) plus explicit Human/Game Director acceptance. Its accepted
+implementation is now the active systemic pre-production governance basis.
+Machine-readable authority has transitioned to
+`docs/governance/NEXT_TASK.md` (`state: DISCOVERY`) — read-only
+research/compare authority, no active task, no repository mutation
+authorized.
 
-The checkpoint contains 37 intentional project files under `Assets/_Project/`, `ProjectSettings/`, and `docs/evidence/`. Generated/recovery/ambiguous local files were conservatively left uncommitted rather than discarded.
+PRODUCT FEEL REMEDIATION 01
+(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
+**PAUSED**, not cancelled or superseded: its task contract, allowed/forbidden
+paths and R1-R6 scope stand unchanged and resume verbatim only once an
+explicit Human/Game Director instruction reactivates it via a fresh
+`docs/governance/NEXT_TASK.md` `state: IMPLEMENT` authority. Foundation v2
+acceptance does not itself reactivate it.
 
-Checkpoint evidence records real Unity/Android/device progress but does **not** claim overall P0A PASS or Human/Game Director micro-fun acceptance.
+## One next action
 
-## Locked operating decisions
-
-- One active write workstream.
-- One meaningful product slice should normally produce one final human-facing APK.
-- Human/device gate is a hard STOP: no adb polling, scheduled retries, device monitoring, auto-install, auto-launch or USB-triggered resume.
-- Non-blocking technical debt is recorded and deferred when safe.
-- Independent review is risk-based; high-risk changes still require it, and aggregate/canonical P0A integration should normally receive independent review.
-- A task-branch commit is a checkpoint, not acceptance or merge.
-- Portrait is not a supported gameplay orientation for the current product direction.
-- Repeated failure after one deliberate bounded remediation triggers design rethink instead of endless technical patching.
-
-## Current execution authority
-
-`TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`
-
-Machine-readable authority:
-
-`docs/governance/NEXT_TASK.md`
-
-The task is executable on `feat/p0a-local-microfun-spike` only after that branch contains both:
-
-1. checkpoint `77f4599fce4844a106827ed79d8b0aa7357a95e4`; and
-2. the accepted current `origin/main` containing this Fun-First rebaseline.
-
-The repository baseline-ancestry guard is the execution gate.
-
-## Current product goal
-
-Produce one credit-efficient gameplay step that feels materially more like a game, hand off one exact APK, then obtain a 2–3 minute Human playtest verdict.
-
-No accepted P0A evidence → no P0B authorization.
+Select and investigate ONE highest-leverage unresolved systemic
+pre-production decision (`DISCOVERY`, read-only/research authority — no
+repository mutation) before any further product implementation. This does
+not authorize a product implementation successor, does not reopen R1, and
+does not infer R2-R6 or Stage C authority. Stop condition:
+`HUMAN_DECISION_REQUIRED_BEFORE_IMPLEMENTATION` — implementation-authority
+(`state: IMPLEMENT`/bounded `SPIKE`) requires a fresh, explicit Human/Game
+Director instruction.

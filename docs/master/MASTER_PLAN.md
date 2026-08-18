@@ -1,10 +1,13 @@
 # TIỂU TIÊN KÝ — OPERATIONAL MASTER PLAN
 
 Version: **v0.1.5 Fun-First Rebaseline**  
-Status: **CANONICAL / PRE-PRODUCTION / P0A AUTHORIZED**  
-Updated: **2026-08-17**
+Status: **CANONICAL (historical operational framing) — current execution
+authority is `docs/governance/NEXT_TASK.md`; P0A is complete/superseded, not
+the active phase. See §14/§15 amendments below.**  
+Updated: **2026-08-17** (status line and §14/§15 pointers reconciled
+2026-08-18; body prose otherwise preserved as history)
 
-This file is the repository operational source of truth for decisions agents need to execute the project. Historical research/reviewer rationale may live elsewhere but cannot override this file without an explicit canon change.
+This file is the repository operational source of truth for decisions agents need to execute the project. Historical research/reviewer rationale may live elsewhere but cannot override this file without an explicit canon change. Where this file's P0A/P0B/Phase roadmap prose (§14) conflicts with the current program state, `docs/governance/NEXT_TASK.md` and `docs/master/RELEASE_TRACK.md` are authoritative — see the amendment notes in §14.
 
 ## 1. Product identity
 
@@ -146,6 +149,27 @@ iOS signed builds require macOS/Xcode; use cloud macOS initially unless measured
 - Revisit rendering-pipeline migration only after core fun is worth preserving and before production visual scaling requires it.
 
 ### Realtime multiplayer direction
+
+**Network canon reconciliation (2026-08-18):** the historical direction
+below (Photon Fusion 2 / `GameMode.Server`) was never implemented past
+this planning stage — P0A used local simulation only and Photon Fusion was
+not added (`docs/evidence/P0A_EVIDENCE_REPORT.md`). Stage B then
+implemented and proved, with a true two-process smoke test, a different
+stack: **Netcode for GameObjects (NGO) + Unity Transport**, 2-player
+server/host-authoritative combat
+(`docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
+`docs/master/RELEASE_TRACK.md` Stage B). Photon and NGO are not
+simultaneous current canons: **NGO + Unity Transport is the current,
+evidence-backed realtime baseline; Photon Fusion 2 / `GameMode.Server` is
+historical/superseded**, preserved below for record. The
+server/host-authoritative gameplay-outcome principle (clients send
+intent/input; the authority owns canonical combat state) carries forward
+unchanged across that stack change. This entry does not select or invent
+an exact Stage C (real Internet/hosted-service) implementation — that
+remains **NOT AUTHORIZED**, per `docs/master/RELEASE_TRACK.md` and
+`docs/governance/NEXT_TASK.md`.
+
+Historical direction (superseded, preserved for record):
 - Photon Fusion 2;
 - production topology: `GameMode.Server` / authoritative headless Unity server;
 - clients send intent/input; server owns canonical combat state;
@@ -293,7 +317,26 @@ If F2P later:
 
 ## 14. Roadmap and gates
 
-### P0A — Local Playable Core / Micro-Fun Validation — ACTIVE PHASE
+**Release-track amendment (2026-08-18):** the Stage order, mandatory
+Player-Visible Delta gate, production baseline ratchet, durable naming,
+bounded player-count config, artifact identity, and compact handoff for all
+work after P0A/Vertical Slice v0.1 are now governed by
+`docs/master/RELEASE_TRACK.md`. The P0B/Phase1-8 prose below remains the
+historical record of the prior framing and is not rewritten; where the two
+conflict on post-P0A stage naming, `RELEASE_TRACK.md` is authoritative.
+
+**Governance amendment (2026-08-18):** craft/quality standards — the
+production maturity model (EXPERIMENT → PROVEN → PRODUCTION_KEPT →
+SCALE_READY), the player-facing Definition of Done, the certainty×reuse
+decision model, the Approved Production Kit v1 contract, and the TTK Combat
+Promise — are now governed by `docs/master/GAME_PRODUCTION_DOCTRINE.md` and
+`docs/master/PRODUCTION_FOUNDATION.md`. Both amend this file minimally and
+do not weaken §2's "prefer deletion-friendly implementation over
+speculative frameworks" rule; see `GAME_PRODUCTION_DOCTRINE.md` §4 for the
+explicit reconciliation between that rule and building strong foundations
+where certainty and reuse are both high.
+
+### P0A — Local Playable Core / Micro-Fun Validation — HISTORICAL (complete, superseded; not the current phase)
 Goal: prove a tiny local mobile interaction loop is promising before network/backend spend.
 
 Current bounded target:
@@ -381,13 +424,26 @@ Machine-readable authority:
 
 `docs/governance/NEXT_TASK.md`
 
-Next P0A product task after rebaseline activation:
+`docs/governance/NEXT_TASK.md` is the sole current execution authority; its
+`state` field (`PAUSED`/`DISCOVERY`/`SPIKE`/`IMPLEMENT`/`REVIEW`/
+`HUMAN_GATE`/`CLOSED` — see `AGENTS.md`) governs whether any task may
+execute. The task pointer below is historical (preserved, not current):
 
-`docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md`
+Historical: the next P0A product task after rebaseline activation was
+`docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md`. The
+historical task `TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001`
+remains an audit record but was already superseded as execution authority.
+Since then, `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`,
+`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`, and
+`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` have all completed and
+are no longer active write authority; see `docs/governance/NEXT_TASK.md`
+and `docs/governance/CURRENT_STATE.md` for current program state (as of
+2026-08-18: `ACTIVE`, task `TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01`).
 
-The historical task `TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001` remains an audit record but is superseded as execution authority.
-
-P0B remains NOT AUTHORIZED.
+P0B, as originally scoped below (Photon Fusion `GameMode.Server`), remains
+NOT AUTHORIZED; its Stage-B successor (NGO + Unity Transport, 2-player
+local-network foundation) has since been implemented — see §7's network
+canon reconciliation and `docs/master/RELEASE_TRACK.md`.
 
 ## 16. Final directive
 
