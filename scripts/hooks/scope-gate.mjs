@@ -6,6 +6,10 @@ import { execFileSync } from 'node:child_process';
 
 const fail = (message) => { console.error(`SCOPE BLOCKED: ${message}`); process.exit(1); };
 
+// Only IMPLEMENT and SPIKE may mutate the repository. Every other state,
+// including unknown/missing state, fails closed (BLOCK).
+const MUTATING_STATES = new Set(['IMPLEMENT', 'SPIKE']);
+
 function normalizeRepoPath(value) {
   if (typeof value !== 'string' || value.trim() === '') fail('empty repository path');
   const raw = value.trim().replaceAll('\\', '/');
@@ -30,7 +34,8 @@ try { root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: '
 catch { fail('not inside a git repository'); }
 
 const authority = readAuthority(root);
-if (authority.status !== 'ACTIVE') fail(`task status is ${authority.status}, expected ACTIVE`);
+const state = authority.state;
+if (!MUTATING_STATES.has(state)) fail(`state ${state ?? '(unset)'} may not mutate the repository; only IMPLEMENT/SPIKE may`);
 
 const inputs = process.argv.slice(2).map(normalizeRepoPath).filter(Boolean);
 if (inputs.length === 0) fail('provide at least one intended repository path');

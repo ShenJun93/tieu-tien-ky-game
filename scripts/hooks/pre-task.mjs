@@ -7,6 +7,10 @@ import { execFileSync } from 'node:child_process';
 const run = (cmd, args = []) => execFileSync(cmd, args, { encoding: 'utf8' }).trim();
 const fail = (message) => { console.error(`PRE-TASK BLOCKED: ${message}`); process.exit(1); };
 
+// Single authority state field. Unknown/missing state fails closed (BLOCK).
+// See docs/governance/WORKFLOW.md and AGENTS.md for full state semantics.
+const KNOWN_STATES = new Set(['PAUSED', 'DISCOVERY', 'SPIKE', 'IMPLEMENT', 'REVIEW', 'HUMAN_GATE', 'CLOSED']);
+
 function readAuthority(root) {
   const file = path.join(root, 'docs/governance/NEXT_TASK.md');
   if (!fs.existsSync(file)) fail('docs/governance/NEXT_TASK.md is missing');
@@ -23,7 +27,23 @@ catch { fail('not inside a git repository'); }
 process.chdir(root);
 
 const authority = readAuthority(root);
-if (authority.status !== 'ACTIVE') fail(`task status is ${authority.status}, expected ACTIVE`);
+const state = authority.state;
+if (!KNOWN_STATES.has(state)) fail(`unknown authority state ${state ?? '(unset)'} — failing closed`);
+
+switch (state) {
+  case 'PAUSED': fail('state is PAUSED — no mutation authority; recovery/read-only work only'); break;
+  case 'DISCOVERY': fail('state is DISCOVERY — repository mutation is forbidden by default'); break;
+  case 'REVIEW': fail('state is REVIEW — independent/read-only review; writer execution blocked'); break;
+  case 'HUMAN_GATE': fail('state is HUMAN_GATE — absolute command stop until explicit Human continuation'); break;
+  case 'CLOSED': fail('state is CLOSED — authority terminated'); break;
+  case 'SPIKE':
+    if (authority.spike_bounded !== true) fail('SPIKE requires an explicit bounded scope: set "spike_bounded": true in NEXT_TASK.md');
+    if (!Array.isArray(authority.allowed_paths) || authority.allowed_paths.length === 0) fail('SPIKE requires a non-empty allowed_paths bounding its disposable mutation');
+    break;
+  case 'IMPLEMENT':
+    break;
+  default: fail(`unknown authority state ${state} — failing closed`);
+}
 
 const branch = run('git', ['branch', '--show-current']);
 if (!branch) fail('detached HEAD is not allowed for task execution');
@@ -50,6 +70,7 @@ if (dirty && process.env.ALLOW_DIRTY !== '1') {
 }
 
 console.log(`PRE-TASK PASS: ${authority.task_id}`);
+console.log(`state: ${state}`);
 console.log(`branch: ${branch}`);
 console.log(`baseline: ${baseline}`);
 console.log(`task: ${authority.task_file}`);
