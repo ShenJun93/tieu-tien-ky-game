@@ -13,9 +13,49 @@ Before changing files:
 
 Read `docs/master/MASTER_PLAN.md` only when the task needs a canon/architecture decision. Read `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md` only when the task needs a craft/quality-standard decision (maturity level, Definition of Done, certainty×reuse call, Approved Production Kit).
 
+## Authority state
+
+Repository write authority is a single `state` field in
+`docs/governance/NEXT_TASK.md`. An unknown or missing state fails closed
+(BLOCK) everywhere it is checked — never reintroduce an independent
+status/mode/readiness/decision-gate boolean alongside it.
+
+```text
+PAUSED      — no mutation authority; recovery/read-only work only.
+DISCOVERY   — research/read/compare; repository mutation forbidden by default.
+SPIKE       — explicitly bounded, disposable mutation; cannot promote
+              production maturity or claim production completion.
+IMPLEMENT   — mutation allowed only inside the explicit scope.
+REVIEW      — independent/read-only review; writer execution blocked.
+HUMAN_GATE  — absolute command stop until explicit Human continuation.
+CLOSED      — authority terminated.
+```
+
+Full lifecycle (`DISCOVERY → SPIKE → decision → IMPLEMENT → verification →
+learning build → acceptance artifact → HUMAN GATE → maturity promotion`):
+`docs/governance/WORKFLOW.md`.
+
+## Live operator precedence
+
+```text
+latest explicit Human/Game Director instruction
+> persisted docs/governance/NEXT_TASK.md authority
+> the task file NEXT_TASK.md points to
+> stable product/craft canon (docs/master/)
+> historical documents
+```
+
+If a live Human instruction contradicts the persisted `NEXT_TASK.md` state:
+the live instruction wins for that turn, delegated mutation stops, and no
+successor authority is inferred. `NEXT_TASK.md` must be explicitly
+reconciled to the new instruction before any writer is delegated again.
+Repository hooks read only `NEXT_TASK.md`; they cannot detect a live
+Human/session instruction themselves, and nothing in this repository should
+be read as claiming otherwise.
+
 ## Core rules
 
-1. Work only on the single `ACTIVE` write task unless independent parallelism is explicitly authorized.
+1. Work only on the single `IMPLEMENT`- or `SPIKE`-state write task unless independent parallelism is explicitly authorized.
 2. Never implement directly on `main`.
 3. Optimize prototype work for the **product question**, not for infrastructure completeness.
 4. A P0A product task should create a player-perceptible step forward. Do not split one product slice into many tiny remediation tasks unless a blocker genuinely requires it.
@@ -93,8 +133,11 @@ Do not claim a governance hook repair passes without a fresh successful run.
 
 Use the smallest matching skill:
 
-- `.agents/skills/execute-task/SKILL.md` — authorized implementation/product slice.
-- `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it.
+- `.agents/skills/execute-task/SKILL.md` — `IMPLEMENT` state only. A `SPIKE`
+  use of this skill stays explicitly bounded/disposable and may not promote
+  production maturity or claim production completion. `DISCOVERY` state must
+  not invoke this skill's implementation path at all.
+- `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it, including `REVIEW`-state governance/decision candidates.
 - `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority.
 
 ## Craft skills

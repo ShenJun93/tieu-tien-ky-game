@@ -1,6 +1,9 @@
 # review-task
 
-Use this skill for an **independent** review when risk warrants it.
+Use this skill for an **independent** review when risk warrants it,
+including a `docs/governance/NEXT_TASK.md` `state: REVIEW` candidate (a
+completed `IMPLEMENT`/`SPIKE` awaiting review) and a significant decision
+recorded under `docs/decisions/` (`docs/decisions/README.md`).
 
 Default mode is read-only.
 
