@@ -59,6 +59,10 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.IsNotNull(pursuer, "The live Wave 1 enemy must be the authored Pursuer prefab, not an inline-built stand-in.");
             Assert.IsNotNull(pursuer.GetComponent<EnemyCombatController>());
 
+            var pursuerPresentation = pursuer.GetComponentInChildren<CharacterPresentation>();
+            Assert.IsNotNull(pursuerPresentation, "Pursuer must carry an animated CharacterPresentation (Task A3), not the primitive placeholder view.");
+            Assert.IsTrue(pursuerPresentation.IsConfigured);
+
             Assert.IsNotNull(Object.FindFirstObjectByType<ProductionHud>());
             Assert.IsNotNull(Object.FindFirstObjectByType<BlessingChoiceHud>());
             Assert.IsNotNull(Object.FindFirstObjectByType<OnboardingHud>());
@@ -91,6 +95,54 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.AreEqual(surfaceBounds.min.z, south.max.z, FloatTolerance, "South wall's inner face must sit flush with the visible GameplaySurface's -Z edge.");
             Assert.AreEqual(surfaceBounds.max.x, east.min.x, FloatTolerance, "East wall's inner face must sit flush with the visible GameplaySurface's +X edge.");
             Assert.AreEqual(surfaceBounds.min.x, west.max.x, FloatTolerance, "West wall's inner face must sit flush with the visible GameplaySurface's -X edge.");
+        }
+
+        [UnityTest]
+        public IEnumerator ArenaScene_LancerAndMiniBoss_CarryConfiguredCharacterPresentations()
+        {
+            // Task A3 regression: Lancer (Wave 2) and MiniBoss must also
+            // carry the animated CharacterPresentation pipeline, not just
+            // the player and Pursuer.
+            yield return SceneManager.LoadSceneAsync("Arena_VerticalSlice_01");
+            yield return null;
+            yield return null;
+
+            var director = Object.FindFirstObjectByType<ArenaRunDirector>();
+            Assert.IsNotNull(director);
+
+            float timeout = Time.realtimeSinceStartup + 20f;
+            while (director.Stage != ArenaRunStage.Wave2 && Time.realtimeSinceStartup < timeout)
+            {
+                DefeatAllActiveEnemies();
+                AutoPickBlessingIfOffered();
+                yield return null;
+            }
+
+            Assert.AreEqual(ArenaRunStage.Wave2, director.Stage, "Must reach Wave 2, where the Lancer spawns.");
+            yield return null;
+
+            GameObject lancer = GameObject.Find("Lancer");
+            Assert.IsNotNull(lancer, "Wave 2 must spawn the authored Lancer prefab.");
+            var lancerPresentation = lancer.GetComponentInChildren<CharacterPresentation>();
+            Assert.IsNotNull(lancerPresentation, "Lancer must carry an animated CharacterPresentation (Task A3).");
+            Assert.IsTrue(lancerPresentation.IsConfigured);
+
+            timeout = Time.realtimeSinceStartup + 20f;
+            while (director.Stage != ArenaRunStage.Boss && director.Stage != ArenaRunStage.Victory && Time.realtimeSinceStartup < timeout)
+            {
+                DefeatAllActiveEnemies();
+                AutoPickBlessingIfOffered();
+                yield return null;
+            }
+
+            Assert.AreEqual(ArenaRunStage.Boss, director.Stage, "Must reach the Boss stage.");
+            yield return null;
+
+            GameObject boss = GameObject.Find("MiniBoss");
+            Assert.IsNotNull(boss, "The Boss stage must spawn the authored MiniBoss prefab.");
+            var bossPresentation = boss.GetComponentInChildren<CharacterPresentation>();
+            Assert.IsNotNull(bossPresentation, "MiniBoss must carry an animated CharacterPresentation (Task A3).");
+            Assert.IsTrue(bossPresentation.IsConfigured);
         }
 
         [UnityTest]

@@ -46,6 +46,7 @@ namespace TieuTienKy.Gameplay
         KnockbackReceiver knockbackReceiver;
         Combatant selfCombatant;
         PrimitiveTelegraphVFX telegraphVfx;
+        CharacterPresentation presentation;
 
         Transform player;
         Combatant playerCombatant;
@@ -73,7 +74,14 @@ namespace TieuTienKy.Gameplay
             knockbackReceiver = GetComponent<KnockbackReceiver>();
             selfCombatant = GetComponent<Combatant>();
             telegraphVfx = GetComponent<PrimitiveTelegraphVFX>();
+            presentation = GetComponentInChildren<CharacterPresentation>();
+
+            selfCombatant.Damaged += OnDamaged;
+            selfCombatant.Defeated += OnDefeated;
         }
+
+        void OnDamaged(int current, int max) => presentation?.PlayHit();
+        void OnDefeated() => presentation?.PlayDeath();
 
         void Update()
         {
@@ -125,21 +133,34 @@ namespace TieuTienKy.Gameplay
 
             if (distance <= attackRange)
             {
+                presentation?.SetMovement(0f);
                 lockedForward = distance > 0.0001f ? toPlayer.normalized : transform.forward;
                 transform.rotation = Quaternion.LookRotation(lockedForward, Vector3.up);
                 timingCycle.TryBeginTelegraph(Time.time);
                 telegraphVfx?.Show(patternCycle.CurrentPattern == BossPattern.Charge ? EnemyArchetype.Lancer : EnemyArchetype.Pursuer, transform, lockedForward);
+
+                if (patternCycle.CurrentPattern == BossPattern.Charge)
+                {
+                    presentation?.PlayCast();
+                }
+                else
+                {
+                    presentation?.PlayBasicAttack();
+                }
+
                 return;
             }
 
             if (distance <= chaseStoppingDistance)
             {
+                presentation?.SetMovement(0f);
                 return;
             }
 
             Vector3 direction = toPlayer.normalized;
             controller.Move(direction * chaseSpeed * Time.deltaTime);
             transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+            presentation?.SetMovement(1f);
         }
 
         void ResolveAttack()
@@ -226,6 +247,7 @@ namespace TieuTienKy.Gameplay
             PatternTiming timing = CurrentTiming();
             timingCycle = new EnemyAttackCycle(timing.TelegraphSeconds, timing.RecoverySeconds);
             telegraphVfx?.Hide();
+            presentation?.SetMovement(0f);
         }
     }
 }

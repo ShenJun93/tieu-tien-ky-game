@@ -103,6 +103,276 @@ namespace TieuTienKy.Gameplay.EditorTools
             Object.DestroyImmediate(boss);
         }
 
+        // ------------------------------------------------------------------
+        // Stage A+B, Task A3: animated CharacterPresentation rigs for
+        // Pursuer/Lancer/MiniBoss, replacing PrimitiveCharacterView on those
+        // three prefabs. Reuses CultivatorProxy's rig-hierarchy/clip
+        // convention (Rig/BodyAnchor/BodyBob/...) so the same curve-authoring
+        // approach applies; only silhouette (body/head scale, weapon
+        // presence), tint and per-archetype attack timing vary. Distinct from
+        // BuildEnemyPrefab/BuildBossPrefab above (which still own gameplay
+        // component wiring) - this only (re)builds the presentation child and
+        // re-saves the same prefab asset.
+        // ------------------------------------------------------------------
+
+        [MenuItem("Tools/Stage AB/Build Enemy Presentation Rigs (A3)")]
+        public static void BuildEnemyPresentationRigs()
+        {
+            EnsureFolder(AnimDir);
+
+            BuildEnemyRigOnPrefab(
+                EnemiesDir + "/Pursuer.prefab", "PursuerRig",
+                bodyColor: PursuerColor, accentColor: PursuerColor,
+                headScale: new Vector3(0.34f, 0.5f, 0.34f), bodyScale: new Vector3(0.36f, 0.34f, 0.3f),
+                hasWeapon: false, weaponLength: 0f, visualScale: 1f,
+                attackLean: -55f, attackStrike: 75f, attackDuration: 0.3f);
+
+            BuildEnemyRigOnPrefab(
+                EnemiesDir + "/Lancer.prefab", "LancerRig",
+                bodyColor: LancerColor, accentColor: new Color(0.85f, 0.8f, 0.9f),
+                headScale: new Vector3(0.42f, 0.4f, 0.4f), bodyScale: new Vector3(0.48f, 0.34f, 0.36f),
+                hasWeapon: true, weaponLength: 1.1f, visualScale: 1f,
+                attackLean: -25f, attackStrike: 40f, attackDuration: 0.5f);
+
+            BuildEnemyRigOnPrefab(
+                EnemiesDir + "/MiniBoss.prefab", "MiniBossRig",
+                bodyColor: BossColor, accentColor: BossAccentColor,
+                headScale: new Vector3(0.5f, 0.46f, 0.46f), bodyScale: new Vector3(0.56f, 0.4f, 0.4f),
+                hasWeapon: true, weaponLength: 1.4f, visualScale: BossVisualScale,
+                attackLean: -30f, attackStrike: 55f, attackDuration: 0.5f,
+                buildCastClip: true);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("[VerticalSliceContentBuilder] Enemy presentation rigs built for Pursuer/Lancer/MiniBoss.");
+        }
+
+        static void BuildEnemyRigOnPrefab(
+            string prefabPath, string rigName,
+            Color bodyColor, Color accentColor,
+            Vector3 headScale, Vector3 bodyScale,
+            bool hasWeapon, float weaponLength, float visualScale,
+            float attackLean, float attackStrike, float attackDuration,
+            bool buildCastClip = false)
+        {
+            GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefabAsset == null)
+            {
+                Debug.LogWarning($"[VerticalSliceContentBuilder] Prefab not found at '{prefabPath}'; run Build Enemy Prefabs first.");
+                return;
+            }
+
+            GameObject instance = PrefabUtility.LoadPrefabContents(prefabPath);
+
+            Transform oldView = instance.transform.Find("CharacterView");
+            if (oldView != null)
+            {
+                Object.DestroyImmediate(oldView.gameObject);
+            }
+
+            Transform oldRig = instance.transform.Find(rigName);
+            if (oldRig != null)
+            {
+                Object.DestroyImmediate(oldRig.gameObject);
+            }
+
+            var root = new GameObject(rigName);
+            root.transform.SetParent(instance.transform, false);
+            var presentation = root.AddComponent<CharacterPresentation>();
+            var animator = root.AddComponent<Animator>();
+
+            Transform rig = CreateChild(root.transform, "Rig", Vector3.zero);
+            Transform bodyAnchor = CreateChild(rig, "BodyAnchor", new Vector3(0f, 0.15f, 0f) * visualScale);
+            Transform bodyBob = CreateChild(bodyAnchor, "BodyBob", Vector3.zero);
+            Renderer bodyR = BuildMesh(bodyBob, "BodyMesh", PrimitiveType.Capsule, Vector3.zero, bodyScale * visualScale, bodyColor);
+
+            Transform headAnchor = CreateChild(bodyBob, "HeadAnchor", new Vector3(0f, 0.67f, 0f) * visualScale);
+            Renderer headR = BuildMesh(headAnchor, "HeadMesh", PrimitiveType.Cube, Vector3.zero, headScale * visualScale, bodyColor);
+            Transform castVfxSocket = CreateChild(headAnchor, "CastVfxSocket", new Vector3(0f, 0.55f, 0f) * visualScale);
+
+            Transform rightArmAnchor = CreateChild(bodyBob, "RightArmAnchor", new Vector3(0.4f, 0.25f, 0f) * visualScale);
+            Transform rightArmPivot = CreateChild(rightArmAnchor, "RightArmPivot", Vector3.zero);
+            Renderer rightArmR = BuildMesh(rightArmPivot, "RightArmMesh", PrimitiveType.Capsule, new Vector3(0f, -0.15f, 0f) * visualScale, new Vector3(0.16f, 0.3f, 0.16f) * visualScale, bodyColor);
+            Transform weaponSocket = CreateChild(rightArmPivot, "WeaponSocket", new Vector3(0f, -0.3f, 0.1f) * visualScale);
+
+            Renderer weaponR = null;
+            if (hasWeapon)
+            {
+                weaponR = BuildMesh(weaponSocket, "Weapon", PrimitiveType.Cube, new Vector3(0f, weaponLength * 0.5f, 0f), new Vector3(0.06f, weaponLength, 0.08f), accentColor);
+            }
+
+            Transform leftArmAnchor = CreateChild(bodyBob, "LeftArmAnchor", new Vector3(-0.4f, 0.25f, 0f) * visualScale);
+            Transform leftArmPivot = CreateChild(leftArmAnchor, "LeftArmPivot", Vector3.zero);
+            Renderer leftArmR = BuildMesh(leftArmPivot, "LeftArmMesh", PrimitiveType.Capsule, new Vector3(0f, -0.15f, 0f) * visualScale, new Vector3(0.16f, 0.3f, 0.16f) * visualScale, bodyColor);
+
+            Transform rightLegAnchor = CreateChild(bodyBob, "RightLegAnchor", new Vector3(0.18f, -0.55f, 0f) * visualScale);
+            Transform rightLegPivot = CreateChild(rightLegAnchor, "RightLegPivot", Vector3.zero);
+            Renderer rightLegR = BuildMesh(rightLegPivot, "RightLegMesh", PrimitiveType.Capsule, new Vector3(0f, -0.18f, 0f) * visualScale, new Vector3(0.18f, 0.35f, 0.18f) * visualScale, bodyColor);
+
+            Transform leftLegAnchor = CreateChild(bodyBob, "LeftLegAnchor", new Vector3(-0.18f, -0.55f, 0f) * visualScale);
+            Transform leftLegPivot = CreateChild(leftLegAnchor, "LeftLegPivot", Vector3.zero);
+            Renderer leftLegR = BuildMesh(leftLegPivot, "LeftLegMesh", PrimitiveType.Capsule, new Vector3(0f, -0.18f, 0f) * visualScale, new Vector3(0.18f, 0.35f, 0.18f) * visualScale, bodyColor);
+
+            Transform bodyVfxSocket = CreateChild(bodyBob, "BodyVfxSocket", new Vector3(0f, 0.2f, 0.22f) * visualScale);
+            Transform feetVfxSocket = CreateChild(rig, "FeetVfxSocket", new Vector3(0f, -0.95f, 0f) * visualScale);
+
+            var renderers = hasWeapon
+                ? new[] { bodyR, headR, rightArmR, leftArmR, rightLegR, leftLegR, weaponR }
+                : new[] { bodyR, headR, rightArmR, leftArmR, rightLegR, leftLegR };
+
+            string clipDir = AnimDir + "/" + rigName;
+            EnsureFolder(clipDir);
+
+            AnimationClip idle = BuildEnemyIdleClip(clipDir);
+            AnimationClip run = BuildEnemyRunClip(clipDir);
+            AnimationClip attack = BuildEnemyAttackClip(clipDir, attackLean, attackStrike, attackDuration);
+            AnimationClip hit = BuildEnemyHitClip(clipDir);
+            AnimationClip death = BuildEnemyDeathClip(clipDir);
+            AnimationClip cast = buildCastClip ? BuildEnemyCastClip(clipDir) : null;
+
+            animator.runtimeAnimatorController = BuildEnemyController(clipDir, idle, run, attack, hit, death, cast);
+
+            presentation.Configure(animator, weaponSocket, bodyVfxSocket, feetVfxSocket, castVfxSocket, renderers);
+
+            PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
+            PrefabUtility.UnloadPrefabContents(instance);
+        }
+
+        static AnimationClip NewEnemyClip(string clipDir, string name, bool loop)
+        {
+            var clip = new AnimationClip { name = name };
+            var settings = AnimationUtility.GetAnimationClipSettings(clip);
+            settings.loopTime = loop;
+            AnimationUtility.SetAnimationClipSettings(clip, settings);
+
+            string path = clipDir + "/" + name + ".anim";
+            if (AssetDatabase.LoadAssetAtPath<AnimationClip>(path) != null)
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
+
+            AssetDatabase.CreateAsset(clip, path);
+            return clip;
+        }
+
+        static AnimationClip BuildEnemyIdleClip(string clipDir)
+        {
+            AnimationClip clip = NewEnemyClip(clipDir, "Idle", loop: true);
+            clip.SetCurve("Rig/BodyAnchor/BodyBob", typeof(Transform), "localPosition.y",
+                Curve(new Keyframe(0f, 0f), new Keyframe(0.7f, 0.025f), new Keyframe(1.4f, 0f)));
+            return clip;
+        }
+
+        static AnimationClip BuildEnemyRunClip(string clipDir)
+        {
+            AnimationClip clip = NewEnemyClip(clipDir, "Run", loop: true);
+            clip.SetCurve("Rig/BodyAnchor/BodyBob", typeof(Transform), "localPosition.y",
+                Curve(new Keyframe(0f, 0f), new Keyframe(0.18f, 0.05f), new Keyframe(0.36f, 0f)));
+            clip.SetCurve("Rig/BodyAnchor/BodyBob/RightLegAnchor/RightLegPivot", typeof(Transform), "localEulerAngles.x",
+                Curve(new Keyframe(0f, 28f), new Keyframe(0.18f, -28f), new Keyframe(0.36f, 28f)));
+            clip.SetCurve("Rig/BodyAnchor/BodyBob/LeftLegAnchor/LeftLegPivot", typeof(Transform), "localEulerAngles.x",
+                Curve(new Keyframe(0f, -28f), new Keyframe(0.18f, 28f), new Keyframe(0.36f, -28f)));
+            return clip;
+        }
+
+        static AnimationClip BuildEnemyAttackClip(string clipDir, float leanAngle, float strikeAngle, float duration)
+        {
+            AnimationClip clip = NewEnemyClip(clipDir, "AttackTelegraph", loop: false);
+            float anticipation = duration * 0.55f;
+            clip.SetCurve("Rig/BodyAnchor/BodyBob/RightArmAnchor/RightArmPivot", typeof(Transform), "localEulerAngles.x",
+                Curve(new Keyframe(0f, 0f), new Keyframe(anticipation, leanAngle), new Keyframe(duration, strikeAngle), new Keyframe(duration + 0.15f, 0f)));
+            clip.SetCurve("Rig/BodyAnchor/BodyBob", typeof(Transform), "localPosition.z",
+                Curve(new Keyframe(0f, 0f), new Keyframe(anticipation, -0.06f), new Keyframe(duration, 0.1f), new Keyframe(duration + 0.15f, 0f)));
+            return clip;
+        }
+
+        static AnimationClip BuildEnemyCastClip(string clipDir)
+        {
+            AnimationClip clip = NewEnemyClip(clipDir, "Cast", loop: false);
+            clip.SetCurve("Rig/BodyAnchor/BodyBob", typeof(Transform), "localEulerAngles.x",
+                Curve(new Keyframe(0f, 0f), new Keyframe(0.35f, -22f), new Keyframe(0.8f, 0f)));
+            clip.SetCurve("Rig/BodyAnchor/BodyBob/RightArmAnchor/RightArmPivot", typeof(Transform), "localEulerAngles.x",
+                Curve(new Keyframe(0f, 0f), new Keyframe(0.35f, -90f), new Keyframe(0.8f, 0f)));
+            return clip;
+        }
+
+        static AnimationClip BuildEnemyHitClip(string clipDir)
+        {
+            AnimationClip clip = NewEnemyClip(clipDir, "Hit", loop: false);
+            clip.SetCurve("Rig/BodyAnchor/BodyBob", typeof(Transform), "localEulerAngles.x",
+                Curve(new Keyframe(0f, 0f), new Keyframe(0.08f, -16f), new Keyframe(0.25f, 0f)));
+            return clip;
+        }
+
+        static AnimationClip BuildEnemyDeathClip(string clipDir)
+        {
+            AnimationClip clip = NewEnemyClip(clipDir, "Death", loop: false);
+            clip.SetCurve("Rig", typeof(Transform), "localEulerAngles.z",
+                Curve(new Keyframe(0f, 0f), new Keyframe(0.6f, 82f)));
+            return clip;
+        }
+
+        static AnimatorController BuildEnemyController(string clipDir, AnimationClip idle, AnimationClip run, AnimationClip attack, AnimationClip hit, AnimationClip death, AnimationClip cast)
+        {
+            string path = clipDir + "/Animator.controller";
+            if (AssetDatabase.LoadAssetAtPath<AnimatorController>(path) != null)
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
+
+            var controller = AnimatorController.CreateAnimatorControllerAtPath(path);
+            controller.AddParameter("MoveSpeed", AnimatorControllerParameterType.Float);
+            controller.AddParameter("BasicAttack", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("Hit", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("Death", AnimatorControllerParameterType.Trigger);
+
+            AnimatorStateMachine sm = controller.layers[0].stateMachine;
+
+            AnimatorState idleState = sm.AddState("Idle");
+            idleState.motion = idle;
+            sm.defaultState = idleState;
+
+            AnimatorState runState = sm.AddState("Run");
+            runState.motion = run;
+
+            AnimatorState attackState = sm.AddState("AttackTelegraph");
+            attackState.motion = attack;
+
+            AnimatorState hitState = sm.AddState("Hit");
+            hitState.motion = hit;
+
+            AnimatorState deathState = sm.AddState("Death");
+            deathState.motion = death;
+
+            AnimatorStateTransition toRun = idleState.AddTransition(runState);
+            toRun.hasExitTime = false;
+            toRun.duration = 0.1f;
+            toRun.AddCondition(AnimatorConditionMode.Greater, 0.1f, "MoveSpeed");
+
+            AnimatorStateTransition toIdle = runState.AddTransition(idleState);
+            toIdle.hasExitTime = false;
+            toIdle.duration = 0.1f;
+            toIdle.AddCondition(AnimatorConditionMode.Less, 0.1f, "MoveSpeed");
+
+            AddOneShot(sm, attackState, "BasicAttack", idleState);
+            AddOneShot(sm, hitState, "Hit", idleState);
+
+            if (cast != null)
+            {
+                controller.AddParameter("Cast", AnimatorControllerParameterType.Trigger);
+                AnimatorState castState = sm.AddState("Cast");
+                castState.motion = cast;
+                AddOneShot(sm, castState, "Cast", idleState);
+            }
+
+            AnimatorStateTransition toDeath = sm.AddAnyStateTransition(deathState);
+            toDeath.hasExitTime = false;
+            toDeath.duration = 0.05f;
+            toDeath.AddCondition(AnimatorConditionMode.If, 0, "Death");
+
+            return controller;
+        }
+
         [MenuItem("Tools/Vertical Slice/Build Cultivator Proxy")]
         public static void BuildCultivatorProxy()
         {

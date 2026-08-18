@@ -23,6 +23,7 @@ namespace TieuTienKy.Gameplay
         KnockbackReceiver knockbackReceiver;
         Combatant selfCombatant;
         PrimitiveTelegraphVFX telegraphVfx;
+        CharacterPresentation presentation;
 
         Transform player;
         Combatant playerCombatant;
@@ -48,7 +49,14 @@ namespace TieuTienKy.Gameplay
             knockbackReceiver = GetComponent<KnockbackReceiver>();
             selfCombatant = GetComponent<Combatant>();
             telegraphVfx = GetComponent<PrimitiveTelegraphVFX>();
+            presentation = GetComponentInChildren<CharacterPresentation>();
+
+            selfCombatant.Damaged += OnDamaged;
+            selfCombatant.Defeated += OnDefeated;
         }
+
+        void OnDamaged(int current, int max) => presentation?.PlayHit();
+        void OnDefeated() => presentation?.PlayDeath();
 
         void Update()
         {
@@ -86,21 +94,25 @@ namespace TieuTienKy.Gameplay
 
             if (distance <= profile.AttackRange)
             {
+                presentation?.SetMovement(0f);
                 lockedForward = distance > 0.0001f ? toPlayer.normalized : transform.forward;
                 transform.rotation = Quaternion.LookRotation(lockedForward, Vector3.up);
                 cycle.TryBeginTelegraph(Time.time);
                 telegraphVfx?.Show(profile.Archetype, transform, lockedForward);
+                presentation?.PlayBasicAttack();
                 return;
             }
 
             if (distance <= profile.StoppingDistance)
             {
+                presentation?.SetMovement(0f);
                 return;
             }
 
             Vector3 direction = toPlayer.normalized;
             controller.Move(direction * profile.ChaseSpeed * Time.deltaTime);
             transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+            presentation?.SetMovement(1f);
         }
 
         void ResolveAttack()
@@ -148,6 +160,7 @@ namespace TieuTienKy.Gameplay
         {
             cycle?.Reset();
             telegraphVfx?.Hide();
+            presentation?.SetMovement(0f);
         }
     }
 }
