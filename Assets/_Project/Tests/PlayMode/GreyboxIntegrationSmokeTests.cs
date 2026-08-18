@@ -58,6 +58,7 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.IsNotNull(player.GetComponent<PlayerController>());
             Assert.IsNotNull(player.GetComponent<BasicAttack>());
             Assert.IsNotNull(player.GetComponent<SwordAttackView>());
+            Assert.IsNotNull(player.GetComponent<PlayerBlessingPresentation>(), "Player must carry the blessing presentation controller.");
             Assert.IsNotNull(player.transform.Find("CharacterView/WeaponSocket/Sword"), "Player must be a full-body armed sword cultivator.");
             Assert.AreEqual(5, player.GetComponent<Combatant>().MaxHealth, "Player base max health must match bootstrap configuration.");
 
@@ -75,6 +76,7 @@ namespace TieuTienKy.Gameplay.Tests
 
             Assert.IsNotNull(GameObject.Find("P0A_RunHud"), "Temporary run HUD must be attached.");
             Assert.IsNotNull(GameObject.Find("P0A_BlessingChoiceHud"), "Temporary blessing choice HUD must be attached.");
+            Assert.IsNotNull(GameObject.Find("P0A_OnboardingHud"), "Temporary onboarding HUD must be attached.");
             Assert.IsNotNull(GameObject.Find("P0A_ArenaEventDirector"), "Arena event director must be attached.");
             Assert.IsNotNull(GameObject.Find("WaterZone"), "Water Zone must exist for Water Shift to relocate.");
             Assert.IsNotNull(GameObject.Find("HazardObstacle"), "Hazard obstacle must exist for knockback play.");
