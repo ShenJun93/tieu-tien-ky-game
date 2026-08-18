@@ -69,6 +69,17 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.IsNotNull(Object.FindFirstObjectByType<ArenaEventDirector>());
             Assert.IsNotNull(GameObject.Find("Boundaries"));
             Assert.IsNotNull(GameObject.Find("GameplaySurface"));
+
+            // Task A5 regression: production HUD must be a real Canvas/uGUI
+            // hierarchy, not the old OnGUI draw calls, and must carry at
+            // least one interactable skill button wired to real gameplay.
+            GameObject hudCanvas = GameObject.Find("ProductionHudCanvas");
+            Assert.IsNotNull(hudCanvas, "ProductionHud must build a real Canvas, not rely on OnGUI.");
+            Assert.IsNotNull(hudCanvas.GetComponent<Canvas>());
+            Transform skillButton = hudCanvas.transform.Find("SkillButton_0");
+            Assert.IsNotNull(skillButton, "Skill buttons must exist as real Canvas UI elements.");
+            Assert.IsNotNull(skillButton.GetComponent<UnityEngine.UI.Button>());
+            Assert.IsNotNull(Object.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>(), "A Canvas UI needs a live EventSystem to receive touch/click input.");
         }
 
         [UnityTest]
