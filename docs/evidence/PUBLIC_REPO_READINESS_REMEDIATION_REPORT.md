@@ -5,7 +5,8 @@ Status: **BLOCKED / HUMAN LOCAL VERIFICATION REQUIRED**
 Branch: `chore/harness-vnext-canon-workflow-reconciliation`  
 Canonical main baseline: `b2e160cb83c0dc74031081ca010eb2a7489c104d`  
 Authority anchor: `e4a4fcb0f4dfec670debae9c0602e9bc1762752b`  
-Activation commit: `d7272d2ac483a775d574dcd083791e4c75abf786`
+Activation commit: `d7272d2ac483a775d574dcd083791e4c75abf786`  
+Writer verification head: `c0c6e642556e25ee65d2c8a61f4175ae5e4cb502`
 
 ## Machine-readable verdict
 
@@ -17,7 +18,7 @@ Activation commit: `d7272d2ac483a775d574dcd083791e4c75abf786`
   "public_metadata_cleanup": "PASS",
   "asset_provenance": "PASS",
   "governance_hook_tests": "PENDING",
-  "scope_diff": "PENDING"
+  "scope_diff": "PASS"
 }
 ```
 
@@ -98,15 +99,26 @@ Expected result: all Harness vNext governance tests PASS.
 
 ## Scope verification
 
-Status: **PENDING final branch comparison**.
-
-Authorized writer paths after activation:
+Writer scope was verified by exact remote comparison:
 
 ```text
-README.md
+base = d7272d2ac483a775d574dcd083791e4c75abf786
+head = c0c6e642556e25ee65d2c8a61f4175ae5e4cb502
+ahead_by = 3
+behind_by = 0
+```
+
+Exact writer paths:
+
+```text
 ASSET_SOURCES.csv
+README.md
 docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md
 ```
+
+No other writer path changed. In particular, no `Assets/`, `Packages/`, `ProjectSettings/`, `Builds/`, gameplay, Unity behavior, R1, networking or Stage C path changed.
+
+Result: **PASS**.
 
 Control-plane activation paths are not writer scope:
 
@@ -115,10 +127,8 @@ docs/governance/NEXT_TASK.md
 docs/tasks/TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001.md
 ```
 
-No `Assets/`, `Packages/`, `ProjectSettings/`, `Builds/`, gameplay, Unity behavior, R1, networking or Stage C mutation is authorized.
-
 ## Stop
 
 Repository-side metadata/provenance remediation is complete. Do not make the repository public yet.
 
-The remaining gate is clean local evidence for full-history Gitleaks + governance regression, followed by exact scope verification and a fresh Human visibility decision.
+The remaining gate is clean local evidence for full-history Gitleaks + governance regression, followed by a fresh Human visibility decision.
