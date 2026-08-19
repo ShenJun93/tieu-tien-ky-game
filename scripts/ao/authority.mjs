@@ -30,60 +30,84 @@ function gate(status, message) {
   throw new GateError(status, message);
 }
 
+function config(message) {
+  gate('INVALID_INVOCATION', message);
+}
+
 export function readAuthority(root) {
   const file = path.join(root, 'docs/governance/NEXT_TASK.md');
-  if (!fs.existsSync(file)) gate('BLOCKED_AUTHORITY', 'NEXT_TASK.md is missing');
+  if (!fs.existsSync(file)) config('NEXT_TASK.md is missing');
   const text = fs.readFileSync(file, 'utf8');
   const match = text.match(/```json\s*([\s\S]*?)```/i);
-  if (!match) gate('BLOCKED_AUTHORITY', 'NEXT_TASK.md has no JSON authority block');
+  if (!match) config('NEXT_TASK.md has no JSON authority block');
   try {
     return JSON.parse(match[1]);
   } catch (error) {
-    gate('BLOCKED_AUTHORITY', `NEXT_TASK.md JSON is malformed: ${error.message}`);
+    config(`NEXT_TASK.md JSON is malformed: ${error.message}`);
   }
 }
 
 function requireString(value, name) {
-  if (typeof value !== 'string' || !value.trim()) gate('BLOCKED_AUTHORITY', `${name} must be a non-empty string`);
+  if (typeof value !== 'string' || !value.trim()) config(`${name} must be a non-empty string`);
 }
 
 function requireStringArray(value, name) {
   if (!Array.isArray(value) || value.some(v => typeof v !== 'string')) {
-    gate('BLOCKED_AUTHORITY', `${name} must be a string array`);
+    config(`${name} must be a string array`);
+  }
+}
+
+function requireExactShaWhenDeclared(value, name) {
+  if (value != null && !/^[0-9a-f]{40}$/i.test(value)) {
+    config(`${name} must be an exact 40-character commit SHA`);
   }
 }
 
 export function validateAuthorityShape(authority) {
   if (!authority || typeof authority !== 'object' || Array.isArray(authority)) {
-    gate('BLOCKED_AUTHORITY', 'authority must be an object');
+    config('authority must be an object');
   }
-  if (!KNOWN_STATES.has(authority.state)) gate('BLOCKED_AUTHORITY', `unknown authority state: ${authority.state}`);
+  if (!KNOWN_STATES.has(authority.state)) config(`unknown authority state: ${authority.state}`);
 
   requireStringArray(authority.allowed_paths ?? [], 'allowed_paths');
   requireStringArray(authority.forbidden_paths ?? [], 'forbidden_paths');
   requireString(authority.stop_condition, 'stop_condition');
 
+  if (authority.task_mode != null) {
+    requireString(authority.task_mode, 'task_mode');
+    if (!TASK_MODES.has(authority.task_mode)) config(`unknown task_mode: ${authority.task_mode}`);
+  }
+
+  for (const key of ['repository', 'task_id', 'branch', 'task_file', 'evidence_file']) {
+    if (authority[key] != null) requireString(authority[key], key);
+  }
+
+  if (authority.workspace_policy != null) {
+    requireString(authority.workspace_policy, 'workspace_policy');
+    if (!WORKSPACE_POLICIES.has(authority.workspace_policy)) {
+      config(`unknown workspace_policy: ${authority.workspace_policy}`);
+    }
+  }
+
+  if (authority.required_evidence != null &&
+      (typeof authority.required_evidence !== 'object' || Array.isArray(authority.required_evidence))) {
+    config('required_evidence must be an object');
+  }
+
+  requireExactShaWhenDeclared(authority.baseline_ref, 'baseline_ref');
+  requireExactShaWhenDeclared(authority.authority_anchor_ref, 'authority_anchor_ref');
+
   if (!MUTATING_STATES.has(authority.state)) return authority;
 
-  requireString(authority.task_mode, 'task_mode');
-  if (!TASK_MODES.has(authority.task_mode)) gate('BLOCKED_AUTHORITY', `unknown task_mode: ${authority.task_mode}`);
-  requireString(authority.repository, 'repository');
-  requireString(authority.task_id, 'task_id');
-  requireString(authority.branch, 'branch');
-  requireString(authority.task_file, 'task_file');
-  requireString(authority.evidence_file, 'evidence_file');
-  requireString(authority.workspace_policy, 'workspace_policy');
-  if (!WORKSPACE_POLICIES.has(authority.workspace_policy)) {
-    gate('BLOCKED_AUTHORITY', `unknown workspace_policy: ${authority.workspace_policy}`);
+  for (const key of [
+    'task_mode', 'repository', 'task_id', 'branch', 'task_file', 'evidence_file',
+    'workspace_policy', 'baseline_ref', 'authority_anchor_ref'
+  ]) {
+    requireString(authority[key], key);
   }
-  if (!authority.required_evidence || typeof authority.required_evidence !== 'object' || Array.isArray(authority.required_evidence) || Object.keys(authority.required_evidence).length === 0) {
-    gate('BLOCKED_AUTHORITY', 'required_evidence must be a non-empty object');
-  }
-  if (!/^[0-9a-f]{40}$/i.test(authority.baseline_ref ?? '')) {
-    gate('BLOCKED_AUTHORITY', 'baseline_ref must be an exact 40-character commit SHA');
-  }
-  if (!/^[0-9a-f]{40}$/i.test(authority.authority_anchor_ref ?? '')) {
-    gate('BLOCKED_AUTHORITY', 'authority_anchor_ref must be an exact 40-character commit SHA');
+
+  if (!authority.required_evidence || Object.keys(authority.required_evidence).length === 0) {
+    config('required_evidence must be a non-empty object');
   }
   return authority;
 }
@@ -138,35 +162,58 @@ export function validateActivation(root, authority) {
 export function inspectAuthority(cwd = process.cwd()) {
   let root;
   let authority = null;
+  let head = null;
+  let currentBranch = null;
+  let treeState = null;
+  let liveMain = null;
+  let transition = null;
+  let repositoryStatus = 'NOT_APPLICABLE';
+  let liveMainStatus = 'NOT_APPLICABLE';
+
   try {
     root = findRepoRoot(cwd);
     authority = readAuthority(root);
     validateAuthorityShape(authority);
 
-    const head = getHeadSha(root);
-    const currentBranch = getCurrentBranch(root);
-    const treeState = getStatusPorcelain(root) === '' ? 'clean' : 'dirty';
-    let liveMain = null;
-    let transition = null;
+    head = getHeadSha(root);
+    currentBranch = getCurrentBranch(root);
+    treeState = getStatusPorcelain(root) === '' ? 'clean' : 'dirty';
 
-    if (MUTATING_STATES.has(authority.state)) {
+    if (authority.repository != null) {
       const actualRepo = normalizeRepositoryUrl(getOriginUrl(root));
       const expectedRepo = normalizeRepositoryUrl(authority.repository);
       if (actualRepo.toLowerCase() !== expectedRepo.toLowerCase()) {
+        repositoryStatus = 'BLOCKED';
         gate('BLOCKED_REPOSITORY', `origin ${actualRepo} does not match authorized ${expectedRepo}`);
       }
+      repositoryStatus = 'PASS';
+    }
+
+    if (MUTATING_STATES.has(authority.state)) {
       if (currentBranch !== authority.branch) {
         gate('BLOCKED_BRANCH', `current branch ${currentBranch} does not match authorized ${authority.branch}`);
       }
       transition = validateActivation(root, authority);
+    }
+
+    if (authority.baseline_ref != null) {
+      try {
+        resolveExactCommit(root, authority.baseline_ref);
+      } catch (error) {
+        gate('BLOCKED_AUTHORITY', error.message);
+      }
       liveMain = resolveLiveMain(root);
       if (liveMain !== authority.baseline_ref.toLowerCase()) {
+        liveMainStatus = 'BLOCKED';
         gate('BLOCKED_LIVE_MAIN_DRIFT', `live origin/main drifted: ${liveMain} != ${authority.baseline_ref}`);
       }
+      liveMainStatus = 'PASS';
     }
 
     return {
       gate_status: 'PASS',
+      repository_status: repositoryStatus,
+      live_main_status: liveMainStatus,
       authority_state: authority.state,
       mutation_authority: authority.state === 'IMPLEMENT' ? 'IMPLEMENT' : authority.state === 'SPIKE' ? 'SPIKE' : 'NONE',
       repository: authority.repository ?? null,
@@ -189,18 +236,10 @@ export function inspectAuthority(cwd = process.cwd()) {
       error: null
     };
   } catch (error) {
-    let head = null;
-    let branch = null;
-    let treeState = null;
-    try {
-      if (root) {
-        head = getHeadSha(root);
-        branch = getCurrentBranch(root);
-        treeState = getStatusPorcelain(root) === '' ? 'clean' : 'dirty';
-      }
-    } catch {}
     return {
       gate_status: error.gateStatus ?? 'BLOCKED_AUTHORITY',
+      repository_status: repositoryStatus,
+      live_main_status: liveMainStatus,
       authority_state: authority?.state ?? null,
       mutation_authority: 'NONE',
       repository: authority?.repository ?? null,
@@ -209,10 +248,10 @@ export function inspectAuthority(cwd = process.cwd()) {
       authority_anchor_ref: authority?.authority_anchor_ref ?? null,
       authority_transition_ref: null,
       branch: authority?.branch ?? null,
-      current_branch: branch,
+      current_branch: currentBranch,
       head_sha: head,
       tree_state: treeState,
-      live_main_sha: null,
+      live_main_sha: liveMain,
       workspace_policy: authority?.workspace_policy ?? null,
       next_mechanical: null,
       allowed_paths: authority?.allowed_paths ?? [],
