@@ -1,11 +1,14 @@
 # TASK — TTK HARNESS vNEXT P1 REMEDIATION 002
 
+**Status:** `AUTHORIZED / IMPLEMENT`  
 **Task ID:** `TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-002`  
 **Mode:** SPEC / Harness-only correctness remediation  
 **Repository:** `ShenJun93/tieu-tien-ky-game`  
 **Branch:** `chore/harness-vnext-canon-workflow-reconciliation`  
 **Canonical main baseline:** `b2e160cb83c0dc74031081ca010eb2a7489c104d`  
-**Independent review head:** `11d91de5f5f360c00835d9617067bc484c4ca815`
+**Independent review head:** `11d91de5f5f360c00835d9617067bc484c4ca815`  
+**Authority anchor:** `7d1fb0eb40fb6171ccdefaee0c01e89f91a17459`  
+**Workspace policy:** `REMOTE_GITHUB_BRANCH`
 
 ## Trigger
 
@@ -29,36 +32,38 @@ Close exactly three P1 correctness gaps without expanding Harness scope:
 
 No gameplay, Unity runtime, package, scene, Product Proof, PvP/networking or Stage C work is authorized.
 
-## Platform prerequisite before IMPLEMENT
+## Platform prerequisite — VERIFIED
 
-Do not open writer authority until the existing task branch is protected server-side against history rewrite.
+Before IMPLEMENT activation, the task branch was protected server-side against history rewrite.
 
-Required live condition for:
-
-`chore/harness-vnext-canon-workflow-reconciliation`
+Operator verification:
 
 ```text
-force push = blocked
-branch deletion = blocked
-administrator protection enforcement = enabled / no admin bypass for these controls
+enforce_admins = true
+force_pushes = false
+deletions = false
+required_status_checks = null
+required_pull_request_reviews = null
 ```
 
-This prerequisite addresses the part of P1-1 that repository-local history inspection cannot prove after a force-push has replaced published history.
+This protection is part of the active P1-1 guarantee. Repository-local hooks do not claim to detect history that an authorized administrator has already replaced; the server-side no-force-push boundary prevents that replacement while the task is active.
 
-## Planned IMPLEMENT authority anchor
+## IMPLEMENT activation contract
 
-After the platform prerequisite is verified, Final Foreman will create a fresh IMPLEMENT transition using the then-current Human-gate commit as `authority_anchor_ref`.
+The IMPLEMENT activation must be one direct child of:
 
-That IMPLEMENT transition must itself change exactly:
+`7d1fb0eb40fb6171ccdefaee0c01e89f91a17459`
+
+and its changed-file set must equal exactly:
 
 ```text
 docs/governance/NEXT_TASK.md
 docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-002.md
 ```
 
-and no third file.
+No third path is permitted in the activation commit.
 
-## Bounded writer paths after IMPLEMENT activation
+## Bounded writer paths after activation
 
 ```text
 scripts/hooks/pre-task.mjs
@@ -69,7 +74,7 @@ docs/governance/WORKFLOW.md
 docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md
 ```
 
-All other paths are outside writer scope unless a later explicit Human authority transition changes this task.
+All other paths are outside writer scope.
 
 ## P1-1 — Authority-transition hardening
 
@@ -85,11 +90,11 @@ Do not build a generalized signing/PKI framework.
 
 ## P1-2 — Aggregate evidence contract
 
-The active implementation contract must use one final machine-readable evidence report containing every key listed in `required_evidence`.
+The active implementation contract uses one final machine-readable evidence report containing every key listed in `required_evidence`.
 
 Required remediation:
 
-1. `evidence_file` points to `docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md`;
+1. `evidence_file` is `docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md`;
 2. that report's JSON contains all task-required evidence keys;
 3. missing/wrong keys remain fail-closed under `pre-finish`;
 4. add/retain regression coverage proving singular evidence-file completeness.
@@ -118,11 +123,11 @@ scope_diff                          = PASS
 remote_ci                           = PASS
 ```
 
-`activation_history_rewrite_guard = PASS` requires live verification that the task branch rejects force-push/history replacement while the implementation is active.
+`activation_history_rewrite_guard = PASS` requires live task-branch protection against force-push/history replacement while implementation is active.
 
 ## Non-blocking findings deliberately deferred
 
-Do not pull these into this blocker remediation unless they become necessary to make one of the P1 fixes correct:
+Do not pull these into this blocker remediation unless necessary for one of the P1 fixes:
 
 - Repository Gate is a regression gate rather than complete scope authorization;
 - research ledger R-014 stale disposition;
