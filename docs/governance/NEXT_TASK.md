@@ -4,59 +4,33 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001",
-  "branch": "chore/ao-lite-v1-post-merge-risk-reconciliation",
-  "baseline_ref": "ff6ace93a33b2a2a8c097dec2d039053218659c1",
-  "authority_anchor_ref": "ff6ace93a33b2a2a8c097dec2d039053218659c1",
-  "workspace_policy": "REMOTE_GITHUB_BRANCH",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001.md",
-  "evidence_file": "docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md",
-  "allowed_paths": [
-    "docs/governance/CURRENT_STATE.md",
-    "docs/governance/RISK_REGISTER.md",
-    "docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "scripts/",
-    ".github/",
-    ".agents/",
-    "docs/master/",
-    "docs/decisions/",
-    "docs/architecture/",
-    "LICENSE",
-    "NOTICE",
-    "COPYING"
-  ],
-  "required_evidence": {
-    "authority_integrity": "PASS",
-    "live_main_identity": "PASS",
-    "ao_lite_post_merge_identity": "PASS",
-    "network_risk_recorded": "PASS",
-    "ip_risk_recorded": "PASS",
-    "package_or_license_mutation": "ABSENT",
-    "scope_diff": "PASS",
-    "successor_authority": "NONE"
-  },
-  "stop_condition": "POST_MERGE_RISK_RECONCILIATION_READY_FOR_FINAL_FOREMAN_CLOSEOUT"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-The Human/Game Director explicitly approved the immediately preceding bounded action: reconcile canonical state after AO-Lite v1 PR #18 and record the identified networking-scope and commercial-rights risks.
+AO-Lite v1 post-merge risk reconciliation writer execution is closed.
 
-This authorizes only the governance/docs reconciliation described by the active task contract.
+Canonical reconciliation now records:
 
-The writer may modify only `docs/governance/CURRENT_STATE.md`, create/update `docs/governance/RISK_REGISTER.md`, and write the declared reconciliation evidence file.
+- AO-Lite v1 implementation integrated via PR #18;
+- `RISK-NETWORK-001` OPEN / P2 governance-product debt;
+- `RISK-IP-001` OPEN / P1 before external commercial commitment;
+- no package or root-license mutation performed by the reconciliation.
 
-No `Packages/**`, `Assets/**`, `ProjectSettings/**`, product-canon, gameplay, Unity runtime, networking implementation, PvP/co-op, LICENSE/NOTICE/COPYING, AO code, Product Proof PR #13, or successor-task mutation is authorized.
+There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
 
-The active writer lineage remains unpublished while `state = IMPLEMENT`. Final Foreman may publish the completed non-writer lineage only after closeout.
+Product Proof Slice 001 remains the next intended product slice in the roadmap, but it is **not** mutation authority. The two recorded risks also do not authorize their own remediation.
 
-Stop condition: `POST_MERGE_RISK_RECONCILIATION_READY_FOR_FINAL_FOREMAN_CLOSEOUT`.
+Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
+
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
