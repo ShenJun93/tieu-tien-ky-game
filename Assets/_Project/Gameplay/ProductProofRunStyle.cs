@@ -14,10 +14,6 @@ namespace TieuTienKy.Gameplay
         }
     }
 
-    /// <summary>
-    /// Deterministic Product-Proof interpretation of the existing three
-    /// run-local Cơ Duyên axes. No generic proc/modifier graph is introduced.
-    /// </summary>
     public readonly struct ProductProofRunStyle
     {
         public readonly bool StormControlActive;
@@ -53,11 +49,6 @@ namespace TieuTienKy.Gameplay
             return new ProductProofRunStyle(stormActive, stormRadius, stormImpulse, windWardActive, galeCounter);
         }
 
-        /// <summary>
-        /// Runtime bridge for existing scalar setters. Product Proof behavior
-        /// turns on at the first investment; exact stack counts remain owned by
-        /// RunBlessingState and are still used for its legacy scalar tuning.
-        /// </summary>
         public static ProductProofRunStyle FromInvestments(bool thunderInvested, bool windInvested, bool wardInvested)
         {
             return FromStacks(thunderInvested ? 1 : 0, windInvested ? 1 : 0, wardInvested ? 1 : 0);
@@ -107,7 +98,6 @@ namespace TieuTienKy.Gameplay
         }
     }
 
-    /// <summary>Pure layout values so the mobile thumb cluster is testable without a Canvas.</summary>
     public readonly struct ProductProofHudButtonSpec
     {
         public readonly float X;
@@ -134,6 +124,6 @@ namespace TieuTienKy.Gameplay
     {
         public static readonly ProductProofHudButtonSpec LoiTram = new ProductProofHudButtonSpec(-130f, 155f, 176f, 30);
         public static readonly ProductProofHudButtonSpec PhongBo = new ProductProofHudButtonSpec(-315f, 135f, 148f, 26);
-        public static readonly ProductProofHudButtonSpec HoThe = new ProductProofHudButtonSpec(-235f, 315f, 148f, 26);
+        public static readonly ProductProofHudButtonSpec HoThe = new ProductProofHudButtonSpec(-250f, 325f, 148f, 26);
     }
 }
