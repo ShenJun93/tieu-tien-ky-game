@@ -1,101 +1,86 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (Harness vNext integrated into `main`; post-merge canonical state reconciled)
+Updated: 2026-08-19 (Product-Proof roadmap integrated; post-merge control-plane reconciliation prepared)
 
-## Repository
+## Repository / canonical integration anchors
 
 - Repo: `ShenJun93/tieu-tien-ky-game`
 - Visibility: **public**
 - Default branch: `main`
-- Canonical main SHA: `d178447c27b357c9067e3c54911edfdb3233ce51`
-- Harness vNext integration PR: #11 — **MERGED**
-- PR #11 merge commit: `d178447c27b357c9067e3c54911edfdb3233ce51`
-- Final merged Harness branch head: `4f637aa5644df7835bd80e21114adadcaa4819da`
-- Exact accepted independent-review candidate: `9366500600e6e73b47431348fe41865aa6c06b11`
-- Human/Game Director remains merge authority for any future repository PR.
-- Local protected R1 specimen remains `E:\GameDev\tieu-tien-ky-game` and must not be touched without separate explicit Human authority.
+- `main` is protected and requires `repository-gate`.
+- Product-Proof roadmap integration PR: #14 — **MERGED**
+- PR #14 merge commit / roadmap integration anchor: `6af043cf07b2528d19553c60a68d78504153824a`
+- Roadmap version integrated by PR #14: `docs/master/MASTER_PLAN.md` **v0.1.6 Product-Proof Roadmap Refresh**
+- Harness vNext PR #11 and its post-merge reconciliation PR #12 remain merged historical foundations.
+- Human/Game Director remains merge authority for future repository PRs.
 
-## Gate status — current truth
+This file intentionally does **not** encode a field claiming that one historical SHA is the perpetually live `main` head. Live `main` identity is a repository fact and must be queried when an exact current SHA is required; merge commits recorded here are durable integration anchors.
+
+## Current program truth
 
 ```text
 FOUNDATION_V2                        = ACCEPTED
-PRODUCT_FOUNDATION                   = ACCEPTED / CANONICAL / INTEGRATED INTO MAIN
-PRIMARY_PRODUCT_PROOF                = PvE-FIRST
-PRODUCT_EXECUTION                    = FROZEN
-R1 DIRTY SPECIMEN                    = QUARANTINED / PARTIAL / UNCOMMITTED
+PRODUCT_FOUNDATION                   = ACCEPTED / CANONICAL / INTEGRATED
+PRIMARY_PRODUCT_PROOF                = SOLO PvE FIRST
+ROADMAP                              = v0.1.6 PRODUCT-PROOF ROADMAP / INTEGRATED VIA PR #14
+HARNESS_VNEXT                        = INTEGRATED
+MAIN_BRANCH_PROTECTION               = PASS / repository-gate REQUIRED
+PRODUCT_PROOF_SLICE_001              = DRAFT PR #13 / PAUSED / NOT MERGE-READY
+PRODUCT_PROOF_UNITY_VERIFICATION     = REQUIRED BEFORE RESUME
+PRODUCT_PROOF_HUMAN_PHYSICAL_GATE    = NOT REACHED
+R1 DIRTY SPECIMEN                    = QUARANTINED / DO NOT TOUCH
 STAGE_C                              = NOT AUTHORIZED
-HARNESS_PLATFORM_GATE                = GREEN
-HARNESS_VNEXT                        = INTEGRATED INTO MAIN
-PR_11                                = MERGED
-MAIN_BRANCH_PROTECTION               = PASS
-TASK_BRANCH_REWRITE_PROTECTION       = LIVE VERIFIED / PASS AT REVIEW GATE
-HARNESS_REMEDIATION_003              = ACCEPTED / INTEGRATED
-ACTIVATION_SINGLE_PARENT_GUARD       = PASS
-ACTIVATION_ANCHOR_DIFF_GUARD         = PASS
-MULTI_PARENT_REGRESSION              = PASS
-GOVERNANCE_REGRESSION_FINAL_PR       = PASS 46/46 / RUN 32234035435
-INDEPENDENT_REVIEW_VERDICT           = ACCEPT
-INDEPENDENT_REVIEW_P0                = 0
-INDEPENDENT_REVIEW_P1                = 0
-HARNESS_VNEXT_POST_MERGE_CANON       = RECONCILED
+PvP / CO-OP / NETWORK SCALE          = NOT AUTHORIZED
 SUCCESSOR_IMPLEMENTATION_AUTHORITY   = NONE
 ```
 
-## Harness vNext integration evidence
+## Product-Proof roadmap position
 
-Fresh independent read-only review of exact candidate `9366500600e6e73b47431348fe41865aa6c06b11` closed the final P1 evidence blocker and returned:
-
-```text
-VERDICT = ACCEPT
-P0      = 0
-P1      = 0
-SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE = YES
-```
-
-The accepted review included the Remediation 003 multi-parent activation closure and a Human live-read of active task-branch rewrite protection:
+The current critical path is:
 
 ```text
-enforce_admins = true
-force_pushes   = false
-deletions      = false
-required_pull_request_reviews = null
-required_status_checks        = null
+completed local/vertical-slice foundations
+→ accepted solo-PvE Product Foundation
+→ Harness vNext execution foundation
+→ Product Proof Slice 001
+→ technical verification
+→ Human physical/product gate
+→ evidence-backed product decision
 ```
 
-The accepted REVIEW-head Repository Gate was run `32230791184` with 46/46 governance regressions passing.
+Stage C, PvP, co-op, hosted real-Internet work, backend/service scale, permanent-power meta, large content scaling, R1 salvage, and Unity Harness SPIKE do not follow automatically from this roadmap.
 
-After the Human merge-gate control-plane sync, the final PR branch head became `4f637aa5644df7835bd80e21114adadcaa4819da`. Repository Gate run `32234035435` on the final pre-merge PR ref completed successfully; the governance regression suite again reported 46 tests, 46 pass, 0 fail.
+A roadmap position is not execution authority. Mutation authority is granted only by an explicit Human/Game Director instruction persisted through the `NEXT_TASK.md` activation contract.
 
-PR #11 then merged into `main` as `d178447c27b357c9067e3c54911edfdb3233ce51`. The merge commit has canonical pre-merge `main` parent `b2e160cb83c0dc74031081ca010eb2a7489c104d` and Harness branch parent `4f637aa5644df7835bd80e21114adadcaa4819da`.
+## Existing Product Proof candidate — PR #13
 
-No separate post-merge `main` workflow run is claimed here; the integration claim is based on the live merge state and exact canonical `main` identity.
+PR #13 (`feat/product-proof): add bounded solo PvE playstyle proof`) remains **open / draft / paused** at head:
 
-## Remediation 003 identity — historical evidence
+`925d370fff00391331d9fd94d07aaf001abf430f`
 
-```text
-prior review head       = 370b06b629fdd650630d3d948d02d907851c8c64
-IMPLEMENT activation    = 5e6c4dbf1e7a8175856425e3736c1145054cc063
-writer head             = ec57c8511860892a88fbc072c37e9264eacc9d05
-final evidence head     = 7c335fe78a53464ccb8c39ed9c0e393e5e516a96
-accepted REVIEW head    = 9366500600e6e73b47431348fe41865aa6c06b11
-final merged branch head= 4f637aa5644df7835bd80e21114adadcaa4819da
-merge commit            = d178447c27b357c9067e3c54911edfdb3233ce51
-```
+Its original base anchor was `62f20934c6fb01b2fa01d8fee408867b58eeeffb`. It contains a bounded test-first candidate for Storm Control, Wind Ward, and mobile HUD changes, but its Unity-dependent evidence remains blocked/not tested. It is **not** current mutation authority and must not be merged in that state.
 
-These SHAs are historical evidence for Harness vNext. They do not grant current or successor mutation authority.
+Any later continuation of PR #13 requires a fresh explicit Human/Game Director decision plus live main/head/evidence revalidation and a valid rebaseline/synchronization decision before mutation. Existing candidate code does not self-authorize continuation.
 
-## Quarantined R1 specimen
+## Historical network / R1 status
 
-The original local worktree `E:\GameDev\tieu-tien-ky-game` remains protected and untouched. Do not reset, clean, stash, commit, rebase, merge or modify it without separate explicit Human authority.
+The NGO + Unity Transport Stage-B foundation remains accepted historical technical capability only. It grants no current PvP/co-op/network-scale product authority.
 
-## Current authority / one next action
+The local R1 specimen remains quarantined and must not be reset, cleaned, stashed, committed, rebased, merged, or otherwise modified without separate explicit Human authority.
 
-Post-merge reconciliation returns machine-readable authority to non-mutating `DISCOVERY`: no active task, branch, baseline, task file, evidence file, or allowed write path remains after control-plane closeout.
+## Current authority after this reconciliation closes
 
-No gameplay, R1, Product Proof, Unity Harness SPIKE, networking/PvP, Stage C, or other successor implementation is authorized or inferred by the Harness vNext merge or this reconciliation.
+The intended canonical closeout is non-mutating `DISCOVERY`:
 
-ONE NEXT ACTION:
+- no active task;
+- no active branch authority;
+- no baseline/authority anchor;
+- no task/evidence pointer;
+- no writable paths;
+- stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
 
-**Human/Game Director selects the next bounded action explicitly.**
+ONE NEXT ACTION after merge of this reconciliation:
 
-Until that explicit decision is persisted into a new authority transition, repository mutation remains unauthorized by default.
+**Human/Game Director explicitly chooses whether to resume/rebaseline Product Proof Slice 001 or select another bounded action.**
+
+No successor implementation authority is inferred by the roadmap, PR #13, or this reconciliation.
