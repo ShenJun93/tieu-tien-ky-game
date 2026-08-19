@@ -62,4 +62,10 @@ No device reconnection, ADB polling or automatic resume grants authority.
 
 Research is not considered closed until material findings are dispositioned into repository decisions/workflow as one of: integrated, partially integrated, to-integrate, deferred, rejected or superseded. Research is evidence input, not an automatic implementation mandate.
 
-This repository is private. Working-title trademark/store/domain clearance remains outside current implementation scope.
+## Public development and licensing
+
+This project is being prepared for public development. Source visibility, once enabled, does **not** by itself grant an open-source license. Unless a separate license file or third-party notice states otherwise, project-original code, game design, documentation, art and audio remain copyrighted by the repository owner.
+
+Third-party content, if introduced later, must retain and comply with its own license and redistribution terms; raw third-party assets must not be assumed safe to publish merely because they can be used inside a compiled game.
+
+Working-title trademark, store-name and domain clearance remain outside current implementation scope.
