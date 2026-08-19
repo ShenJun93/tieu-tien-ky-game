@@ -18,30 +18,27 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ## Current authority
 
-PR #19 Remediation 001 writer execution is closed.
+PR #19 post-merge cleanup writer execution is closed.
 
-The completed reconciliation now records:
+The completed cleanup candidate records:
 
-- AO-Lite v1 implementation integrated via PR #18;
-- `RISK-NETWORK-001` OPEN / P2 governance-product debt, unchanged by Remediation 001;
-- `RISK-IP-001` OPEN / P1 before external commercial commitment;
-- existing README public-development/licensing policy is explicitly acknowledged;
-- existing `ASSET_SOURCES.csv` provenance control is explicitly acknowledged;
-- remaining IP risk is incomplete/not-yet-validated repository-wide chain-of-title/provenance coverage, incomplete comprehensive third-party/contributor-obligation audit, and unresolved formal repository/release licensing + notice decision;
-- no package, root-license, README, `ASSET_SOURCES.csv`, product/runtime, or successor mutation was performed by Remediation 001.
+- PR #19 merged/integrated at `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
+- stale pre-merge/in-progress wording removed from `docs/governance/CURRENT_STATE.md`;
+- PR #19 risk-reconciliation integration reflected in canonical state prose;
+- `RISK-NETWORK-001` and `RISK-IP-001` remain open with no new remediation authority;
+- Product Proof Slice 001 remains intended roadmap work but is not mutation authority;
+- no package, root-license, README, `ASSET_SOURCES.csv`, risk-register, product/runtime, or successor mutation was performed by this cleanup.
 
-Remediation lineage:
+Cleanup lineage:
 
-- reviewed head: `2bf1042f8b783feaeff6e69ba7c6c37024fd7225`;
-- activation: `34e2b7ab55e674dbb67cbd8be75671654f2fec0b`;
-- content: `d9e379c96e3b0071759d6c0c2173670aaab5101f`;
-- evidence: `d2acfdb7252681ec7ba394507a311040fb8d95d8`.
+- canonical baseline / authority anchor: `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
+- activation: `5a6b3ff929a577e128f021677bfba1d77de5c781`;
+- content: `ba88fccd789a0aa9a7decfec745a4b6f229d9fef`;
+- evidence: `556aed886a0fb9aaedda123eb6b39a76cb2f329b`.
 
 There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
 
-PR #19 requires exact-head Repository Gate and a fresh independent read-only re-review before any Human merge decision.
-
-Product Proof Slice 001 remains an intended roadmap slice, but it is **not** mutation authority. The recorded risks also do not authorize their own remediation.
+The post-merge cleanup candidate requires an exact-head Repository Gate and a fresh independent read-only review before any Human merge decision.
 
 Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
 
