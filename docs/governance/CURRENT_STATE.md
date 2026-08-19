@@ -1,28 +1,17 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (public-repo readiness verified PASS; waiting explicit Human visibility approval)
+Updated: 2026-08-19 13:26 +07 (public visibility explicitly approved; waiting bounded platform action)
 
 ## Repository
 
 - Repo: `ShenJun93/tieu-tien-ky-game`
 - Local protected R1 specimen: `E:\GameDev\tieu-tien-ky-game`
-- Visibility: **private** (public transition not yet authorized)
+- Visibility: **private** at last live revalidation; Human approved private → public transition.
 - Default branch: `main`
 - Canonical main SHA: `b2e160cb83c0dc74031081ca010eb2a7489c104d`
 - Harness branch: `chore/harness-vnext-canon-workflow-reconciliation`
 - Draft review surface: PR #11
-- Human/Game Director remains merge and visibility authority.
-
-## Canon
-
-- Working title: **TIỂU TIÊN KÝ**.
-- Standalone mobile-first Android + iOS product.
-- Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
-- Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
-- Product identity: **mobile-first PvE action-arena cultivation game**.
-- Primary Product Proof direction: **1-player solo PvE arena/run**.
-- Product bets: **Readable Chaos**, **Cultivation as Combat Physics**, **Retellable Run Moments**.
-- Human PvP is an optional hypothesis, not a current product dependency.
+- Human/Game Director remains merge authority.
 
 ## Gate status — current truth
 
@@ -37,65 +26,43 @@ HARNESS_VNEXT_REPO_SIDE           = PASS / HARDENED CANDIDATE
 HARNESS_AUTHORITY_LOCK            = PASS
 HARNESS_MAIN_DRIFT_GUARD          = PASS
 GOVERNANCE_REGRESSION_FRESH       = PASS 40/40
-GITHUB_ACTIONS_HOSTED_PRIVATE     = BLOCKED_BY_EXHAUSTED_QUOTA
-PRIVATE_MAIN_PROTECTION           = UNAVAILABLE/UNRESOLVED ON CURRENT PRIVATE FREE PATH
-PUBLIC_REPO_READINESS_AUDIT       = SAFE_TO_PUBLIC_AFTER_REMEDIATION
 PUBLIC_METADATA_CLEANUP           = PASS
 ASSET_PROVENANCE                  = PASS
 CURRENT_TREE_SECRET_SEARCH        = PASS
-FULL_HISTORY_SECRET_SCAN          = PASS / 132 COMMITS / NO LEAKS
+FULL_HISTORY_SECRET_SCAN          = PASS / 132 COMMITS / NO LEAKS / EXIT 0
 PUBLIC_READINESS_WRITER_SCOPE     = PASS
 TTK_PUBLIC_REPO_READINESS         = SAFE_TO_PUBLIC
-REPOSITORY_VISIBILITY_CHANGE      = WAITING_EXPLICIT_HUMAN_APPROVAL
-HARNESS_VNEXT_OVERALL             = BLOCKED_ON_VISIBILITY_PLATFORM_GATE
+PUBLIC_VISIBILITY_APPROVAL        = APPROVED_BY_HUMAN / 2026-08-19 13:26 +07
+REPOSITORY_VISIBILITY_CHANGE      = AUTHORIZED / HUMAN_PLATFORM_ACTION REQUIRED
+HARNESS_VNEXT_OVERALL             = BLOCKED_ON_VISIBILITY_PLATFORM_ACTION
+```
+
+## Live revalidation before approval execution
+
+```text
+repository visibility = private
+main                   = b2e160cb83c0dc74031081ca010eb2a7489c104d
+PR #11                 = open / draft / unmerged / mergeable
+PR #11 head            = 6ede6acf78aba39ecdcd122c4dc2a4e7ca0d1a58
+admin permission       = confirmed
 ```
 
 ## Public-repository strategy
 
-Preferred zero-subscription infrastructure path:
-
 ```text
 GitHub public repository
-→ GitHub Free protected main / required PR + status check
-→ standard GitHub-hosted Actions for lightweight deterministic checks
+→ GitHub-hosted Repository Gate
+→ protected main / required PR + repository-gate
 → local Unity/device verification for heavy/player-facing evidence
-→ independent review
+→ fresh independent Harness review
 → Human merge gate
 ```
 
-Public visibility is not equivalent to an open-source license. `README.md` records public-development intent and copyright posture. `ASSET_SOURCES.csv` records the existing procedural WAV family as project-generated.
+Public visibility is not equivalent to an open-source license. `README.md` records public-development intent and copyright posture. `ASSET_SOURCES.csv` records project-generated procedural audio provenance.
 
-Public-readiness evidence: `docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md`.
+## Platform tool boundary
 
-## Local verification evidence
-
-Clean verification checkout:
-
-`E:\GameDev\_verification\ttk-public-audit-20260819-124024`
-
-Verified head:
-
-`6f9bfaf4ee4bc1c2c24739d9d9dad577e2dc6ae8`
-
-Gitleaks:
-
-```text
-132 commits scanned
-~1.84 MB scanned
-no leaks found
-exit code 0
-```
-
-Governance regression:
-
-```text
-tests 40
-pass 40
-fail 0
-exit code 0
-```
-
-Final checkout status was clean after removing the generated local report file.
+The connected GitHub app available in this session does not expose repository-visibility mutation. Therefore the already-approved private → public transition requires one Human operator platform action; this is an execution limitation, not a new approval requirement.
 
 ## Quarantined R1 specimen
 
@@ -103,10 +70,10 @@ The original local worktree `E:\GameDev\tieu-tien-ky-game` remains protected and
 
 ## Current authority / one next action
 
-`docs/governance/NEXT_TASK.md` remains `state: HUMAN_GATE`.
+`docs/governance/NEXT_TASK.md` remains `state: HUMAN_GATE` with no writer paths.
 
 ONE NEXT ACTION:
 
-**Human/Game Director explicitly approves or declines the private → public visibility transition.**
+**Execute the already-approved GitHub repository visibility change from private to public, then return control to Final Foreman for verification, Repository Gate, and protected-main configuration.**
 
-Until explicit approval, do not change repository visibility, merge PR #11, start independent final review, Unity harness SPIKE, R1, Product Proof, PvP, Stage C or any successor implementation.
+No merge, independent final review, Unity harness SPIKE, R1, Product Proof, PvP, Stage C or successor implementation is authorized yet.

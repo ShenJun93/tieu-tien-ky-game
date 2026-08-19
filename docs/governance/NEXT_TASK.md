@@ -27,36 +27,45 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "governance_hook_tests": "PASS",
     "scope_diff": "PASS"
   },
-  "stop_condition": "EXPLICIT_HUMAN_VISIBILITY_APPROVAL_REQUIRED"
+  "stop_condition": "HUMAN_PLATFORM_VISIBILITY_ACTION_REQUIRED"
 }
 ```
 
 ## Current authority
 
-Repository mutation is stopped.
+Public-repository readiness is fully verified and the Human/Game Director explicitly approved the private → public visibility transition on 2026-08-19.
 
-Public-repository readiness is fully verified:
+Live revalidation immediately before this transition confirmed:
 
 ```text
-CURRENT-TREE SECRET SEARCH = PASS
-FULL-HISTORY GITLEAKS      = PASS / 132 commits / no leaks / exit 0
-README PUBLIC METADATA     = PASS
-AUDIO PROVENANCE LEDGER    = PASS
-GOVERNANCE REGRESSION      = PASS 40/40
-WRITER SCOPE               = PASS
-TTK PUBLIC READINESS       = SAFE_TO_PUBLIC
+REPOSITORY VISIBILITY = private
+MAIN                  = b2e160cb83c0dc74031081ca010eb2a7489c104d
+PR #11                = open / draft / unmerged
+PR #11 HEAD           = 6ede6acf78aba39ecdcd122c4dc2a4e7ca0d1a58
+ADMIN PERMISSION      = confirmed
+TTK PUBLIC READINESS  = SAFE_TO_PUBLIC
 ```
 
-No repository visibility change, PR merge, gameplay/R1 mutation, Unity package/runtime change, Product Proof, networking/PvP/Stage C or successor task is authorized by this state.
+No gameplay/R1/Unity/package mutation, PR merge, Product Proof, networking/PvP/Stage C or successor implementation is authorized.
 
-## Human visibility action
+## Authorized platform action
 
-Human/Game Director must explicitly approve or decline changing `ShenJun93/tieu-tien-ky-game` from private to public.
+The only authorized next mutation is changing `ShenJun93/tieu-tien-ky-game` repository visibility from **private** to **public**.
 
-If approved, Final Foreman must first live-revalidate repository visibility, `main`, PR #11 and permissions, then perform only the bounded visibility/platform transition. After the repository is public, verify a successful `Repository Gate / repository-gate` run and configure protected `main` before independent Harness review.
+The connected GitHub app available to the Final Foreman does not expose repository-visibility mutation, so the Human operator must perform this one GitHub platform action. After it is observed as public, Final Foreman resumes live verification and platform hardening.
+
+## After visibility change
+
+Final Foreman must:
+
+1. verify repository visibility = public;
+2. verify `main` and PR #11 did not drift;
+3. obtain a successful `Repository Gate / repository-gate` on the public repo;
+4. protect `main`: require PR, require `repository-gate`, block force pushes and deletion;
+5. only then authorize fresh independent Harness review.
 
 ## Stop condition
 
 ```text
-WAITING_FOR_EXPLICIT_HUMAN_VISIBILITY_APPROVAL
+WAITING_FOR_HUMAN_PLATFORM_VISIBILITY_ACTION
 ```
