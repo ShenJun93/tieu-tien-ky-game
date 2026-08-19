@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (AO-Lite v1 design integrated via PR #16; implementation not authorized)
+Updated: 2026-08-19 (AO-Lite v1 implementation integrated via PR #18; post-merge risk reconciliation in progress)
 
 ## Repository / canonical integration anchors
 
@@ -14,7 +14,10 @@ Updated: 2026-08-19 (AO-Lite v1 design integrated via PR #16; implementation not
 - Harness vNext PR #11 and its post-merge reconciliation PR #12 remain merged historical foundations.
 - AO-Lite v1 design PR #16 — **MERGED / ACCEPTED DESIGN**
 - PR #16 merge commit / AO-Lite design integration anchor: `1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`
+- AO-Lite v1 implementation PR #18 — **MERGED / ACCEPTED IMPLEMENTATION**
+- PR #18 merge commit / AO-Lite v1 implementation integration anchor: `ff6ace93a33b2a2a8c097dec2d039053218659c1`
 - Accepted AO-Lite v1 design: `docs/superpowers/specs/2026-08-19-ao-lite-v1-design.md`
+- Canonical project risks: `docs/governance/RISK_REGISTER.md`
 - Human/Game Director remains merge authority for future repository PRs.
 
 This file intentionally does **not** encode a field claiming that one historical SHA is the perpetually live `main` head. Live `main` identity is a repository fact and must be queried when an exact current SHA is required; merge commits recorded here are durable integration anchors.
@@ -28,22 +31,25 @@ PRIMARY_PRODUCT_PROOF                = SOLO PvE FIRST
 ROADMAP                              = v0.1.6 PRODUCT-PROOF ROADMAP / INTEGRATED VIA PR #14
 HARNESS_VNEXT                        = INTEGRATED
 AO_LITE_V1_DESIGN                    = ACCEPTED / INTEGRATED VIA PR #16
-AO_LITE_V1_IMPLEMENTATION            = NOT AUTHORIZED
+AO_LITE_V1_IMPLEMENTATION            = ACCEPTED / INTEGRATED VIA PR #18
 MAIN_BRANCH_PROTECTION               = PASS / repository-gate REQUIRED
+RISK_NETWORK_001                     = OPEN / P2 GOVERNANCE-PRODUCT DEBT
+RISK_IP_001                          = OPEN / P1 BEFORE EXTERNAL COMMERCIAL COMMITMENT
 PRODUCT_PROOF_SLICE_001              = DRAFT PR #13 / PAUSED / NOT MERGE-READY
 PRODUCT_PROOF_UNITY_VERIFICATION     = REQUIRED BEFORE RESUME
 PRODUCT_PROOF_HUMAN_PHYSICAL_GATE    = NOT REACHED
 R1 DIRTY SPECIMEN                    = QUARANTINED / DO NOT TOUCH
 STAGE_C                              = NOT AUTHORIZED
 PvP / CO-OP / NETWORK SCALE          = NOT AUTHORIZED
+COMMERCIAL_RIGHTS_REVIEW             = REQUIRED BEFORE EXTERNAL COMMERCIAL COMMITMENT
 SUCCESSOR_IMPLEMENTATION_AUTHORITY   = NONE
 ```
 
 ## AO-Lite v1 status
 
-The accepted design introduces a future repository-owned, read-only-by-default mechanical verification layer beneath existing TTK authority.
+AO-Lite v1 is now integrated as a repository-owned, read-only-by-default mechanical verification layer beneath existing TTK authority.
 
-Accepted v1 boundary:
+Integrated v1 boundary:
 
 ```text
 authority/repository/workspace inspection
@@ -52,7 +58,7 @@ authority/repository/workspace inspection
 + TTK project-owned verification policy
 ```
 
-Explicitly not granted by design integration:
+Explicitly not granted by the integrated v1 implementation:
 
 ```text
 no task activation
@@ -65,7 +71,23 @@ no Unity execution policy
 no auto-repair/swarm
 ```
 
-The accepted design is canonical architecture, not implementation authority. Any `scripts/ao/**` mutation requires a fresh bounded activation from then-current canonical `main`.
+AO-Lite integration does not grant Product Proof, gameplay, networking, PvP/co-op, Stage C, backend, release, or successor authority.
+
+## Canonical risk register
+
+Two open risks are now tracked in `docs/governance/RISK_REGISTER.md`.
+
+### `RISK-NETWORK-001`
+
+Canonical `Packages/manifest.json` contains NGO and Unity Transport, and historical Stage-B network capability exists. This is technical optionality, not product authority. PvP/co-op/network scale remain explicitly **NOT AUTHORIZED**.
+
+Dependency/capability presence grants zero feature authority. Any future keep/remove/activate decision requires a separately authorized audit and Human decision.
+
+### `RISK-IP-001`
+
+The public repository has no root `LICENSE` file at the recorded reconciliation baseline. This is tracked as a commercial-rights/provenance governance risk, not as a conclusion that the owner cannot commercialize the game.
+
+Before an external commercialization, publisher, or store-release commitment, the project requires a separately authorized rights/provenance inventory and explicit licensing/notice decision. No open-source or proprietary license text is selected by this reconciliation.
 
 ## Product-Proof roadmap position
 
@@ -81,15 +103,15 @@ completed local/vertical-slice foundations
 → evidence-backed product decision
 ```
 
-AO-Lite is workflow tooling and does not replace or promote itself into the product critical path merely because its design is accepted.
+AO-Lite is workflow tooling and does not replace or promote itself into the product critical path because it is integrated.
 
 Stage C, PvP, co-op, hosted real-Internet work, backend/service scale, permanent-power meta, large content scaling, R1 salvage, and Unity Harness SPIKE do not follow automatically from this roadmap.
 
-A roadmap position or accepted tooling design is not execution authority. Mutation authority is granted only by an explicit Human/Game Director instruction persisted through the `NEXT_TASK.md` activation contract.
+The risk register records debt/gates; it does not itself create Product Proof or remediation authority.
 
 ## Existing Product Proof candidate — PR #13
 
-PR #13 (`feat(product-proof): add bounded solo PvE playstyle proof`) remains **open / draft / paused / unmerged** at head:
+PR #13 (`feat(product-proof): add bounded solo PvE playstyle proof`) remains **open / draft / paused / unmerged** at its recorded historical head:
 
 `925d370fff00391331d9fd94d07aaf001abf430f`
 
@@ -99,13 +121,13 @@ Any later continuation requires a fresh explicit Human/Game Director decision pl
 
 ## Historical network / R1 status
 
-The NGO + Unity Transport Stage-B foundation remains accepted historical technical capability only. It grants no current PvP/co-op/network-scale product authority.
+The NGO + Unity Transport Stage-B foundation remains accepted historical technical capability only. It grants no current PvP/co-op/network-scale product authority. `RISK-NETWORK-001` records the governance/product-debt consequence of carrying that capability before a current product decision.
 
 The local R1 specimen remains quarantined and must not be reset, cleaned, stashed, committed, rebased, merged, or otherwise modified without separate explicit Human authority.
 
-## Current authority after this reconciliation closes
+## Canonical closeout target
 
-The canonical closeout target is non-mutating `DISCOVERY`:
+This reconciliation must close to non-mutating `DISCOVERY`:
 
 - no active task;
 - no active branch authority;
@@ -118,6 +140,6 @@ ONE NEXT ACTION after merge of this reconciliation:
 
 **Human/Game Director explicitly chooses the next bounded action.**
 
-AO-Lite v1 implementation is an accepted possible successor tooling task, and Product Proof Slice 001 remains the next intended product slice, but neither is mutation authority until explicitly activated.
+Product Proof Slice 001 remains the next intended product slice, but roadmap position, AO-Lite integration, the two open risks, and PR #13 do not create mutation authority.
 
-No successor implementation authority is inferred by PR #16, the AO-Lite design, the roadmap, PR #13, or this reconciliation.
+No successor implementation authority is inferred by PR #18 or this reconciliation.
