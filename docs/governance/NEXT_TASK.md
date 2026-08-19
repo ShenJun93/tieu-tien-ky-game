@@ -4,30 +4,41 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
+  "state": "HUMAN_GATE",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-001",
+  "branch": "docs/ao-lite-v1-design",
+  "baseline_ref": "74d7a78aeb5488eb7789e52528b0592f41eff0a8",
+  "authority_anchor_ref": "74d7a78aeb5488eb7789e52528b0592f41eff0a8",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-001.md",
+  "evidence_file": "docs/evidence/AO_LITE_V1_DESIGN_REPORT.md",
   "allowed_paths": [],
   "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "required_evidence": {
+    "authority_integrity": "PASS",
+    "design_scope": "PASS",
+    "research_disposition": "PASS",
+    "spec_self_review": "PASS",
+    "scope_diff": "PASS",
+    "implementation_authority": "NONE"
+  },
+  "spec_candidate_ref": "16f349fbcabe75316a022094cb6a8d54445d8b2f",
+  "stop_condition": "HUMAN_REVIEW_REQUIRED_BEFORE_IMPLEMENTATION_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-Post-merge reconciliation for roadmap PR #14 is complete. There is no active write task, no active branch authority, no writable path, and no successor implementation authority.
+AO-Lite v1 design/spec is prepared and held at the Human review gate.
 
-The accepted operational roadmap places solo PvE Product Proof Slice 001 as the next intended product slice, but roadmap position is not execution authority.
+Exact design/evidence candidate before this control-plane transition:
 
-PR #13 remains an open/draft/paused Product Proof candidate requiring explicit Human continuation, live main/head/evidence revalidation, and a valid rebaseline/synchronization decision on a Unity-capable execution surface before any mutation can resume.
+`16f349fbcabe75316a022094cb6a8d54445d8b2f`
 
-No R1, Unity Harness SPIKE, networking/PvP/co-op, Stage C, backend/services, gameplay/runtime/package mutation, or other successor work is authorized by this state.
+No AO implementation authority exists. No successor task, worker dispatch, Product Proof mutation, ready-for-review action, merge, or other mutation may be inferred from the design candidate.
 
-## One next action
+The exact HUMAN_GATE branch head may be published as a Draft PR solely for Human review and repository CI. Human/Game Director then explicitly accepts, revises, or rejects the design.
 
-Human/Game Director explicitly chooses the next bounded action.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `HUMAN_REVIEW_REQUIRED_BEFORE_IMPLEMENTATION_AUTHORITY`.
