@@ -1,17 +1,17 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 13:26 +07 (public visibility explicitly approved; waiting bounded platform action)
+Updated: 2026-08-19 13:34 +07 (public platform gate GREEN; independent Harness review required)
 
 ## Repository
 
 - Repo: `ShenJun93/tieu-tien-ky-game`
-- Local protected R1 specimen: `E:\GameDev\tieu-tien-ky-game`
-- Visibility: **private** at last live revalidation; Human approved private → public transition.
+- Visibility: **public**
 - Default branch: `main`
 - Canonical main SHA: `b2e160cb83c0dc74031081ca010eb2a7489c104d`
 - Harness branch: `chore/harness-vnext-canon-workflow-reconciliation`
 - Draft review surface: PR #11
 - Human/Game Director remains merge authority.
+- Local protected R1 specimen remains `E:\GameDev\tieu-tien-ky-game` and must not be touched.
 
 ## Gate status — current truth
 
@@ -25,44 +25,36 @@ STAGE_C                           = NOT AUTHORIZED
 HARNESS_VNEXT_REPO_SIDE           = PASS / HARDENED CANDIDATE
 HARNESS_AUTHORITY_LOCK            = PASS
 HARNESS_MAIN_DRIFT_GUARD          = PASS
-GOVERNANCE_REGRESSION_FRESH       = PASS 40/40
-PUBLIC_METADATA_CLEANUP           = PASS
-ASSET_PROVENANCE                  = PASS
-CURRENT_TREE_SECRET_SEARCH        = PASS
-FULL_HISTORY_SECRET_SCAN          = PASS / 132 COMMITS / NO LEAKS / EXIT 0
-PUBLIC_READINESS_WRITER_SCOPE     = PASS
-TTK_PUBLIC_REPO_READINESS         = SAFE_TO_PUBLIC
-PUBLIC_VISIBILITY_APPROVAL        = APPROVED_BY_HUMAN / 2026-08-19 13:26 +07
-REPOSITORY_VISIBILITY_CHANGE      = AUTHORIZED / HUMAN_PLATFORM_ACTION REQUIRED
-HARNESS_VNEXT_OVERALL             = BLOCKED_ON_VISIBILITY_PLATFORM_ACTION
+GOVERNANCE_REGRESSION_LOCAL       = PASS 40/40
+PUBLIC_REPO_READINESS             = SAFE_TO_PUBLIC / COMPLETED
+REPOSITORY_VISIBILITY             = PUBLIC
+REMOTE_REPOSITORY_GATE            = PASS / RUN 32223611609 / 40 OF 40
+MAIN_BRANCH_PROTECTION            = PASS
+HARNESS_PLATFORM_GATE             = GREEN
+HARNESS_VNEXT_OVERALL             = READY_FOR_FRESH_INDEPENDENT_REVIEW
 ```
 
-## Live revalidation before approval execution
+## Platform gate closure
+
+Public GitHub state is now proven live. The rerun of `Repository Gate / repository-gate` completed successfully on GitHub-hosted infrastructure after the visibility transition, including the full 40-test governance suite.
+
+`main` is protected with:
 
 ```text
-repository visibility = private
-main                   = b2e160cb83c0dc74031081ca010eb2a7489c104d
-PR #11                 = open / draft / unmerged / mergeable
-PR #11 head            = 6ede6acf78aba39ecdcd122c4dc2a4e7ca0d1a58
-admin permission       = confirmed
+require pull request before merge
+require repository-gate
+strict/up-to-date check = true
+enforce protection for admins = true
+required approving reviews = 0
+force push = blocked
+deletion = blocked
 ```
 
-## Public-repository strategy
+Evidence: `docs/evidence/HARNESS_VNEXT_PLATFORM_GATE_CLOSURE.md`.
 
-```text
-GitHub public repository
-→ GitHub-hosted Repository Gate
-→ protected main / required PR + repository-gate
-→ local Unity/device verification for heavy/player-facing evidence
-→ fresh independent Harness review
-→ Human merge gate
-```
+## Non-blocking maintenance debt
 
-Public visibility is not equivalent to an open-source license. `README.md` records public-development intent and copyright posture. `ASSET_SOURCES.csv` records project-generated procedural audio provenance.
-
-## Platform tool boundary
-
-The connected GitHub app available in this session does not expose repository-visibility mutation. Therefore the already-approved private → public transition requires one Human operator platform action; this is an execution limitation, not a new approval requirement.
+GitHub Actions reported that `actions/checkout@v4` targets deprecated Node.js 20 and is currently forced onto Node.js 24 by GitHub. The job passed. This is maintenance debt, not an acceptance blocker.
 
 ## Quarantined R1 specimen
 
@@ -70,10 +62,10 @@ The original local worktree `E:\GameDev\tieu-tien-ky-game` remains protected and
 
 ## Current authority / one next action
 
-`docs/governance/NEXT_TASK.md` remains `state: HUMAN_GATE` with no writer paths.
+`docs/governance/NEXT_TASK.md` is `state: REVIEW` with no writer paths.
 
 ONE NEXT ACTION:
 
-**Execute the already-approved GitHub repository visibility change from private to public, then return control to Final Foreman for verification, Repository Gate, and protected-main configuration.**
+**Run a fresh independent read-only review of the current PR #11 Harness candidate.**
 
-No merge, independent final review, Unity harness SPIKE, R1, Product Proof, PvP, Stage C or successor implementation is authorized yet.
+The reviewer must not implement fixes, mutate the branch, merge the PR, or authorize gameplay/R1/Product Proof/Unity harness SPIKE/networking/PvP/Stage C. The review returns only a verdict and findings. Human/Game Director decides any subsequent remediation or merge authority.

@@ -4,14 +4,14 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "HUMAN_GATE",
+  "state": "REVIEW",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001",
+  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-001",
   "branch": "chore/harness-vnext-canon-workflow-reconciliation",
   "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001.md",
-  "evidence_file": "docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-001.md",
+  "evidence_file": "docs/evidence/HARNESS_VNEXT_PLATFORM_GATE_CLOSURE.md",
   "allowed_paths": [],
   "forbidden_paths": [
     "Assets/",
@@ -20,52 +20,60 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "Builds/"
   ],
   "required_evidence": {
-    "current_tree_secret_search": "PASS",
-    "full_history_secret_scan": "PASS",
-    "public_metadata_cleanup": "PASS",
-    "asset_provenance": "PASS",
     "governance_hook_tests": "PASS",
-    "scope_diff": "PASS"
+    "authority_immutability_tests": "PASS",
+    "main_drift_guard_tests": "PASS",
+    "scope_diff": "PASS",
+    "remote_ci": "PASS",
+    "main_branch_protection": "PASS"
   },
-  "stop_condition": "HUMAN_PLATFORM_VISIBILITY_ACTION_REQUIRED"
+  "stop_condition": "FRESH_INDEPENDENT_HARNESS_REVIEW_REQUIRED"
 }
 ```
 
 ## Current authority
 
-Public-repository readiness is fully verified and the Human/Game Director explicitly approved the private → public visibility transition on 2026-08-19.
-
-Live revalidation immediately before this transition confirmed:
+Harness vNext repository-side P1 hardening and its GitHub platform gates are complete:
 
 ```text
-REPOSITORY VISIBILITY = private
-MAIN                  = b2e160cb83c0dc74031081ca010eb2a7489c104d
-PR #11                = open / draft / unmerged
-PR #11 HEAD           = 6ede6acf78aba39ecdcd122c4dc2a4e7ca0d1a58
-ADMIN PERMISSION      = confirmed
-TTK PUBLIC READINESS  = SAFE_TO_PUBLIC
+GOVERNANCE TESTS          = PASS 40/40 locally and remotely
+AUTHORITY IMMUTABILITY    = PASS
+LIVE MAIN DRIFT GUARD     = PASS
+WRITER SCOPE              = PASS
+PUBLIC REPOSITORY         = PASS
+REMOTE CI                 = PASS
+MAIN BRANCH PROTECTION    = PASS
+PLATFORM GATE             = GREEN
 ```
 
-No gameplay/R1/Unity/package mutation, PR merge, Product Proof, networking/PvP/Stage C or successor implementation is authorized.
+Repository mutation is stopped. `allowed_paths` is empty.
 
-## Authorized platform action
+## Authorized review action
 
-The only authorized next mutation is changing `ShenJun93/tieu-tien-ky-game` repository visibility from **private** to **public**.
+Run a **fresh independent read-only review** of PR #11 and the current Harness candidate. The reviewer should evaluate:
 
-The connected GitHub app available to the Final Foreman does not expose repository-visibility mutation, so the Human operator must perform this one GitHub platform action. After it is observed as public, Final Foreman resumes live verification and platform hardening.
+1. canon/workflow coherence;
+2. authority root-of-trust and writer lock semantics;
+3. main-drift protection;
+4. evidence contract integrity;
+5. GitHub workflow/repository gate design;
+6. branch-protection assumptions and Human merge authority;
+7. research-integration lifecycle;
+8. scope leakage or contradictions introduced by the public-readiness/platform closure work.
 
-## After visibility change
-
-Final Foreman must:
-
-1. verify repository visibility = public;
-2. verify `main` and PR #11 did not drift;
-3. obtain a successful `Repository Gate / repository-gate` on the public repo;
-4. protect `main`: require PR, require `repository-gate`, block force pushes and deletion;
-5. only then authorize fresh independent Harness review.
-
-## Stop condition
+The reviewer must return one verdict:
 
 ```text
-WAITING_FOR_HUMAN_PLATFORM_VISIBILITY_ACTION
+ACCEPT
+ACCEPT_WITH_NON_BLOCKING_NOTES
+REMEDIATE
+REJECT
 ```
+
+and list findings by severity/evidence.
+
+## Hard stop
+
+The reviewer must not edit files, push commits, change repository settings, mark the PR ready, merge PR #11, or authorize Unity harness SPIKE, R1, Product Proof, gameplay, networking/PvP, Stage C, or any successor implementation.
+
+Only Human/Game Director may authorize remediation or merge after the independent review.
