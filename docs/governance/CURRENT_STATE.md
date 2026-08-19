@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 13:34 +07 (public platform gate GREEN; independent Harness review required)
+Updated: 2026-08-19 (Harness Remediation 002 complete; fresh independent review required)
 
 ## Repository
 
@@ -22,39 +22,87 @@ PRIMARY_PRODUCT_PROOF             = PvE-FIRST
 PRODUCT_EXECUTION                 = FROZEN
 R1 DIRTY SPECIMEN                 = QUARANTINED / PARTIAL / UNCOMMITTED
 STAGE_C                           = NOT AUTHORIZED
-HARNESS_VNEXT_REPO_SIDE           = PASS / HARDENED CANDIDATE
-HARNESS_AUTHORITY_LOCK            = PASS
-HARNESS_MAIN_DRIFT_GUARD          = PASS
-GOVERNANCE_REGRESSION_LOCAL       = PASS 40/40
-PUBLIC_REPO_READINESS             = SAFE_TO_PUBLIC / COMPLETED
-REPOSITORY_VISIBILITY             = PUBLIC
-REMOTE_REPOSITORY_GATE            = PASS / RUN 32223611609 / 40 OF 40
-MAIN_BRANCH_PROTECTION            = PASS
 HARNESS_PLATFORM_GATE             = GREEN
+MAIN_BRANCH_PROTECTION            = PASS
+TASK_BRANCH_REWRITE_PROTECTION    = PASS
+HARNESS_REMEDIATION_002            = IMPLEMENTATION PASS / REVIEW REQUIRED
+ACTIVATION_EXACT_CONTENT          = PASS
+AGGREGATE_EVIDENCE_CONTRACT       = PASS
+REVIEW_TAXONOMY_CONTRACT          = PASS
+GOVERNANCE_REGRESSION_LOCAL       = PASS 44/44
+GOVERNANCE_REGRESSION_REMOTE      = PASS 44/44
+FINAL_WRITER_SCOPE                = PASS / 6 AUTHORIZED PATHS
+REMOTE_REPOSITORY_GATE            = PASS / RUN 32227935690
 HARNESS_VNEXT_OVERALL             = READY_FOR_FRESH_INDEPENDENT_REVIEW
 ```
 
-## Platform gate closure
-
-Public GitHub state is now proven live. The rerun of `Repository Gate / repository-gate` completed successfully on GitHub-hosted infrastructure after the visibility transition, including the full 40-test governance suite.
-
-`main` is protected with:
+## Remediation 002 identity
 
 ```text
-require pull request before merge
-require repository-gate
-strict/up-to-date check = true
-enforce protection for admins = true
-required approving reviews = 0
-force push = blocked
-deletion = blocked
+Human-gate prerequisite head = 7d1fb0eb40fb6171ccdefaee0c01e89f91a17459
+IMPLEMENT activation         = af18d87cec829a125bca793e9dcac64b726fb93a
+code/docs writer head        = 91b05ba1e6d5c0c5eabaa0b1442714eded75c1ce
+final evidence head          = 94a3424a94b40c37a1d95083a194f9712b38133a
 ```
 
-Evidence: `docs/evidence/HARNESS_VNEXT_PLATFORM_GATE_CLOSURE.md`.
+The activation compare was exactly one direct child and changed only `NEXT_TASK.md` plus the active Remediation-002 task contract.
 
-## Non-blocking maintenance debt
+Writer scope from activation through final evidence changed exactly six authorized paths:
 
-GitHub Actions reported that `actions/checkout@v4` targets deprecated Node.js 20 and is currently forced onto Node.js 24 by GitHub. The job passed. This is maintenance debt, not an acceptance blocker.
+```text
+.agents/skills/review-task/SKILL.md
+docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md
+docs/governance/WORKFLOW.md
+scripts/hooks/hooks.test.mjs
+scripts/hooks/pre-finish.mjs
+scripts/hooks/pre-task.mjs
+```
+
+No gameplay, Unity runtime, package, ProjectSettings or Builds path was changed by Remediation 002.
+
+## Three prior P1 findings — remediation status
+
+### P1-1 — activation/history bypass
+
+Closed by:
+
+- exact changed-file-set validation in both `pre-task` and `pre-finish`;
+- adversarial tests for extra activation content and rewritten/squashed activation payload;
+- active task branch protected server-side with admin enforcement, force-push blocked and deletion blocked.
+
+### P1-2 — evidence-file mismatch
+
+Closed by one aggregate machine-readable evidence file:
+
+`docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md`
+
+It contains every key required by the active task contract.
+
+### P1-3 — review verdict taxonomy drift
+
+Closed by active-contract-first review semantics. `NEXT_TASK` in REVIEW declares `review_verdict_enum`; `.agents/skills/review-task/SKILL.md` must use that enum and only use its own default vocabulary when no active enum is declared.
+
+## Verification
+
+Local scratch regression using exact new hook/test/skill contents:
+
+```text
+tests = 44
+pass  = 44
+fail  = 0
+```
+
+Public GitHub-hosted verification on final evidence head:
+
+```text
+Repository Gate run = 32227935690
+result              = success
+tests               = 44
+pass                = 44
+fail                = 0
+```
+
+The known `actions/checkout@v4` Node-runtime warning remains non-blocking maintenance debt.
 
 ## Quarantined R1 specimen
 
@@ -62,10 +110,10 @@ The original local worktree `E:\GameDev\tieu-tien-ky-game` remains protected and
 
 ## Current authority / one next action
 
-`docs/governance/NEXT_TASK.md` is `state: REVIEW` with no writer paths.
+`docs/governance/NEXT_TASK.md` is `state: REVIEW` with `allowed_paths: []`.
 
 ONE NEXT ACTION:
 
-**Run a fresh independent read-only review of the current PR #11 Harness candidate.**
+**Run a fresh independent read-only review of current PR #11 exact head, focused first on closure of the three Remediation-002 P1 findings and then on regressions/coherence.**
 
-The reviewer must not implement fixes, mutate the branch, merge the PR, or authorize gameplay/R1/Product Proof/Unity harness SPIKE/networking/PvP/Stage C. The review returns only a verdict and findings. Human/Game Director decides any subsequent remediation or merge authority.
+No merge, Unity harness SPIKE, R1, Product Proof, gameplay, networking/PvP, Stage C or successor implementation is authorized.
