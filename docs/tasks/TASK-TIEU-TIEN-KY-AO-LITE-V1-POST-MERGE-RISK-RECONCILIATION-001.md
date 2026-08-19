@@ -1,73 +1,152 @@
 # TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001
 
-Status: **CLOSED — WRITER CLOSED / DISCOVERY CLOSEOUT**
+Status: **ACTIVE / IMPLEMENT — REMEDIATION 001**
 
 Project: **TIỂU TIÊN KÝ**
 
-Type: bounded governance/docs reconciliation (`task_mode: SPEC`).
+Type: bounded governance/docs remediation (`task_mode: SPEC`).
 
 ## Human authority
 
-The Human/Game Director explicitly authorized this bounded reconciliation after AO-Lite v1 PR #18 merged. That authorization covered only canonical post-merge state reconciliation and recording the two identified project risks.
+The Human/Game Director explicitly authorized `DUYỆT REMEDIATION PR #19` after a fresh independent read-only review returned:
 
-No Product Proof, networking/PvP/co-op, package mutation, LICENSE change, commercial release, or successor task was authorized.
+- `VERDICT = REMEDIATE`
+- `P0 = NONE`
+- one `P1` concerning overbroad `RISK-IP-001` / evidence framing
+- `SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE = NO`
 
-## Exact lineage
+This authorization covers only Remediation 001 described below. It does not authorize merge, Product Proof continuation, package/networking changes, LICENSE changes, commercial release, or any successor task.
 
-- canonical baseline / authority anchor: `ff6ace93a33b2a2a8c097dec2d039053218659c1`
-- authority activation: `94f706b509d00d15dd452dc238a5ecd67e479ba6`
-- writer content commit: `13842d05a093ac119faf02d8a8e14f3b91a97c80`
-- writer evidence commit: `23097b3d0a707ec4a3df14b783db8496138077b9`
-- evidence: `docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md`
+## Exact execution identity
 
-## Delivered writer scope
+- repository: `ShenJun93/tieu-tien-ky-game`
+- state: `IMPLEMENT`
+- task_mode: `SPEC`
+- branch: `chore/ao-lite-v1-post-merge-risk-reconciliation`
+- canonical baseline: `ff6ace93a33b2a2a8c097dec2d039053218659c1`
+- remediation authority anchor: `2bf1042f8b783feaeff6e69ba7c6c37024fd7225`
+- workspace_policy: `REMOTE_GITHUB_BRANCH`
+- evidence file: `docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md`
+- remediation round: `1`
+
+The activation commit must be exactly one direct child of the remediation authority anchor and change exactly `docs/governance/NEXT_TASK.md` plus this task contract.
+
+## Root cause / reproduced P1
+
+The exact baseline already contains material licensing/provenance controls that the prior wording did not acknowledge:
+
+1. `README.md` section `Public development and licensing` states that public visibility does not itself grant an open-source license, project-original material remains copyrighted unless separately licensed, and third-party content must comply with its own license and redistribution terms.
+2. `ASSET_SOURCES.csv` already defines `source`, `license`, `commercial_use`, `attribution_required`, `date_acquired`, and provenance/notes fields, with an existing generated-audio record.
+
+Therefore the phrases `Commercial-rights and provenance policy not yet explicit` and `absence of an explicit canonical chain-of-title/provenance/third-party-rights policy` overstate the remaining gap.
+
+## Objective
+
+Correct the IP risk/evidence framing without creating new legal policy or changing the risk gate:
+
+- explicitly acknowledge the existing README licensing policy;
+- explicitly acknowledge `ASSET_SOURCES.csv` as an existing provenance control with initial records;
+- preserve root `LICENSE` absence as an observed fact;
+- preserve `RISK-IP-001` as OPEN / P1 before external commercial commitment;
+- narrow the remaining risk to an incomplete/not-yet-validated repository-wide chain-of-title/provenance inventory, incomplete comprehensive third-party-obligation audit, and unresolved formal repository/release licensing + notice decision;
+- preserve the statement that missing `LICENSE` does not itself prove non-commercializability;
+- preserve that no MIT/Apache/GPL/proprietary license or other release-rights model is selected here.
+
+## Allowed writer paths
 
 Exactly:
 
-- `docs/governance/CURRENT_STATE.md`
 - `docs/governance/RISK_REGISTER.md`
 - `docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md`
 
-Activation and this closeout are control-plane commits changing only `docs/governance/NEXT_TASK.md` and this task contract. The writer did not modify the control plane after activation.
+## Writer-locked control plane
 
-## Result
+After activation, the implementation writer must not modify:
 
-`CURRENT_STATE.md` now records AO-Lite v1 implementation as accepted/integrated via PR #18 and preserves the rule that tooling integration grants no successor/product authority.
+- `docs/governance/NEXT_TASK.md`
+- this task contract
 
-`docs/governance/RISK_REGISTER.md` now contains:
+Final Foreman owns closeout.
 
-- `RISK-NETWORK-001` — OPEN / P2 governance-product debt; NGO + Unity Transport capability precedes current PvP/co-op product authority; dependency presence grants zero feature authority; keep/remove/activate is deferred to separate audit + Human decision.
-- `RISK-IP-001` — OPEN / P1 before external commercialization/publisher/store-release commitment; public repository lacks root `LICENSE`; risk is explicit chain-of-title/provenance/third-party-rights governance, not a conclusion that commercialization is impossible; license/policy choice is deferred to separate rights review + Human decision.
+## Unpublished remediation rule
 
-No `Packages/**` or root license/notice path was changed.
+While `state = IMPLEMENT`, build remediation commits as unpublished Git objects. Do not move the published PR branch ref until Final Foreman has returned the completed lineage to `DISCOVERY`.
 
-## Evidence summary
+## Required remediation behavior
+
+### `RISK-IP-001`
+
+The entry must acknowledge existing controls and distinguish them from the remaining unresolved risk.
+
+Required existing-control facts:
+
+- README already states public visibility != open-source license;
+- project-original material is treated as copyrighted absent a separate license/notice;
+- third-party license/redistribution obligations are already acknowledged;
+- `ASSET_SOURCES.csv` already provides a provenance schema and at least an initial generated-audio record.
+
+Required remaining-risk framing:
+
+- repository-wide chain-of-title/provenance inventory is incomplete/not yet validated;
+- third-party obligations are not yet comprehensively audited;
+- formal repository/release licensing + notice decision remains unresolved.
+
+### Evidence report
+
+Replace the overbroad absence claim with the same exact distinction: existing controls are present, but comprehensive inventory/validation and formal release licensing/notice decision remain outstanding.
+
+### `RISK-NETWORK-001`
+
+Must remain unchanged.
+
+## Required evidence
 
 ```json
 {
   "authority_integrity": "PASS",
   "live_main_identity": "PASS",
-  "ao_lite_post_merge_identity": "PASS",
-  "network_risk_recorded": "PASS",
-  "ip_risk_recorded": "PASS",
+  "existing_readme_licensing_policy": "PASS",
+  "existing_asset_provenance_control": "PASS",
+  "p1_ip_risk_framing": "PASS",
+  "network_risk_unchanged": "PASS",
   "package_or_license_mutation": "ABSENT",
   "scope_diff": "PASS",
   "successor_authority": "NONE"
 }
 ```
 
-The remote writer does not claim local governance hook execution. Exact-head Repository Gate is required after the completed lineage is published as a Draft PR.
+## Hard exclusions
 
-## Risk/research dispositions
+Do not modify:
 
-- networking-capability governance risk: `INTEGRATED` as `RISK-NETWORK-001`;
-- commercial-rights/provenance concern: `INTEGRATED` as `RISK-IP-001`;
-- NGO/Transport removal or activation: `DEFERRED`;
-- repository license selection/change: `DEFERRED`;
-- Product Proof continuation: `DEFERRED` / no authority from this task.
+- `docs/governance/CURRENT_STATE.md`;
+- `README.md`;
+- `ASSET_SOURCES.csv`;
+- `Assets/**`;
+- `Packages/**`;
+- `ProjectSettings/**`;
+- `scripts/**`;
+- `.github/**`;
+- `.agents/**`;
+- `docs/master/**`;
+- `docs/decisions/**`;
+- `docs/architecture/**`;
+- root `LICENSE`, `NOTICE`, or `COPYING`;
+- Product Proof PR #13 or any Unity workspace.
 
-## Review / merge boundary
+Do not authorize gameplay, Product Proof, R1, Unity Harness SPIKE, networking/PvP/co-op, Stage C, backend/services, package mutation, commercial release, merge, or successor implementation.
 
-Final Foreman returns the branch to `DISCOVERY` before publication. Because the task records network/legal/governance risk semantics, the published Draft PR requires exact-head Repository Gate and fresh independent read-only review before any Human merge decision.
+## Verification / closeout
 
-No merge and no successor authority are inferred by this closeout.
+Before Final-Foreman closeout:
+
+1. revalidate live `main == ff6ace93a33b2a2a8c097dec2d039053218659c1`;
+2. verify remediation writer diff changes exactly the two allowed writer paths;
+3. verify `RISK-NETWORK-001` is byte-for-byte unchanged from review head where practical, or otherwise unchanged by diff inspection;
+4. verify README and `ASSET_SOURCES.csv` remain unchanged and are referenced only as baseline evidence;
+5. verify no package/root-license/product/runtime path changed;
+6. update evidence truthfully with exact remediation lineage.
+
+Final Foreman then returns the lineage to `DISCOVERY`, publishes the exact new head to PR #19, waits for exact-head Repository Gate, and stops for fresh independent re-review.
+
+No merge and no successor authority are inferred by remediation completion.

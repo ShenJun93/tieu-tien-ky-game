@@ -4,33 +4,67 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001",
+  "branch": "chore/ao-lite-v1-post-merge-risk-reconciliation",
+  "baseline_ref": "ff6ace93a33b2a2a8c097dec2d039053218659c1",
+  "authority_anchor_ref": "2bf1042f8b783feaeff6e69ba7c6c37024fd7225",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001.md",
+  "evidence_file": "docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md",
+  "allowed_paths": [
+    "docs/governance/RISK_REGISTER.md",
+    "docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/CURRENT_STATE.md",
+    "README.md",
+    "ASSET_SOURCES.csv",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "scripts/",
+    ".github/",
+    ".agents/",
+    "docs/master/",
+    "docs/decisions/",
+    "docs/architecture/",
+    "LICENSE",
+    "NOTICE",
+    "COPYING"
+  ],
+  "required_evidence": {
+    "authority_integrity": "PASS",
+    "live_main_identity": "PASS",
+    "existing_readme_licensing_policy": "PASS",
+    "existing_asset_provenance_control": "PASS",
+    "p1_ip_risk_framing": "PASS",
+    "network_risk_unchanged": "PASS",
+    "package_or_license_mutation": "ABSENT",
+    "scope_diff": "PASS",
+    "successor_authority": "NONE"
+  },
+  "review_head_before_remediation": "2bf1042f8b783feaeff6e69ba7c6c37024fd7225",
+  "remediation_round": 1,
+  "stop_condition": "PR19_REMEDIATION_001_READY_FOR_FINAL_FOREMAN_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-AO-Lite v1 post-merge risk reconciliation writer execution is closed.
+The Human/Game Director explicitly authorized **Remediation 001 for PR #19** after independent review returned `REMEDIATE` with one P1 finding.
 
-Canonical reconciliation now records:
+The writer may correct only the overbroad `RISK-IP-001` / evidence framing by acknowledging the repository controls that already existed at the exact baseline:
 
-- AO-Lite v1 implementation integrated via PR #18;
-- `RISK-NETWORK-001` OPEN / P2 governance-product debt;
-- `RISK-IP-001` OPEN / P1 before external commercial commitment;
-- no package or root-license mutation performed by the reconciliation.
+- README `Public development and licensing` policy;
+- `ASSET_SOURCES.csv` provenance schema and existing records.
 
-There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
+The remaining risk must be narrowed to an incomplete/not-yet-validated repository-wide chain-of-title/provenance inventory, incomplete third-party-obligation audit, and unresolved formal repository/release licensing + notice decision.
 
-Product Proof Slice 001 remains the next intended product slice in the roadmap, but it is **not** mutation authority. The two recorded risks also do not authorize their own remediation.
+`RISK-NETWORK-001` must remain unchanged. No README, `ASSET_SOURCES.csv`, package, root-license, product/runtime, Product Proof, networking/PvP/co-op, Stage C, or successor mutation is authorized.
 
-Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
+The remediation lineage remains unpublished while `state = IMPLEMENT`. Final Foreman may publish only after writer closeout returns the lineage to non-mutating `DISCOVERY`.
 
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `PR19_REMEDIATION_001_READY_FOR_FINAL_FOREMAN_CLOSEOUT`.
