@@ -4,42 +4,42 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "HUMAN_GATE",
+  "state": "IMPLEMENT",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001",
-  "branch": "docs/product-proof-roadmap-refresh",
-  "baseline_ref": "62f20934c6fb01b2fa01d8fee408867b58eeeffb",
-  "authority_anchor_ref": "62f20934c6fb01b2fa01d8fee408867b58eeeffb",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-POST-MERGE-RECONCILIATION-001",
+  "branch": "chore/product-proof-roadmap-post-merge-reconciliation",
+  "baseline_ref": "6af043cf07b2528d19553c60a68d78504153824a",
+  "authority_anchor_ref": "6af043cf07b2528d19553c60a68d78504153824a",
   "workspace_policy": "REMOTE_GITHUB_BRANCH",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001.md",
-  "evidence_file": "docs/evidence/PRODUCT_PROOF_ROADMAP_REFRESH_REPORT.md",
-  "allowed_paths": [],
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-POST-MERGE-RECONCILIATION-001.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_REPORT.md",
+  "allowed_paths": [
+    "docs/governance/CURRENT_STATE.md",
+    "docs/evidence/PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_REPORT.md"
+  ],
   "forbidden_paths": [
     "Assets/",
     "Packages/",
     "ProjectSettings/",
-    "docs/"
+    "docs/master/",
+    "docs/decisions/",
+    "docs/architecture/"
   ],
   "required_evidence": {
     "live_main_identity": "PASS",
-    "roadmap_coherence": "PASS",
-    "scope_diff": "PASS"
+    "pr14_merge_state": "PASS",
+    "canon_reconciliation": "PASS",
+    "writer_scope": "PASS"
   },
-  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
+  "stop_condition": "PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_READY_FOR_CONTROL_PLANE_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-The Product Proof roadmap refresh writer work is complete and its evidence is PASS. No further repository mutation is authorized on this branch while it waits at the Human merge gate.
+This is a bounded governance-only recovery task. Its sole purpose is to reconcile the post-merge canonical control-plane state after roadmap PR #14 and remove stale pre-merge `HUMAN_GATE` / repository identity wording.
 
-The roadmap now reflects the accepted solo-PvE-first Product Proof critical path and removes stale Product Feel Remediation execution wording while preserving historical P0A/Stage/Phase records.
+The implementation writer may edit only `docs/governance/CURRENT_STATE.md` and the singular evidence report named above. It must not edit `NEXT_TASK.md` or the active task contract after this activation commit.
 
-## Human gate
-
-Human/Game Director decides whether to merge the roadmap PR.
-
-Merging this docs-only roadmap refresh does **not** activate Product Proof implementation. After any merge, a separate fresh Human/Game Director instruction and authority transition are still required before gameplay mutation.
-
-No R1, Unity Harness SPIKE, networking/PvP, Stage C, backend/services, gameplay/runtime/package mutation, or successor implementation authority is granted.
+No gameplay, Product Proof implementation, R1, Unity Harness SPIKE, networking/PvP, Stage C, backend/services, package/project-setting mutation, or successor task is authorized.
