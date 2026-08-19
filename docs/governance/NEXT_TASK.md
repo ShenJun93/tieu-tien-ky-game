@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "REVIEW",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-IMPLEMENTATION-001",
@@ -14,23 +14,8 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "workspace_policy": "REMOTE_GITHUB_BRANCH",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-IMPLEMENTATION-001.md",
   "evidence_file": "docs/evidence/AO_LITE_V1_IMPLEMENTATION_REPORT.md",
-  "allowed_paths": [
-    ".gitignore",
-    "scripts/ao/",
-    "docs/evidence/AO_LITE_V1_IMPLEMENTATION_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "scripts/hooks/",
-    ".github/",
-    ".agents/",
-    "docs/master/",
-    "docs/decisions/",
-    "docs/architecture/",
-    "docs/governance/CURRENT_STATE.md"
-  ],
+  "allowed_paths": [],
+  "forbidden_paths": [],
   "required_evidence": {
     "authority_integrity": "PASS",
     "live_main_identity": "PASS",
@@ -41,20 +26,22 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "scope_diff": "PASS",
     "prohibited_capabilities": "ABSENT"
   },
-  "stop_condition": "AO_LITE_V1_IMPLEMENTATION_READY_FOR_INDEPENDENT_REVIEW"
+  "implementation_candidate_ref": "78b130454e2947014181aa8f5e5370d21b16c06c",
+  "writer_evidence_ref": "c49ea1ce2a9264ab658b53d0e0e4e0f139d1b9b0",
+  "stop_condition": "INDEPENDENT_READ_ONLY_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE_GATE"
 }
 ```
 
 ## Current authority
 
-Human/Game Director explicitly continued after accepted AO-Lite v1 design and post-merge reconciliation. This activates only the bounded AO-Lite v1 implementation defined by the accepted design.
+AO-Lite v1 writer execution is closed. This branch is now a non-mutating independent review candidate.
 
-The writer may modify only `.gitignore`, `scripts/ao/**`, and `docs/evidence/AO_LITE_V1_IMPLEMENTATION_REPORT.md`.
+Writer/evidence candidate before this Final-Foreman transition:
 
-The active writer lineage remains **unpublished** while state is `IMPLEMENT`; no task branch ref or PR is published until Final-Foreman closeout, avoiding an unprotected published active-writer branch.
+`c49ea1ce2a9264ab658b53d0e0e4e0f139d1b9b0`
 
-No Product Proof/gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package/project-setting/product-canon mutation is authorized.
+No writer mutation is authorized in `REVIEW`. The branch may now be published as a Draft PR for exact-head Repository Gate and independent read-only review.
 
-AO-Lite v1 itself must remain read-only-by-default and must not gain push/PR/merge/worker-dispatch/rebaseline/scope-expansion/workspace-creation/auto-repair capability.
+No merge, Product Proof/gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package/project-setting mutation, remediation, or successor task is authorized by this state.
 
-Stop condition: `AO_LITE_V1_IMPLEMENTATION_READY_FOR_INDEPENDENT_REVIEW`.
+Stop condition: `INDEPENDENT_READ_ONLY_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE_GATE`.
