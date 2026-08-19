@@ -5,16 +5,6 @@ using UnityEngine.UI;
 
 namespace TieuTienKy.Gameplay
 {
-    /// <summary>
-    /// Production mobile HUD for Arena_VerticalSlice_01: left movement
-    /// affordance, right skill buttons (Lôi Trảm/Phong Bộ/Hộ Thể) with
-    /// cooldown fill, HP/objective/blessing/kill/time readout, boss HP bar,
-    /// pause (Resume/Restart/Menu), and a richer Victory/Defeat result panel
-    /// with a build summary and Retry/Menu. Canvas/uGUI (Task A5) - no
-    /// longer depends on debug-style OnGUI. UI never owns cooldown/combat
-    /// state - every button here only calls into
-    /// PlayerSkillController/ArenaRunDirector.
-    /// </summary>
     public sealed class ProductionHud : MonoBehaviour, IBossArrivalCueDisplay
     {
         [SerializeField] string mainMenuSceneName = "MainMenu";
@@ -40,32 +30,27 @@ namespace TieuTienKy.Gameplay
         float bossArrivalCueTimer;
         bool paused;
 
-        // Top readout.
         Text hpText;
         Text stageText;
         Text blessingText;
         Text killsText;
         Text timeText;
 
-        // Movement affordance.
         RectTransform moveBase;
         RectTransform moveKnob;
 
-        // Skill buttons: index 0=Lôi Trảm, 1=Phong Bộ, 2=Hộ Thể.
         readonly Button[] skillButtons = new Button[3];
+        readonly Text[] skillLabels = new Text[3];
         readonly GameObject[] skillCooldownOverlays = new GameObject[3];
 
-        // Pause.
         Button pauseButton;
         GameObject pausePanel;
 
-        // Boss.
         GameObject bossPanel;
         Image bossHpFill;
         Text bossHpText;
         Text bossArrivalText;
 
-        // Result.
         GameObject resultPanel;
         Text resultTitleText;
         Text resultSummaryText;
@@ -80,7 +65,6 @@ namespace TieuTienKy.Gameplay
 
         public void ShowBossArrivalCue() => bossArrivalCueTimer = BossArrivalCueSeconds;
 
-        /// <summary>Task B1: skill buttons emit intent through this gateway, not directly into PlayerSkillController, so the same HUD works unchanged against LocalPlayerActionGateway (solo) or NetworkPlayerActionGateway (Task B2).</summary>
         public void SetActionGateway(IPlayerActionGateway gateway) => actionGateway = gateway;
 
         void Awake()
@@ -146,7 +130,6 @@ namespace TieuTienKy.Gameplay
             blessingText.text = blessingLine;
         }
 
-        /// <summary>Visual-only left-side circle tracking TouchInputReader.MoveInput - addresses the recorded P0A gap of no on-screen joystick affordance.</summary>
         void RefreshMovementAffordance()
         {
             if (inputReader == null)
@@ -170,6 +153,10 @@ namespace TieuTienKy.Gameplay
             {
                 return;
             }
+
+            skillLabels[0].text = "LÔI\nTRẢM";
+            skillLabels[1].text = skillController.GaleCounterPrimed ? "PHONG BỘ\nPHẢN KÍCH" : "PHONG\nBỘ";
+            skillLabels[2].text = "HỘ\nTHỂ";
 
             RefreshSkillButton(0, skillController.LoiTram.IsReady(Time.time), skillController.LoiTram.CooldownDuration);
             RefreshSkillButton(1, skillController.PhongBo.IsReady(Time.time), skillController.PhongBo.CooldownDuration);
@@ -226,7 +213,20 @@ namespace TieuTienKy.Gameplay
 
         string BuildBlessingLine()
         {
-            var parts = new List<string>(3);
+            var parts = new List<string>(5);
+            if (skillController != null)
+            {
+                ProductProofRunStyle style = skillController.CurrentRunStyle;
+                if (style.StormControlActive)
+                {
+                    parts.Add("STORM CONTROL");
+                }
+                if (style.WindWardActive)
+                {
+                    parts.Add(skillController.GaleCounterPrimed ? "WIND WARD: COUNTER READY" : "WIND WARD");
+                }
+            }
+
             AppendIfAcquired(parts, "Lôi Kiếm", director.Blessings.StackCount(BlessingId.ThunderSword));
             AppendIfAcquired(parts, "Phong Hành", director.Blessings.StackCount(BlessingId.WindStride));
             AppendIfAcquired(parts, "Hộ Thể", director.Blessings.StackCount(BlessingId.BodyWard));
@@ -235,12 +235,10 @@ namespace TieuTienKy.Gameplay
 
         static void AppendIfAcquired(List<string> parts, string displayName, int stacks)
         {
-            if (stacks <= 0)
+            if (stacks > 0)
             {
-                return;
+                parts.Add($"{displayName} {RomanNumeral(stacks)}");
             }
-
-            parts.Add($"{displayName} {RomanNumeral(stacks)}");
         }
 
         static string RomanNumeral(int stacks) => stacks switch
@@ -279,10 +277,6 @@ namespace TieuTienKy.Gameplay
             return $"{minutes:00}:{secs:00}";
         }
 
-        // --------------------------------------------------------------
-        // Construction.
-        // --------------------------------------------------------------
-
         void Build()
         {
             Canvas canvas = UiBuilder.CreateCanvas("ProductionHudCanvas", sortOrder: 5);
@@ -301,16 +295,12 @@ namespace TieuTienKy.Gameplay
         {
             hpText = UiBuilder.CreateText(root, "HpText", string.Empty, 34, TextAnchor.UpperLeft, Color.white,
                 new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -30f), new Vector2(500f, 46f));
-
             stageText = UiBuilder.CreateText(root, "StageText", string.Empty, 34, TextAnchor.UpperLeft, Color.white,
                 new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -80f), new Vector2(600f, 46f));
-
             blessingText = UiBuilder.CreateText(root, "BlessingText", string.Empty, 26, TextAnchor.UpperLeft, new Color(0.85f, 0.85f, 0.9f),
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -130f), new Vector2(700f, 40f));
-
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -130f), new Vector2(1050f, 40f));
             killsText = UiBuilder.CreateText(root, "KillsText", string.Empty, 34, TextAnchor.UpperRight, Color.white,
                 new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(400f, 46f));
-
             timeText = UiBuilder.CreateText(root, "TimeText", string.Empty, 34, TextAnchor.UpperRight, Color.white,
                 new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -80f), new Vector2(400f, 46f));
         }
@@ -319,12 +309,10 @@ namespace TieuTienKy.Gameplay
         {
             moveBase = UiBuilder.CreatePanel(root, "MoveBase", new Color(1f, 1f, 1f, 0.25f),
                 new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(220f, 220f), new Vector2(220f, 220f)).rectTransform;
-
             moveKnob = UiBuilder.CreatePanel(moveBase, "MoveKnob", new Color(1f, 1f, 1f, 0.55f),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(80f, 80f)).rectTransform;
         }
 
-        /// <summary>Basic Attack has no dedicated button (tap-anywhere-right-half already triggers it via TouchInputReader); this satisfies the HUD's required "Basic" readout without adding a second, conflicting touch target.</summary>
         void BuildBasicAttackHint(Transform root)
         {
             UiBuilder.CreateText(root, "BasicHint", "BASIC: TAP TO ATTACK", 22, TextAnchor.LowerRight, new Color(1f, 1f, 1f, 0.6f),
@@ -334,19 +322,23 @@ namespace TieuTienKy.Gameplay
         void BuildSkillButtons(Transform root)
         {
             string[] labels = { "LÔI\nTRẢM", "PHONG\nBỘ", "HỘ\nTHỂ" };
-            float size = 190f;
-            float gap = 30f;
-            float startX = -(size * 3f + gap * 2f) - 40f;
+            ProductProofHudButtonSpec[] specs =
+            {
+                ProductProofHudLayout.LoiTram,
+                ProductProofHudLayout.PhongBo,
+                ProductProofHudLayout.HoThe
+            };
 
             for (int i = 0; i < 3; i++)
             {
-                float x = startX + i * (size + gap) + size * 0.5f;
-                Button button = UiBuilder.CreateButton(root, $"SkillButton_{i}", labels[i], 28, ButtonColor,
-                    new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(x, size * 0.5f + 60f), new Vector2(size, size), out _);
+                ProductProofHudButtonSpec spec = specs[i];
+                Button button = UiBuilder.CreateButton(root, $"SkillButton_{i}", labels[i], spec.FontSize, ButtonColor,
+                    new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(spec.X, spec.Y), new Vector2(spec.Size, spec.Size), out Text label);
 
                 int capturedIndex = i;
                 button.onClick.AddListener(() => ActivateSkill(capturedIndex));
                 skillButtons[i] = button;
+                skillLabels[i] = label;
 
                 GameObject overlay = UiBuilder.CreatePanel(button.transform, "CooldownOverlay", CooldownOverlayColor,
                     Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero).gameObject;
@@ -366,15 +358,9 @@ namespace TieuTienKy.Gameplay
 
             switch (index)
             {
-                case 0:
-                    actionGateway.RequestLoiTram();
-                    break;
-                case 1:
-                    actionGateway.RequestPhongBo();
-                    break;
-                case 2:
-                    actionGateway.RequestHoThe();
-                    break;
+                case 0: actionGateway.RequestLoiTram(); break;
+                case 1: actionGateway.RequestPhongBo(); break;
+                case 2: actionGateway.RequestHoThe(); break;
             }
         }
 
