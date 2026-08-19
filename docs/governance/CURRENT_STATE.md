@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (AO-Lite v1 implementation integrated via PR #18; post-merge risk reconciliation in progress)
+Updated: 2026-08-20 (AO-Lite v1 implementation and PR #19 post-merge risk reconciliation integrated)
 
 ## Repository / canonical integration anchors
 
@@ -16,6 +16,8 @@ Updated: 2026-08-19 (AO-Lite v1 implementation integrated via PR #18; post-merge
 - PR #16 merge commit / AO-Lite design integration anchor: `1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`
 - AO-Lite v1 implementation PR #18 — **MERGED / ACCEPTED IMPLEMENTATION**
 - PR #18 merge commit / AO-Lite v1 implementation integration anchor: `ff6ace93a33b2a2a8c097dec2d039053218659c1`
+- AO-Lite post-merge risk reconciliation PR #19 — **MERGED / INTEGRATED**
+- PR #19 merge commit / risk-reconciliation integration anchor: `bbb9fbf5768eb46463c974a9236f958f8f94c46e`
 - Accepted AO-Lite v1 design: `docs/superpowers/specs/2026-08-19-ao-lite-v1-design.md`
 - Canonical project risks: `docs/governance/RISK_REGISTER.md`
 - Human/Game Director remains merge authority for future repository PRs.
@@ -32,6 +34,7 @@ ROADMAP                              = v0.1.6 PRODUCT-PROOF ROADMAP / INTEGRATED
 HARNESS_VNEXT                        = INTEGRATED
 AO_LITE_V1_DESIGN                    = ACCEPTED / INTEGRATED VIA PR #16
 AO_LITE_V1_IMPLEMENTATION            = ACCEPTED / INTEGRATED VIA PR #18
+POST_MERGE_RISK_RECONCILIATION       = ACCEPTED / INTEGRATED VIA PR #19
 MAIN_BRANCH_PROTECTION               = PASS / repository-gate REQUIRED
 RISK_NETWORK_001                     = OPEN / P2 GOVERNANCE-PRODUCT DEBT
 RISK_IP_001                          = OPEN / P1 BEFORE EXTERNAL COMMERCIAL COMMITMENT
@@ -75,7 +78,7 @@ AO-Lite integration does not grant Product Proof, gameplay, networking, PvP/co-o
 
 ## Canonical risk register
 
-Two open risks are now tracked in `docs/governance/RISK_REGISTER.md`.
+Two open risks are tracked in `docs/governance/RISK_REGISTER.md` and were integrated through PR #19.
 
 ### `RISK-NETWORK-001`
 
@@ -85,9 +88,11 @@ Dependency/capability presence grants zero feature authority. Any future keep/re
 
 ### `RISK-IP-001`
 
-The public repository has no root `LICENSE` file at the recorded reconciliation baseline. This is tracked as a commercial-rights/provenance governance risk, not as a conclusion that the owner cannot commercialize the game.
+The integrated risk record acknowledges the existing README `Public development and licensing` policy and the existing `ASSET_SOURCES.csv` provenance-tracking control. The public repository also has no root `LICENSE` file at the recorded reconciliation baseline.
 
-Before an external commercialization, publisher, or store-release commitment, the project requires a separately authorized rights/provenance inventory and explicit licensing/notice decision. No open-source or proprietary license text is selected by this reconciliation.
+The remaining risk is incomplete or not-yet-validated repository-wide chain-of-title/provenance coverage, incomplete comprehensive third-party/contributor-obligation audit, and an unresolved formal repository/release licensing + notice decision. This is not a conclusion that the owner cannot commercialize the game, and no open-source or proprietary license model is selected by PR #19.
+
+Before an external commercialization, publisher, or store-release commitment that relies on project rights, the project requires a separately authorized rights/provenance inventory and validation plus an explicit licensing/notice decision.
 
 ## Product-Proof roadmap position
 
@@ -125,9 +130,9 @@ The NGO + Unity Transport Stage-B foundation remains accepted historical technic
 
 The local R1 specimen remains quarantined and must not be reset, cleaned, stashed, committed, rebased, merged, or otherwise modified without separate explicit Human authority.
 
-## Canonical closeout target
+## Canonical post-merge authority state
 
-This reconciliation must close to non-mutating `DISCOVERY`:
+PR #19 is integrated. Canonical authority remains non-mutating `DISCOVERY`:
 
 - no active task;
 - no active branch authority;
@@ -136,10 +141,10 @@ This reconciliation must close to non-mutating `DISCOVERY`:
 - no writable paths;
 - stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
 
-ONE NEXT ACTION after merge of this reconciliation:
+Current next-action boundary:
 
 **Human/Game Director explicitly chooses the next bounded action.**
 
-Product Proof Slice 001 remains the next intended product slice, but roadmap position, AO-Lite integration, the two open risks, and PR #13 do not create mutation authority.
+Product Proof Slice 001 remains the next intended product slice, but roadmap position, AO-Lite integration, the two open risks, PR #13, and the integration of PR #19 do not create mutation authority.
 
-No successor implementation authority is inferred by PR #18 or this reconciliation.
+No successor implementation authority is inferred by PR #18 or PR #19.
