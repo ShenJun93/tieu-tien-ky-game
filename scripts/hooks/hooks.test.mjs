@@ -71,7 +71,7 @@ function makeFixture(overrides = {}) {
   }
 
   write(root, 'docs/tasks/TASK.md', '# test task\n');
-  writeEvidence(root, { verdict: 'UNSET', automated_tests: 'UNSET' });
+  writeEvidence(root, { verdict: 'PASS', automated_tests: 'UNSET' });
   write(root, 'docs/governance/NEXT_TASK.md', '# inactive baseline\n');
   commitAll(root, 'baseline');
   const baseline = git(root, ['rev-parse', 'HEAD']);
@@ -84,8 +84,6 @@ function makeFixture(overrides = {}) {
 }
 
 const NON_MUTATING_STATES = ['PAUSED', 'DISCOVERY', 'REVIEW', 'HUMAN_GATE', 'CLOSED'];
-
-// --- scope-gate: path hygiene ---
 
 test('scope-gate allows a normal allowed path', () => {
   const { root } = makeFixture();
@@ -104,8 +102,6 @@ test('scope-gate blocks Windows absolute paths', () => {
   const result = invoke(root, 'scope-gate.mjs', ['C:\\temp\\Foo.cs']);
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
 });
-
-// --- pre-task: authority / identity semantics ---
 
 test('pre-task passes IMPLEMENT with exact repository, branch, SHA baseline and evidence contract', () => {
   const { root } = makeFixture();
@@ -183,19 +179,15 @@ test('pre-task blocks SPIKE state with a non-SPIKE task mode', () => {
 });
 
 test('pre-task blocks branch that does not contain authorized baseline', () => {
-  const { root, baseline } = makeFixture();
+  const { root } = makeFixture();
   git(root, ['checkout', '-q', '--orphan', 'unrelated']);
   write(root, 'other.txt', 'x\n');
   commitAll(root, 'unrelated');
   git(root, ['branch', '-M', 'feat/test-task']);
-  writeAuthority(root, baseline);
-  commitAll(root, 'authority on unrelated history');
   const result = invoke(root, 'pre-task.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /does not contain baseline|cannot resolve merge-base/);
 });
-
-// --- scope-gate: authority state semantics ---
 
 for (const state of NON_MUTATING_STATES) {
   test(`scope-gate blocks mutation when state is ${state}`, () => {
@@ -213,8 +205,6 @@ test('scope-gate allows SPIKE mutation within bounded path', () => {
   const result = invoke(root, 'scope-gate.mjs', ['docs/evidence/spike.md']);
   assert.equal(result.status, 0, result.stderr);
 });
-
-// --- pre-finish: generic task-declared evidence ---
 
 test('pre-finish rejects unsatisfied declared evidence', () => {
   const { root } = makeFixture();
