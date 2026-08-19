@@ -1,29 +1,27 @@
 # TIỂU TIÊN KÝ — RELEASE TRACK + PLAYER-VISIBLE DELTA GATE
 
-Status: **Program/execution authority — documentation only. Landed 2026-08-18.**
+Status: **HISTORICAL PROGRAM RECORD / PARTIALLY SUPERSEDED BY ACCEPTED PRODUCT FOUNDATION**.
 
-This file is the authoritative post-P0A macro-slice order and product-quality
-gate. It amends `docs/master/MASTER_PLAN.md` §14 (Roadmap and gates)
-minimally: it does not delete or invalidate P0A/P0B/Phase history. It
-originally defined how work after `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`
-(historical; complete) would be staged and evaluated once that task reached
-its own Human Gate — which it did. Since then, Stage A and Stage B have both
-been implemented and completed
-(`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001`, historical; complete)
-with a physical Human Gate 1 outcome (§5 below). Current execution
-authority is always `docs/governance/NEXT_TASK.md`, whose `status` as of
-2026-08-18 is `ACTIVE` (TTK Production Foundation v1 accepted; PRODUCT FEEL
-REMEDIATION 01 is the current authorized execution task).
+This file preserves the Stage A → Stage B → Human Gate → Stage C/D program framing that governed work through the 2026-08-18 Stage A+B Human Gate. It remains valid as **historical evidence** for what was built/tested and as a source for reusable process ideas such as Player-Visible Delta and exact artifact identity.
 
-Relationship to prior roadmap naming: **Stage A (Playable Product
-Foundation)** absorbs and extends P0A + the Vertical Slice v0.1 work.
-**Stage B (2-Player Network Foundation)** is the local-network-authoritative
-step previously called P0B. Stages C/D are new: they did not exist in the
-prior P0B/Phase1-8 roadmap. `MASTER_PLAN.md` §14 remains the historical
-record of that prior framing; this file governs stage order and product
-gates going forward.
+It is **not current successor/product-mode authority**.
 
-## 1. Release-track order
+Current authority order:
+
+```text
+latest explicit Human/Game Director instruction
+> docs/governance/NEXT_TASK.md
+> active task contract
+> docs/master/PRODUCT_FOUNDATION.md + accepted decisions
+> current craft/production doctrine
+> this historical release track
+```
+
+The accepted Product Foundation (`docs/master/PRODUCT_FOUNDATION.md`, PR #9) made solo PvE the primary Product Proof and Human PvP an optional unproven hypothesis. Therefore the old requirement that Human PvP must gate Stage C/product progression is **SUPERSEDED for current execution**. No Stage C, PvP, co-op or multiplayer successor work is authorized unless a fresh task explicitly says so.
+
+## 1. Historical release-track order
+
+The following sequence was the accepted 2026-08-18 program framing and is preserved for audit/history:
 
 ```text
 Stage A — Playable Product Foundation
@@ -31,7 +29,7 @@ Stage A — Playable Product Foundation
 Stage B — 2-Player Network Foundation
 ↓
 QUICK HUMAN PRODUCT/FUN GATE
-↓ GO
+↓ GO (historically intended)
 Stage C — Real Internet Foundation
 ↓
 Stage D — Actual 6-Player 2v2v2 PvPvE Match
@@ -41,157 +39,119 @@ PLAYABLE_PRODUCTION_ALPHA_CANDIDATE
 FINAL HUMAN ALPHA GATE
 ```
 
-Accepted slices become production baselines, not disposable milestone
-prototypes.
+**Current interpretation:** Stage A/B implementation and evidence remain valid historical technical work. The Stage C/D/PvP dependency chain above is not a current roadmap commitment.
 
-## 2. Player-Visible Delta ratchet
+## 2. Player-Visible Delta ratchet — STILL ACTIVE PRINCIPLE
 
-A macro-slice is not a meaningful product advance merely because code,
-tests, architecture, or networking are correct. Every macro-slice must
-answer:
+A macro-slice is not a meaningful product advance merely because code, tests, architecture or networking are correct. Every player-facing slice should answer:
 
-> What can the player now SEE, HEAR, FEEL, UNDERSTAND, or DO in the build
-> that was materially weaker or absent before?
+> What can the player now SEE, HEAR, FEEL, UNDERSTAND, or DO in the build that was materially weaker or absent before?
 
-At least one material Player-Visible Delta is mandatory. Infrastructure-only
-work is allowed only when it is a necessary prerequisite for the immediately
-following player-facing capability.
+At least one material Player-Visible Delta is normally required for a player-facing product slice. Infrastructure-only work is justified when it is a necessary safety/iteration prerequisite and the task explicitly says why.
 
-## 3. Stage A+B product outcome
+## 3. Historical Stage A+B product target
 
-Stage A+B is the first major conversion from foundation to game. Target
-Human impression:
+Historical target impression:
 
-> "This clearly feels like an actual mobile action game being built, not a
-> Unity demo."
+> "This clearly feels like an actual mobile action game being built, not a Unity demo."
 
-Stage A+B must visibly deliver, across CHARACTERS, COMBAT, ARENA, UI, RUN,
-and NETWORK, the concrete bars listed in the accepted amendment record
-(`docs/evidence/` macro-slice reports must enumerate these explicitly per
-slice rather than restating this file).
+Stage A+B delivered substantial technical/architectural foundations but did not pass the Human Product Gate.
 
-## 4. Technical PASS is necessary but not sufficient
+## 4. Technical PASS is necessary but not sufficient — STILL ACTIVE PRINCIPLE
 
-Automated gates (tests, compile, Android build, network smoke, arena
-integrity, regressions) produce `TECHNICAL_GATE=GREEN` only. They do not by
-themselves produce a product PASS.
+Automated gates prove technical claims only. They do not self-certify Human readability, feel, product identity or fun.
 
-## 5. Quick Human Product/Fun Gate (after Stage A+B)
-
-Evaluated dimensions: `LOOKS_LIKE_A_GAME`, `COMBAT_HAS_WEIGHT`,
-`CHARACTERS_FEEL_ALIVE`, `ARENA_FEELS_LIKE_A_LEVEL`, `UI_FEELS_LIKE_GAME_UI`,
-`AUDIO_SUPPORTS_ACTION`, `FOUR_ACTIONS_READABLE`, `RUN_HAS_CLIMAX`,
-`HUMAN_VS_HUMAN_IS_MORE_FUN`, `WANT_TO_REPLAY`.
-
-**GO** — Stage C may open when `TECHNICAL_GATE=GREEN`,
-`PRODUCT_FEEL=YES or CLEARLY_PROMISING`,
-`HUMAN_VS_HUMAN_FUN=YES or CLEARLY_PROMISING`, and no foundation-breaking
-blocker exists.
-
-**NO-GO** — If technical tests are green but the Human still reasonably
-describes the build as "Unity demo, just prettier," Stage A+B is
-`PRODUCT_GATE=RED`. Do not scale to Internet/6-player systems to hide weak
-product feel; perform the smallest evidence-backed correction to the
-player-facing bottleneck instead.
-
-**Outcome, physical Gate 1 (2026-08-18):** `TECHNICAL_GATE=GREEN`,
-`PRODUCT_GATE=RED` — `NO-GO` for Stage C. Full verdict:
-`docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, "Human Gate
-outcome (2026-08-18)". Per the NO-GO rule above, the correction lands as
-**PRODUCT FEEL REMEDIATION 01**
-(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) — a bounded
-player-facing correction on the existing Stage A+B foundation, not a scale-up
-into Stage C. That task ends on a second physical evaluation, **Human Gate
-02**, using an expanded dimension set (first-30-seconds read, control
-ergonomics, per-skill signature, audio/haptic perceptual help,
-run-to-run variety, and — for the first time — an actual two-device
-Human-vs-Human LAN PvP session). Stage C opens only after Human Gate 02
-returns an explicit Human `GO`.
-
-## 6. Player-visible evidence in reports
-
-Every final macro-slice report must include: `PLAYER_VISIBLE_DELTA`,
-`BEFORE`, `AFTER`, `WHY_PLAYER_NOTICES_IT`, `TECHNICAL_EVIDENCE`,
-`HUMAN_VERDICT`. Do not report only changed files/test counts.
-
-## 7. Production baseline ratchet
+Current Product Foundation proof model:
 
 ```text
-verified foundation
-→ accepted Stage A+B technical/architectural foundation
-→ Human-accepted Stage A+B product baseline (after Product Feel
-  Remediation + Human Gate 02 GO)
-→ Stage C Real Internet Foundation
-→ 6-player Alpha Candidate
-→ Human-accepted Playable Production Alpha
+TECHNICAL GATE
+→ INTERNAL HUMAN PRODUCT GATE
+→ SMALL TARGET-AUDIENCE PLAYTEST (later/provisional)
+→ LATER RETENTION VALIDATION
 ```
 
-**Technical vs. product baseline.** The **accepted Stage A+B
-technical/architectural foundation** (seams, tests, architecture — currently
-`GREEN`) and the **Human-accepted Stage A+B product baseline** are distinct
-claims and must not be conflated. The product baseline is **NOT accepted**
-while `STAGE_AB_PRODUCT_GATE=RED`; it becomes accepted only after PRODUCT
-FEEL REMEDIATION 01 closes the carried-forward blockers and Human Gate 02
-returns an explicit `GO` (§5). Stage C opens only after that Human `GO` —
-this ratchet does not itself authorize Stage C.
+See `docs/master/PRODUCT_FOUNDATION.md` §11.
 
-Each accepted baseline binds: exact HEAD, fresh tests, exact Human artifact,
-Human/product verdict.
+## 5. Historical Human Gate outcome (2026-08-18)
 
-## 8. Artifact identity
+Evaluated dimensions included `LOOKS_LIKE_A_GAME`, `COMBAT_HAS_WEIGHT`, `CHARACTERS_FEEL_ALIVE`, `ARENA_FEELS_LIKE_A_LEVEL`, `UI_FEELS_LIKE_GAME_UI`, `AUDIO_SUPPORTS_ACTION`, `FOUR_ACTIONS_READABLE`, `RUN_HAS_CLIMAX`, `HUMAN_VS_HUMAN_IS_MORE_FUN`, `WANT_TO_REPLAY`.
 
-Human-facing/evidence APKs use SHA-bound names:
+Outcome:
 
 ```text
-TieuTienKy-StageAB-<shortSHA>.apk
-TieuTienKy-InternetFoundation-<shortSHA>.apk
-TieuTienKy-PlayableAlphaCandidate-<shortSHA>.apk
+STAGE_AB_TECHNICAL_GATE = GREEN
+STAGE_AB_PRODUCT_GATE   = RED
+PRODUCT_DIRECTION       = VALIDATED / PROMISING
+HUMAN_PVP_FUN           = NOT_PROVEN
 ```
 
-The legacy `Builds/Android/P0A.apk` path may remain as a transient
-build-tool output until a bounded tooling change is justified.
+Full evidence: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`.
 
-## 9. Durable domain naming
+The old follow-on `PRODUCT FEEL REMEDIATION 01` is now a **historical/salvage source**, not a task that may resume verbatim. Its useful R1-R5 observations can inform new PvE-first Product Proof slices. Its R6 Human LAN PvP gate is not a current requirement.
 
-Use production names for new long-lived runtime responsibilities:
-`MatchDirector`, `TeamService`, `MatchConfig`, `TeamAssignment`,
-`MatchClock`, `MatchPhase`, `TeamScore`, `MatchResult`, `PvEDirector`. Use
-`Alpha` primarily for milestone-specific config/diagnostics/evidence. Do not
-perform a speculative rename sweep of already-landed code.
+## 6. Player-visible evidence in reports — STILL ACTIVE PRINCIPLE
 
-## 10. Bounded player-count configuration
+Player-facing final reports should include the equivalent of:
 
-Accepted Alpha configuration: `TeamCount = 3`, `PlayersPerTeam = 2`,
-`MaxPlayers = 6`. These values belong in a bounded authored `MatchConfig`,
-not scattered constants. This does not authorize 9 players, arbitrary
-topology, or a generic faction/tournament framework.
+```text
+PLAYER_VISIBLE_DELTA
+BEFORE
+AFTER
+WHY_PLAYER_NOTICES_IT
+TECHNICAL_EVIDENCE
+HUMAN_VERDICT (when required)
+```
 
-## 11. Compact authority handoff
+Task-specific evidence is declared in `NEXT_TASK.required_evidence`; non-player-facing governance/tooling work must not invent a Human/Android gate.
 
-Once authority docs for a Stage are committed, resumed workers receive:
-`PROJECT`, `TASK`, `REPO`, `BRANCH`, `EXPECTED_HEAD`, `AUTHORITY_SHA`,
-`DESIGN_PATH`, `PLAN_PATH`, `AMENDMENT_PATH`, `AMENDMENT_SHA`,
-`WRITE_SCOPE`, `PLAYER_VISIBLE_DELTA_TARGET`, `DONE_WHEN`, `STOP_WHEN`.
-Workers read exact repository artifacts rather than receiving full
-duplicated plans in every session.
+## 7. Production baseline ratchet — REINTERPRETED
 
-## 12. No new premature systems
+Durable technical seams accepted during Stage A+B remain available according to their maturity in `PRODUCTION_FOUNDATION.md`.
 
-This track does not authorize: 9-player/final 3v3v3 scale,
-matchmaking/MMR/ranked, dedicated servers, host migration, reconnect
-framework, rollback/prediction framework, anti-cheat platform, broad
-backend, inventory/equipment, shop/gacha, permanent progression, live ops,
-or generic ability/modifier/event/DI frameworks.
+Product advancement now follows the accepted Product Foundation rather than the old Stage C/D sequence:
 
-## 13. Entry condition (historical; satisfied)
+```text
+accepted technical/craft seams
+→ PvE-first Product Proof
+→ evidence-backed product decision
+→ only then separately authorize co-op/PvP/network/service scale if justified
+```
 
-Stage A execution began only after `TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`
-reached its own Human Gate and was accepted, per
-`docs/governance/NEXT_TASK.md` and
-`docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md` — that condition is
-satisfied and historical. Stage A and Stage B have both since been
-implemented and completed, with a physical Human Gate 1 outcome
-(`STAGE_AB_TECHNICAL_GATE=GREEN`, `STAGE_AB_PRODUCT_GATE=RED`; §5). This
-file establishes program order and gates; it does not itself authorize
-Stage C/D execution, and current execution authority for any new work
-remains `docs/governance/NEXT_TASK.md`.
+No networking scale follows automatically from existing Stage B capability.
+
+## 8. Artifact identity — ACTIVE PATTERN, GENERIC NAMING
+
+Human-facing/evidence artifacts should be bound to the exact source SHA. Task-specific naming should be declared by the active task, for example:
+
+```text
+TieuTienKy-<slice>-<shortSHA>.apk
+```
+
+Old StageAB/InternetFoundation/PlayableAlphaCandidate names remain historical examples, not mandatory names for future Product Proof work.
+
+## 9. Durable domain naming — HISTORICAL GUIDANCE ONLY
+
+Names such as `MatchDirector`, `TeamService`, `MatchConfig`, `TeamAssignment`, `MatchClock`, `MatchPhase`, `TeamScore`, `MatchResult`, `PvEDirector` were historical Stage C/D naming guidance. Do not create or rename multiplayer domains merely to satisfy this section.
+
+Use names that match an explicitly authorized current responsibility; do not perform speculative rename sweeps.
+
+## 10. Historical bounded player-count configuration
+
+The old Alpha configuration (`TeamCount = 3`, `PlayersPerTeam = 2`, `MaxPlayers = 6`) is **historical hypothesis/configuration**, not current Product Foundation scope.
+
+The next Product Proof direction is 1-player solo PvE unless separately changed by accepted evidence/canon.
+
+## 11. Compact authority handoff — STILL ACTIVE PRINCIPLE
+
+Workers should receive compact exact repository identity rather than duplicated plans. Current contract is defined by `NEXT_TASK` + active task + `WORKFLOW.md`, including immutable baseline SHA, branch/workspace policy, scope, evidence and stop condition.
+
+## 12. No premature systems — STILL ACTIVE PRINCIPLE
+
+Nothing in this historical track authorizes matchmaking/MMR/ranked, dedicated servers, host migration, reconnect framework, rollback/prediction framework, anti-cheat platform, broad backend, inventory/equipment, shop/gacha, permanent progression, live ops or generic ability/modifier/event/DI frameworks.
+
+## 13. Relationship to current canon
+
+- `docs/master/PRODUCT_FOUNDATION.md` governs current product identity, mode direction, Product Proof and product bets.
+- `docs/governance/NEXT_TASK.md` is current machine-readable write authority.
+- `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `PRODUCTION_FOUNDATION.md` govern craft/quality/maturity.
+- this file preserves the historical Stage A/B/C/D program and reusable process lessons only.

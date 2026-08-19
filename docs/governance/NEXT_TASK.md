@@ -4,46 +4,68 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
+  "state": "HUMAN_GATE",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003",
+  "branch": "chore/harness-vnext-canon-workflow-reconciliation",
+  "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003.md",
+  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md",
   "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "activation_single_parent_guard": "PASS",
+    "activation_anchor_diff_guard": "PASS",
+    "multi_parent_activation_regression": "PASS",
+    "governance_hook_tests": "PASS",
+    "scope_diff": "PASS",
+    "remote_ci": "PASS"
+  },
+  "independent_review_verdict": "ACCEPT",
+  "independent_review_p0": 0,
+  "independent_review_p1": 0,
+  "safe_to_move_to_human_merge_gate": true,
+  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
 }
 ```
 
 ## Current authority
 
-`state` is `DISCOVERY`: there is no active write task and no active branch authority. Repository mutation is forbidden by default.
-
-The Product Foundation is now **ACCEPTED / CANONICAL / INTEGRATED INTO MAIN**. PR #9 merged `chore/product-foundation-canon` into `main` as merge commit `ae03480376d9563b39820184d41cdb36bfdd2a71` after independent review `PASS` and explicit Human/Game Director acceptance and merge approval.
-
-The post-merge reconciliation task `TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-POST-MERGE-RECONCILIATION-001` only corrected stale text that still described that completed merge as future work. It grants no successor authority.
-
-No Product Proof implementation, `PRODUCT-FEEL-REMEDIATION-01` resumption, R1 salvage/resumption, R2-R6, Stage C, co-op/PvP implementation, Unity/runtime/package mutation, or any other write task is authorized by this state.
-
-## Live operator precedence
+Fresh independent read-only review of exact candidate `9366500600e6e73b47431348fe41865aa6c06b11` returned:
 
 ```text
-latest explicit Human/Game Director instruction
-> persisted NEXT_TASK.md authority
-> task contract
-> stable product/craft canon
-> historical documents
+VERDICT = ACCEPT
+P0      = 0
+P1      = 0
+SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE = YES
 ```
 
-A future Human/Game Director instruction may authorize a bounded successor task, but `NEXT_TASK.md` must be explicitly reconciled before delegated mutation proceeds.
+The sole prior evidence blocker was closed by a fresh Human live-read of the active task-branch protection:
 
-## Product execution status
+```text
+enforce_admins = true
+force_pushes   = false
+deletions      = false
+required_pull_request_reviews = null
+required_status_checks        = null
+```
 
-`PRODUCT_EXECUTION` remains **FROZEN**. `PRODUCT-FEEL-REMEDIATION-01` remains **PAUSED**. R1 remains **QUARANTINED**. R2-R6 remain **NOT STARTED**. Stage C remains **NOT AUTHORIZED**. `HUMAN_PVP_FUN` remains **NOT PROVEN**.
+Exact REVIEW-head Repository Gate run `32230791184` remains `SUCCESS` with 46/46 governance regressions passing.
 
-## One next action
+Repository mutation is stopped. `allowed_paths` is empty.
 
-Human/Game Director selects the next bounded action. The roadmap's next candidate is the R1-R6 Salvage Review, but it is **NOT AUTHORIZED** by the Product Foundation merge or this reconciliation.
+## Human Gate
 
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+PR #11 is eligible for a Human/Game Director merge decision only. This state is not merge authorization.
+
+Human must explicitly choose whether to merge PR #11. No successor task, gameplay/R1/Product Proof/Unity Harness SPIKE/networking/PvP/Stage C authority is inferred or granted.
+
+## Hard stop
+
+Do not edit files, push implementation commits, change repository settings, mark PR #11 ready, merge it, or start successor implementation without separate explicit Human authority.

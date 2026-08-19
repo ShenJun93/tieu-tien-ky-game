@@ -1,33 +1,23 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01
 
-Status: **PAUSED** (as of 2026-08-19; see `docs/governance/CURRENT_STATE.md`
-and `docs/governance/NEXT_TASK.md`). This task was `ACTIVE` from 2026-08-18
-until superseded governance authority was reconciled
-(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`); it is paused, not
-cancelled or superseded — its scope, allowed/forbidden paths and R1-R6
-contract below are unchanged and stand ready to resume verbatim once an
-explicit Human/Game Director instruction reactivates it via a fresh
-`docs/governance/NEXT_TASK.md` authority. The TTK Production Foundation v1
-this task relies on, per `docs/master/GAME_PRODUCTION_DOCTRINE.md` and
-`docs/master/PRODUCTION_FOUNDATION.md`, remains `CANONICAL / ACCEPTED`,
-`FOUNDATION_ACCEPTED_FROM_REVIEWED_HEAD =
-4feb9f4d70e332404edad6295724c38fd02b19cb`.
-Project: **TIỂU TIÊN KÝ**
-Program: **PLAYABLE PRODUCTION ALPHA**
-Macro-slice: **PRODUCT FEEL REMEDIATION 01**
-Execution branch: `feat/p0a-local-microfun-spike`
+Status: **HISTORICAL / SALVAGE SOURCE — NOT A CURRENT EXECUTION CONTRACT**
 
-## Authority
+This task was active after the 2026-08-18 Stage A+B Human Gate, before the later Product Foundation research/canon decision changed the primary product direction to **solo PvE-first**.
 
-Program authority: `docs/master/RELEASE_TRACK.md`.
-Craft/quality authority: `docs/master/GAME_PRODUCTION_DOCTRINE.md`,
-`docs/master/PRODUCTION_FOUNDATION.md`.
+It must **not** be resumed verbatim.
 
-Predecessor: `TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001`.
+Current product authority:
 
-Predecessor outcome (physical Human Gate, 2026-08-18, Samsung Galaxy A15,
-`Builds/Android/TieuTienKy-StageAB-0065a18.apk`, BUILD_HEAD
-`0065a18d9cfa901f03f228171681bf707ead23af`):
+- `docs/master/PRODUCT_FOUNDATION.md`
+- `docs/decisions/001-product-foundation.md`
+- `docs/governance/CURRENT_STATE.md`
+- `docs/governance/NEXT_TASK.md`
+
+The historical task remains useful because it captured real Human product gaps and partially completed R1 work. Its material should be classified/reused through fresh successor tasks rather than reactivated as one six-step program.
+
+## Historical predecessor outcome
+
+Physical Human Gate, 2026-08-18:
 
 ```text
 STAGE_AB_TECHNICAL_GATE = GREEN
@@ -37,181 +27,129 @@ STAGE_C                 = NOT_AUTHORIZED
 HUMAN_PVP_FUN           = NOT_PROVEN
 ```
 
-Full verdict detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
-Human Gate outcome (2026-08-18). This task stays on the existing
-production-kept Stage A+B foundation — it remediates player-facing feel, it
-does not rebuild the foundation.
-
-## Mission
-
-> "This now feels deliberately designed as a mobile action game rather than
-> a technically complete Unity demo."
-
-Primary player-facing blockers this task exists to close, in the Human's own
-words:
+The Human identified these gaps:
 
 1. mobile controls / skill-button ergonomics;
-2. UI visual/product quality (`UI_FEELS_LIKE_GAME_UI = NO`, "phèn");
+2. UI visual/product quality (`UI_FEELS_LIKE_GAME_UI = NO`, “phèn”);
 3. combat skill + animation signature (`COMBAT_HAS_WEIGHT = YES_WITH_GAP`);
 4. audio perceptual effectiveness (`AUDIO_SUPPORTS_ACTION = NO`);
 5. insufficient run/build decision depth (`WANT_TO_REPLAY = WEAK_YES`);
-6. Human-vs-Human fun has not actually been tested
-   (`HUMAN_VS_HUMAN_IS_MORE_FUN = NOT_TESTED`).
+6. Human-vs-Human fun had not been tested.
 
-Use `COMPONENT EXISTS != PRODUCT PASS` as the standing check against
-declaring any of R1–R6 done merely because the underlying component exists
-and functions (`docs/master/GAME_PRODUCTION_DOCTRINE.md` §3).
+Those observations remain valid historical evidence. Their old sequencing/authority does not.
 
-## Architectural ratchet
+## Current salvage disposition
 
-Preserve production-kept seams from Stage A+B. Do not create duplicate
-damage formulas, skill systems, blessing engine, Water reaction engine,
-arena-space system, enemy combat engine, or a second `IPlayerActionGateway`
-path. Prefer `KEEP → EXTEND → MIGRATE LOCALLY → REPLACE PRESENTATION`.
+```text
+R1 Mobile controls          = SALVAGE / REIMPLEMENT CANDIDATE
+R2 UI product pass          = SALVAGE / REIMPLEMENT CANDIDATE
+R3 Combat signature         = SALVAGE / REIMPLEMENT CANDIDATE
+R4 Audio + haptic           = SALVAGE / REIMPLEMENT CANDIDATE
+R5 Micro-replayability      = SALVAGE / REIMPLEMENT CANDIDATE
+R6 Human LAN PvP gate       = SUPERSEDED AS CURRENT PRODUCT-PROOF REQUIREMENT
+```
 
-## Required bounded domains
+R1-R5 are not automatically next tasks. They are inputs to a new PvE-first Product Proof plan and may be reordered, merged, narrowed, or rejected according to current evidence.
 
-### R1 — Mobile control contract
+R6 may only reappear as a separately authorized optional PvP experiment if future evidence/product priorities justify it. Existing NGO + Unity Transport technical capability is preserved and does not itself authorize that experiment.
 
-- dedicated Basic-attack control, separate from the skill cluster;
-- thumb-friendly action cluster layout;
-- prevent UI touch from also triggering Basic attack underneath it;
-- multitouch correctness (movement + action simultaneously);
+## Historical R1 — Mobile control contract
+
+Original intent:
+
+- dedicated Basic-attack control separate from skill cluster;
+- thumb-friendly action cluster;
+- prevent UI touch from also triggering Basic attack;
+- multitouch movement + action;
 - safe-area / physical-device ergonomics;
 - readable cooldown/press feedback.
 
-Craft skill: `.agents/skills/ttk-mobile-action-controls/SKILL.md`.
+Current interpretation:
 
-### R2 — UI product pass
+- safe area, multitouch, thumb ergonomics, input conflict prevention and correct action-intent routing remain durable requirements;
+- a dedicated Basic button is a **candidate solution**, not current canon;
+- future R1 should be authored from current `main` and current Product Foundation, while the quarantined dirty specimen is inspected only under explicit salvage-review authority.
 
-- authored visual language (typography/icons/panels coherent across every
-  required screen);
+## Historical R2 — UI product pass
+
+Still useful product gap:
+
+- coherent typography/icons/panels;
 - touch hierarchy;
-- eliminate programmer-looking presentation;
-- do not change gameplay-truth ownership — UI still emits intent and
-  renders runtime state only.
+- eliminate programmer/debug-overlay feel;
+- UI emits intent and renders runtime truth only.
 
-Craft skill: `.agents/skills/ttk-game-ui-art-direction/SKILL.md`.
+Current status: product/craft requirement remains relevant, implementation not authorized by this historical task.
 
-### R3 — Combat signature pass
+## Historical R3 — Combat signature pass
+
+Still useful product gap:
 
 - Basic cadence/rhythm;
-- Lôi Trảm signature;
-- Phong Bộ signature;
-- Hộ Thể defensive/reversal readability;
-- better attack/skill animation rhythm;
+- Lôi signature;
+- Phong signature;
+- Hộ defensive/reversal readability;
+- attack/skill animation rhythm;
 - hit/opponent-response coherence.
 
-Craft skills: `.agents/skills/ttk-eastern-combat-direction/SKILL.md`,
-`.agents/skills/ttk-combat-animation-rhythm/SKILL.md`.
+Current status: consistent with Product Foundation, but must be scoped around the new PvE Product Proof rather than old R1-R6 sequence.
 
-### R4 — Audio + haptic pass
+## Historical R4 — Audio + haptic pass
 
-- replace "audio exists" success criterion with a perceptual one;
+Still useful product gap:
+
+- perceptual audio success rather than clip-exists success;
 - priority/timing/mix;
 - recognizable action signatures;
-- bounded mobile haptic hierarchy;
-- no generic audio/event framework.
+- bounded mobile haptic hierarchy.
 
-Craft skill: `.agents/skills/ttk-audio-haptic-direction/SKILL.md`.
+Current status: relevant future player-facing work, not current authority.
 
-### R5 — Micro-replayability
+## Historical R5 — Micro-replayability
 
-- current Lôi/Phong/Hộ paths must produce noticeably different tactical
-  play;
-- favor behavioral/capstone changes over stat-only increments;
-- no generic modifier system;
-- no broad content expansion.
+Original task assumed Lôi/Phong/Hộ build paths and `RunBlessingState` content.
 
-Craft skill: `.agents/skills/ttk-build-identity-replayability/SKILL.md`.
-
-### R6 — Real Human LAN PvP gate
-
-- expose a bounded LAN Host/Join path using the existing NGO + Unity
-  Transport stack from Stage B;
-- same Wi-Fi, two physical Android devices;
-- no Relay/UGS/Internet;
-- a Human can actually fight a Human;
-- makes `HUMAN_VS_HUMAN_IS_MORE_FUN` testable for the first time.
-
-Craft skill: `.agents/skills/ttk-human-product-gate/SKILL.md` (for the gate
-itself); reuse Stage B's `Arena_Network_01` topology and authority model —
-do not build a new network stack.
-
-## Hard exclusions
-
-Not authorized in this task:
+Current Product Foundation instead requires at minimum:
 
 ```text
-Stage C / Relay / Sessions / UGS / real Internet
-6 players / matchmaking
-prediction/rollback framework
-permanent progression
-inventory
-economy
-generic ability/modifier/event/DI framework
-broad content expansion
+2 clear authored playstyles
+1 emergent hybrid interaction
 ```
 
-## Evidence
+Cơ Duyên is optional if cheap for the first Product Proof. The `RunBlessingState` seam remains durable, but future Product Proof does not have to implement all three historical blessing paths.
 
-Primary evidence: `docs/evidence/PRODUCT_FEEL_REMEDIATION_01_FINAL_REPORT.md`
-(new file; historical evidence in `STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`
-remains append-only and is not rewritten by this task).
+## Historical R6 — Real Human LAN PvP gate
 
-Required fields, matching the established report convention: `STARTING_HEAD`,
-`ACTIVATION_HEAD`, `BUILD_HEAD`, `REPORT_HEAD`, `BRANCH`,
-`PLAYER_VISIBLE_DELTA` (`BEFORE`/`AFTER`/`WHY_PLAYER_NOTICES_IT`) per R1–R6,
-`EDITMODE`, `PLAYMODE`, `SOLO_REGRESSION`, `TWO_PROCESS_OR_LAN_RESULT`,
-`ANDROID_BUILD`, `HUMAN_APK`, `DEFERRED_TECHNICAL_DEBT`,
-`ARCHITECTURAL_RATCHET`, `HUMAN_TEST_STEPS`.
+Original intent:
 
-## Human Gate 02
+- LAN Host/Join using NGO + Unity Transport;
+- same Wi-Fi / two Android devices;
+- Human fights Human;
+- test `HUMAN_VS_HUMAN_IS_MORE_FUN`.
 
-After the exact SHA-bound Android artifact is ready (per R6, a build usable
-on two physical Android devices on the same Wi-Fi):
+**Current disposition: SUPERSEDED AS A REQUIRED GATE.**
 
-Print exactly:
+`PRODUCT_FOUNDATION.md` now defines Human PvP as an optional testable hypothesis, not product dependency/current core authority. Do not infer R6 or Stage C authorization from this historical task.
+
+## Quarantined R1 specimen
+
+The original local worktree contains partial uncommitted R1 material. Exact protected inventory is in `docs/governance/CURRENT_STATE.md` and `docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`.
+
+Do not reset, clean, stash, commit, rebase, merge or modify it without fresh Human/Game Director authority.
+
+A future salvage review should classify each artifact as:
 
 ```text
-BLOCKED_ON_HUMAN_GATE
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+SALVAGE
+REIMPLEMENT
+OBSOLETE
+REJECT
 ```
 
-Then STOP all commands. No `adb` install, auto-launch, device polling,
-scheduled retry, device monitoring, or Stage C work while waiting.
+## Historical Human Gate 02
 
-Human evaluates:
+The old combined Human Gate 02 (including two-device LAN PvP) is **historical only**. Future Human Gate criteria are declared by the fresh active task and current Product Foundation/craft skills.
 
-```text
-FIRST_30_SECONDS_FEEL_PRODUCTION
-UI_THUMB_ERGONOMICS
-NO_ACCIDENTAL_ACTION_OVERLAP
-BASIC_FEELS_SATISFYING
-LOI_HAS_SIGNATURE
-PHONG_HAS_SIGNATURE
-HO_HAS_SIGNATURE
-AUDIO_IS_NOTICEABLY_HELPFUL
-HAPTICS_HELP_WITHOUT_ANNOYING
-TWO_RUNS_FEEL_DIFFERENT
-HUMAN_PVP_WORKS_ON_TWO_PHONES
-HUMAN_PVP_IS_MORE_FUN
-WANT_A_THIRD_RUN
-```
+## No successor authority
 
-Stage C remains closed until an explicit Human `GO` after this gate.
-
-## Execution discipline
-
-- No new worktree; do not switch/reset/rebase/stash/clean to repair
-  context.
-- RED→GREEN for any new gameplay/network contract.
-- Local checkpoint commits are allowed; do not push execution checkpoints
-  while this task is running, then push once final evidence +
-  `pre-finish.mjs` (where applicable) have passed.
-- Do not merge. Do not open a PR unless Human explicitly requests it.
-- Do not start a next task after Human Gate 02.
-- Do not modify `docs/governance/`, `docs/master/`, `docs/tasks/`,
-  `.agents/`, or `AGENTS.md` during execution of this task — that authority
-  reverts to the standard scope-gate restriction once this governance
-  transition lands (see `docs/governance/NEXT_TASK.md` `forbidden_paths`).
+This file grants no active mutation, R1, Product Proof, PvP, networking or Stage C authority. Current write authority lives only in `docs/governance/NEXT_TASK.md`.

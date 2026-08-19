@@ -2,87 +2,70 @@
 
 **Working title:** Tiểu Tiên Ký  
 **Tagline:** *Mỗi trận, một kỳ duyên.*  
-**Status:** Pre-production / P0A Fun-First  
+**Status:** Pre-production / Product Foundation accepted  
 **Platforms:** Android + iOS (mobile-first); Windows is internal dev/debug only.  
 **Gameplay orientation:** Landscape-only.
 
-## Product North Star
+## Product identity
 
-> Mỗi trận phải tạo được ít nhất một khoảnh khắc mà người chơi muốn kể lại, tái hiện lại hoặc gửi clip cho người khác.
+Tiểu Tiên Ký is a **mobile-first PvE action-arena cultivation game**. The primary Product Proof direction is solo PvE: direct mobile combat, readable chaos, cultivation mechanics that change combat state/space/timing rather than only numbers, and runs capable of producing memorable/retellable moments.
 
-Tiểu Tiên Ký is a standalone chibi cultivation PvPvE arena project. It combines cute Eastern-fantasy presentation with systemic combat, playful displacement/environment interactions and emergent player stories.
+The accepted product-level authority is:
 
-## Canonical direction
+- `docs/master/PRODUCT_FOUNDATION.md`
+- `docs/decisions/001-product-foundation.md`
 
-- **Art:** Chibi Cultivation Adventure — Cute Eastern Fantasy.
-- **Production order:** FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS.
-- **Prototype rule:** one task should create one meaningful player-perceptible step; non-blocking prototype debt is deferred when safe.
-- **Engine:** Unity 6000.3.21f1 + C# + Unity Input System.
-- **Rendering:** Built-in RP is allowed for P0A; URP remains a later production direction, not a P0A blocker.
-- **Networking direction:** Photon Fusion authoritative multiplayer only after accepted P0A/P0B authorization.
-- **Backend direction:** Nakama/PostgreSQL later when durable backend needs are authorized.
-- **Codebase:** one shared gameplay codebase for Android + iOS with platform-specific adapters only where needed.
+Do not infer that co-op or Human PvP is a current product dependency. Existing NGO + Unity Transport work is preserved as technical capability only until separately authorized.
 
-## Current phase
+## Repository navigation
 
-P0A now targets a bounded **Playable Core Loop** rather than isolated technical checks:
+Use the repository as the source of truth rather than duplicating mutable roadmap state here:
 
 ```text
-move
-→ simple enemy pressure
-→ one Basic Attack
-→ readable impact + knockback
-→ environment / Water × Lightning consequence
-→ quick defeat/reset
-→ continue playing for ~2–3 minutes
+Current truth         → docs/governance/CURRENT_STATE.md
+Write authority       → docs/governance/NEXT_TASK.md
+Operating workflow    → docs/governance/WORKFLOW.md
+Product Foundation    → docs/master/PRODUCT_FOUNDATION.md
+Production doctrine   → docs/master/GAME_PRODUCTION_DOCTRINE.md
+Maturity / DoD        → docs/master/PRODUCTION_FOUNDATION.md
+Repository map        → docs/architecture/REPO_MAP.md
+Significant decisions → docs/decisions/
 ```
 
-The goal is to determine whether the game is becoming meaningfully fun/game-like before spending on multiplayer, backend, content scale or production art.
+`docs/master/MASTER_PLAN.md`, `docs/master/RELEASE_TRACK.md`, historical task files and evidence reports preserve project history. Where historical product/mode assumptions conflict with the accepted Product Foundation, the accepted Product Foundation is current authority.
 
-Current machine-readable authority lives in:
+## Technical baseline
 
-`docs/governance/NEXT_TASK.md`
+- Unity `6000.3.21f1` + C#.
+- Unity Input System.
+- Android + iOS share one gameplay codebase; platform-specific adapters only when needed.
+- NGO + Unity Transport is the current evidence-backed networking implementation, but networking expansion is not current Product Proof authority.
+- Built-in Render Pipeline may remain until evidence justifies a rendering migration.
 
-Current operational canon:
+## Human evidence
 
-`docs/master/MASTER_PLAN.md`
-
-Preserved P0A implementation checkpoint before the Fun-First transition:
-
-`77f4599fce4844a106827ed79d8b0aa7357a95e4`
-
-## Human Gate / artifact discipline
-
-For physical mobile slices:
+For player-facing mobile slices, automated checks prove correctness; they do not prove fun, feel, readability or product identity. The normal high-value loop is:
 
 ```text
-Agent: code → focused tests → exact final APK → HARD STOP
-Human: temporarily connect phone → install exact APK → disconnect if desired → play → report
+agent implementation
+→ focused automated/Unity verification
+→ exact SHA-bound artifact when required
+→ hard Human Gate
+→ physical-device verdict
 ```
 
-No adb polling, automatic device monitoring, USB-triggered resume or silent rebuild after artifact handoff.
+No device reconnection, ADB polling or automatic resume grants authority.
 
-## Governance
+## Agent workflow
 
-`main` is the canonical baseline. Feature implementation occurs on authorized branches. A task-branch commit is a checkpoint, not acceptance or merge. Human/Game Director remains merge authority; no auto-merge.
+`main` is the canonical baseline. Mutation occurs only on an explicitly authorized task branch/workspace. Human/Game Director remains merge authority; no auto-merge.
 
-The current Playable Core task becomes executable on the P0A implementation branch only after that branch contains the accepted current `main` baseline and preserved checkpoint `77f4599f...`.
+Research is not considered closed until material findings are dispositioned into repository decisions/workflow as one of: integrated, partially integrated, to-integrate, deferred, rejected or superseded. Research is evidence input, not an automatic implementation mandate.
 
-P0B remains NOT AUTHORIZED until P0A receives accepted technical + Human playtest evidence.
+## Public development and licensing
 
-This repository is private. The working title has not yet completed trademark/store/domain clearance.
+This project is being prepared for public development. Source visibility, once enabled, does **not** by itself grant an open-source license. Unless a separate license file or third-party notice states otherwise, project-original code, game design, documentation, art and audio remain copyrighted by the repository owner.
 
-## P0A implementation status (unverified draft)
+Third-party content, if introduced later, must retain and comply with its own license and redistribution terms; raw third-party assets must not be assumed safe to publish merely because they can be used inside a compiled game.
 
-The `Assets/`, `Packages/`, and `ProjectSettings/` scaffold for P0A was authored on an
-operator machine with no Unity Editor, no Android SDK, and no connected Android device
-available. The gameplay C# source, tests, and greybox scene are source-only and have
-**never been opened, compiled, run, built, or playtested**. See
-`docs/evidence/P0A_EVIDENCE_REPORT.md` for the exact gate-by-gate status.
-
-Before relying on this as a working prototype, open the project once in Unity
-`6000.3.21f1`: this will regenerate the remaining default `ProjectSettings/*` files
-(`ProjectSettings.asset`, `TagManager.asset`, etc.), which were intentionally left for
-the Editor to generate rather than hand-authored. Then set Company Name / Product Name /
-Android package identifier in Player Settings, run the EditMode tests under
-`Assets/_Project/Tests/EditMode/`, and build+run on a physical Android device.
+Working-title trademark, store-name and domain clearance remain outside current implementation scope.
