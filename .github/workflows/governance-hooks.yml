@@ -1,38 +1,28 @@
-name: Governance Hooks
+name: Repository Gate
 
 on:
   pull_request:
-    paths:
-      - 'AGENTS.md'
-      - '.agents/**'
-      - 'docs/governance/**'
-      - 'scripts/hooks/**'
-      - '.github/workflows/governance-hooks.yml'
   push:
     branches:
       - main
-    paths:
-      - 'AGENTS.md'
-      - '.agents/**'
-      - 'docs/governance/**'
-      - 'scripts/hooks/**'
-      - '.github/workflows/governance-hooks.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  governance-hooks:
+  repository-gate:
+    name: repository-gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      - name: Runtime info
+        run: |
+          node --version
+          git --version
 
-      - name: Run governance hook tests
+      - name: Governance regression suite
         run: node --test scripts/hooks/hooks.test.mjs
