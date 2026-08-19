@@ -4,41 +4,30 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "HUMAN_GATE",
-  "task_mode": "SPEC",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-001",
-  "branch": "docs/ao-lite-v1-design",
-  "baseline_ref": "74d7a78aeb5488eb7789e52528b0592f41eff0a8",
-  "authority_anchor_ref": "74d7a78aeb5488eb7789e52528b0592f41eff0a8",
-  "workspace_policy": "REMOTE_GITHUB_BRANCH",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-001.md",
-  "evidence_file": "docs/evidence/AO_LITE_V1_DESIGN_REPORT.md",
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
   "allowed_paths": [],
   "forbidden_paths": [],
-  "required_evidence": {
-    "authority_integrity": "PASS",
-    "design_scope": "PASS",
-    "research_disposition": "PASS",
-    "spec_self_review": "PASS",
-    "scope_diff": "PASS",
-    "implementation_authority": "NONE"
-  },
-  "spec_candidate_ref": "16f349fbcabe75316a022094cb6a8d54445d8b2f",
-  "stop_condition": "HUMAN_REVIEW_REQUIRED_BEFORE_IMPLEMENTATION_AUTHORITY"
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-AO-Lite v1 design/spec is prepared and held at the Human review gate.
+AO-Lite v1 design post-merge reconciliation is complete. There is no active write task, no active branch authority, no writable path, and no successor implementation authority.
 
-Exact design/evidence candidate before this control-plane transition:
+AO-Lite v1 design is accepted and integrated via PR #16, but design integration alone does not authorize `scripts/ao/**` implementation.
 
-`16f349fbcabe75316a022094cb6a8d54445d8b2f`
+Product Proof Slice 001 remains a separate paused candidate and is not current mutation authority.
 
-No AO implementation authority exists. No successor task, worker dispatch, Product Proof mutation, ready-for-review action, merge, or other mutation may be inferred from the design candidate.
+No AO-Lite implementation, Product Proof mutation, R1, Unity Harness SPIKE, networking/PvP/co-op, Stage C, backend/services, gameplay/runtime/package mutation, or other successor work is authorized by this state.
 
-The exact HUMAN_GATE branch head may be published as a Draft PR solely for Human review and repository CI. Human/Game Director then explicitly accepts, revises, or rejects the design.
+## One next action
 
-Stop condition: `HUMAN_REVIEW_REQUIRED_BEFORE_IMPLEMENTATION_AUTHORITY`.
+Human/Game Director explicitly chooses the next bounded action.
+
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
