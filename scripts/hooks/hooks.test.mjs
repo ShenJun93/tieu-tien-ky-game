@@ -14,10 +14,6 @@ function git(root, args, options = {}) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8', ...options }).trim();
 }
 
-function gitBare(bare, args) {
-  return execFileSync('git', ['--git-dir', bare, ...args], { encoding: 'utf8' }).trim();
-}
-
 function invoke(root, script, args = []) {
   return spawnSync(process.execPath, [`scripts/hooks/${script}`, ...args], {
     cwd: root,
@@ -84,7 +80,7 @@ function makeFixture(overrides = {}) {
   const anchor = baseline;
 
   git(root, ['remote', 'add', 'origin', remote]);
-  gitBare(remote, ['update-ref', 'refs/heads/main', baseline]);
+  git(root, ['push', '-q', 'origin', `${baseline}:refs/heads/main`]);
   git(root, ['branch', '-M', overrides.branch ?? 'feat/test-task']);
 
   write(root, 'docs/tasks/TASK.md', '# test task\n');
@@ -98,7 +94,7 @@ function makeFixture(overrides = {}) {
 function advanceRemoteMain(fixture) {
   const tree = git(fixture.root, ['rev-parse', `${fixture.baseline}^{tree}`]);
   const advanced = git(fixture.root, ['commit-tree', tree, '-p', fixture.baseline], { input: 'advance main\n' });
-  gitBare(fixture.remote, ['update-ref', 'refs/heads/main', advanced]);
+  git(fixture.root, ['push', '-q', 'origin', `${advanced}:refs/heads/main`]);
   return advanced;
 }
 
