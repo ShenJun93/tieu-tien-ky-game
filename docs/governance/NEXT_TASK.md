@@ -4,76 +4,59 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "REVIEW",
+  "state": "IMPLEMENT",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-002",
+  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003",
   "branch": "chore/harness-vnext-canon-workflow-reconciliation",
   "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-002.md",
-  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md",
-  "allowed_paths": [],
+  "authority_anchor_ref": "370b06b629fdd650630d3d948d02d907851c8c64",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003.md",
+  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md",
+  "allowed_paths": [
+    "scripts/hooks/pre-task.mjs",
+    "scripts/hooks/pre-finish.mjs",
+    "scripts/hooks/hooks.test.mjs",
+    "docs/governance/WORKFLOW.md",
+    "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md"
+  ],
   "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003.md",
     "Assets/",
     "Packages/",
     "ProjectSettings/",
     "Builds/"
   ],
   "required_evidence": {
-    "activation_exact_content_tests": "PASS",
-    "activation_history_rewrite_guard": "PASS",
-    "evidence_contract_aggregate_tests": "PASS",
-    "review_taxonomy_contract": "PASS",
+    "activation_single_parent_guard": "PASS",
+    "activation_anchor_diff_guard": "PASS",
+    "multi_parent_activation_regression": "PASS",
     "governance_hook_tests": "PASS",
     "scope_diff": "PASS",
     "remote_ci": "PASS"
   },
-  "review_verdict_enum": [
-    "ACCEPT",
-    "ACCEPT_WITH_NON_BLOCKING_NOTES",
-    "REMEDIATE",
-    "REJECT"
-  ],
-  "stop_condition": "FRESH_INDEPENDENT_HARNESS_REVIEW_REQUIRED"
+  "stop_condition": "HARNESS_VNEXT_P1_REMEDIATION_003_IMPLEMENT_AND_VERIFY_ONLY"
 }
 ```
 
-## Current authority
+## Human authority
 
-Harness Remediation 002 implementation is complete and writer authority is closed.
+Human/Game Director explicitly approved **HARNESS REMEDIATION 003** after a fresh independent review of `370b06b629fdd650630d3d948d02d907851c8c64` returned `REMEDIATE` with one remaining P1: a multi-parent activation commit can satisfy the current first-parent plus `git show --name-only` checks while folding unauthorized payload into the activation tree.
 
-Verified implementation/evidence state before this REVIEW transition:
+## IMPLEMENT authority
 
-```text
-IMPLEMENT activation         = af18d87cec829a125bca793e9dcac64b726fb93a
-final evidence head          = 94a3424a94b40c37a1d95083a194f9712b38133a
-activation exact content     = PASS
-history rewrite outer guard  = PASS
-aggregate evidence contract  = PASS
-review taxonomy contract     = PASS
-governance regression        = PASS 44/44 locally and remotely
-writer scope                  = PASS / 6 authorized paths
-remote CI                     = PASS / run 32227935690
-```
+Remediation 003 is intentionally narrow. Writer changes are bounded to the five `allowed_paths` above and may only:
 
-Repository mutation is stopped. `allowed_paths` is empty.
+1. require the activation commit to have exactly one parent and that parent to equal `authority_anchor_ref`;
+2. compute activation changed paths by an explicit anchor-to-transition tree diff rather than merge-aware `git show` semantics;
+3. add adversarial regression coverage for a multi-parent activation whose second parent injects unauthorized payload;
+4. document that no-force-push protection remains an outer history-rewrite boundary but does not replace single-parent validation;
+5. record aggregate evidence.
 
-## Authorized review action
-
-Run a **fresh independent read-only review** of PR #11 and the current exact PR head.
-
-The active review contract explicitly declares the allowed verdict vocabulary in `review_verdict_enum`; the reusable review skill must use this enum rather than its fallback taxonomy.
-
-The reviewer should specifically verify closure of the three prior P1 findings:
-
-1. activation commit exact-content + branch-history protection;
-2. singular aggregate evidence-file coherence;
-3. active-contract-first review verdict taxonomy.
-
-Also check for regressions, contradictions, scope leakage and overengineering introduced by Remediation 002.
+`NEXT_TASK.md` and this active task contract are writer-locked after this activation.
 
 ## Hard stop
 
-The reviewer must not edit files, push commits, change repository settings, mark PR #11 ready, merge it, or authorize Unity harness SPIKE, R1, Product Proof, gameplay, networking/PvP, Stage C or any successor implementation.
-
-Only Human/Game Director may authorize further remediation or merge after the independent verdict.
+No merge, mark-ready, gameplay/R1/Unity/package mutation, Product Proof, networking/PvP, Stage C, broader Harness redesign, signing/PKI, or successor implementation is authorized. After all evidence is PASS, Final Foreman must return authority to `REVIEW` and require a fresh independent read-only review.
