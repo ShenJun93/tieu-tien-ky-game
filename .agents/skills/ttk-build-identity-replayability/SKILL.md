@@ -51,4 +51,4 @@ Do not require old `TWO_RUNS_FEEL_DIFFERENT` wording or all three historical ele
 - `docs/master/PRODUCT_FOUNDATION.md` §5, §8, §9, §12
 - `docs/master/GAME_PRODUCTION_DOCTRINE.md` (systemic decisions before stat/content volume)
 - `docs/master/PRODUCTION_FOUNDATION.md` (`RunBlessingState` seam maturity)
-- `docs/governance/RESEARCH_INTEGRATION_LEDGER.md` R-006/R-008
+- `docs/governance/RESEARCH_INTEGRATION_LEDGER.md` R-005/R-006
