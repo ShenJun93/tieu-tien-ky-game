@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (Harness vNext canon/workflow reconciliation active)
+Updated: 2026-08-19 (Harness vNext candidate ready for independent review)
 
 ## Repository
 
@@ -20,71 +20,70 @@ Updated: 2026-08-19 (Harness vNext canon/workflow reconciliation active)
 - Primary Product Proof direction: **1-player solo PvE arena/run**.
 - Product bets: **Readable Chaos**, **Cultivation as Combat Physics**, **Retellable Run Moments**.
 - Human PvP is an **optional testable hypothesis**, not a product dependency or current gate.
-- Product-level canon: `docs/master/PRODUCT_FOUNDATION.md` and `docs/decisions/001-product-foundation.md`.
+- Product-level canon: `docs/master/PRODUCT_FOUNDATION.md`, `docs/decisions/001-product-foundation.md`.
 - Craft/quality canon: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
-- Historical operational framing remains in `docs/master/MASTER_PLAN.md`, `docs/master/RELEASE_TRACK.md`, historical tasks and evidence; historical framing cannot override the accepted Product Foundation.
+- Historical operational framing remains preserved in `MASTER_PLAN`, `RELEASE_TRACK`, tasks and evidence, but cannot override accepted Product Foundation/current authority.
 
 ## Gate status (current truth)
 
 ```text
 FOUNDATION_V2                     = ACCEPTED
-SYSTEMIC_PREPRODUCTION_FOUNDATION = ACCEPTED / ACTIVE BASIS FOR FUTURE DECISIONS
 PRODUCT_FOUNDATION                = ACCEPTED / CANONICAL / INTEGRATED INTO MAIN
 PRIMARY_PRODUCT_PROOF             = PvE-FIRST
 STAGE_AB_TECHNICAL_GATE           = GREEN (historical technical evidence)
 STAGE_AB_PRODUCT_GATE             = RED (historical Human outcome)
 PRODUCT_DIRECTION                 = VALIDATED / PROMISING
-PRODUCT_EXECUTION                 = FROZEN except explicitly authorized governance/harness work
-PRODUCT_FEEL_REMEDIATION_01       = HISTORICAL / SALVAGE SOURCE, NOT CURRENT EXECUTION CONTRACT
+PRODUCT_EXECUTION                 = FROZEN
+PRODUCT_FEEL_REMEDIATION_01       = HISTORICAL / SALVAGE SOURCE
 R1 DIRTY SPECIMEN                 = QUARANTINED / PARTIAL / UNCOMMITTED
 R2-R5 OLD REMEDIATION IDEAS       = HISTORICAL SALVAGE CANDIDATES ONLY
 R6 OLD LAN PVP GATE               = SUPERSEDED AS CURRENT PRODUCT-PROOF REQUIREMENT
 STAGE_C                           = NOT AUTHORIZED
 HUMAN_PVP_FUN                     = NOT PROVEN
+HARNESS_VNEXT_CANDIDATE           = READY_FOR_INDEPENDENT_REVIEW
 ```
 
-## Accepted Product Foundation basis
+## Harness vNext candidate
 
-The Product Foundation was independently reviewed `PASS`, explicitly accepted by the Human/Game Director, and integrated by PR #9 (`ae03480376d9563b39820184d41cdb36bfdd2a71`). Post-merge governance reconciliation was integrated by PR #10 (`b2e160cb83c0dc74031081ca010eb2a7489c104d`).
-
-The accepted Product Foundation changed product-level assumptions that older execution documents had embedded. In particular, solo PvE is now the primary experience; Human PvP is optional and unproven. Historical release/remediation documents remain evidence and salvage inputs, not successor authority.
-
-## Quarantined R1 specimen
-
-The original local worktree `E:\GameDev\tieu-tien-ky-game` preserves a partial, uncommitted mobile-control experiment on branch `feat/p0a-local-microfun-spike` over audited commit `3b9264196bb941033f4c16bc3a68341a9dc7d785`.
-
-Protected dirty inventory:
-
-- modified: `Assets/_Project/Core/Cooldown.cs`
-- modified: `Assets/_Project/Gameplay/BasicAttack.cs`
-- modified: `Assets/_Project/Gameplay/HoTheSkill.cs`
-- modified: `Assets/_Project/Gameplay/LoiTramSkill.cs`
-- modified: `Assets/_Project/Gameplay/PhongBoSkill.cs`
-- modified: `Assets/_Project/Input/TouchInputReader.cs`
-- untracked: five EditMode/PlayMode test files recorded in `docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`
-
-This specimen must not be reset, cleaned, stashed, committed, rebased, merged or modified without separate explicit Human authority. A future salvage review classifies material as `SALVAGE`, `REIMPLEMENT`, `OBSOLETE`, or `REJECT`; it does not automatically resume this worktree.
-
-## Current activity
-
-Active bounded task:
+Task:
 
 `TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001`
 
-Purpose:
+Implemented candidate outcomes:
 
-1. reconcile stale PvP-gated historical authority with accepted PvE-first Product Foundation;
-2. integrate prior research into explicit repository dispositions;
-3. add a minimal task-mode router and repository map;
-4. generalize verification from Android-hardcoded evidence to task-declared evidence;
-5. preserve one-writer/worktree/human-merge safety;
-6. prepare, but **not authorize or install**, a later Unity read/verify harness SPIKE.
+1. PvE-first Product Foundation reconciled with historical Release Track/Product Feel task;
+2. research-integration lifecycle + 16-entry retrospective/current ledger;
+3. task-mode router without creating a second write-authority mechanism;
+4. immutable execution identity fields / workspace policy;
+5. lightweight repository map;
+6. task-declared `required_evidence` verification instead of Android-hardcoded `pre-finish`;
+7. default two-round same-symptom repair budget;
+8. minimal GitHub Actions governance-hook test workflow;
+9. affected controls/build/Human-gate skills reconciled with current Product Foundation.
 
-No gameplay/runtime/package/R1/Product-Proof/Stage-C mutation is authorized by this task.
+Verification evidence:
+
+```text
+GOVERNANCE_HOOK_TESTS         = PASS (31/31)
+SCOPE_DIFF                    = PASS
+CANON_COHERENCE_REVIEW        = PASS (writer/Foreman verification; independent review still required)
+RESEARCH_DISPOSITION_COVERAGE = PASS
+UNITY / ANDROID / HUMAN GATE  = NOT REQUIRED FOR THIS GOVERNANCE-ONLY TASK
+```
+
+Full evidence: `docs/evidence/HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_REPORT.md`.
+
+`docs/governance/NEXT_TASK.md` is now `state: REVIEW`, so further writer mutation is blocked until the required independent review returns a verdict and the Human/Game Director gives any subsequent authority.
+
+## Quarantined R1 specimen
+
+The original local worktree `E:\GameDev\tieu-tien-ky-game` remains untouched with partial uncommitted R1 material on branch `feat/p0a-local-microfun-spike` over audited commit `3b9264196bb941033f4c16bc3a68341a9dc7d785`.
+
+Do not reset, clean, stash, commit, rebase, merge or modify it without separate explicit Human authority. A future salvage review classifies its artifacts as `SALVAGE`, `REIMPLEMENT`, `OBSOLETE`, or `REJECT`.
 
 ## Research integration policy
 
-A material research round is not closed merely because a report exists. Findings must be dispositioned as one of:
+Material research is not closed until findings have explicit disposition:
 
 ```text
 INTEGRATED
@@ -95,8 +94,8 @@ REJECTED
 SUPERSEDED
 ```
 
-`DEFERRED`, `REJECTED`, and `SUPERSEDED` are valid outcomes when their rationale/trigger is recorded. This avoids both research loss and indiscriminate adoption.
+Research may justify implementation, a bounded SPIKE, deliberate deferral/rejection, or supersession. It never grants write authority by itself.
 
-## One next action
+## Next action
 
-Complete the current Harness vNext candidate, run governance verification, then hand it to a fresh independent read-only reviewer. No successor implementation authority is inferred.
+Run the required **fresh independent read-only review** of the current Harness vNext branch candidate. Do not start Unity harness SPIKE, R1, Product Proof, PvP, Stage C or any successor implementation yet.

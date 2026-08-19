@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "REVIEW",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001",
@@ -40,22 +40,38 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "canon_coherence_review": "PASS",
     "research_disposition_coverage": "PASS"
   },
-  "stop_condition": "HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_READY_FOR_INDEPENDENT_REVIEW"
+  "stop_condition": "INDEPENDENT_REVIEW_VERDICT_REQUIRED"
 }
 ```
 
 ## Current authority
 
-Human/Game Director explicitly authorized integration of the completed research into the repository. This is a bounded governance/harness reconciliation only.
+The Harness vNext candidate completed bounded implementation verification and is now **read-only / awaiting fresh independent review**.
 
-No gameplay/runtime/scene/package mutation, R1 implementation, Product Proof implementation, Unity harness installation, networking implementation or Stage C work is authorized.
+Writer execution is blocked by `state: REVIEW`.
 
-## Research integration
+No gameplay/runtime/package mutation, R1 implementation, Product Proof implementation, Unity harness installation, networking implementation, Stage C work, successor task or merge is authorized.
 
-Research is not considered closed until material findings have a persisted disposition (`INTEGRATED`, `PARTIALLY_INTEGRATED`, `TO_INTEGRATE`, `DEFERRED`, `REJECTED`, or `SUPERSEDED`). This rule prevents both research loss and indiscriminate adoption.
+## Review target
+
+Review the current branch HEAD against:
+
+- exact baseline `b2e160cb83c0dc74031081ca010eb2a7489c104d`;
+- the active task contract;
+- `docs/evidence/HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_REPORT.md`;
+- accepted `docs/master/PRODUCT_FOUNDATION.md` and `docs/decisions/001-product-foundation.md`;
+- current root governance semantics.
+
+Required reviewer verdict:
+
+```text
+PASS
+PASS_WITH_REMEDIATION
+FAIL
+```
 
 ## Stop condition
 
-`HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_READY_FOR_INDEPENDENT_REVIEW`.
+`INDEPENDENT_REVIEW_VERDICT_REQUIRED`.
 
-No successor or merge authority is implied.
+No successor or merge authority is implied by a writer self-check.
