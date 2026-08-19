@@ -55,3 +55,6 @@ Desktop.ini
 .claude/
 .playwright-mcp/
 .utmp/
+
+# AO-Lite local evidence
+.local/ao/
