@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (Product Foundation canonical integration reconciled)
+Updated: 2026-08-19 (Harness vNext canon/workflow reconciliation active)
 
 ## Repository
 
@@ -16,12 +16,13 @@ Updated: 2026-08-19 (Product Foundation canonical integration reconciled)
 - Standalone mobile-first Android + iOS product.
 - Gameplay orientation: **landscape-only** unless a later explicit canon change reopens it.
 - Art direction: **Chibi Cultivation Adventure — Cute Eastern Fantasy**.
-- Production order: **FUN → SYSTEM → NETWORK → REPLAYABILITY → IDENTITY → CONTENT → BUSINESS**.
-- Full canon: `docs/master/MASTER_PLAN.md`. Product-level foundation (accepted direction/hypotheses/deferred): `docs/master/PRODUCT_FOUNDATION.md` (**ACCEPTED / CANONICAL**, integrated into `main` by PR #9, merge commit `ae03480376d9563b39820184d41cdb36bfdd2a71`). Craft/quality doctrine: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`. `docs/CANONICAL_BASELINE.md` is historical/superseded (see its top marker).
-
-## Audited baseline
-
-`3b9264196bb941033f4c16bc3a68341a9dc7d785` (branch `feat/p0a-local-microfun-spike`, commit "docs(governance): accept TTK production foundation v1") is the audited clean-commit reference this reconciliation started from. Program history up to that commit (P0A → Vertical Slice v0.1 → Stage A+B → TTK Production Foundation v1 acceptance → PRODUCT FEEL REMEDIATION 01 activation) is preserved in full in `docs/evidence/VERTICAL_SLICE_V0.1_FINAL_REPORT.md`, `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, and the historical task files under `docs/tasks/`; it is not restated here.
+- Product identity: **mobile-first PvE action-arena cultivation game**.
+- Primary Product Proof direction: **1-player solo PvE arena/run**.
+- Product bets: **Readable Chaos**, **Cultivation as Combat Physics**, **Retellable Run Moments**.
+- Human PvP is an **optional testable hypothesis**, not a product dependency or current gate.
+- Product-level canon: `docs/master/PRODUCT_FOUNDATION.md` and `docs/decisions/001-product-foundation.md`.
+- Craft/quality canon: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
+- Historical operational framing remains in `docs/master/MASTER_PLAN.md`, `docs/master/RELEASE_TRACK.md`, historical tasks and evidence; historical framing cannot override the accepted Product Foundation.
 
 ## Gate status (current truth)
 
@@ -30,109 +31,72 @@ FOUNDATION_V2                     = ACCEPTED
 SYSTEMIC_PREPRODUCTION_FOUNDATION = ACCEPTED / ACTIVE BASIS FOR FUTURE DECISIONS
 PRODUCT_FOUNDATION                = ACCEPTED / CANONICAL / INTEGRATED INTO MAIN
 PRIMARY_PRODUCT_PROOF             = PvE-FIRST
-STAGE_AB_TECHNICAL_GATE           = GREEN
-STAGE_AB_PRODUCT_GATE             = RED
+STAGE_AB_TECHNICAL_GATE           = GREEN (historical technical evidence)
+STAGE_AB_PRODUCT_GATE             = RED (historical Human outcome)
 PRODUCT_DIRECTION                 = VALIDATED / PROMISING
-PRODUCT_EXECUTION                 = FROZEN
-PRODUCT_FEEL_REMEDIATION_01       = PAUSED
-R1 (mobile controls)              = QUARANTINED, PARTIAL, UNCOMMITTED (see below)
-R2-R6                             = NOT STARTED
+PRODUCT_EXECUTION                 = FROZEN except explicitly authorized governance/harness work
+PRODUCT_FEEL_REMEDIATION_01       = HISTORICAL / SALVAGE SOURCE, NOT CURRENT EXECUTION CONTRACT
+R1 DIRTY SPECIMEN                 = QUARANTINED / PARTIAL / UNCOMMITTED
+R2-R5 OLD REMEDIATION IDEAS       = HISTORICAL SALVAGE CANDIDATES ONLY
+R6 OLD LAN PVP GATE               = SUPERSEDED AS CURRENT PRODUCT-PROOF REQUIREMENT
 STAGE_C                           = NOT AUTHORIZED
 HUMAN_PVP_FUN                     = NOT PROVEN
 ```
 
-`PRODUCT_FOUNDATION = ACCEPTED / CANONICAL / INTEGRATED INTO MAIN` basis:
-implementation candidate HEAD `46f0460721b19239def355d0f8d312799df1575f`
-on `chore/product-foundation-canon`; independent review verdict `PASS`
-(P0=0, P1=0, P2=2 non-blocking notes, recorded as closed/deferred in
-`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001.md` and
-`docs/evidence/PRODUCT_FOUNDATION_CANON_REPORT.md`); explicit Human/Game
-Director acceptance (**APPROVE PRODUCT FOUNDATION CANON ACCEPTANCE**);
-and explicit merge approval (**APPROVE MERGE PRODUCT FOUNDATION CANON**).
-PR #9 then merged the accepted branch into repository `main` as merge
-commit `ae03480376d9563b39820184d41cdb36bfdd2a71`.
+## Accepted Product Foundation basis
 
-The two independent-review P2 notes remain disposed and non-blocking:
-**P2-A** — the evidence report's captured `diff --name-only`/`--stat`
-reflected the state after the bootstrap commit rather than the final
-candidate; independent remote comparison verified the final candidate was
-exactly 2 commits ahead of baseline and changed exactly the 7 allowed paths.
-**P2-B** — the earlier ambiguous wording about
-`PRODUCT_FOUNDATION_CANON` implementation was corrected to state plainly
-that **Product Proof/gameplay implementation has not started**. Neither
-note opened a remediation task.
+The Product Foundation was independently reviewed `PASS`, explicitly accepted by the Human/Game Director, and integrated by PR #9 (`ae03480376d9563b39820184d41cdb36bfdd2a71`). Post-merge governance reconciliation was integrated by PR #10 (`b2e160cb83c0dc74031081ca010eb2a7489c104d`).
 
-Canonical integration changes product/canon status only. It does **not**
-unfreeze `PRODUCT_EXECUTION`, reactivate `PRODUCT_FEEL_REMEDIATION_01`,
-reopen R1, start R2-R6, or authorize Stage C. Each still requires its own
-fresh explicit Human/Game Director authority.
-
-`FOUNDATION_V2 = ACCEPTED` basis: implementation candidate HEAD
-`5891da081ee09ca3f61f2d0a28f2597ae9273486` on
-`chore/foundation-v2-reconciliation`; independent review verdict `PASS`
-(P0=0, P1=0, P2=2 non-blocking test-coverage notes, recorded as deferred in
-`docs/tasks/TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001.md` and
-`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`); explicit
-Human/Game Director acceptance. Acceptance of the governance/control-plane
-foundation does **not** unfreeze `PRODUCT_EXECUTION`, reactivate
-`PRODUCT_FEEL_REMEDIATION_01`, reopen R1, start R2-R6, or authorize Stage C
-— each requires its own separate explicit Human/Game Director instruction.
-
-Full gate detail: `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`,
-"Human Gate outcome (2026-08-18)". Carried-forward blockers and the R1-R6
-scope PRODUCT FEEL REMEDIATION 01 is paused on:
-`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`.
+The accepted Product Foundation changed product-level assumptions that older execution documents had embedded. In particular, solo PvE is now the primary experience; Human PvP is optional and unproven. Historical release/remediation documents remain evidence and salvage inputs, not successor authority.
 
 ## Quarantined R1 specimen
 
-The original P0A worktree (`E:\GameDev\tieu-tien-ky-game`) carries
-uncommitted R1 (mobile-controls) work-in-progress on top of the audited
-baseline above: modified `Assets/_Project/Core/Cooldown.cs`,
-`Assets/_Project/Gameplay/BasicAttack.cs`, `HoTheSkill.cs`,
-`LoiTramSkill.cs`, `PhongBoSkill.cs`, `Assets/_Project/Input/TouchInputReader.cs`,
-plus five new untracked EditMode/PlayMode test files. This is a partial,
-evidence-incomplete specimen. It is preserved exactly as found — not reset,
-committed, staged, or discarded — pending explicit Human/Game Director
-direction. Full inventory:
-`docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`,
-`ORIGINAL_R1_DIRTY_INVENTORY`.
+The original local worktree `E:\GameDev\tieu-tien-ky-game` preserves a partial, uncommitted mobile-control experiment on branch `feat/p0a-local-microfun-spike` over audited commit `3b9264196bb941033f4c16bc3a68341a9dc7d785`.
+
+Protected dirty inventory:
+
+- modified: `Assets/_Project/Core/Cooldown.cs`
+- modified: `Assets/_Project/Gameplay/BasicAttack.cs`
+- modified: `Assets/_Project/Gameplay/HoTheSkill.cs`
+- modified: `Assets/_Project/Gameplay/LoiTramSkill.cs`
+- modified: `Assets/_Project/Gameplay/PhongBoSkill.cs`
+- modified: `Assets/_Project/Input/TouchInputReader.cs`
+- untracked: five EditMode/PlayMode test files recorded in `docs/evidence/FOUNDATION_V2_RECONCILIATION_REPORT.md`
+
+This specimen must not be reset, cleaned, stashed, committed, rebased, merged or modified without separate explicit Human authority. A future salvage review classifies material as `SALVAGE`, `REIMPLEMENT`, `OBSOLETE`, or `REJECT`; it does not automatically resume this worktree.
 
 ## Current activity
 
-Systemic pre-production / foundation governance reconciliation
-(`TASK-TIEU-TIEN-KY-FOUNDATION-V2-RECONCILIATION-001`) is **ACCEPTED /
-CLOSED**: independent review verdict `PASS` (P0=0, P1=0, P2=2 non-blocking
-notes) plus explicit Human/Game Director acceptance. Its accepted
-implementation is the active systemic pre-production governance basis.
+Active bounded task:
 
-Product Foundation canon persistence
-(`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-CANON-001`) is **ACCEPTED /
-CLOSED**: independent review `PASS` (P0=0, P1=0, P2=2 non-blocking notes),
-explicit Human/Game Director acceptance, and PR #9 canonical integration
-into `main` at `ae03480376d9563b39820184d41cdb36bfdd2a71`. The Product
-Foundation is therefore **ACCEPTED / CANONICAL / INTEGRATED INTO MAIN**.
+`TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001`
 
-The post-merge reconciliation
-(`TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-POST-MERGE-RECONCILIATION-001`)
-changes only stale governance text created by the timing of the merge. It
-does not change Product Foundation substance and grants no successor
-implementation authority.
+Purpose:
 
-PRODUCT FEEL REMEDIATION 01
-(`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md`) is
-**PAUSED**, not cancelled or superseded: its task contract, allowed/forbidden
-paths and R1-R6 scope stand unchanged and resume verbatim only once an
-explicit Human/Game Director instruction reactivates it via a fresh
-`docs/governance/NEXT_TASK.md` `state: IMPLEMENT` authority. Neither
-Foundation v2 acceptance nor Product Foundation canonical integration
-reactivates it.
+1. reconcile stale PvP-gated historical authority with accepted PvE-first Product Foundation;
+2. integrate prior research into explicit repository dispositions;
+3. add a minimal task-mode router and repository map;
+4. generalize verification from Android-hardcoded evidence to task-declared evidence;
+5. preserve one-writer/worktree/human-merge safety;
+6. prepare, but **not authorize or install**, a later Unity read/verify harness SPIKE.
+
+No gameplay/runtime/package/R1/Product-Proof/Stage-C mutation is authorized by this task.
+
+## Research integration policy
+
+A material research round is not closed merely because a report exists. Findings must be dispositioned as one of:
+
+```text
+INTEGRATED
+PARTIALLY_INTEGRATED
+TO_INTEGRATE
+DEFERRED
+REJECTED
+SUPERSEDED
+```
+
+`DEFERRED`, `REJECTED`, and `SUPERSEDED` are valid outcomes when their rationale/trigger is recorded. This avoids both research loss and indiscriminate adoption.
 
 ## One next action
 
-Human/Game Director selects the next bounded action. The roadmap's next
-candidate is the R1-R6 Salvage Review, but it is **NOT AUTHORIZED** by the
-Product Foundation merge or by this reconciliation. `docs/governance/NEXT_TASK.md`
-remains `state: DISCOVERY` (read-only/research, no repository mutation).
-Any successor `IMPLEMENT`/bounded `SPIKE` authority requires a fresh,
-explicit Human/Game Director instruction and explicit reconciliation of
-`NEXT_TASK.md`.
+Complete the current Harness vNext candidate, run governance verification, then hand it to a fresh independent read-only reviewer. No successor implementation authority is inferred.
