@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "HUMAN_GATE",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-001",
@@ -14,20 +14,8 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "workspace_policy": "REMOTE_GITHUB_BRANCH",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-001.md",
   "evidence_file": "docs/evidence/AO_LITE_V1_DESIGN_REPORT.md",
-  "allowed_paths": [
-    "docs/superpowers/specs/2026-08-19-ao-lite-v1-design.md",
-    "docs/evidence/AO_LITE_V1_DESIGN_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "scripts/",
-    ".github/",
-    ".agents/",
-    "docs/master/",
-    "docs/decisions/"
-  ],
+  "allowed_paths": [],
+  "forbidden_paths": [],
   "required_evidence": {
     "authority_integrity": "PASS",
     "design_scope": "PASS",
@@ -36,18 +24,21 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "scope_diff": "PASS",
     "implementation_authority": "NONE"
   },
-  "stop_condition": "SPEC_READY_FOR_HUMAN_REVIEW"
+  "spec_candidate_ref": "16f349fbcabe75316a022094cb6a8d54445d8b2f",
+  "stop_condition": "HUMAN_REVIEW_REQUIRED_BEFORE_IMPLEMENTATION_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-Human/Game Director authorized a bounded AO-Lite v1 design/spec task after reviewing the recommended architecture direction and the East/West market + Vân Kiếp AO research.
+AO-Lite v1 design/spec is prepared and held at the Human review gate.
 
-This task may write only the AO-Lite v1 design specification and its design evidence report.
+Exact design/evidence candidate before this control-plane transition:
 
-It does **not** authorize AO implementation code, Product Proof mutation, gameplay/runtime work, worker dispatch, remote publication while writer authority is active, ready-for-review, merge, or successor implementation.
+`16f349fbcabe75316a022094cb6a8d54445d8b2f`
 
-For this remote SPEC task, Final Foreman may construct the exact commit chain without exposing an active writer branch. The branch may be published only after the control plane has transitioned to `HUMAN_GATE`; a Draft PR may then be opened solely for Human review and repository CI.
+No AO implementation authority exists. No successor task, worker dispatch, Product Proof mutation, ready-for-review action, merge, or other mutation may be inferred from the design candidate.
 
-Stop condition: `SPEC_READY_FOR_HUMAN_REVIEW`.
+The exact HUMAN_GATE branch head may be published as a Draft PR solely for Human review and repository CI. Human/Game Director then explicitly accepts, revises, or rejects the design.
+
+Stop condition: `HUMAN_REVIEW_REQUIRED_BEFORE_IMPLEMENTATION_AUTHORITY`.
