@@ -87,7 +87,8 @@ state
 task_mode
 task_id
 branch
-baseline_ref        # immutable SHA when authority is activated
+baseline_ref          # immutable canonical main SHA when authority is activated
+authority_anchor_ref  # immutable commit immediately before activation
 workspace_policy
 allowed_paths
 forbidden_paths
@@ -100,12 +101,64 @@ The worker/model is deliberately **not** part of durable authority. Claude, Code
 Recommended `workspace_policy` values:
 
 ```text
-ISOLATED_WORKTREE          — default for a new local mutation task.
+ISOLATED_WORKTREE            — default for a new local mutation task.
 EXISTING_AUTHORIZED_WORKTREE — only when the active task intentionally owns that existing clean workspace.
-REMOTE_GITHUB_BRANCH       — bounded remote docs/governance mutation where no local editor/runtime state is involved.
+REMOTE_GITHUB_BRANCH         — bounded remote docs/governance mutation where no local editor/runtime state is involved.
 ```
 
 Starting a new AI session does not itself require a new worktree. Starting a new independent mutation task normally does.
+
+## Authority root-of-trust / writer lock
+
+A mutating task uses a two-layer identity:
+
+```text
+baseline_ref
+  canonical main commit the task is based on
+
+authority_anchor_ref
+  exact branch commit immediately before Human/Final-Foreman activation
+```
+
+Activation is one direct child commit of `authority_anchor_ref` and must set both:
+
+```text
+docs/governance/NEXT_TASK.md
+active task contract
+```
+
+After that activation commit:
+
+- the implementation writer must not edit either file;
+- `scope-gate` hard-blocks both paths even if they were accidentally listed in `allowed_paths`;
+- `pre-task` and `pre-finish` require exactly one authority transition after the anchor and exactly one matching active-task-contract transition;
+- the writer diff used for completion starts **after** the authority-transition commit;
+- transitions to `REVIEW`, `HUMAN_GATE`, `DISCOVERY`, `CLOSED`, or a successor task are Final-Foreman/Human control-plane actions.
+
+This is intended to prevent accidental/agentic self-expansion or evidence weakening. It is not a cryptographic defense against a malicious repository administrator; GitHub-side branch controls provide the outer repository boundary.
+
+## Live-main drift guard
+
+An immutable baseline is not enough if `main` moves while a task is active.
+
+For local mutation tasks, both task start and completion must use non-mutating:
+
+```bash
+git ls-remote --exit-code origin refs/heads/main
+```
+
+and require the returned SHA to equal `baseline_ref` exactly. No `git fetch` is required for this check.
+
+If live `main` differs:
+
+```text
+STOP
+→ inspect main delta
+→ explicit rebaseline/synchronization decision
+→ new authority transition if continuation remains valid
+```
+
+Never silently keep executing against a stale baseline. For `REMOTE_GITHUB_BRANCH`, Final Foreman performs the equivalent live base/head check through GitHub before each bounded mutation batch.
 
 ## One-write-task rule
 
@@ -206,6 +259,22 @@ A fresh reviewer should receive the task contract, diff and evidence; it need no
 - task commits are checkpoints/artifact anchors; commit != acceptance != merge.
 - never reset/clean/stash/revert operator work without explicit authorization.
 - if `main` changes during an active task, synchronize explicitly; do not silently drift.
+
+## GitHub repository boundary
+
+Repository prose/hooks cannot stop an administrator from bypassing Git locally or pushing directly to an unprotected `main`. The durable outer boundary should therefore use GitHub branch protection/rules when the account plan supports them:
+
+```text
+require pull request before merging
+block force pushes
+block branch deletion
+require stable repository-gate status check once that check has produced a successful run
+Human/Game Director remains merge authority
+```
+
+GitHub-side protection is a platform setting, not a writer-controlled task file. If available automation lacks Administration permission, reaching this gate requires an explicit Human platform action and live re-verification afterward; do not silently downgrade the requirement.
+
+The stable PR workflow is `.github/workflows/governance-hooks.yml`, whose required job identity is `repository-gate` and which must run on every PR rather than only governance-path PRs if it is used as a required check.
 
 ## Lifecycle guards
 
