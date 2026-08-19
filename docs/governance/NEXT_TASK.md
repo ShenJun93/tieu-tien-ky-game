@@ -4,46 +4,58 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001",
+  "branch": "chore/harness-vnext-canon-workflow-reconciliation",
+  "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001.md",
+  "evidence_file": "docs/evidence/HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_REPORT.md",
+  "allowed_paths": [
+    "AGENTS.md",
+    "README.md",
+    ".agents/skills/",
+    "docs/architecture/",
+    "docs/governance/",
+    "docs/master/GAME_PRODUCTION_DOCTRINE.md",
+    "docs/master/PRODUCTION_FOUNDATION.md",
+    "docs/master/RELEASE_TRACK.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001.md",
+    "docs/evidence/HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_REPORT.md",
+    "scripts/hooks/",
+    ".github/workflows/"
+  ],
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "scope_diff": "PASS",
+    "canon_coherence_review": "PASS",
+    "research_disposition_coverage": "PASS"
+  },
+  "stop_condition": "HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_READY_FOR_INDEPENDENT_REVIEW"
 }
 ```
 
 ## Current authority
 
-`state` is `DISCOVERY`: there is no active write task and no active branch authority. Repository mutation is forbidden by default.
+Human/Game Director explicitly authorized integration of the completed research into the repository. This is a bounded governance/harness reconciliation only.
 
-The Product Foundation is now **ACCEPTED / CANONICAL / INTEGRATED INTO MAIN**. PR #9 merged `chore/product-foundation-canon` into `main` as merge commit `ae03480376d9563b39820184d41cdb36bfdd2a71` after independent review `PASS` and explicit Human/Game Director acceptance and merge approval.
+No gameplay/runtime/scene/package mutation, R1 implementation, Product Proof implementation, Unity harness installation, networking implementation or Stage C work is authorized.
 
-The post-merge reconciliation task `TASK-TIEU-TIEN-KY-PRODUCT-FOUNDATION-POST-MERGE-RECONCILIATION-001` only corrected stale text that still described that completed merge as future work. It grants no successor authority.
+## Research integration
 
-No Product Proof implementation, `PRODUCT-FEEL-REMEDIATION-01` resumption, R1 salvage/resumption, R2-R6, Stage C, co-op/PvP implementation, Unity/runtime/package mutation, or any other write task is authorized by this state.
+Research is not considered closed until material findings have a persisted disposition (`INTEGRATED`, `PARTIALLY_INTEGRATED`, `TO_INTEGRATE`, `DEFERRED`, `REJECTED`, or `SUPERSEDED`). This rule prevents both research loss and indiscriminate adoption.
 
-## Live operator precedence
+## Stop condition
 
-```text
-latest explicit Human/Game Director instruction
-> persisted NEXT_TASK.md authority
-> task contract
-> stable product/craft canon
-> historical documents
-```
+`HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_READY_FOR_INDEPENDENT_REVIEW`.
 
-A future Human/Game Director instruction may authorize a bounded successor task, but `NEXT_TASK.md` must be explicitly reconciled before delegated mutation proceeds.
-
-## Product execution status
-
-`PRODUCT_EXECUTION` remains **FROZEN**. `PRODUCT-FEEL-REMEDIATION-01` remains **PAUSED**. R1 remains **QUARANTINED**. R2-R6 remain **NOT STARTED**. Stage C remains **NOT AUTHORIZED**. `HUMAN_PVP_FUN` remains **NOT PROVEN**.
-
-## One next action
-
-Human/Game Director selects the next bounded action. The roadmap's next candidate is the R1-R6 Salvage Review, but it is **NOT AUTHORIZED** by the Product Foundation merge or this reconciliation.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+No successor or merge authority is implied.
