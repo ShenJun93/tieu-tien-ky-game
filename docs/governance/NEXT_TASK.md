@@ -4,68 +4,50 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "HUMAN_GATE",
-  "task_mode": "SPEC",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003",
-  "branch": "chore/harness-vnext-canon-workflow-reconciliation",
-  "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003.md",
-  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md",
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
   "allowed_paths": [],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Builds/"
-  ],
-  "required_evidence": {
-    "activation_single_parent_guard": "PASS",
-    "activation_anchor_diff_guard": "PASS",
-    "multi_parent_activation_regression": "PASS",
-    "governance_hook_tests": "PASS",
-    "scope_diff": "PASS",
-    "remote_ci": "PASS"
-  },
-  "independent_review_verdict": "ACCEPT",
-  "independent_review_p0": 0,
-  "independent_review_p1": 0,
-  "safe_to_move_to_human_merge_gate": true,
-  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-Fresh independent read-only review of exact candidate `9366500600e6e73b47431348fe41865aa6c06b11` returned:
+`state` is `DISCOVERY`: there is no active write task and no active branch authority. Repository mutation is forbidden by default.
+
+Harness vNext is **INTEGRATED INTO MAIN**. PR #11 merged the accepted Harness branch into canonical `main` as merge commit `d178447c27b357c9067e3c54911edfdb3233ce51`.
+
+The post-merge recovery task `TASK-TIEU-TIEN-KY-HARNESS-VNEXT-POST-MERGE-RECONCILIATION-001` corrected stale pre-merge Human Merge Gate wording only. It grants no successor authority.
+
+No gameplay, Product Proof, R1 salvage/resumption, Unity Harness SPIKE, networking/PvP, Stage C, runtime/package mutation, or other implementation task is authorized by this state.
+
+## Live operator precedence
 
 ```text
-VERDICT = ACCEPT
-P0      = 0
-P1      = 0
-SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE = YES
+latest explicit Human/Game Director instruction
+> persisted NEXT_TASK.md authority
+> task contract
+> stable product/craft canon
+> historical documents
 ```
 
-The sole prior evidence blocker was closed by a fresh Human live-read of the active task-branch protection:
+A future Human/Game Director instruction may authorize a bounded successor task, but `NEXT_TASK.md` must be explicitly transitioned before delegated mutation proceeds.
 
-```text
-enforce_admins = true
-force_pushes   = false
-deletions      = false
-required_pull_request_reviews = null
-required_status_checks        = null
-```
+## Preserved product/runtime status
 
-Exact REVIEW-head Repository Gate run `32230791184` remains `SUCCESS` with 46/46 governance regressions passing.
+`PRODUCT_EXECUTION` remains **FROZEN**. R1 remains **QUARANTINED**. Stage C remains **NOT AUTHORIZED**.
 
-Repository mutation is stopped. `allowed_paths` is empty.
+Harness vNext integration changes execution governance/harness availability only; it does not itself authorize gameplay or product implementation.
 
-## Human Gate
+## One next action
 
-PR #11 is eligible for a Human/Game Director merge decision only. This state is not merge authorization.
+Human/Game Director selects the next bounded action explicitly.
 
-Human must explicitly choose whether to merge PR #11. No successor task, gameplay/R1/Product Proof/Unity Harness SPIKE/networking/PvP/Stage C authority is inferred or granted.
+No successor task is inferred from PR #11, the Harness vNext integration, the recovery task, or this `DISCOVERY` state.
 
-## Hard stop
-
-Do not edit files, push implementation commits, change repository settings, mark PR #11 ready, merge it, or start successor implementation without separate explicit Human authority.
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
