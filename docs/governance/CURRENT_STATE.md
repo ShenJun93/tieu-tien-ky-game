@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (Harness Remediation 002 complete; fresh independent review required)
+Updated: 2026-08-19 (Harness Remediation 003 complete; fresh independent review required)
 
 ## Repository
 
@@ -25,84 +25,92 @@ STAGE_C                           = NOT AUTHORIZED
 HARNESS_PLATFORM_GATE             = GREEN
 MAIN_BRANCH_PROTECTION            = PASS
 TASK_BRANCH_REWRITE_PROTECTION    = PASS
-HARNESS_REMEDIATION_002            = IMPLEMENTATION PASS / REVIEW REQUIRED
-ACTIVATION_EXACT_CONTENT          = PASS
-AGGREGATE_EVIDENCE_CONTRACT       = PASS
-REVIEW_TAXONOMY_CONTRACT          = PASS
-GOVERNANCE_REGRESSION_LOCAL       = PASS 44/44
-GOVERNANCE_REGRESSION_REMOTE      = PASS 44/44
-FINAL_WRITER_SCOPE                = PASS / 6 AUTHORIZED PATHS
-REMOTE_REPOSITORY_GATE            = PASS / RUN 32227935690
+HARNESS_REMEDIATION_002           = SUPERSEDED BY FOLLOW-UP REVIEW FINDING
+HARNESS_REMEDIATION_003           = IMPLEMENTATION PASS / REVIEW REQUIRED
+ACTIVATION_SINGLE_PARENT_GUARD    = PASS
+ACTIVATION_ANCHOR_DIFF_GUARD      = PASS
+MULTI_PARENT_REGRESSION           = PASS
+GOVERNANCE_REGRESSION_REMOTE      = PASS 46/46
+FINAL_WRITER_SCOPE                = PASS / 5 AUTHORIZED PATHS
+REMOTE_REPOSITORY_GATE            = PASS / RUN 32230628757
 HARNESS_VNEXT_OVERALL             = READY_FOR_FRESH_INDEPENDENT_REVIEW
 ```
 
-## Remediation 002 identity
+## Remediation 003 identity
 
 ```text
-Human-gate prerequisite head = 7d1fb0eb40fb6171ccdefaee0c01e89f91a17459
-IMPLEMENT activation         = af18d87cec829a125bca793e9dcac64b726fb93a
-code/docs writer head        = 91b05ba1e6d5c0c5eabaa0b1442714eded75c1ce
-final evidence head          = 94a3424a94b40c37a1d95083a194f9712b38133a
+Independent review head = 370b06b629fdd650630d3d948d02d907851c8c64
+IMPLEMENT activation    = 5e6c4dbf1e7a8175856425e3736c1145054cc063
+writer head             = ec57c8511860892a88fbc072c37e9264eacc9d05
+final evidence head     = 7c335fe78a53464ccb8c39ed9c0e393e5e516a96
 ```
 
-The activation compare was exactly one direct child and changed only `NEXT_TASK.md` plus the active Remediation-002 task contract.
-
-Writer scope from activation through final evidence changed exactly six authorized paths:
+The IMPLEMENT activation was one direct child of the review head and changed only:
 
 ```text
-.agents/skills/review-task/SKILL.md
-docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md
+docs/governance/NEXT_TASK.md
+docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003.md
+```
+
+## Remaining P1 addressed
+
+The follow-up independent review found that the prior validator could accept a multi-parent merge activation because:
+
+```text
+transition^ = first parent only
+merge-aware git show --name-only may hide second-parent payload
+```
+
+Remediation 003 closes that exact gap in both `pre-task` and `pre-finish`:
+
+```text
+git rev-list --parents -n 1 <transition>
+→ require exactly one parent
+→ require that parent == authority_anchor_ref
+
+git diff --name-only --no-renames <anchor> <transition> --
+→ require exactly NEXT_TASK.md + active task contract
+```
+
+No-force-push/deletion branch protection remains the outer published-history rewrite boundary. It is not treated as a substitute for single-parent/direct-child validation.
+
+## Regression evidence
+
+Public GitHub-hosted Repository Gate on writer head:
+
+```text
+run_id = 32230490702
+result = success
+tests  = 46
+pass   = 46
+fail   = 0
+```
+
+Final-evidence exact-head Repository Gate:
+
+```text
+run_id = 32230628757
+result = success
+tests  = 46
+pass   = 46
+fail   = 0
+```
+
+New adversarial regressions are tests #45 and #46 and explicitly exercise a two-parent activation where the second parent injects `UNAUTHORIZED.md`.
+
+## Final writer scope
+
+From activation through final evidence, writer execution changed exactly:
+
+```text
+docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md
 docs/governance/WORKFLOW.md
 scripts/hooks/hooks.test.mjs
 scripts/hooks/pre-finish.mjs
 scripts/hooks/pre-task.mjs
 ```
 
-No gameplay, Unity runtime, package, ProjectSettings or Builds path was changed by Remediation 002.
-
-## Three prior P1 findings — remediation status
-
-### P1-1 — activation/history bypass
-
-Closed by:
-
-- exact changed-file-set validation in both `pre-task` and `pre-finish`;
-- adversarial tests for extra activation content and rewritten/squashed activation payload;
-- active task branch protected server-side with admin enforcement, force-push blocked and deletion blocked.
-
-### P1-2 — evidence-file mismatch
-
-Closed by one aggregate machine-readable evidence file:
-
-`docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md`
-
-It contains every key required by the active task contract.
-
-### P1-3 — review verdict taxonomy drift
-
-Closed by active-contract-first review semantics. `NEXT_TASK` in REVIEW declares `review_verdict_enum`; `.agents/skills/review-task/SKILL.md` must use that enum and only use its own default vocabulary when no active enum is declared.
-
-## Verification
-
-Local scratch regression using exact new hook/test/skill contents:
-
-```text
-tests = 44
-pass  = 44
-fail  = 0
-```
-
-Public GitHub-hosted verification on final evidence head:
-
-```text
-Repository Gate run = 32227935690
-result              = success
-tests               = 44
-pass                = 44
-fail                = 0
-```
-
-The known `actions/checkout@v4` Node-runtime warning remains non-blocking maintenance debt.
+No gameplay, Unity runtime, package, ProjectSettings, Builds, active `NEXT_TASK`, or active task-contract writer mutation occurred.
 
 ## Quarantined R1 specimen
 
@@ -114,6 +122,6 @@ The original local worktree `E:\GameDev\tieu-tien-ky-game` remains protected and
 
 ONE NEXT ACTION:
 
-**Run a fresh independent read-only review of current PR #11 exact head, focused first on closure of the three Remediation-002 P1 findings and then on regressions/coherence.**
+**Run a fresh independent read-only review of current PR #11 exact head, focused first on closure of the multi-parent activation bypass, then on regressions/coherence and whether PR #11 is safe to enter Human merge gate.**
 
 No merge, Unity harness SPIKE, R1, Product Proof, gameplay, networking/PvP, Stage C or successor implementation is authorized.
