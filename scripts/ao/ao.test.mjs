@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(here, '../..');
@@ -26,8 +26,8 @@ function active(o={}){
   const baseline=git(root,['rev-parse','HEAD']), branch=o.branch??'chore/ao-test';
   git(root,['remote','add','origin',remote]); git(root,['push','-q','origin',`${baseline}:refs/heads/main`]); git(root,['branch','-M',branch]);
   const task='docs/tasks/TASK.md';
-  const a={state:o.state??'IMPLEMENT',task_mode:'SPEC',repository:o.repository??remote.replaceAll('\\','/'),task_id:'T',branch,
-    baseline_ref:o.badBaseline??baseline,authority_anchor_ref:baseline,workspace_policy:o.policy??'EXISTING_AUTHORIZED_WORKTREE',
+  const a={state:o.state??'IMPLEMENT',task_mode:o.taskMode===undefined?'SPEC':o.taskMode,repository:o.repository===undefined?remote.replaceAll('\\','/'):o.repository,task_id:'T',branch,
+    baseline_ref:o.badBaseline===undefined?baseline:o.badBaseline,authority_anchor_ref:o.anchor===undefined?baseline:o.anchor,workspace_policy:o.policy===undefined?'EXISTING_AUTHORIZED_WORKTREE':o.policy,
     task_file:task,evidence_file:'docs/evidence/E.md',allowed_paths:o.allowed??['src/'],forbidden_paths:o.forbidden??['blocked/'],
     required_evidence:{ao_tests:'PASS'},stop_condition:'REVIEW'};
   write(root,'docs/governance/NEXT_TASK.md',md(a)); write(root,task,'# task\n');
@@ -58,23 +58,31 @@ test('read-only Git primitives enforce exact SHA and repository normalization', 
   assert.equal(g.normalizeRepositoryUrl('git@github.com:ShenJun93/tieu-tien-ky-game.git'),'shenjun93/tieu-tien-ky-game');
 });
 
-test('passive authority is observable but never mutation authority; malformed/unknown authority fails closed', async()=>{
+test('passive authority is observable but malformed/unsupported authority is invalid configuration', async()=>{
   const {inspectAuthority}=await load('authority.mjs'); assert.equal(typeof inspectAuthority,'function','authority module missing');
   const r=repo(); write(r,'docs/governance/NEXT_TASK.md',md({state:'DISCOVERY',task_id:null,branch:null,baseline_ref:null,task_file:null,evidence_file:null,allowed_paths:[],forbidden_paths:[],stop_condition:'HUMAN'})); commit(r,'discovery');
-  let x=inspectAuthority(r); assert.equal(x.gate_status,'PASS'); assert.equal(x.mutation_authority,'NONE'); assert.equal(x.next_mechanical,null);
-  write(r,'docs/governance/NEXT_TASK.md',md({state:'MAGIC',allowed_paths:[],forbidden_paths:[],stop_condition:'X'})); commit(r,'bad'); assert.equal(inspectAuthority(r).gate_status,'BLOCKED_AUTHORITY');
-  write(r,'docs/governance/NEXT_TASK.md','# x\n```json\n{ bad\n```\n'); commit(r,'bad json'); assert.equal(inspectAuthority(r).gate_status,'BLOCKED_AUTHORITY');
+  let x=inspectAuthority(r); assert.equal(x.gate_status,'PASS'); assert.equal(x.mutation_authority,'NONE'); assert.equal(x.next_mechanical,null); assert.equal(x.repository_status,'NOT_APPLICABLE'); assert.equal(x.live_main_status,'NOT_APPLICABLE');
+  write(r,'docs/governance/NEXT_TASK.md',md({state:'MAGIC',allowed_paths:[],forbidden_paths:[],stop_condition:'X'})); commit(r,'bad'); assert.equal(inspectAuthority(r).gate_status,'INVALID_INVOCATION');
+  write(r,'docs/governance/NEXT_TASK.md','# x\n```json\n{ bad\n```\n'); commit(r,'bad json'); assert.equal(inspectAuthority(r).gate_status,'INVALID_INVOCATION');
 });
 
 test('active authority validates repo, exact baseline, activation lock and live-main drift', async()=>{
   const {inspectAuthority}=await load('authority.mjs'); assert.equal(typeof inspectAuthority,'function');
   let f=active(); let x=inspectAuthority(f.root); assert.equal(x.gate_status,'PASS',x.error); assert.equal(x.authority_transition_ref,f.activation); assert.equal(x.live_main_sha,f.baseline);
   f=active({repository:'Other/Repo'}); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_REPOSITORY');
-  f=active({badBaseline:'HEAD~1',writer:false}); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_AUTHORITY');
+  f=active({badBaseline:'HEAD~1',writer:false}); assert.equal(inspectAuthority(f.root).gate_status,'INVALID_INVOCATION');
   f=active({extra:'extra.txt',writer:false}); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_ACTIVATION');
   f=active({editTask:true,writer:false}); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_ACTIVATION');
   f=active({editNext:true,writer:false}); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_ACTIVATION');
   f=active(); advance(f); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_LIVE_MAIN_DRIFT');
+});
+
+test('REVIEW validates declared repository/baseline/live-main without activation validation', async()=>{
+  const {inspectAuthority}=await load('authority.mjs'); const {runCli}=await load('cli.mjs');
+  let f=active({state:'REVIEW',writer:false}); let x=inspectAuthority(f.root); assert.equal(x.gate_status,'PASS',x.error); assert.equal(x.repository_status,'PASS'); assert.equal(x.live_main_status,'PASS'); assert.equal(x.live_main_sha,f.baseline); assert.equal(x.authority_transition_ref,null);
+  f=active({state:'REVIEW',writer:false,repository:'Other/Repo'}); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_REPOSITORY'); assert.equal(runCli(['inspect'],{cwd:f.root,writeLine:()=>{}}),1);
+  f=active({state:'REVIEW',writer:false,badBaseline:'HEAD~1'}); assert.equal(inspectAuthority(f.root).gate_status,'INVALID_INVOCATION'); assert.equal(runCli(['inspect'],{cwd:f.root,writeLine:()=>{}}),2);
+  f=active({state:'REVIEW',writer:false}); advance(f); assert.equal(inspectAuthority(f.root).gate_status,'BLOCKED_LIVE_MAIN_DRIFT'); assert.equal(runCli(['inspect'],{cwd:f.root,writeLine:()=>{}}),1);
 });
 
 test('workspace policy is inspection-only and isolated policy requires a linked worktree', async()=>{
@@ -118,12 +126,13 @@ test('project policy only selects fixed diff/AO/governance checks', async()=>{
   assert.doesNotMatch(JSON.stringify(checks),/Unity|push|reset|rebase|checkout|stash|worktree add/i);
 });
 
-test('CLI parses stable surface and HUMAN_GATE inspect remains passive', async()=>{
+test('CLI parses stable surface, uses explicit identity status, and HUMAN_GATE remains passive', async()=>{
   const {parseArgs,runCli}=await load('cli.mjs'); assert.equal(typeof runCli,'function','cli module missing');
   assert.deepEqual(parseArgs(['inspect']),{command:'inspect',json:false,candidate:null}); assert.throws(()=>parseArgs(['verify-candidate']),/candidate/i);
   const r=repo(); write(r,'docs/governance/NEXT_TASK.md',md({state:'HUMAN_GATE',task_id:'T',branch:null,baseline_ref:null,task_file:null,evidence_file:null,allowed_paths:[],forbidden_paths:[],stop_condition:'HUMAN'})); commit(r,'human');
   const out=[]; assert.equal(runCli(['inspect'],{cwd:r,writeLine:s=>out.push(s)}),0); const text=out.join('\n');
-  assert.match(text,/AUTHORITY_STATE\s+HUMAN_GATE/); assert.match(text,/MUTATION_AUTHORITY\s+NONE/); assert.match(text,/AO_MUTATION\s+NONE/); assert.match(text,/NEXT_MECHANICAL\s+NONE/);
+  assert.match(text,/AUTHORITY_STATE\s+HUMAN_GATE/); assert.match(text,/REPOSITORY\s+NOT_APPLICABLE/); assert.match(text,/LIVE_MAIN\s+NOT_APPLICABLE/); assert.match(text,/MUTATION_AUTHORITY\s+NONE/); assert.match(text,/AO_MUTATION\s+NONE/); assert.match(text,/NEXT_MECHANICAL\s+NONE/);
+  write(r,'docs/governance/NEXT_TASK.md','# bad\n```json\n{ bad\n```\n'); commit(r,'bad config'); assert.equal(runCli(['inspect'],{cwd:r,writeLine:()=>{}}),2);
 });
 
 test('CLI verify-candidate passes an exact committed local fixture', async()=>{
