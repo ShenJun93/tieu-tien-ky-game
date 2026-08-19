@@ -64,17 +64,28 @@ function revList(range, repoPath) {
   return text ? text.split(/\r?\n/).filter(Boolean) : [];
 }
 
-function changedPathsInCommit(commit) {
-  const text = run('git', ['show', '--pretty=format:', '--name-only', commit]);
+function requireSingleParentDirectChild(transition, anchor) {
+  const line = run('git', ['rev-list', '--parents', '-n', '1', transition]);
+  const parts = line.split(/\s+/).filter(Boolean);
+  const resolved = parts[0];
+  const parents = parts.slice(1);
+  if (resolved !== transition || parents.length !== 1 || parents[0] !== anchor) {
+    fail(`authority transition must be a single-parent direct child of authority_anchor_ref; got ${parents.length} parent(s)`);
+  }
+  return parents[0];
+}
+
+function changedPathsFromAnchor(anchor, transition) {
+  const text = run('git', ['diff', '--name-only', '--no-renames', anchor, transition, '--']);
   return [...new Set(text.split(/\r?\n/).filter(Boolean).map((value) => value.replaceAll('\\', '/')))];
 }
 
-function requireExactActivationContent(transition, taskFile) {
+function requireExactActivationContent(anchor, transition, taskFile) {
   const expected = [AUTHORITY_PATH, taskFile].sort();
-  const actual = changedPathsInCommit(transition).sort();
+  const actual = changedPathsFromAnchor(anchor, transition).sort();
   const exact = actual.length === expected.length && expected.every((value, index) => actual[index] === value);
   if (!exact) {
-    fail(`authority-transition commit must change exactly ${expected.join(', ')}; got ${actual.join(', ') || '(none)'}`);
+    fail(`authority-transition commit must change exactly ${expected.join(', ')} relative to authority_anchor_ref; got ${actual.join(', ') || '(none)'}`);
   }
   return actual;
 }
@@ -93,15 +104,14 @@ function validateAuthorityTransition(authority, baseline) {
   }
   const transition = authorityCommits[0];
 
-  const parent = run('git', ['rev-parse', `${transition}^`]);
-  if (parent !== anchor) fail('authority transition must be the direct child of authority_anchor_ref');
+  requireSingleParentDirectChild(transition, anchor);
 
   const taskCommits = revList(`${anchor}..HEAD`, taskFile);
   if (taskCommits.length !== 1 || taskCommits[0] !== transition) {
     fail('active task contract must be created/updated exactly once in the same authority-transition commit');
   }
 
-  requireExactActivationContent(transition, taskFile);
+  requireExactActivationContent(anchor, transition, taskFile);
 
   return { anchor, transition, taskFile };
 }

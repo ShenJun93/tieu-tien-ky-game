@@ -316,3 +316,20 @@ Record:
 4. What evidence was obtained?
 5. What research findings changed disposition?
 6. What is the single next product action?
+
+## Activation structural invariant
+
+Published-history protection and repository-local activation validation solve different failure modes and must both hold.
+
+For every mutating activation:
+
+```text
+activation parent count = exactly 1
+activation parent       = authority_anchor_ref
+activation payload      = explicit tree diff authority_anchor_ref → activation
+rename detection        = disabled for this check
+```
+
+`pre-task` and `pre-finish` must therefore reject zero-parent or multi-parent activation commits, including a merge activation whose first parent is the authority anchor. Activation changed paths are measured with an explicit anchor-to-transition tree diff, not merge-aware `git show --name-only` output.
+
+Server-side no-force-push/deletion protection remains the outer boundary against replacement of already-published task history. It does **not** substitute for the single-parent/direct-child invariant and does not make a multi-parent fast-forward activation acceptable.

@@ -418,3 +418,65 @@ test('review skill defers to active review contract verdict enum with a fallback
   assert.match(skill, /If the active review contract does not declare a verdict enum, use the fallback default/i);
   assert.match(skill, /Do not invent a second competing taxonomy/i);
 });
+
+function makeMultiParentActivationFixture(overrides = {}) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-merge-work-'));
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-merge-remote-'));
+  execFileSync('git', ['init', '--bare', '-q', remote]);
+
+  git(root, ['init', '-q']);
+  git(root, ['config', 'user.email', 'hooks@test.local']);
+  git(root, ['config', 'user.name', 'Hook Test']);
+
+  for (const name of hookNames) {
+    write(root, `scripts/hooks/${name}`, fs.readFileSync(path.join(sourceRoot, 'scripts/hooks', name), 'utf8'));
+  }
+
+  writeEvidence(root, { verdict: 'PASS', automated_tests: 'UNSET' });
+  write(root, 'docs/governance/NEXT_TASK.md', '# inactive baseline\n');
+  commitAll(root, 'baseline');
+  const baseline = git(root, ['rev-parse', 'HEAD']);
+  const anchor = baseline;
+  const branch = overrides.branch ?? 'feat/test-task';
+
+  git(root, ['remote', 'add', 'origin', remote]);
+  git(root, ['push', '-q', 'origin', `${baseline}:refs/heads/main`]);
+  git(root, ['branch', '-M', branch]);
+
+  git(root, ['checkout', '-q', '-b', 'activation-side-payload']);
+  write(root, 'UNAUTHORIZED.md', 'payload inherited from second parent\n');
+  commitAll(root, 'side-parent payload');
+  const side = git(root, ['rev-parse', 'HEAD']);
+
+  git(root, ['checkout', '-q', branch]);
+  git(root, ['merge', '--no-ff', '--no-commit', 'activation-side-payload']);
+  write(root, 'docs/tasks/TASK.md', '# test task\n');
+  writeAuthority(root, baseline, anchor, remote, overrides);
+  commitAll(root, 'merge activation');
+  const activation = git(root, ['rev-parse', 'HEAD']);
+
+  return { root, remote, baseline, anchor, side, activation };
+}
+
+test('pre-task blocks multi-parent activation whose merge-aware show hides second-parent payload', () => {
+  const fixture = makeMultiParentActivationFixture();
+  const parentTokens = git(fixture.root, ['rev-list', '--parents', '-n', '1', fixture.activation]).split(/\s+/);
+  assert.equal(parentTokens.length, 3, `expected transition + two parents, got ${parentTokens.join(' ')}`);
+
+  const mergeAwareShow = git(fixture.root, ['show', '--pretty=format:', '--name-only', fixture.activation]);
+  assert.doesNotMatch(mergeAwareShow, /UNAUTHORIZED\.md/);
+
+  const anchorDiff = git(fixture.root, ['diff', '--name-only', '--no-renames', fixture.anchor, fixture.activation, '--']);
+  assert.match(anchorDiff, /UNAUTHORIZED\.md/);
+
+  const result = invoke(fixture.root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /single-parent direct child/);
+});
+
+test('pre-finish blocks multi-parent activation whose first parent is the authority anchor', () => {
+  const fixture = makeMultiParentActivationFixture();
+  const result = invoke(fixture.root, 'pre-finish.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /single-parent direct child/);
+});
