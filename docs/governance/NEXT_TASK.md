@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "PAUSED",
   "task_mode": "SLICE",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001",
@@ -14,36 +14,12 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "workspace_policy": "REMOTE_GITHUB_BRANCH",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001.md",
   "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_001_REPORT.md",
-  "allowed_paths": [
-    "Assets/_Project/Gameplay/RunBlessingState.cs",
-    "Assets/_Project/Gameplay/LoiTramSkill.cs",
-    "Assets/_Project/Gameplay/PhongBoSkill.cs",
-    "Assets/_Project/Gameplay/HoTheSkill.cs",
-    "Assets/_Project/Gameplay/PlayerSkillController.cs",
-    "Assets/_Project/Gameplay/ArenaRunDirector.cs",
-    "Assets/_Project/Presentation/ProductionHud.cs",
-    "Assets/_Project/Gameplay/ProductProofRunStyle.cs",
-    "Assets/_Project/Gameplay/ProductProofRunStyle.cs.meta",
-    "Assets/_Project/Tests/EditMode/RunBlessingStateTests.cs",
-    "Assets/_Project/Tests/EditMode/ProductProofRunStyleTests.cs",
-    "Assets/_Project/Tests/EditMode/ProductProofRunStyleTests.cs.meta",
-    "Assets/_Project/Tests/PlayMode/ProductProofInteractionPlayModeTests.cs",
-    "Assets/_Project/Tests/PlayMode/ProductProofInteractionPlayModeTests.cs.meta",
-    "docs/evidence/PRODUCT_PROOF_SLICE_001_REPORT.md"
-  ],
+  "allowed_paths": [],
   "forbidden_paths": [
-    "Assets/_Project/Gameplay/NetworkArenaSceneBootstrap.cs",
-    "Assets/_Project/Gameplay/NetworkArenaSessionDirector.cs",
-    "Assets/_Project/Gameplay/NetworkPlayerActionGateway.cs",
-    "Assets/_Project/Gameplay/NetworkPlayerMovement.cs",
-    "Assets/_Project/Gameplay/NetworkSmokeTestDriver.cs",
-    "Assets/_Project/Gameplay/NetworkedCombatantSync.cs",
+    "Assets/",
     "Packages/",
     "ProjectSettings/",
-    "docs/master/",
-    "docs/decisions/",
-    "docs/governance/",
-    "docs/tasks/"
+    "docs/"
   ],
   "required_evidence": {
     "authority_integrity": "PASS",
@@ -54,18 +30,18 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "scope_diff": "PASS",
     "human_playtest": "RECORDED"
   },
-  "stop_condition": "PRODUCT_PROOF_SLICE_001_HUMAN_GATE"
+  "stop_condition": "UNITY_CAPABLE_VERIFICATION_REQUIRED_BEFORE_RESUME"
 }
 ```
 
 ## Current authority
 
-Human/Game Director explicitly approved the bounded design for **Product Proof Slice 001 — Solo PvE Core Run** with `ok go` on 2026-08-19.
+Product Proof Slice 001 is **PAUSED** because the authoring execution surface cannot run Unity, execute the required EditMode/PlayMode verification, or produce the exact-SHA Android artifact.
 
-The implementation may strengthen only the existing solo Product Proof flow: two materially different in-run playstyles, one bounded hybrid interaction, clearer systemic/spatial payoff, and mobile-native skill-control readability using the existing arena/run/skill foundation.
+The reachable candidate history contains a bounded test-first implementation and a truthful blocked evidence report. `PAUSED` grants no mutation authority: `allowed_paths` is empty and all repository content is forbidden until a fresh explicit Human/Game Director continuation establishes a valid mutation authority transition.
 
-This task does **not** authorize R1 salvage/resumption, networking/PvP/Stage C, Unity Harness SPIKE, package changes, product-canon changes, backend/services, or generic ability/modifier architecture.
+## Required continuation check
 
-## Stop
+Before any mutation, revalidate live `main`, branch head, task contract, evidence report, and repository controls. Resume only on an authorized Unity-capable execution surface.
 
-After exact-SHA technical verification and Android acceptance artifact generation, transition to the hard Human physical gate. Do not install, launch, poll a device, merge, or infer a successor task.
+No Human physical gate has been reached. No merge, R1, networking/PvP/Stage C, Unity Harness SPIKE, or successor task is authorized.
