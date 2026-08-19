@@ -1,13 +1,10 @@
 # TIỂU TIÊN KÝ — OPERATIONAL MASTER PLAN
 
-Version: **v0.1.5 Fun-First Rebaseline**  
-Status: **CANONICAL (historical operational framing) — current execution
-authority is `docs/governance/NEXT_TASK.md`; P0A is complete/superseded, not
-the active phase. See §14/§15 amendments below.**  
-Updated: **2026-08-17** (status line and §14/§15 pointers reconciled
-2026-08-18; body prose otherwise preserved as history)
+Version: **v0.1.6 Product-Proof Roadmap Refresh**  
+Status: **CANONICAL OPERATIONAL PLAN — current execution authority is `docs/governance/NEXT_TASK.md`; current product direction is `docs/master/PRODUCT_FOUNDATION.md`; the older P0A/P0B/Stage/Phase roadmap remains preserved as historical record.**  
+Updated: **2026-08-19**
 
-This file is the repository operational source of truth for decisions agents need to execute the project. Historical research/reviewer rationale may live elsewhere but cannot override this file without an explicit canon change. Where this file's P0A/P0B/Phase roadmap prose (§14) conflicts with the current program state, `docs/governance/NEXT_TASK.md` and `docs/master/RELEASE_TRACK.md` are authoritative — see the amendment notes in §14.
+This file is the repository operational source of truth for decisions agents need to execute the project. Historical research/reviewer rationale may live elsewhere but cannot override this file without an explicit canon change. For current work, `docs/governance/NEXT_TASK.md` governs execution authority and `docs/master/PRODUCT_FOUNDATION.md` governs accepted product direction. `docs/master/RELEASE_TRACK.md` preserves the historical Stage A/B/C/D program and reusable process lessons; it is not current successor/product-mode authority.
 
 **Product-foundation amendment (2026-08-19):** current stable
 product-level authority for accepted direction, audience/mode hypotheses,
@@ -326,13 +323,111 @@ If F2P later:
 
 ## 14. Roadmap and gates
 
-**Release-track amendment (2026-08-18):** the Stage order, mandatory
-Player-Visible Delta gate, production baseline ratchet, durable naming,
-bounded player-count config, artifact identity, and compact handoff for all
-work after P0A/Vertical Slice v0.1 are now governed by
-`docs/master/RELEASE_TRACK.md`. The P0B/Phase1-8 prose below remains the
-historical record of the prior framing and is not rewritten; where the two
-conflict on post-P0A stage naming, `RELEASE_TRACK.md` is authoritative.
+### Current product roadmap amendment — 2026-08-19
+
+The accepted Product Foundation supersedes the old assumption that network/PvP progression is the next mandatory program step. The current critical path is **solo PvE Product Proof first**. Technical networking work already proved during Stage B remains reusable capability, but it does not pull Stage C, PvP, co-op, backend, or service scale forward automatically.
+
+Current program position:
+
+```text
+P0A LOCAL MICRO-FUN / PLAYABLE CORE
+  COMPLETE / HISTORICAL
+        ↓
+VERTICAL SLICE v0.1
+  COMPLETE / HISTORICAL
+        ↓
+STAGE A+B PRODUCTION ALPHA TECHNICAL FOUNDATION
+  TECHNICAL GATE GREEN
+  PRODUCT GATE RED
+  NETWORK FOUNDATION PROVEN TECHNICALLY, NOT CURRENT PRODUCT MODE AUTHORITY
+        ↓
+PRODUCT FOUNDATION CANON
+  ACCEPTED / SOLO PvE PRIMARY PRODUCT PROOF
+        ↓
+HARNESS vNEXT GOVERNANCE / EXECUTION FOUNDATION
+  INTEGRATED
+        ↓
+PRODUCT PROOF SLICE 001
+  NEXT INTENDED BOUNDED PRODUCT SLICE
+  NOT AUTHORIZED BY ROADMAP TEXT ALONE
+        ↓
+TECHNICAL GATE
+        ↓
+INTERNAL HUMAN PRODUCT / PHYSICAL-DEVICE GATE
+        ↓
+EVIDENCE-BACKED PRODUCT DECISION
+        ↓
+IF PROMISING: ONE BOUNDED PRODUCT-PROOF ITERATION OR SMALL TARGET-AUDIENCE PLAYTEST
+IF WEAK: REDESIGN THE CORE PRODUCT INTERACTION, DO NOT HIDE IT WITH INFRASTRUCTURE
+        ↓
+ONLY AFTER REPEATABLE SOLO-PvE FUN IS PROVEN:
+  PRODUCTION-KEPT SOLO CORE / IDENTITY / CONTENT SCALING
+        ↓
+OPTIONAL CO-OP / PvP / REAL-INTERNET / SERVICE EXPERIMENTS
+  FRESH AUTHORITY + EVIDENCE REQUIRED
+        ↓
+LATER RETENTION / OPERATIONS / BUSINESS / RELEASE VALIDATION
+```
+
+**Product Proof Slice 001 — intended proof question**
+
+Can the existing solo PvE arena/run foundation produce a materially more replayable Tiểu Tiên Ký experience when the player can intentionally pursue different combat styles and create readable cultivation-system interactions, without using networking, content volume, permanent progression, or infrastructure to mask weak core fun?
+
+The slice should remain bounded around the already accepted Product Foundation §9 direction:
+
+- 1 player;
+- 1 PvE arena/run;
+- existing four core actions: Basic, Lôi, Phong, Hộ Thể;
+- 2 clear authored playstyles;
+- 1 emergent hybrid interaction;
+- 2 core cultivation/environment interactions;
+- 3 enemy pressure patterns;
+- 1 climax encounter;
+- representative mobile controls/readability;
+- representative hit/skill/audio feedback;
+- Replay / Quit;
+- Cơ Duyên or one Pháp Bảo toy only if cheap and directly useful to the proof;
+- permanent power/meta remains OFF for the first Product Proof.
+
+The evidence sequence is intentionally separated:
+
+```text
+TECHNICAL GATE
+  correctness + focused tests + EditMode/PlayMode + exact-SHA device artifact
+        ↓
+INTERNAL HUMAN PRODUCT GATE
+  fun + readability + intentional interaction + playstyle difference + replay desire
+        ↓
+SMALL TARGET-AUDIENCE PLAYTEST
+  later/provisional support only if the internal proof is promising
+        ↓
+LATER RETENTION VALIDATION
+  separate later evidence; not inferred from one playtest or Replay click
+```
+
+Current critical-path exclusions until separately authorized by evidence:
+
+- Stage C / hosted real-Internet foundation;
+- PvP dependency or PvP balancing work;
+- co-op implementation;
+- matchmaking/MMR/ranked/host migration/reconnect frameworks;
+- backend/service scale;
+- permanent-power meta/economy;
+- large content roster or live ops;
+- generic ability/reaction/combo/event architecture;
+- R1 salvage/resumption;
+- Unity Harness SPIKE.
+
+Roadmap rule:
+
+> **A roadmap position is not execution authority.** `docs/governance/NEXT_TASK.md` plus the active task contract must separately activate every mutating slice.
+
+**Release-track amendment (2026-08-18):** `docs/master/RELEASE_TRACK.md`
+preserves the Stage A → Stage B → historical Stage C/D sequence and its
+reusable Player-Visible Delta / artifact-identity process. The accepted
+Product Foundation subsequently superseded that sequence as a current
+product-mode dependency chain. The P0B/Phase1-8 prose below remains the
+historical record of the prior framing and is not rewritten.
 
 **Governance amendment (2026-08-18):** craft/quality standards — the
 production maturity model (EXPERIMENT → PROVEN → PRODUCTION_KEPT →
@@ -427,6 +522,8 @@ Validate retention, acquisition, operations and selected business model.
 ### Phase 8 — Global mobile launch
 Only after technical, product, operational, legal and business gates are accepted.
 
+The P0B/Phase1-8 sequence immediately above is retained for historical audit. It must not be interpreted as the current mandatory successor order where it conflicts with the 2026-08-19 Product Foundation or the current roadmap amendment at the start of this section.
+
 ## 15. Current execution authority
 
 Machine-readable authority:
@@ -436,45 +533,41 @@ Machine-readable authority:
 `docs/governance/NEXT_TASK.md` is the sole current execution authority; its
 `state` field (`PAUSED`/`DISCOVERY`/`SPIKE`/`IMPLEMENT`/`REVIEW`/
 `HUMAN_GATE`/`CLOSED` — see `AGENTS.md`) governs whether any task may
-execute. The task pointer below is historical (preserved, not current):
+execute.
 
-Historical: the next P0A product task after rebaseline activation was
-`docs/tasks/TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001.md`. The
-historical task `TASK-TIEU-TIEN-KY-PHASE0A-LOCAL-MICROFUN-SPIKE-001`
-remains an audit record but was already superseded as execution authority.
-Since then, `TASK-TIEU-TIEN-KY-P0A-PLAYABLE-CORE-LOOP-001`,
-`TASK-TIEU-TIEN-KY-VERTICAL-SLICE-V0.1-001`, and
-`TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001` have all completed and
-are no longer active write authority; see `docs/governance/NEXT_TASK.md`
-and `docs/governance/CURRENT_STATE.md` for current program state (as of
-2026-08-18: `ACTIVE`, task `TASK-TIEU-TIEN-KY-PRODUCT-FEEL-REMEDIATION-01`).
+Historical P0A, Vertical Slice v0.1, and Stage A+B production-alpha tasks are complete and no longer grant write authority. The old `PRODUCT FEEL REMEDIATION 01` is a historical/salvage source only; it is not the current task and must not be resumed verbatim.
 
-P0B, as originally scoped below (Photon Fusion `GameMode.Server`), remains
-NOT AUTHORIZED; its Stage-B successor (NGO + Unity Transport, 2-player
-local-network foundation) has since been implemented — see §7's network
-canon reconciliation and `docs/master/RELEASE_TRACK.md`.
+At this roadmap refresh, the repository is positioned **before a fresh bounded Product Proof implementation activation**. The accepted Product Foundation makes solo PvE the primary Product Proof direction; §14 records Product Proof Slice 001 as the next intended product slice. That roadmap position does not itself authorize implementation.
+
+A future Product Proof writer must receive a separate exact task activation with its own baseline, authority anchor, branch/workspace policy, allowed paths, required evidence, and Human physical gate. Until that transition exists in `NEXT_TASK.md`, no gameplay mutation follows from this roadmap.
+
+P0B's original Photon Fusion framing remains historical/superseded. The later NGO + Unity Transport Stage-B foundation remains accepted technical capability, but Stage C, PvP, co-op, real-Internet hosting, backend/service scale and other successor work remain **NOT AUTHORIZED** unless a fresh task explicitly grants them.
 
 ## 16. Final directive
 
-Success is evaluated as:
+Success is evaluated for the current product direction as:
 
 ```text
 FUN
  ↓
-REPEATABLE FUN
+REPEATABLE SOLO-PvE FUN
  ↓
-MULTIPLAYER FUN
+UNIQUE TIỂU TIÊN KÝ SYSTEMIC FUN
  ↓
-UNIQUE TIỂU TIÊN KÝ FUN
+MOBILE PRODUCT PROOF
+ ↓
+TARGET-AUDIENCE SUPPORT
  ↓
 RETENTION
  ↓
 SHAREABILITY
  ↓
-SCALABILITY
+SCALABILITY / OPTIONAL MULTIPLAYER PROOFS
  ↓
 BUSINESS
 ```
+
+Multiplayer fun is no longer a mandatory predecessor to proving unique Tiểu Tiên Ký fun. If co-op/PvP is later authorized, it must earn its place with separate evidence rather than inheriting product authority from the existing Stage-B network capability.
 
 Do not use later layers to hide failure in an earlier layer.
 

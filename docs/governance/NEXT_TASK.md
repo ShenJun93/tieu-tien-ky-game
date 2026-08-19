@@ -4,50 +4,42 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
+  "state": "HUMAN_GATE",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001",
+  "branch": "docs/product-proof-roadmap-refresh",
+  "baseline_ref": "62f20934c6fb01b2fa01d8fee408867b58eeeffb",
+  "authority_anchor_ref": "62f20934c6fb01b2fa01d8fee408867b58eeeffb",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_ROADMAP_REFRESH_REPORT.md",
   "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "docs/"
+  ],
+  "required_evidence": {
+    "live_main_identity": "PASS",
+    "roadmap_coherence": "PASS",
+    "scope_diff": "PASS"
+  },
+  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
 }
 ```
 
 ## Current authority
 
-`state` is `DISCOVERY`: there is no active write task and no active branch authority. Repository mutation is forbidden by default.
+The Product Proof roadmap refresh writer work is complete and its evidence is PASS. No further repository mutation is authorized on this branch while it waits at the Human merge gate.
 
-Harness vNext is **INTEGRATED INTO MAIN**. PR #11 merged the accepted Harness branch into canonical `main` as merge commit `d178447c27b357c9067e3c54911edfdb3233ce51`.
+The roadmap now reflects the accepted solo-PvE-first Product Proof critical path and removes stale Product Feel Remediation execution wording while preserving historical P0A/Stage/Phase records.
 
-The post-merge recovery task `TASK-TIEU-TIEN-KY-HARNESS-VNEXT-POST-MERGE-RECONCILIATION-001` corrected stale pre-merge Human Merge Gate wording only. It grants no successor authority.
+## Human gate
 
-No gameplay, Product Proof, R1 salvage/resumption, Unity Harness SPIKE, networking/PvP, Stage C, runtime/package mutation, or other implementation task is authorized by this state.
+Human/Game Director decides whether to merge the roadmap PR.
 
-## Live operator precedence
+Merging this docs-only roadmap refresh does **not** activate Product Proof implementation. After any merge, a separate fresh Human/Game Director instruction and authority transition are still required before gameplay mutation.
 
-```text
-latest explicit Human/Game Director instruction
-> persisted NEXT_TASK.md authority
-> task contract
-> stable product/craft canon
-> historical documents
-```
-
-A future Human/Game Director instruction may authorize a bounded successor task, but `NEXT_TASK.md` must be explicitly transitioned before delegated mutation proceeds.
-
-## Preserved product/runtime status
-
-`PRODUCT_EXECUTION` remains **FROZEN**. R1 remains **QUARANTINED**. Stage C remains **NOT AUTHORIZED**.
-
-Harness vNext integration changes execution governance/harness availability only; it does not itself authorize gameplay or product implementation.
-
-## One next action
-
-Human/Game Director selects the next bounded action explicitly.
-
-No successor task is inferred from PR #11, the Harness vNext integration, the recovery task, or this `DISCOVERY` state.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+No R1, Unity Harness SPIKE, networking/PvP, Stage C, backend/services, gameplay/runtime/package mutation, or successor implementation authority is granted.
