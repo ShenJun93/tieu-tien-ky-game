@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (Harness vNext candidate ready for independent review)
+Updated: 2026-08-19 (Harness vNext P1 repo-side remediation complete; GitHub platform Human Gate)
 
 ## Repository
 
@@ -8,6 +8,9 @@ Updated: 2026-08-19 (Harness vNext candidate ready for independent review)
 - Local operator path: `E:\GameDev\tieu-tien-ky-game`
 - Visibility: private
 - Default branch: `main`
+- Canonical main SHA: `b2e160cb83c0dc74031081ca010eb2a7489c104d`
+- Harness branch: `chore/harness-vnext-canon-workflow-reconciliation`
+- Draft review surface: PR #11
 - Human/Game Director remains merge authority.
 
 ## Canon
@@ -40,40 +43,79 @@ R2-R5 OLD REMEDIATION IDEAS       = HISTORICAL SALVAGE CANDIDATES ONLY
 R6 OLD LAN PVP GATE               = SUPERSEDED AS CURRENT PRODUCT-PROOF REQUIREMENT
 STAGE_C                           = NOT AUTHORIZED
 HUMAN_PVP_FUN                     = NOT PROVEN
-HARNESS_VNEXT_CANDIDATE           = READY_FOR_INDEPENDENT_REVIEW
+HARNESS_VNEXT_REPO_SIDE           = PASS / HARDENED CANDIDATE
+HARNESS_AUTHORITY_LOCK            = PASS
+HARNESS_MAIN_DRIFT_GUARD          = PASS
+GOVERNANCE_REGRESSION             = PASS 40/40
+REMOTE_REPOSITORY_GATE            = BLOCKED_ON_GITHUB_PLATFORM
+MAIN_BRANCH_PROTECTION            = BLOCKED_ON_GITHUB_PLATFORM
+HARNESS_VNEXT_OVERALL             = BLOCKED_ON_HUMAN_PLATFORM_GATE
 ```
 
-## Harness vNext candidate
+## Harness vNext / P1 hardening
 
-Task:
+Initial Harness vNext integrated:
 
-`TASK-TIEU-TIEN-KY-HARNESS-VNEXT-CANON-WORKFLOW-RECONCILIATION-001`
-
-Implemented candidate outcomes:
-
-1. PvE-first Product Foundation reconciled with historical Release Track/Product Feel task;
-2. research-integration lifecycle + 16-entry retrospective/current ledger;
-3. task-mode router without creating a second write-authority mechanism;
-4. immutable execution identity fields / workspace policy;
+1. PvE-first Product Foundation reconciliation with historical Release Track/Product Feel material;
+2. research-integration lifecycle and retrospective/current ledger;
+3. task-mode router without a second write-authority mechanism;
+4. execution identity/workspace policy;
 5. lightweight repository map;
-6. task-declared `required_evidence` verification instead of Android-hardcoded `pre-finish`;
-7. default two-round same-symptom repair budget;
-8. minimal GitHub Actions governance-hook test workflow;
-9. affected controls/build/Human-gate skills reconciled with current Product Foundation.
+6. task-declared evidence verification;
+7. two-round same-symptom repair budget;
+8. minimal repository CI candidate;
+9. craft-skill reconciliation with current Product Foundation.
 
-Verification evidence:
+Adversarial review then identified and P1 remediation closed the repository-side gaps:
 
 ```text
-GOVERNANCE_HOOK_TESTS         = PASS (31/31)
-SCOPE_DIFF                    = PASS
-CANON_COHERENCE_REVIEW        = PASS (writer/Foreman verification; independent review still required)
-RESEARCH_DISPOSITION_COVERAGE = PASS
-UNITY / ANDROID / HUMAN GATE  = NOT REQUIRED FOR THIS GOVERNANCE-ONLY TASK
+self-modifiable authority  → authority_anchor_ref + single transition + writer locks
+stale long-running task    → live origin/main drift checks at start/finish
+scope root-of-trust        → writer completion scope begins after control-plane activation
 ```
 
-Full evidence: `docs/evidence/HARNESS_VNEXT_CANON_WORKFLOW_RECONCILIATION_REPORT.md`.
+Fresh isolated governance regression:
 
-`docs/governance/NEXT_TASK.md` is now `state: REVIEW`, so further writer mutation is blocked until the required independent review returns a verdict and the Human/Game Director gives any subsequent authority.
+```text
+TESTS = 40
+PASS  = 40
+FAIL  = 0
+```
+
+Evidence: `docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_REPORT.md`.
+
+## Remaining GitHub platform gates
+
+### Remote CI
+
+The stable all-PR workflow/job is now:
+
+```text
+Repository Gate / repository-gate
+```
+
+Multiple fresh PR runs, including the run after the 40/40 fixture repair, failed before any job step executed (`steps=null`). Therefore repository-side tests are green but GitHub-hosted execution is not proven.
+
+### Main branch protection
+
+Live GitHub state still reports:
+
+```text
+main protected = false
+required status checks = off
+```
+
+Target before final Harness acceptance:
+
+```text
+require pull request before merging
+block force pushes
+block branch deletion
+require repository-gate after a successful run exists
+Human/Game Director remains merge authority
+```
+
+These are GitHub platform/admin settings and cannot be silently substituted by repository prose/hooks.
 
 ## Quarantined R1 specimen
 
@@ -96,6 +138,12 @@ SUPERSEDED
 
 Research may justify implementation, a bounded SPIKE, deliberate deferral/rejection, or supersession. It never grants write authority by itself.
 
-## Next action
+## Current authority / one next action
 
-Run the required **fresh independent read-only review** of the current Harness vNext branch candidate. Do not start Unity harness SPIKE, R1, Product Proof, PvP, Stage C or any successor implementation yet.
+`docs/governance/NEXT_TASK.md` is `state: HUMAN_GATE`.
+
+ONE NEXT ACTION:
+
+**Human/Game Director resolves or reports the two GitHub platform gates on PR #11: hosted `repository-gate` execution and private-repository `main` protection availability/configuration.**
+
+Do not start independent final review, Unity harness SPIKE, R1, Product Proof, PvP, Stage C or any successor implementation until those platform gates are reconciled and explicit continuation is given.
