@@ -4,50 +4,45 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001",
+  "branch": "docs/product-proof-roadmap-refresh",
+  "baseline_ref": "62f20934c6fb01b2fa01d8fee408867b58eeeffb",
+  "authority_anchor_ref": "62f20934c6fb01b2fa01d8fee408867b58eeeffb",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_ROADMAP_REFRESH_REPORT.md",
+  "allowed_paths": [
+    "docs/master/MASTER_PLAN.md",
+    "docs/evidence/PRODUCT_PROOF_ROADMAP_REFRESH_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "docs/master/PRODUCT_FOUNDATION.md",
+    "docs/master/RELEASE_TRACK.md",
+    "docs/governance/CURRENT_STATE.md"
+  ],
+  "required_evidence": {
+    "live_main_identity": "PASS",
+    "roadmap_coherence": "PASS",
+    "scope_diff": "PASS"
+  },
+  "stop_condition": "PRODUCT_PROOF_ROADMAP_REFRESH_READY_FOR_HUMAN_MERGE_GATE"
 }
 ```
 
 ## Current authority
 
-`state` is `DISCOVERY`: there is no active write task and no active branch authority. Repository mutation is forbidden by default.
+The Human/Game Director explicitly requested a roadmap refresh before proceeding with the intended Product Proof task.
 
-Harness vNext is **INTEGRATED INTO MAIN**. PR #11 merged the accepted Harness branch into canonical `main` as merge commit `d178447c27b357c9067e3c54911edfdb3233ce51`.
+This is a bounded docs-only reconciliation. It may update the operational roadmap to reflect the already-accepted Product Foundation and current program sequence. It does **not** activate Product Proof gameplay implementation.
 
-The post-merge recovery task `TASK-TIEU-TIEN-KY-HARNESS-VNEXT-POST-MERGE-RECONCILIATION-001` corrected stale pre-merge Human Merge Gate wording only. It grants no successor authority.
+## Hard boundary
 
-No gameplay, Product Proof, R1 salvage/resumption, Unity Harness SPIKE, networking/PvP, Stage C, runtime/package mutation, or other implementation task is authorized by this state.
+No gameplay/runtime/package/project-setting mutation is authorized. No R1 salvage/resumption, Unity Harness SPIKE, networking/PvP, Stage C, backend/service work, merge, or successor implementation authority is granted.
 
-## Live operator precedence
-
-```text
-latest explicit Human/Game Director instruction
-> persisted NEXT_TASK.md authority
-> task contract
-> stable product/craft canon
-> historical documents
-```
-
-A future Human/Game Director instruction may authorize a bounded successor task, but `NEXT_TASK.md` must be explicitly transitioned before delegated mutation proceeds.
-
-## Preserved product/runtime status
-
-`PRODUCT_EXECUTION` remains **FROZEN**. R1 remains **QUARANTINED**. Stage C remains **NOT AUTHORIZED**.
-
-Harness vNext integration changes execution governance/harness availability only; it does not itself authorize gameplay or product implementation.
-
-## One next action
-
-Human/Game Director selects the next bounded action explicitly.
-
-No successor task is inferred from PR #11, the Harness vNext integration, the recovery task, or this `DISCOVERY` state.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+The roadmap may name Product Proof Slice 001 as the next intended bounded product slice, but execution still requires a separate explicit Human/Game Director instruction and a fresh authority transition after this docs task closes.
