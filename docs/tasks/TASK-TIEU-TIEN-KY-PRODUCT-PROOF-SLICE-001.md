@@ -1,6 +1,6 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001
 
-Status: **ACTIVE / IMPLEMENT**
+Status: **PAUSED / BLOCKED — UNITY-CAPABLE VERIFICATION REQUIRED**
 
 Project: **TIỂU TIÊN KÝ**
 
@@ -21,39 +21,41 @@ Approved design intent:
 ## Exact execution identity
 
 - repository: `ShenJun93/tieu-tien-ky-game`
-- state: `IMPLEMENT`
+- activation state: `IMPLEMENT`
+- current control-plane state: `PAUSED`
 - task_mode: `SLICE`
 - task_id: `TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001`
 - branch: `feat/product-proof-slice-001`
 - baseline_ref: `62f20934c6fb01b2fa01d8fee408867b58eeeffb`
 - authority_anchor_ref: `62f20934c6fb01b2fa01d8fee408867b58eeeffb`
+- corrected activation commit: `8fe5c0792d6859be2afdf832a939d17b67d3843c`
+- test-first commit: `113cdd0715bd2a56ad6320c750091be478785845`
+- implementation commit: `f97f1a52b75ec9e0d5b095fb3f7aa45be49c3e4c`
+- bounded layout repair: `44f3633b3da5234b92b0998d25903fbf5e186a97`
+- writer evidence head: `29ceb1ea1aa72d7d397c1d4f23a8d3b5faccb1ee`
 - workspace_policy: `REMOTE_GITHUB_BRANCH`
 - evidence_file: `docs/evidence/PRODUCT_PROOF_SLICE_001_REPORT.md`
-- stop_condition: `PRODUCT_PROOF_SLICE_001_HUMAN_GATE`
+- current stop_condition: `UNITY_CAPABLE_VERIFICATION_REQUIRED_BEFORE_RESUME`
 
 ## Product question
 
 Can the existing solo PvE vertical-slice foundation produce a noticeably more replayable Product Proof when the player can deliberately pursue two different behavior-changing combat styles and create at least one readable cross-skill/system interaction, without hiding weak fun behind networking, content volume, permanent progression, or architecture work?
 
-## Required player-visible delta
+## Authored player-visible delta
 
 ### Playstyle A — Storm Control
 
-The Lôi/Water route must read as positional control, not merely a bigger damage number. Thunder-oriented Cơ Duyên should make Water × Lightning produce a stronger, deliberate spatial consequence that the player can set up and recognize.
+Thunder investment turns a deliberate Water × Lôi Trảm hit into a bounded secondary spatial pulse around the wet target. Nearby non-direct targets are pushed without extra damage; direct Lôi targets retain their existing Conductive knockback.
 
 ### Playstyle B — Wind Ward
 
-The Phong/Hộ route must reward timing and repositioning. A successful Hộ Thể defensive timing, when the run has the relevant Wind/Ward investment, should prime a bounded next-Phong-Bộ payoff that materially changes position/space rather than only lowering cooldowns or increasing a duration scalar.
-
-### Hybrid interaction
-
-At least one interaction must combine existing systems/skills into a clear payoff and remain deletion-friendly. No generic combo graph, status framework, proc system, event bus, or ability framework may be introduced.
+Wind + Ward investment allows a genuine Hộ Thể block to prime exactly one Gale Counter. The next successful Phong Bộ consumes it, repositions farther, and creates a bounded arrival push.
 
 ### Mobile controls
 
-The three skill buttons must be reorganized into a clearer thumb-friendly hierarchy with readable ready/cooldown states. Basic Attack semantics remain unchanged unless a directly blocking local defect is proven.
+The three skill buttons are reorganized into a non-overlapping bottom-right thumb cluster with Lôi Trảm as the larger primary action. Primed Phong Bộ and active run styles receive explicit HUD labels. Basic Attack semantics remain unchanged.
 
-## Existing foundations to extend, not replace
+## Existing foundations extended, not replaced
 
 - `Arena_VerticalSlice_01` composition;
 - `ArenaRunDirector` run progression;
@@ -64,11 +66,7 @@ The three skill buttons must be reorganized into a clearer thumb-friendly hierar
 - `IPlayerActionGateway` / `PlayerActionExecutor` execution seam;
 - `ProductionHud` Canvas/uGUI flow.
 
-## Allowed writer paths
-
-Exactly the paths listed in `docs/governance/NEXT_TASK.md`. The task may add the named Product Proof helper/tests and may edit only the named existing solo gameplay files plus the singular evidence report.
-
-## Hard exclusions
+## Hard exclusions remain in force
 
 - R1 salvage/resumption or any quarantined worktree content;
 - networking/PvP/Stage C, Relay/Sessions, host migration, matchmaking, backend/services;
@@ -78,45 +76,33 @@ Exactly the paths listed in `docs/governance/NEXT_TASK.md`. The task may add the
 - permanent progression/meta/economy;
 - product canon, release track or decision changes;
 - generic ability/modifier/reaction/combo/event architecture;
-- direct edits to `NEXT_TASK.md` or this task contract by the implementation writer after activation;
 - merge or successor-task authorization.
 
-## TDD / verification discipline
+## Evidence state
 
-Behavior changes are test-first. A focused failing test must be authored before its production behavior. If the current execution environment cannot run Unity, do not fabricate RED/GREEN evidence: record the runtime verification as `BLOCKED` until executed on an authorized Unity-capable surface.
-
-Required evidence keys:
+`docs/evidence/PRODUCT_PROOF_SLICE_001_REPORT.md` truthfully records:
 
 ```json
 {
+  "verdict": "FAIL",
   "authority_integrity": "PASS",
-  "focused_gameplay_tests": "PASS",
-  "editmode": "PASS",
-  "playmode": "PASS",
-  "android_build": "PASS",
+  "focused_gameplay_tests": "BLOCKED",
+  "editmode": "BLOCKED",
+  "playmode": "BLOCKED",
+  "android_build": "BLOCKED",
   "scope_diff": "PASS",
-  "human_playtest": "RECORDED"
+  "human_playtest": "NOT_TESTED"
 }
 ```
 
-## Human physical gate
+This is an environment/evidence blocker, not a technical PASS or FAIL claim about the code. The execution surface used to author the branch has no Unity editor/runtime or C# compiler and cannot generate the required Android artifact.
 
-Once an exact final SHA has passing technical verification and a SHA-bound Android APK:
+## Pause boundary
 
-```text
-BLOCKED_ON_HUMAN_GATE
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
-```
+`PAUSED` grants **no mutation authority**.
 
-Then stop all commands. No `adb` install/launch/polling, no USB-triggered resume, no automatic Human verdict, and no merge.
+Do not resume writer changes merely because this branch exists. A future explicit Human/Game Director continuation must first revalidate live main, current branch head, this task/evidence, and establish a valid mutation surface/authority transition consistent with `AGENTS.md` and `docs/governance/WORKFLOW.md`.
 
-Human acceptance should answer at minimum:
+The next verification-capable execution should run the focused Product Proof tests, full EditMode, full PlayMode, and exact-SHA Android build. Only after all required technical evidence passes may Final Foreman transition to the hard Human physical gate.
 
-- can the two intended styles be intentionally played and felt as different?
-- can the signature system interaction be deliberately created and read on phone?
-- is the skill-control cluster materially easier to use/read?
-- does the run feel less like a shallow mini-demo and more worth replaying with the other style?
-
-## Success boundary
-
-Technical completion plus Human evidence may support a later Human merge decision for this slice only. It grants no networking/PvP/Stage C/R1 or other successor authority.
+No merge and no successor authority are authorized.
