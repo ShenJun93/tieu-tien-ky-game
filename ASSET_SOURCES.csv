@@ -1,1 +1,2 @@
 path_or_asset,source,license,commercial_use,attribution_required,date_acquired,notes
+Assets/_Project/Resources/Audio/*.wav,Project-generated procedural synthesis via Assets/Editor/StageABAudioBuilder.cs,Project-original / all rights reserved,yes,no,2026-08-18,"14 short 16-bit PCM WAV clips generated locally from deterministic sine/square/triangle/noise synthesis; no web or third-party source audio."
