@@ -4,21 +4,15 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "HUMAN_GATE",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001",
   "branch": "chore/harness-vnext-canon-workflow-reconciliation",
   "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "authority_anchor_ref": "e4a4fcb0f4dfec670debae9c0602e9bc1762752b",
-  "workspace_policy": "REMOTE_GITHUB_BRANCH",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001.md",
   "evidence_file": "docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md",
-  "allowed_paths": [
-    "README.md",
-    "ASSET_SOURCES.csv",
-    "docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md"
-  ],
+  "allowed_paths": [],
   "forbidden_paths": [
     "Assets/",
     "Packages/",
@@ -27,24 +21,49 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   ],
   "required_evidence": {
     "current_tree_secret_search": "PASS",
-    "full_history_secret_scan": "PASS",
+    "full_history_secret_scan": "PENDING",
     "public_metadata_cleanup": "PASS",
     "asset_provenance": "PASS",
-    "governance_hook_tests": "PASS",
+    "governance_hook_tests": "PENDING",
     "scope_diff": "PASS"
   },
-  "stop_condition": "PUBLIC_REPO_READINESS_REMEDIATION_READY_FOR_HUMAN_GATE"
+  "stop_condition": "HUMAN_LOCAL_PUBLIC_READINESS_VERIFICATION_REQUIRED"
 }
 ```
 
 ## Current authority
 
-Human/Game Director explicitly approved continuation into the bounded **TTK Public-Repo Readiness Remediation** after the read-only audit returned `SAFE_TO_PUBLIC_AFTER_REMEDIATION`.
+Repository mutation is stopped.
 
-This task prepares the existing Harness vNext branch for a later Human visibility decision. It does **not** authorize changing repository visibility, merging PR #11, gameplay/R1 mutation, Unity runtime/package changes, Product Proof, networking/PvP/Stage C, or any successor implementation.
+The bounded repository-side public-readiness remediation is complete:
 
-The authority transition is anchored to `e4a4fcb0f4dfec670debae9c0602e9bc1762752b`. This activation commit must contain both this file and the active task contract. After activation, both are writer-locked until a fresh Human/Final-Foreman lifecycle transition.
+```text
+CURRENT-TREE SECRET SEARCH = PASS
+README PUBLIC METADATA     = PASS
+AUDIO PROVENANCE LEDGER    = PASS
+WRITER SCOPE               = PASS
+FULL-HISTORY SECRET SCAN   = PENDING
+GOVERNANCE REGRESSION      = PENDING
+```
 
-## One next action
+No repository visibility change, PR merge, gameplay/R1 mutation, Unity package/runtime change, Product Proof, networking/PvP/Stage C or successor task is authorized.
 
-Complete the three-path public-readiness remediation, obtain a full-history secret-scan proof from a clean non-quarantined checkout, run the governance regression, then stop at Human Gate. Do not make the repository public yet.
+## Human/local verification action
+
+Use a fresh clean checkout on `E:` that is **not** `E:\GameDev\tieu-tien-ky-game` (the protected dirty R1 specimen). Fetch all refs, run Gitleaks over full Git history/all refs, then run:
+
+```text
+node --test scripts/hooks/hooks.test.mjs
+```
+
+Zero unresolved secret findings and a full governance-test PASS are required.
+
+If Gitleaks reports any finding, STOP and report it. Do not rewrite history, rotate credentials or delete evidence automatically.
+
+## Stop condition
+
+```text
+BLOCKED_ON_HUMAN_LOCAL_VERIFICATION
+```
+
+After the required local evidence is supplied, Final Foreman must live-revalidate `main`, the branch head and evidence before creating any fresh authority for a private → public visibility change. Do not make the repository public yet.
