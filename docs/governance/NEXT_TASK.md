@@ -4,15 +4,21 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "HUMAN_GATE",
+  "state": "IMPLEMENT",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-001",
+  "task_id": "TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001",
   "branch": "chore/harness-vnext-canon-workflow-reconciliation",
   "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-001.md",
-  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_REPORT.md",
-  "allowed_paths": [],
+  "authority_anchor_ref": "e4a4fcb0f4dfec670debae9c0602e9bc1762752b",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001.md",
+  "evidence_file": "docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md",
+  "allowed_paths": [
+    "README.md",
+    "ASSET_SOURCES.csv",
+    "docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md"
+  ],
   "forbidden_paths": [
     "Assets/",
     "Packages/",
@@ -20,40 +26,25 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "Builds/"
   ],
   "required_evidence": {
+    "current_tree_secret_search": "PASS",
+    "full_history_secret_scan": "PASS",
+    "public_metadata_cleanup": "PASS",
+    "asset_provenance": "PASS",
     "governance_hook_tests": "PASS",
-    "authority_immutability_tests": "PASS",
-    "main_drift_guard_tests": "PASS",
-    "scope_diff": "PASS",
-    "remote_ci": "PASS",
-    "main_branch_protection": "PASS"
+    "scope_diff": "PASS"
   },
-  "stop_condition": "HUMAN_GITHUB_PLATFORM_GATE_REQUIRED"
+  "stop_condition": "PUBLIC_REPO_READINESS_REMEDIATION_READY_FOR_HUMAN_GATE"
 }
 ```
 
 ## Current authority
 
-Repository mutation is stopped. The repo-side Harness vNext P1 remediation is complete and verified locally, but the task cannot progress to independent review while two GitHub platform requirements remain unresolved:
+Human/Game Director explicitly approved continuation into the bounded **TTK Public-Repo Readiness Remediation** after the read-only audit returned `SAFE_TO_PUBLIC_AFTER_REMEDIATION`.
 
-```text
-REMOTE CI / repository-gate = BLOCKED (GitHub-hosted job fails before step 1)
-MAIN BRANCH PROTECTION       = BLOCKED (main is currently unprotected)
-```
+This task prepares the existing Harness vNext branch for a later Human visibility decision. It does **not** authorize changing repository visibility, merging PR #11, gameplay/R1 mutation, Unity runtime/package changes, Product Proof, networking/PvP/Stage C, or any successor implementation.
 
-No writer, gameplay/runtime/package mutation, R1, Product Proof, Unity-harness SPIKE, networking, PvP, Stage C, merge or successor task is authorized.
+The authority transition is anchored to `e4a4fcb0f4dfec670debae9c0602e9bc1762752b`. This activation commit must contain both this file and the active task contract. After activation, both are writer-locked until a fresh Human/Final-Foreman lifecycle transition.
 
-## Human platform action
+## One next action
 
-1. Inspect PR #11's failed `Repository Gate` run and the GitHub run-level error/banner; inspect Billing & Licensing → Usage/Budgets → Actions if GitHub indicates a usage/billing restriction.
-2. Once hosted Actions can run, obtain a successful `repository-gate` on PR #11.
-3. If the account plan supports private-repository protection, protect `main`: require pull request, disallow force pushes, disallow deletion, and require `repository-gate` after it has a successful run.
-4. Report the observed GitHub error/plan limitation if either control is unavailable. Do not weaken the gate silently.
-
-## Stop condition
-
-```text
-BLOCKED_ON_HUMAN_GATE
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
-```
-
-After explicit Human continuation, Final Foreman must live-revalidate GitHub state and create a fresh authority transition before any writer resumes.
+Complete the three-path public-readiness remediation, obtain a full-history secret-scan proof from a clean non-quarantined checkout, run the governance regression, then stop at Human Gate. Do not make the repository public yet.
