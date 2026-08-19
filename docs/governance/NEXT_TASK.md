@@ -4,67 +4,45 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001",
-  "branch": "chore/ao-lite-v1-post-merge-risk-reconciliation",
-  "baseline_ref": "ff6ace93a33b2a2a8c097dec2d039053218659c1",
-  "authority_anchor_ref": "2bf1042f8b783feaeff6e69ba7c6c37024fd7225",
-  "workspace_policy": "REMOTE_GITHUB_BRANCH",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-POST-MERGE-RISK-RECONCILIATION-001.md",
-  "evidence_file": "docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md",
-  "allowed_paths": [
-    "docs/governance/RISK_REGISTER.md",
-    "docs/evidence/AO_LITE_V1_POST_MERGE_RISK_RECONCILIATION_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "docs/governance/CURRENT_STATE.md",
-    "README.md",
-    "ASSET_SOURCES.csv",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "scripts/",
-    ".github/",
-    ".agents/",
-    "docs/master/",
-    "docs/decisions/",
-    "docs/architecture/",
-    "LICENSE",
-    "NOTICE",
-    "COPYING"
-  ],
-  "required_evidence": {
-    "authority_integrity": "PASS",
-    "live_main_identity": "PASS",
-    "existing_readme_licensing_policy": "PASS",
-    "existing_asset_provenance_control": "PASS",
-    "p1_ip_risk_framing": "PASS",
-    "network_risk_unchanged": "PASS",
-    "package_or_license_mutation": "ABSENT",
-    "scope_diff": "PASS",
-    "successor_authority": "NONE"
-  },
-  "review_head_before_remediation": "2bf1042f8b783feaeff6e69ba7c6c37024fd7225",
-  "remediation_round": 1,
-  "stop_condition": "PR19_REMEDIATION_001_READY_FOR_FINAL_FOREMAN_CLOSEOUT"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-The Human/Game Director explicitly authorized **Remediation 001 for PR #19** after independent review returned `REMEDIATE` with one P1 finding.
+PR #19 Remediation 001 writer execution is closed.
 
-The writer may correct only the overbroad `RISK-IP-001` / evidence framing by acknowledging the repository controls that already existed at the exact baseline:
+The completed reconciliation now records:
 
-- README `Public development and licensing` policy;
-- `ASSET_SOURCES.csv` provenance schema and existing records.
+- AO-Lite v1 implementation integrated via PR #18;
+- `RISK-NETWORK-001` OPEN / P2 governance-product debt, unchanged by Remediation 001;
+- `RISK-IP-001` OPEN / P1 before external commercial commitment;
+- existing README public-development/licensing policy is explicitly acknowledged;
+- existing `ASSET_SOURCES.csv` provenance control is explicitly acknowledged;
+- remaining IP risk is incomplete/not-yet-validated repository-wide chain-of-title/provenance coverage, incomplete comprehensive third-party/contributor-obligation audit, and unresolved formal repository/release licensing + notice decision;
+- no package, root-license, README, `ASSET_SOURCES.csv`, product/runtime, or successor mutation was performed by Remediation 001.
 
-The remaining risk must be narrowed to an incomplete/not-yet-validated repository-wide chain-of-title/provenance inventory, incomplete third-party-obligation audit, and unresolved formal repository/release licensing + notice decision.
+Remediation lineage:
 
-`RISK-NETWORK-001` must remain unchanged. No README, `ASSET_SOURCES.csv`, package, root-license, product/runtime, Product Proof, networking/PvP/co-op, Stage C, or successor mutation is authorized.
+- reviewed head: `2bf1042f8b783feaeff6e69ba7c6c37024fd7225`;
+- activation: `34e2b7ab55e674dbb67cbd8be75671654f2fec0b`;
+- content: `d9e379c96e3b0071759d6c0c2173670aaab5101f`;
+- evidence: `d2acfdb7252681ec7ba394507a311040fb8d95d8`.
 
-The remediation lineage remains unpublished while `state = IMPLEMENT`. Final Foreman may publish only after writer closeout returns the lineage to non-mutating `DISCOVERY`.
+There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
 
-Stop condition: `PR19_REMEDIATION_001_READY_FOR_FINAL_FOREMAN_CLOSEOUT`.
+PR #19 requires exact-head Repository Gate and a fresh independent read-only re-review before any Human merge decision.
+
+Product Proof Slice 001 remains an intended roadmap slice, but it is **not** mutation authority. The recorded risks also do not authorize their own remediation.
+
+Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
+
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
