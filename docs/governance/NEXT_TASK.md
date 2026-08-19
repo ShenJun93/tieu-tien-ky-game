@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "REVIEW",
+  "state": "HUMAN_GATE",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003",
@@ -27,55 +27,45 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "scope_diff": "PASS",
     "remote_ci": "PASS"
   },
-  "review_verdict_enum": [
-    "ACCEPT",
-    "ACCEPT_WITH_NON_BLOCKING_NOTES",
-    "REMEDIATE",
-    "REJECT"
-  ],
-  "stop_condition": "FRESH_INDEPENDENT_HARNESS_REVIEW_REQUIRED"
+  "independent_review_verdict": "ACCEPT",
+  "independent_review_p0": 0,
+  "independent_review_p1": 0,
+  "safe_to_move_to_human_merge_gate": true,
+  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
 }
 ```
 
 ## Current authority
 
-Harness Remediation 003 implementation/evidence is complete and writer authority is closed.
-
-Verified state before this REVIEW transition:
+Fresh independent read-only review of exact candidate `9366500600e6e73b47431348fe41865aa6c06b11` returned:
 
 ```text
-review finding head             = 370b06b629fdd650630d3d948d02d907851c8c64
-IMPLEMENT activation            = 5e6c4dbf1e7a8175856425e3736c1145054cc063
-writer head                     = ec57c8511860892a88fbc072c37e9264eacc9d05
-final evidence head             = 7c335fe78a53464ccb8c39ed9c0e393e5e516a96
-single-parent activation guard  = PASS
-anchor-relative tree diff       = PASS
-multi-parent regression         = PASS
-governance regression           = PASS 46/46 remotely
-writer scope                    = PASS / 5 authorized paths
-remote CI                       = PASS / run 32230628757
+VERDICT = ACCEPT
+P0      = 0
+P1      = 0
+SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE = YES
 ```
+
+The sole prior evidence blocker was closed by a fresh Human live-read of the active task-branch protection:
+
+```text
+enforce_admins = true
+force_pushes   = false
+deletions      = false
+required_pull_request_reviews = null
+required_status_checks        = null
+```
+
+Exact REVIEW-head Repository Gate run `32230791184` remains `SUCCESS` with 46/46 governance regressions passing.
 
 Repository mutation is stopped. `allowed_paths` is empty.
 
-## Authorized review action
+## Human Gate
 
-Run a **fresh independent read-only review** of PR #11 and the exact current PR head.
+PR #11 is eligible for a Human/Game Director merge decision only. This state is not merge authorization.
 
-Reviewer must first verify closure of the remaining prior P1:
-
-1. activation parent list is required to contain exactly one parent;
-2. that parent must equal `authority_anchor_ref`;
-3. activation changed paths are computed by explicit `authority_anchor_ref → transition` tree diff with rename detection disabled;
-4. multi-parent merge activation with second-parent payload is blocked by both `pre-task` and `pre-finish`;
-5. no-force-push/deletion protection is treated only as the outer history-rewrite boundary, not a substitute for single-parent validation.
-
-Then check regressions, evidence integrity, workflow coherence, scope leakage, overengineering, main drift assumptions and Human merge authority.
-
-The active review contract explicitly declares the allowed verdict vocabulary in `review_verdict_enum`.
+Human must explicitly choose whether to merge PR #11. No successor task, gameplay/R1/Product Proof/Unity Harness SPIKE/networking/PvP/Stage C authority is inferred or granted.
 
 ## Hard stop
 
-The reviewer must not edit files, push commits, change repository settings, mark PR #11 ready, merge it, or authorize Unity harness SPIKE, R1, Product Proof, gameplay, networking/PvP, Stage C or any successor implementation.
-
-Only Human/Game Director may authorize further remediation or merge after the independent verdict.
+Do not edit files, push implementation commits, change repository settings, mark PR #11 ready, merge it, or start successor implementation without separate explicit Human authority.
