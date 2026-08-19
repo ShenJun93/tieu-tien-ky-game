@@ -1,6 +1,6 @@
 # TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-POST-MERGE-RECONCILIATION-001
 
-Status: **ACTIVE / IMPLEMENT**
+Status: **CLOSED / PASS**
 
 Project: **TIỂU TIÊN KÝ**
 
@@ -8,46 +8,34 @@ Type: **bounded governance-only post-merge reconciliation** (`task_mode: SPEC`).
 
 ## Explicit Human authorization
 
-The Human/Game Director explicitly continued on 2026-08-19 after accepting and merging AO-Lite v1 design PR #16. This authorization is limited to post-merge reconciliation and does not activate AO-Lite implementation.
+The Human/Game Director explicitly continued on 2026-08-19 after accepting and merging AO-Lite v1 design PR #16. This task reconciled post-merge canonical state only; it did not activate AO-Lite implementation.
 
 ## Exact execution identity
 
 - repository: `ShenJun93/tieu-tien-ky-game`
-- state: `IMPLEMENT`
-- task_mode: `SPEC`
 - task_id: `TASK-TIEU-TIEN-KY-AO-LITE-V1-DESIGN-POST-MERGE-RECONCILIATION-001`
 - branch: `chore/ao-lite-v1-design-post-merge-reconciliation`
 - baseline_ref: `1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`
 - authority_anchor_ref: `1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`
+- activation_commit: `9fb73c47af445f07dfd04bfa889ce0878946d179`
+- writer_head: `0e80bcbe518ee412d5b710b226472c5fc0a82737`
 - workspace_policy: `REMOTE_GITHUB_BRANCH`
 - evidence_file: `docs/evidence/AO_LITE_V1_DESIGN_POST_MERGE_RECONCILIATION_REPORT.md`
-- stop_condition: `AO_LITE_V1_DESIGN_POST_MERGE_RECONCILIATION_READY_FOR_CONTROL_PLANE_CLOSEOUT`
 
-## Objective
+## Result
 
-Restore truthful canonical post-merge governance after PR #16 by:
+PASS.
 
-1. live-verifying canonical `main` is PR #16 merge commit `1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`;
-2. verifying PR #16 is merged and the accepted AO-Lite v1 design is integrated;
-3. updating `CURRENT_STATE.md` to record AO-Lite v1 design as integrated while keeping implementation authority explicitly absent;
-4. recording machine-readable reconciliation evidence;
-5. returning `NEXT_TASK.md` to non-mutating `DISCOVERY` before this reconciliation is offered for Human merge.
+The task:
 
-## Allowed writer paths
+1. live-verified canonical `main@1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`;
+2. verified PR #16 merged and AO-Lite v1 design integrated;
+3. reconciled `CURRENT_STATE.md` to record accepted AO-Lite v1 design while keeping implementation authority absent;
+4. live-confirmed PR #13 remains open/draft/unmerged and unchanged by this task;
+5. preserved Product Proof, gameplay/runtime, Unity, networking/PvP/co-op/Stage C/backend, package/project-setting, R1 and product-canon boundaries;
+6. returned `NEXT_TASK.md` to non-mutating `DISCOVERY` before Human merge review.
 
-- `docs/governance/CURRENT_STATE.md`
-- `docs/evidence/AO_LITE_V1_DESIGN_POST_MERGE_RECONCILIATION_REPORT.md`
-
-## Control-plane paths
-
-The activation commit changes exactly:
-
-- `docs/governance/NEXT_TASK.md`
-- this task contract
-
-After activation, the implementation writer must not edit those two control-plane paths. Final-Foreman/Human closeout may later close this task and set `NEXT_TASK.md` to `DISCOVERY`.
-
-## Required evidence
+## Evidence
 
 ```json
 {
@@ -59,20 +47,15 @@ After activation, the implementation writer must not edit those two control-plan
 }
 ```
 
-## Hard exclusions
+Writer diff after activation was exactly:
 
-- no `scripts/ao/**` implementation;
-- no Product Proof implementation or PR #13 mutation;
-- no Unity Harness SPIKE;
-- no gameplay/runtime/content changes;
-- no networking/PvP/co-op/Stage C/backend/services work;
-- no Packages/ProjectSettings changes;
-- no product-canon or roadmap redesign;
-- no merge of this reconciliation PR by the executor unless separately authorized;
-- no successor authority inference.
+- `docs/governance/CURRENT_STATE.md`
+- `docs/evidence/AO_LITE_V1_DESIGN_POST_MERGE_RECONCILIATION_REPORT.md`
 
-## Closeout target
+## Boundary / closure
 
-The branch must end with machine-readable authority in `DISCOVERY`, with no active task, branch, baseline, task/evidence pointer, or writable paths. The final stop condition must be `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+This task is closed. It grants no mutation authority.
 
-Successful reconciliation confirms only that the accepted AO-Lite v1 design is canonical. A separate explicit Human/Game Director instruction is required before any AO-Lite implementation activation.
+AO-Lite v1 implementation is not authorized by this closure. Product Proof implementation is not authorized by this closure. No merge action or successor task is inferred.
+
+A separate explicit Human/Game Director decision is required before any successor authority transition.
