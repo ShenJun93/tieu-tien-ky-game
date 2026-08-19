@@ -8,18 +8,16 @@ Authority anchor: `370b06b629fdd650630d3d948d02d907851c8c64`
 IMPLEMENT activation: `5e6c4dbf1e7a8175856425e3736c1145054cc063`  
 Verified writer head: `ec57c8511860892a88fbc072c37e9264eacc9d05`
 
-## Machine-readable evidence — INTERIM
-
-This report is intentionally not final until the report file itself is included in the writer-scope recheck.
+## Machine-readable evidence — FINAL
 
 ```json
 {
-  "verdict": "PASS_WITH_REMEDIATION",
+  "verdict": "PASS",
   "activation_single_parent_guard": "PASS",
   "activation_anchor_diff_guard": "PASS",
   "multi_parent_activation_regression": "PASS",
   "governance_hook_tests": "PASS",
-  "scope_diff": "PENDING_FINAL_SCOPE_RECHECK",
+  "scope_diff": "PASS",
   "remote_ci": "PASS"
 }
 ```
@@ -67,19 +65,32 @@ git diff --name-only --no-renames <anchor> <merge activation> --
   reports UNAUTHORIZED.md
 ```
 
-## Writer scope before this report
+## Final writer scope
 
-Compare `5e6c4dbf... → ec57c851...` was one writer commit changing exactly:
+After this evidence file was added, Final Foreman rechecked the complete writer delta from activation. Compare `5e6c4dbf... → 58a2bed2...` returned exactly five changed paths:
 
 ```text
+docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md
 docs/governance/WORKFLOW.md
 scripts/hooks/hooks.test.mjs
 scripts/hooks/pre-finish.mjs
 scripts/hooks/pre-task.mjs
 ```
 
-All are authorized Remediation-003 writer paths. No gameplay, Unity, package, project-settings, build, active `NEXT_TASK`, or active task-contract writer mutation occurred.
+All five are authorized by the Remediation-003 contract. No gameplay, Unity, package, project-settings, build, active `NEXT_TASK`, or active task-contract writer mutation occurred.
 
-## Current stop
+Result: `scope_diff = PASS`.
 
-Final Foreman must recheck scope including this evidence file. Only after that passes may this report be promoted to final machine `PASS`, followed by exact-head CI and a transition back to fresh independent `REVIEW`.
+## Verdict
+
+```text
+ACTIVATION SINGLE-PARENT GUARD = PASS
+ANCHOR-RELATIVE TREE DIFF      = PASS
+MULTI-PARENT REGRESSION        = PASS
+GOVERNANCE REGRESSION          = PASS / 46 OF 46
+WRITER SCOPE                   = PASS
+REMOTE CI                      = PASS
+REMEDIATION 003                = IMPLEMENTATION/EVIDENCE COMPLETE
+```
+
+Final Foreman must still require a successful Repository Gate on the exact final-evidence head, then return authority to `REVIEW`. This report does not grant merge or successor authority.
