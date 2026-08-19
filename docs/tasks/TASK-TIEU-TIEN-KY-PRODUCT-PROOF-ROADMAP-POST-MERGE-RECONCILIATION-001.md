@@ -1,6 +1,6 @@
 # TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-POST-MERGE-RECONCILIATION-001
 
-Status: **ACTIVE / IMPLEMENT**
+Status: **CLOSED / PASS**
 
 Project: **TIỂU TIÊN KÝ**
 
@@ -8,46 +8,34 @@ Type: **bounded governance-only post-merge reconciliation** (`task_mode: SPEC`).
 
 ## Explicit Human authorization
 
-The Human/Game Director authorized the stated one-next-action with `go` on 2026-08-19: reconcile post-merge control-plane state after roadmap PR #14 only, without activating Product Proof implementation.
+The Human/Game Director authorized this bounded recovery with `go` on 2026-08-19. The task did not authorize Product Proof implementation.
 
 ## Exact execution identity
 
 - repository: `ShenJun93/tieu-tien-ky-game`
-- state: `IMPLEMENT`
-- task_mode: `SPEC`
 - task_id: `TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-POST-MERGE-RECONCILIATION-001`
 - branch: `chore/product-proof-roadmap-post-merge-reconciliation`
 - baseline_ref: `6af043cf07b2528d19553c60a68d78504153824a`
 - authority_anchor_ref: `6af043cf07b2528d19553c60a68d78504153824a`
+- activation_commit: `7f0e90939fe486c2baae71123f845d9c41093099`
+- writer_head: `a8fad3436bc2f798fa39a1c9d8e3546254700b3d`
 - workspace_policy: `REMOTE_GITHUB_BRANCH`
 - evidence_file: `docs/evidence/PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_REPORT.md`
-- stop_condition: `PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_READY_FOR_CONTROL_PLANE_CLOSEOUT`
 
-## Objective
+## Result
 
-Restore truthful canonical post-merge governance after PR #14 by:
+PASS.
 
-1. live-verifying canonical `main` is the PR #14 merge commit;
-2. verifying PR #14 is merged and the roadmap refresh is integrated;
-3. correcting `CURRENT_STATE.md` so current repository/program truth no longer points at old Harness-era main or pre-roadmap status;
-4. recording machine-readable reconciliation evidence;
-5. returning `NEXT_TASK.md` to non-mutating `DISCOVERY` before the recovery PR is offered for Human merge.
+The task:
 
-## Allowed writer paths
+1. live-verified `main@6af043cf07b2528d19553c60a68d78504153824a` as the merged roadmap integration anchor;
+2. verified PR #14 merged and roadmap v0.1.6 integrated;
+3. reconciled `CURRENT_STATE.md` so it no longer claims an old Harness-era SHA is perpetually live `main`;
+4. recorded Product Proof PR #13 as open/draft/paused/not merge-ready, with no mutation authority;
+5. preserved Product Foundation, roadmap, runtime, network, package, project-setting and R1 boundaries;
+6. prepared canonical `NEXT_TASK.md` closeout to non-mutating `DISCOVERY` before Human merge review.
 
-- `docs/governance/CURRENT_STATE.md`
-- `docs/evidence/PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_REPORT.md`
-
-## Control-plane paths
-
-The activation commit changes exactly:
-
-- `docs/governance/NEXT_TASK.md`
-- this task contract
-
-After activation, implementation writer must not edit those two control-plane files. Final-Foreman/Human control-plane closeout may later close this task and set `NEXT_TASK.md` to `DISCOVERY`.
-
-## Required evidence
+## Evidence
 
 ```json
 {
@@ -58,20 +46,15 @@ After activation, implementation writer must not edit those two control-plane fi
 }
 ```
 
-## Hard exclusions
+Writer diff after activation was exactly:
 
-- no gameplay/runtime changes;
-- no Product Proof Slice 001 activation or implementation;
-- no R1 salvage/resumption;
-- no Unity Harness SPIKE;
-- no networking/PvP/co-op/Stage C/backend/services work;
-- no Packages/ProjectSettings changes;
-- no product-canon or roadmap redesign;
-- no merge of this recovery PR by the executor;
-- no successor authority inference.
+- `docs/governance/CURRENT_STATE.md`
+- `docs/evidence/PRODUCT_PROOF_ROADMAP_POST_MERGE_RECONCILIATION_REPORT.md`
 
-## Closeout target
+## Boundary / closure
 
-The recovery branch must end with machine-readable authority in `DISCOVERY`, with no active task, branch, baseline, task/evidence pointer, or writable paths. The final stop condition after closeout must be `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+This task is closed. It grants no mutation authority.
 
-Merging the eventual recovery PR must therefore preserve a non-mutating canonical state and must not require another cleanup merely because the PR merged.
+No Product Proof implementation, R1, Unity Harness SPIKE, networking/PvP/co-op, Stage C, backend/services, Packages/ProjectSettings work, merge action, or successor task is authorized by this closure.
+
+A separate explicit Human/Game Director decision is required before any successor authority transition.
