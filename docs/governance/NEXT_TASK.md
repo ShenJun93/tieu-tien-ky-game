@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "REVIEW",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-IMPLEMENTATION-001",
@@ -14,25 +14,8 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "workspace_policy": "REMOTE_GITHUB_BRANCH",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-IMPLEMENTATION-001.md",
   "evidence_file": "docs/evidence/AO_LITE_V1_REMEDIATION_001_REPORT.md",
-  "allowed_paths": [
-    "scripts/ao/authority.mjs",
-    "scripts/ao/cli.mjs",
-    "scripts/ao/ao.test.mjs",
-    "docs/evidence/AO_LITE_V1_REMEDIATION_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "scripts/hooks/",
-    ".github/",
-    ".agents/",
-    "docs/master/",
-    "docs/decisions/",
-    "docs/architecture/",
-    "docs/governance/CURRENT_STATE.md",
-    ".gitignore"
-  ],
+  "allowed_paths": [],
+  "forbidden_paths": [],
   "required_evidence": {
     "authority_integrity": "PASS",
     "live_main_identity": "PASS",
@@ -43,23 +26,28 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "scope_diff": "PASS",
     "prohibited_capabilities": "ABSENT"
   },
-  "remediation_round": 1,
   "review_head_before_remediation": "5e30b892cf0b013f8e8d9d3cce6a391b981f1ded",
+  "remediation_activation_ref": "a645cf6843e64ee2e590f2d0086f297d135727b3",
+  "remediation_test_ref": "5d1821d96e3f272223367cbd601bf88fea9c960e",
+  "remediation_implementation_ref": "98b34aaf14bf0afe75e04f012baed6ea3d3182f6",
+  "remediation_evidence_ref": "9e24c15e33292f5e363d3bdb7cef611e2160f33c",
+  "remediation_round": 1,
   "stop_condition": "FRESH_INDEPENDENT_REREVIEW_REQUIRED_BEFORE_HUMAN_MERGE_GATE"
 }
 ```
 
 ## Current authority
 
-Human/Game Director explicitly authorized bounded Remediation 001 for PR #18 after an independent review returned `REMEDIATE` with two P1 findings and no P0 findings.
+AO-Lite v1 Remediation 001 writer execution is closed. The branch is again a non-mutating `REVIEW` candidate.
 
-This authority may change only `scripts/ao/authority.mjs`, `scripts/ao/cli.mjs`, `scripts/ao/ao.test.mjs`, and the remediation evidence file.
+The two P1 findings from the prior independent review were addressed within the exact bounded remediation scope. Remediation evidence is recorded at:
 
-The remediation objective is exactly:
+`docs/evidence/AO_LITE_V1_REMEDIATION_001_REPORT.md`
 
-1. fail closed when a non-mutating state declares repository/baseline/live-main identity that is wrong, malformed, or drifted, while keeping activation validation restricted to mutating states;
-2. implement exit code `2` for malformed configuration / unsupported contract shape while retaining exit code `1` for deterministic gate failures.
+No writer mutation is authorized in `REVIEW`.
 
-No Product Proof/gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package/project-setting/canon mutation is authorized. No merge, ready-for-review transition, successor task, publication capability, provider dispatch, or scope expansion is authorized.
+PR #18 may be updated only by publishing this completed Final-Foreman review lineage for exact-head Repository Gate and a fresh independent read-only re-review.
+
+No ready-for-review transition, merge, Product Proof/gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package/project-setting/canon mutation, additional remediation, or successor task is authorized by this state.
 
 Stop condition: `FRESH_INDEPENDENT_REREVIEW_REQUIRED_BEFORE_HUMAN_MERGE_GATE`.
