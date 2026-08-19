@@ -10,8 +10,12 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(here, '../..');
 const hookNames = ['pre-task.mjs', 'scope-gate.mjs', 'pre-finish.mjs'];
 
-function git(root, args) {
-  return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+function git(root, args, options = {}) {
+  return execFileSync('git', args, { cwd: root, encoding: 'utf8', ...options }).trim();
+}
+
+function gitBare(bare, args) {
+  return execFileSync('git', ['--git-dir', bare, ...args], { encoding: 'utf8' }).trim();
 }
 
 function invoke(root, script, args = []) {
@@ -32,27 +36,28 @@ function commitAll(root, message) {
   git(root, ['commit', '-m', message]);
 }
 
-function authorityJson(baseline, overrides = {}) {
+function authorityJson(baseline, anchor, repository, overrides = {}) {
   const base = {
     state: 'IMPLEMENT',
     task_mode: 'SLICE',
-    repository: 'ShenJun93/tieu-tien-ky-game',
+    repository,
     task_id: 'T1',
     branch: 'feat/test-task',
     baseline_ref: baseline,
+    authority_anchor_ref: anchor,
     workspace_policy: 'EXISTING_AUTHORIZED_WORKTREE',
     task_file: 'docs/tasks/TASK.md',
     evidence_file: 'docs/evidence/TASK_REPORT.md',
-    allowed_paths: ['Assets/', 'docs/evidence/', 'docs/governance/NEXT_TASK.md'],
-    forbidden_paths: ['scripts/hooks/', '.agents/', 'AGENTS.md'],
+    allowed_paths: ['Assets/', 'docs/evidence/'],
+    forbidden_paths: ['docs/governance/NEXT_TASK.md', 'docs/tasks/TASK.md', 'scripts/hooks/', '.agents/', 'AGENTS.md'],
     required_evidence: { automated_tests: 'PASS' },
     stop_condition: 'READY_FOR_REVIEW'
   };
   return JSON.stringify({ ...base, ...overrides }, null, 2);
 }
 
-function writeAuthority(root, baseline, overrides = {}) {
-  write(root, 'docs/governance/NEXT_TASK.md', `# NEXT TASK\n\n\`\`\`json\n${authorityJson(baseline, overrides)}\n\`\`\`\n`);
+function writeAuthority(root, baseline, anchor, repository, overrides = {}) {
+  write(root, 'docs/governance/NEXT_TASK.md', `# NEXT TASK\n\n\`\`\`json\n${authorityJson(baseline, anchor, repository, overrides)}\n\`\`\`\n`);
 }
 
 function writeEvidence(root, value) {
@@ -60,27 +65,41 @@ function writeEvidence(root, value) {
 }
 
 function makeFixture(overrides = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-work-'));
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-remote-'));
+  execFileSync('git', ['init', '--bare', '-q', remote]);
+
   git(root, ['init', '-q']);
   git(root, ['config', 'user.email', 'hooks@test.local']);
   git(root, ['config', 'user.name', 'Hook Test']);
-  git(root, ['remote', 'add', 'origin', 'https://github.com/ShenJun93/tieu-tien-ky-game.git']);
 
   for (const name of hookNames) {
     write(root, `scripts/hooks/${name}`, fs.readFileSync(path.join(sourceRoot, 'scripts/hooks', name), 'utf8'));
   }
 
-  write(root, 'docs/tasks/TASK.md', '# test task\n');
   writeEvidence(root, { verdict: 'PASS', automated_tests: 'UNSET' });
   write(root, 'docs/governance/NEXT_TASK.md', '# inactive baseline\n');
   commitAll(root, 'baseline');
   const baseline = git(root, ['rev-parse', 'HEAD']);
-  git(root, ['update-ref', 'refs/remotes/origin/main', baseline]);
+  const anchor = baseline;
 
+  git(root, ['remote', 'add', 'origin', remote]);
+  gitBare(remote, ['update-ref', 'refs/heads/main', baseline]);
   git(root, ['branch', '-M', overrides.branch ?? 'feat/test-task']);
-  writeAuthority(root, baseline, overrides);
+
+  write(root, 'docs/tasks/TASK.md', '# test task\n');
+  writeAuthority(root, baseline, anchor, remote, overrides);
   commitAll(root, 'activate task');
-  return { root, baseline };
+  const activation = git(root, ['rev-parse', 'HEAD']);
+
+  return { root, remote, baseline, anchor, activation };
+}
+
+function advanceRemoteMain(fixture) {
+  const tree = git(fixture.root, ['rev-parse', `${fixture.baseline}^{tree}`]);
+  const advanced = git(fixture.root, ['commit-tree', tree, '-p', fixture.baseline], { input: 'advance main\n' });
+  gitBare(fixture.remote, ['update-ref', 'refs/heads/main', advanced]);
+  return advanced;
 }
 
 const NON_MUTATING_STATES = ['PAUSED', 'DISCOVERY', 'REVIEW', 'HUMAN_GATE', 'CLOSED'];
@@ -103,12 +122,26 @@ test('scope-gate blocks Windows absolute paths', () => {
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
 });
 
-test('pre-task passes IMPLEMENT with exact repository, branch, SHA baseline and evidence contract', () => {
+test('scope-gate hard-blocks NEXT_TASK even if accidentally allowed', () => {
+  const { root } = makeFixture({ allowed_paths: ['Assets/', 'docs/evidence/', 'docs/governance/NEXT_TASK.md'] });
+  const result = invoke(root, 'scope-gate.mjs', ['docs/governance/NEXT_TASK.md']);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /writer-locked control-plane path/);
+});
+
+test('scope-gate hard-blocks active task contract even if accidentally allowed', () => {
+  const { root } = makeFixture({ allowed_paths: ['Assets/', 'docs/evidence/', 'docs/tasks/TASK.md'] });
+  const result = invoke(root, 'scope-gate.mjs', ['docs/tasks/TASK.md']);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /writer-locked control-plane path/);
+});
+
+test('pre-task passes IMPLEMENT with locked authority, exact baseline and live main', () => {
   const { root } = makeFixture();
   const result = invoke(root, 'pre-task.mjs');
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /task_mode: SLICE/);
-  assert.match(result.stdout, /workspace_policy: EXISTING_AUTHORIZED_WORKTREE/);
+  assert.match(result.stdout, /authority_transition:/);
+  assert.match(result.stdout, /live_main:/);
 });
 
 for (const state of NON_MUTATING_STATES) {
@@ -153,6 +186,13 @@ test('pre-task requires immutable 40-character SHA baseline', () => {
   assert.match(result.stderr, /40-character commit SHA/);
 });
 
+test('pre-task requires immutable 40-character authority anchor', () => {
+  const { root } = makeFixture({ authority_anchor_ref: 'HEAD~1' });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /authority_anchor_ref/);
+});
+
 test('pre-task requires non-empty required_evidence', () => {
   const { root } = makeFixture({ required_evidence: {} });
   const result = invoke(root, 'pre-task.mjs');
@@ -186,7 +226,33 @@ test('pre-task blocks branch that does not contain authorized baseline', () => {
   git(root, ['branch', '-M', 'feat/test-task']);
   const result = invoke(root, 'pre-task.mjs');
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /does not contain baseline|cannot resolve merge-base/);
+  assert.match(result.stderr, /does not contain baseline|cannot resolve/);
+});
+
+test('pre-task blocks a second NEXT_TASK mutation after activation', () => {
+  const fixture = makeFixture();
+  write(fixture.root, 'docs/governance/NEXT_TASK.md', fs.readFileSync(path.join(fixture.root, 'docs/governance/NEXT_TASK.md'), 'utf8') + '\n<!-- writer edit -->\n');
+  commitAll(fixture.root, 'attempt authority self-edit');
+  const result = invoke(fixture.root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /exactly one NEXT_TASK transition/);
+});
+
+test('pre-task blocks active task contract mutation after activation', () => {
+  const fixture = makeFixture();
+  write(fixture.root, 'docs/tasks/TASK.md', '# changed by writer\n');
+  commitAll(fixture.root, 'attempt contract self-edit');
+  const result = invoke(fixture.root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /task contract/);
+});
+
+test('pre-task blocks when live origin/main advances after authorization', () => {
+  const fixture = makeFixture();
+  advanceRemoteMain(fixture);
+  const result = invoke(fixture.root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /live origin\/main drifted/);
 });
 
 for (const state of NON_MUTATING_STATES) {
@@ -213,73 +279,100 @@ test('pre-finish rejects unsatisfied declared evidence', () => {
   assert.match(result.stderr, /required evidence not satisfied/);
 });
 
-test('pre-finish passes governance-only evidence without Android/Human fields', () => {
-  const { root, baseline } = makeFixture();
-  writeAuthority(root, baseline, {
+test('pre-finish passes governance-only evidence and ignores activation control-plane diff', () => {
+  const fixture = makeFixture({
     task_mode: 'SPEC',
     required_evidence: {
       governance_hook_tests: 'PASS',
       scope_diff: 'PASS'
     }
   });
-  writeEvidence(root, {
+  writeEvidence(fixture.root, {
     verdict: 'PASS',
     governance_hook_tests: 'PASS',
     scope_diff: 'PASS'
   });
-  write(root, 'docs/evidence/notes.md', 'verified\n');
-  commitAll(root, 'complete governance task');
-  const result = invoke(root, 'pre-finish.mjs');
+  write(fixture.root, 'docs/evidence/notes.md', 'verified\n');
+  commitAll(fixture.root, 'complete governance task');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /writer changed files checked:/);
   assert.doesNotMatch(result.stdout, /android/i);
 });
 
 test('pre-finish blocks when a required evidence key is missing', () => {
-  const { root, baseline } = makeFixture();
-  writeAuthority(root, baseline, { required_evidence: { automated_tests: 'PASS', scope_diff: 'PASS' } });
-  writeEvidence(root, { verdict: 'PASS', automated_tests: 'PASS' });
-  commitAll(root, 'missing evidence');
-  const result = invoke(root, 'pre-finish.mjs');
+  const fixture = makeFixture({ required_evidence: { automated_tests: 'PASS', scope_diff: 'PASS' } });
+  writeEvidence(fixture.root, { verdict: 'PASS', automated_tests: 'PASS' });
+  commitAll(fixture.root, 'missing evidence');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /scope_diff -> missing/);
 });
 
 test('pre-finish blocks when declared evidence has the wrong value', () => {
-  const { root } = makeFixture();
-  writeEvidence(root, { verdict: 'PASS', automated_tests: 'FAIL' });
-  commitAll(root, 'wrong evidence');
-  const result = invoke(root, 'pre-finish.mjs');
+  const fixture = makeFixture();
+  writeEvidence(fixture.root, { verdict: 'PASS', automated_tests: 'FAIL' });
+  commitAll(fixture.root, 'wrong evidence');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /got "FAIL", expected "PASS"/);
 });
 
-test('pre-finish rejects committed files outside task scope', () => {
-  const { root } = makeFixture();
-  writeEvidence(root, { verdict: 'PASS', automated_tests: 'PASS' });
-  write(root, 'UNAUTHORIZED.md', 'bad\n');
-  commitAll(root, 'bad scope');
-  const result = invoke(root, 'pre-finish.mjs');
+test('pre-finish rejects committed writer file outside task scope', () => {
+  const fixture = makeFixture();
+  writeEvidence(fixture.root, { verdict: 'PASS', automated_tests: 'PASS' });
+  write(fixture.root, 'UNAUTHORIZED.md', 'bad\n');
+  commitAll(fixture.root, 'bad scope');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /committed diff violates task scope/);
 });
 
+test('pre-finish blocks a writer change to NEXT_TASK after activation', () => {
+  const fixture = makeFixture();
+  write(fixture.root, 'docs/governance/NEXT_TASK.md', fs.readFileSync(path.join(fixture.root, 'docs/governance/NEXT_TASK.md'), 'utf8') + '\n<!-- writer edit -->\n');
+  commitAll(fixture.root, 'authority self-edit');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /exactly one NEXT_TASK transition/);
+});
+
+test('pre-finish blocks a writer change to active task contract after activation', () => {
+  const fixture = makeFixture();
+  write(fixture.root, 'docs/tasks/TASK.md', '# writer changed contract\n');
+  commitAll(fixture.root, 'contract self-edit');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /task contract changed/);
+});
+
+test('pre-finish blocks when live origin/main advances before completion', () => {
+  const fixture = makeFixture();
+  writeEvidence(fixture.root, { verdict: 'PASS', automated_tests: 'PASS' });
+  commitAll(fixture.root, 'complete task');
+  advanceRemoteMain(fixture);
+  const result = invoke(fixture.root, 'pre-finish.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /live origin\/main drifted/);
+});
+
 test('pre-finish rejects evidence verdict FAIL even if required keys match', () => {
-  const { root } = makeFixture();
-  writeEvidence(root, { verdict: 'FAIL', automated_tests: 'PASS' });
-  commitAll(root, 'failed verdict');
-  const result = invoke(root, 'pre-finish.mjs');
+  const fixture = makeFixture();
+  writeEvidence(fixture.root, { verdict: 'FAIL', automated_tests: 'PASS' });
+  commitAll(fixture.root, 'failed verdict');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /verdict is FAIL/);
 });
 
 test('pre-finish blocks SPIKE from claiming implementation completion', () => {
-  const { root } = makeFixture({
+  const fixture = makeFixture({
     state: 'SPIKE', task_mode: 'SPIKE', spike_bounded: true,
     allowed_paths: ['docs/evidence/'], required_evidence: { spike_result: 'RECORDED' }
   });
-  writeEvidence(root, { verdict: 'PASS', spike_result: 'RECORDED' });
-  commitAll(root, 'spike evidence');
-  const result = invoke(root, 'pre-finish.mjs');
+  writeEvidence(fixture.root, { verdict: 'PASS', spike_result: 'RECORDED' });
+  commitAll(fixture.root, 'spike evidence');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /only IMPLEMENT may/);
 });
