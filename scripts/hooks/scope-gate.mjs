@@ -5,9 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const fail = (message) => { console.error(`SCOPE BLOCKED: ${message}`); process.exit(1); };
-
-// Only IMPLEMENT and SPIKE may mutate the repository. Every other state,
-// including unknown/missing state, fails closed (BLOCK).
+const AUTHORITY_PATH = 'docs/governance/NEXT_TASK.md';
 const MUTATING_STATES = new Set(['IMPLEMENT', 'SPIKE']);
 
 function normalizeRepoPath(value) {
@@ -20,7 +18,7 @@ function normalizeRepoPath(value) {
 }
 
 function readAuthority(root) {
-  const file = path.join(root, 'docs/governance/NEXT_TASK.md');
+  const file = path.join(root, AUTHORITY_PATH);
   if (!fs.existsSync(file)) fail('NEXT_TASK.md is missing');
   const text = fs.readFileSync(file, 'utf8');
   const match = text.match(/```json\s*([\s\S]*?)```/i);
@@ -37,6 +35,12 @@ const authority = readAuthority(root);
 const state = authority.state;
 if (!MUTATING_STATES.has(state)) fail(`state ${state ?? '(unset)'} may not mutate the repository; only IMPLEMENT/SPIKE may`);
 
+if (!authority.task_file || typeof authority.task_file !== 'string') fail('task_file is missing');
+const locked = new Set([
+  normalizeRepoPath(AUTHORITY_PATH),
+  normalizeRepoPath(authority.task_file)
+]);
+
 const inputs = process.argv.slice(2).map(normalizeRepoPath).filter(Boolean);
 if (inputs.length === 0) fail('provide at least one intended repository path');
 
@@ -49,6 +53,10 @@ function matches(rule, file) {
 
 const blocked = [];
 for (const file of inputs) {
+  if (locked.has(file)) {
+    blocked.push(`${file} -> writer-locked control-plane path; only Human/Final-Foreman authority transition may change it`);
+    continue;
+  }
   const forbiddenHit = forbidden.find((rule) => matches(rule, file));
   if (forbiddenHit) {
     blocked.push(`${file} -> forbidden by ${forbiddenHit}`);
