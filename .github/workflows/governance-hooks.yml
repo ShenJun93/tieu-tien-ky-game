@@ -1,0 +1,38 @@
+name: Governance Hooks
+
+on:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - '.agents/**'
+      - 'docs/governance/**'
+      - 'scripts/hooks/**'
+      - '.github/workflows/governance-hooks.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'AGENTS.md'
+      - '.agents/**'
+      - 'docs/governance/**'
+      - 'scripts/hooks/**'
+      - '.github/workflows/governance-hooks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  governance-hooks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run governance hook tests
+        run: node --test scripts/hooks/hooks.test.mjs

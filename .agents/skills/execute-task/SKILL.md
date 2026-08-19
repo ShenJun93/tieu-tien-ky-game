@@ -1,40 +1,40 @@
 # execute-task
 
-Use this skill for an authorized implementation/product task, i.e. when
-`docs/governance/NEXT_TASK.md` `state` is `IMPLEMENT`.
+Use this skill for an authorized mutation task when `docs/governance/NEXT_TASK.md` is `state: IMPLEMENT`, or for a bounded disposable `state: SPIKE` where the task explicitly allows the same execution mechanics without production-completion claims.
 
-`SPIKE` may use this skill only for its explicitly bounded, disposable
-scope; a `SPIKE` run may not promote production maturity or claim
-production completion (`scripts/hooks/pre-finish.mjs` fails closed for it).
-
-Do not invoke this skill's implementation steps at all when `state` is
-`DISCOVERY` — discovery is research/read/compare only.
+Do not invoke implementation steps when `state` is `DISCOVERY`, `REVIEW`, `HUMAN_GATE`, `PAUSED`, or `CLOSED`.
 
 ## Procedure
 
 1. Read `CURRENT_STATE.md`, `NEXT_TASK.md`, then the referenced task.
-2. Verify branch, baseline, dirty state, toolchain and authority.
-3. Run `node scripts/hooks/pre-task.mjs` when the active task contract expects it.
-4. Map the implementation directly to the product acceptance gate.
-5. Before mutation batches, run `node scripts/hooks/scope-gate.mjs` for intended paths when applicable.
-6. Implement the whole bounded product slice before stopping for non-blocking defects.
-7. Run focused tests first; broaden only when risk justifies it.
-8. Build one exact final human-facing artifact when a physical gate is required.
-9. Commit intentionally on the task branch so evidence/artifacts can be tied to an exact HEAD.
-10. At a Human Gate, report and HARD STOP. Never poll or auto-resume.
-11. Return the short required final report and stop.
+2. Read `docs/architecture/REPO_MAP.md` only if orientation is needed.
+3. Identify `task_mode` and use the smallest credible execution shape from `WORKFLOW.md`.
+4. Verify repository/branch/baseline/workspace policy/dirty state/toolchain and authority.
+5. Run `node scripts/hooks/pre-task.mjs` when a compatible local execution surface exists and the task uses the guard.
+6. Load only the smallest relevant craft/process skills.
+7. Before mutation batches, run `scope-gate.mjs` for intended paths when applicable.
+8. Implement the whole bounded task/slice; do not open side quests for safe non-blocking debt.
+9. Verify exactly the task's declared `required_evidence`; broaden only when risk/evidence justifies it.
+10. For player-facing Unity work, include the required engine/runtime/device/Human layers; for governance/tooling work, do not invent Android/Human evidence.
+11. Commit intentionally on the authorized task branch so evidence can bind to an exact HEAD.
+12. If research occurs, persist material dispositions (`INTEGRATED`, `PARTIALLY_INTEGRATED`, `TO_INTEGRATE`, `DEFERRED`, `REJECTED`, `SUPERSEDED`) before claiming the research is closed.
+13. At a Human Gate, report and HARD STOP. Never poll or auto-resume.
+14. Return the required final report and stop. Do not start the successor task.
 
-## Product-slice rule
+## Task-mode guidance
 
-For P0A, do not turn every warning, presentation imperfection, diagnostic issue, or safe local defect into a new task. If it does not crash, corrupt state, invalidate the product question, block Android build/play, or create serious compounding debt, record it under `DEFERRED TECHNICAL DEBT` and continue.
-
-A product slice should normally hand the Human **one final APK**, not a sequence of intermediate APKs.
+- `MICRO`: skip ceremonial planning; inspect → edit → verify.
+- `SLICE`: short read-only exploration/plan, then bounded implementation.
+- `SPEC`: explicit contract and impact/scope review before mutation; fresh review normally required.
+- `BATCH`: prove transform on a small sample, then apply mechanically and verify aggregate result.
+- `SPIKE`: disposable evidence only; no maturity promotion.
+- `PARALLEL`: only with explicit isolation/independent ownership; never two writers in one mutable Unity worktree.
 
 ## Rules
 
-- Do not start the next task.
 - Do not merge.
 - Do not invent missing acceptance criteria.
 - Do not expand into future systems to make a prototype look complete.
-- If blocked by an authority contradiction or genuinely required unauthorized dependency, stop and report evidence.
+- Do not preserve a historical task solution when current Product Foundation/task authority changed the question.
+- If blocked by authority contradiction or a genuinely required unauthorized dependency, STOP + REPORT evidence.
 - Prefer deleting/replacing a failed prototype direction over building abstractions to rescue it.

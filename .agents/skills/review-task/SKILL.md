@@ -1,28 +1,32 @@
 # review-task
 
-Use this skill for an **independent** review when risk warrants it,
-including a `docs/governance/NEXT_TASK.md` `state: REVIEW` candidate (a
-completed `IMPLEMENT`/`SPIKE` awaiting review) and a significant decision
-recorded under `docs/decisions/` (`docs/decisions/README.md`).
+Use this skill for an **independent read-only review** when risk warrants it, including `state: REVIEW` governance/decision candidates and accepted-significance changes.
 
 Default mode is read-only.
 
 ## Procedure
 
-1. Read `CURRENT_STATE`, `NEXT_TASK`, the active task and available evidence.
-2. Compare the implementation branch to the authorized baseline.
-3. Verify changed files are in scope.
-4. Check the product acceptance criteria and evidence, not just test counts.
-5. Separate blockers from safe deferred technical debt.
-6. Report regressions, architecture risk, overengineering, dependency changes and missing proof.
-7. Return one verdict: `PASS`, `PASS_WITH_REMEDIATION`, or `FAIL`.
+1. Read `CURRENT_STATE`, `NEXT_TASK`, active task and available evidence.
+2. Read current accepted Product Foundation/craft canon only where the task touches those domains.
+3. Compare implementation branch to the authorized immutable baseline.
+4. Verify changed files are in scope and forbidden paths are untouched.
+5. Check the task's declared `required_evidence`; do not substitute test counts for the actual claims.
+6. Check research disposition coverage when research informed the task.
+7. Check for current-canon vs historical-document drift.
+8. Separate blockers from safe deferred debt and from optional reviewer preferences.
+9. Report regressions, architecture/harness risk, overengineering, dependency changes and missing proof.
+10. Return one verdict: `PASS`, `PASS_WITH_REMEDIATION`, or `FAIL`.
 
 ## Risk policy
 
-Independent review is required for high-risk architecture/network/security/legal/release changes and should normally be used before merging the aggregate P0A result to `main`.
+Independent review is required for high-risk architecture/network/security/legal/release changes and for governance/harness/canon mutations that change future execution semantics.
 
-Do **not** require a fresh independent reviewer after every low-risk P0A feel/tuning/presentation iteration. Executor self-check + Final Foreman review + Human physical acceptance is sufficient unless risk, uncertainty, regression evidence or scope expansion justifies independence.
+Do **not** require a fresh independent reviewer after every low-risk feel/tuning/presentation iteration. Executor self-check + Final Foreman + Human physical acceptance is sufficient unless risk, uncertainty, regression evidence or scope expansion justifies independence.
 
-If remediation is needed, prefer one bounded repair inside the current product slice when authority allows it. Do not manufacture a new task for non-blocking debt.
+## Fresh-context rule
+
+A reviewer should judge the **task contract + diff + evidence + current canon**, not inherit the writer's reasoning as truth. Writer self-check is useful but is not independent review.
+
+If remediation is needed, prefer one bounded repair inside current authority when safe. Do not manufacture new tasks for non-blocking preference findings.
 
 Do not merge or start the next task.

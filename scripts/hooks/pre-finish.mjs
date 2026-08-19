@@ -7,11 +7,6 @@ import { execFileSync } from 'node:child_process';
 const run = (cmd, args = []) => execFileSync(cmd, args, { encoding: 'utf8' }).trim();
 const fail = (message) => { console.error(`PRE-FINISH BLOCKED: ${message}`); process.exit(1); };
 
-// Only IMPLEMENT may claim implementation completion. SPIKE is explicitly
-// bounded/disposable and can never claim production completion; every other
-// state (including unknown/missing state) fails closed (BLOCK).
-const COMPLETABLE_STATES = new Set(['IMPLEMENT']);
-
 function normalizeRepoPath(value) {
   const raw = String(value ?? '').trim().replaceAll('\\', '/');
   if (!raw) fail('empty path in task authority');
@@ -34,6 +29,14 @@ function matches(rule, file) {
   return rule.endsWith('/') ? file.startsWith(rule) : file === rule;
 }
 
+function sameValue(actual, expected) {
+  if (actual === expected) return true;
+  if (actual && expected && typeof actual === 'object' && typeof expected === 'object') {
+    return JSON.stringify(actual) === JSON.stringify(expected);
+  }
+  return false;
+}
+
 let root;
 try { root = run('git', ['rev-parse', '--show-toplevel']); }
 catch { fail('not inside a git repository'); }
@@ -41,8 +44,7 @@ process.chdir(root);
 
 const authorityFile = path.join(root, 'docs/governance/NEXT_TASK.md');
 const { data: authority } = readJsonBlock(authorityFile, 'NEXT_TASK.md');
-const state = authority.state;
-if (!COMPLETABLE_STATES.has(state)) fail(`state ${state ?? '(unset)'} cannot claim implementation completion; only IMPLEMENT may`);
+if (authority.state !== 'IMPLEMENT') fail(`state ${authority.state ?? '(unset)'} cannot claim implementation completion; only IMPLEMENT may`);
 
 const branch = run('git', ['branch', '--show-current']);
 if (branch !== authority.branch) fail(`branch ${branch || '(detached)'} does not match ${authority.branch}`);
@@ -50,15 +52,20 @@ if (branch !== authority.branch) fail(`branch ${branch || '(detached)'} does not
 const dirty = run('git', ['status', '--porcelain']);
 if (dirty && process.env.ALLOW_DIRTY !== '1') fail('working tree is not clean; commit intentionally before completion claim');
 
-const baselineRef = authority.baseline_ref ?? 'refs/remotes/origin/main';
+const baselineRef = authority.baseline_ref;
+if (!baselineRef || !/^[0-9a-f]{40}$/i.test(baselineRef)) fail('baseline_ref must be an explicit 40-character commit SHA');
 let baseline;
-try { baseline = run('git', ['rev-parse', '--verify', baselineRef]); }
-catch { fail(`baseline ref is missing: ${baselineRef}`); }
+try { baseline = run('git', ['rev-parse', '--verify', `${baselineRef}^{commit}`]); }
+catch { fail(`baseline commit is missing: ${baselineRef}`); }
+if (baseline.toLowerCase() !== baselineRef.toLowerCase()) fail('baseline_ref did not resolve to exact authorized SHA');
+
 const mergeBase = run('git', ['merge-base', 'HEAD', baseline]);
-if (mergeBase !== baseline) fail(`branch does not contain current baseline ${baseline.slice(0, 12)} from ${baselineRef}`);
+if (mergeBase !== baseline) fail(`branch does not contain authorized baseline ${baseline.slice(0, 12)}`);
 
 const allowed = (authority.allowed_paths ?? []).map(normalizeRepoPath);
 const forbidden = (authority.forbidden_paths ?? []).map(normalizeRepoPath);
+if (allowed.length === 0) fail('allowed_paths is empty');
+
 const changedText = run('git', ['diff', '--name-only', `${baseline}...HEAD`]);
 const changed = changedText ? changedText.split(/\r?\n/).filter(Boolean).map(normalizeRepoPath) : [];
 const scopeErrors = [];
@@ -70,20 +77,31 @@ for (const file of changed) {
 }
 if (scopeErrors.length) fail(`committed diff violates task scope:\n${scopeErrors.join('\n')}`);
 
+const required = authority.required_evidence;
+if (!required || typeof required !== 'object' || Array.isArray(required) || Object.keys(required).length === 0) {
+  fail('required_evidence must be a non-empty object');
+}
+
 const evidencePath = authority.evidence_file ? path.join(root, authority.evidence_file) : null;
 if (!evidencePath) fail('evidence_file is unset');
-const { data: gate } = readJsonBlock(evidencePath, 'evidence report');
+const { data: evidence } = readJsonBlock(evidencePath, 'evidence report');
+
 const verdicts = new Set(['PASS', 'PASS_WITH_REMEDIATION', 'FAIL']);
-if (!verdicts.has(gate.verdict)) fail(`evidence verdict must be PASS, PASS_WITH_REMEDIATION, or FAIL; got ${gate.verdict ?? '(unset)'}`);
-for (const key of ['android_build', 'android_install_run', 'automated_tests', 'human_playtest']) {
-  if (!gate[key] || gate[key] === 'UNSET') fail(`evidence gate field ${key} is not recorded`);
+if (!verdicts.has(evidence.verdict)) fail(`evidence verdict must be PASS, PASS_WITH_REMEDIATION, or FAIL; got ${evidence.verdict ?? '(unset)'}`);
+
+const evidenceErrors = [];
+for (const [key, expected] of Object.entries(required)) {
+  if (!(key in evidence)) {
+    evidenceErrors.push(`${key} -> missing (expected ${JSON.stringify(expected)})`);
+    continue;
+  }
+  if (!sameValue(evidence[key], expected)) {
+    evidenceErrors.push(`${key} -> got ${JSON.stringify(evidence[key])}, expected ${JSON.stringify(expected)}`);
+  }
 }
-if (gate.verdict === 'PASS') {
-  if (gate.android_build !== 'PASS') fail('PASS requires android_build=PASS');
-  if (gate.android_install_run !== 'PASS') fail('PASS requires android_install_run=PASS');
-  if (gate.automated_tests !== 'PASS') fail('PASS requires automated_tests=PASS');
-  if (gate.human_playtest !== 'RECORDED') fail('PASS requires human_playtest=RECORDED');
-}
+if (evidenceErrors.length) fail(`required evidence not satisfied:\n${evidenceErrors.join('\n')}`);
+
+if (evidence.verdict === 'FAIL') fail('evidence verdict is FAIL');
 
 const head = run('git', ['rev-parse', 'HEAD']);
 console.log(`PRE-FINISH PASS: ${authority.task_id}`);
@@ -92,5 +110,6 @@ console.log(`baseline: ${baseline}`);
 console.log(`HEAD: ${head}`);
 console.log(`changed files checked: ${changed.length}`);
 console.log(`evidence: ${authority.evidence_file}`);
-console.log(`verdict: ${gate.verdict}`);
-console.log('NOTE: process evidence passed; Human/Game Director acceptance is still required.');
+console.log(`verdict: ${evidence.verdict}`);
+console.log(`required evidence checked: ${Object.keys(required).join(', ')}`);
+console.log('NOTE: process evidence passed; Human/Game Director acceptance/merge authority remains separate.');

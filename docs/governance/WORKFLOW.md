@@ -100,12 +100,12 @@ The worker/model is deliberately **not** part of durable authority. Claude, Code
 Recommended `workspace_policy` values:
 
 ```text
-ISOLATED_WORKTREE
-EXISTING_AUTHORIZED_WORKTREE
-REMOTE_GITHUB_BRANCH
+ISOLATED_WORKTREE          — default for a new local mutation task.
+EXISTING_AUTHORIZED_WORKTREE — only when the active task intentionally owns that existing clean workspace.
+REMOTE_GITHUB_BRANCH       — bounded remote docs/governance mutation where no local editor/runtime state is involved.
 ```
 
-Starting a new AI session does not itself require a new worktree. Starting a new independent local mutation task normally does.
+Starting a new AI session does not itself require a new worktree. Starting a new independent mutation task normally does.
 
 ## One-write-task rule
 
@@ -113,9 +113,42 @@ Only one primary write task may be in `IMPLEMENT`/`SPIKE` unless explicit indepe
 
 Read-only research/review may run separately. Multiple writers require isolated workspaces and non-overlapping conflict domains/interfaces; otherwise serialize them.
 
+## Product-slice rule
+
+A player-facing implementation task should answer a product question and normally produce a player-perceptible change.
+
+Inside one authorized slice, repair small local defects needed to complete the slice without opening a new task for each defect. Defer harmless warnings, placeholder imperfections, non-critical harness quirks and safe technical debt.
+
+Create a new remediation task only when the required fix materially crosses authority, changes architecture, or cannot safely be contained in the current slice.
+
 ## Verification contract
 
 Verification is task-specific. `NEXT_TASK.required_evidence` declares exactly what the active task must prove. `pre-finish.mjs` compares those requirements with the machine-readable evidence report rather than assuming every task requires Android/Human evidence.
+
+Examples:
+
+```json
+{
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "scope_diff": "PASS"
+  }
+}
+```
+
+```json
+{
+  "required_evidence": {
+    "unity_compile": "PASS",
+    "editmode": "PASS",
+    "playmode": "PASS",
+    "android_build": "PASS",
+    "human_playtest": "RECORDED"
+  }
+}
+```
+
+Evidence values use explicit states such as `PASS`, `FAIL`, `NOT_TESTED`, `BLOCKED`, or a task-defined exact value such as `RECORDED`. Never substitute “should work”.
 
 ## Repair budget
 
@@ -127,7 +160,9 @@ attempt 2 → verify
 still failing → STOP iterative patching; re-plan, fresh-context diagnose, or escalate
 ```
 
-Default maximum is **2 repair rounds** for the same symptom unless the task explicitly justifies a different budget.
+Default maximum is **2 repair rounds** for the same symptom unless the task explicitly justifies a different budget. This does not forbid resolving a newly discovered independent blocker.
+
+Repeated failures across tasks should trigger a harness/test/tool improvement when that is cheaper and more durable than stronger prompting.
 
 ## Human Gate — hard stop
 
@@ -140,11 +175,27 @@ WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
 
 Then stop all commands; no ADB polling, device monitoring, scheduled retry/wakeup, auto-install/launch or USB-triggered resume.
 
+## Artifact discipline
+
+For physical mobile gates:
+
+```text
+Agent:
+code → focused verification → exact SHA-bound artifact → report → HARD STOP
+
+Human:
+install/test exact artifact → report evidence
+```
+
+Do not silently rebuild an artifact after handoff. If code changes, identify the superseding artifact explicitly.
+
 ## Review policy
 
 Independent review is mandatory for high-risk architecture/network/security/legal/release changes and for governance/harness/canon mutations that alter future execution semantics.
 
 For low-risk gameplay/presentation/tuning work, executor self-check + Final Foreman + Human physical evidence is normally sufficient unless risk, uncertainty, regression evidence or scope expansion justifies independence.
+
+A fresh reviewer should receive the task contract, diff and evidence; it need not inherit the writer's reasoning history.
 
 ## Git
 
@@ -155,6 +206,10 @@ For low-risk gameplay/presentation/tuning work, executor self-check + Final Fore
 - task commits are checkpoints/artifact anchors; commit != acceptance != merge.
 - never reset/clean/stash/revert operator work without explicit authorization.
 - if `main` changes during an active task, synchronize explicitly; do not silently drift.
+
+## Lifecycle guards
+
+Use `pre-task`, `scope-gate`, and `pre-finish` when compatible with the active execution surface. Guard PASS is process evidence only and never substitutes for gameplay/device evidence when the task declares such evidence.
 
 ## Game-specific priorities
 
@@ -168,3 +223,14 @@ For early Product Proof work:
 6. only then cleanup/polish/scale.
 
 Technical perfection is not a product-proof gate.
+
+## After every meaningful product slice
+
+Record:
+
+1. What can the player now actually do/feel?
+2. What decisions became locked?
+3. What debt was intentionally deferred?
+4. What evidence was obtained?
+5. What research findings changed disposition?
+6. What is the single next product action?

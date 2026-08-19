@@ -9,16 +9,16 @@ Before changing files:
 1. `docs/governance/CURRENT_STATE.md`
 2. `docs/governance/NEXT_TASK.md`
 3. the task file referenced by `NEXT_TASK.md`
-4. only the code/docs needed for that task
+4. `docs/architecture/REPO_MAP.md` when repository orientation is needed
+5. only the code/docs and smallest matching skill(s) needed for that task
 
-Read `docs/master/MASTER_PLAN.md` only when the task needs a canon/architecture decision. Read `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md` only when the task needs a craft/quality-standard decision (maturity level, Definition of Done, certainty×reuse call, Approved Production Kit).
+Read `docs/master/PRODUCT_FOUNDATION.md` when the task touches product direction, gameplay-mode assumptions, Product Proof or product bets. Read `docs/master/MASTER_PLAN.md` only when historical/operational context or a broader canon/architecture decision is needed. Read `docs/master/GAME_PRODUCTION_DOCTRINE.md` and `docs/master/PRODUCTION_FOUNDATION.md` only when the task needs a craft/quality-standard decision (maturity level, Definition of Done, certainty×reuse call, Approved Production Kit).
+
+Do not load historical roadmap/task/evidence material as current authority unless the active task explicitly needs it. Historical documents are evidence/salvage inputs, not successor authority.
 
 ## Authority state
 
-Repository write authority is a single `state` field in
-`docs/governance/NEXT_TASK.md`. An unknown or missing state fails closed
-(BLOCK) everywhere it is checked — never reintroduce an independent
-status/mode/readiness/decision-gate boolean alongside it.
+Repository write authority is a single `state` field in `docs/governance/NEXT_TASK.md`. An unknown or missing state fails closed (BLOCK) everywhere it is checked — never reintroduce an independent status/mode/readiness/decision-gate boolean alongside it.
 
 ```text
 PAUSED      — no mutation authority; recovery/read-only work only.
@@ -31,9 +31,11 @@ HUMAN_GATE  — absolute command stop until explicit Human continuation.
 CLOSED      — authority terminated.
 ```
 
-Full lifecycle (`DISCOVERY → SPIKE → decision → IMPLEMENT → verification →
-learning build → acceptance artifact → HUMAN GATE → maturity promotion`):
-`docs/governance/WORKFLOW.md`.
+Full lifecycle: `docs/governance/WORKFLOW.md`.
+
+## Task mode is not authority
+
+`task_mode` may describe execution shape (`MICRO`, `SLICE`, `SPEC`, `BATCH`, `SPIKE`, `PARALLEL`) but never grants write authority. Only `state` does that. A task mode may reduce unnecessary ceremony; it may not weaken scope, verification or Human authority.
 
 ## Live operator precedence
 
@@ -41,32 +43,29 @@ learning build → acceptance artifact → HUMAN GATE → maturity promotion`):
 latest explicit Human/Game Director instruction
 > persisted docs/governance/NEXT_TASK.md authority
 > the task file NEXT_TASK.md points to
-> stable product/craft canon (docs/master/)
+> accepted product/craft canon (docs/master/, docs/decisions/)
 > historical documents
 ```
 
-If a live Human instruction contradicts the persisted `NEXT_TASK.md` state:
-the live instruction wins for that turn, delegated mutation stops, and no
-successor authority is inferred. `NEXT_TASK.md` must be explicitly
-reconciled to the new instruction before any writer is delegated again.
-Repository hooks read only `NEXT_TASK.md`; they cannot detect a live
-Human/session instruction themselves, and nothing in this repository should
-be read as claiming otherwise.
+If a live Human instruction contradicts persisted `NEXT_TASK.md`: the live instruction wins for that turn, delegated mutation stops, and no successor authority is inferred. `NEXT_TASK.md` must be reconciled before another writer proceeds. Repository hooks read repository state only; they cannot detect live Human/session instruction.
 
 ## Core rules
 
 1. Work only on the single `IMPLEMENT`- or `SPIKE`-state write task unless independent parallelism is explicitly authorized.
 2. Never implement directly on `main`.
-3. Optimize prototype work for the **product question**, not for infrastructure completeness.
-4. A P0A product task should create a player-perceptible step forward. Do not split one product slice into many tiny remediation tasks unless a blocker genuinely requires it.
+3. Optimize prototype work for the **product question**, not infrastructure completeness.
+4. A player-facing product task should create a player-perceptible step forward. Do not split one product slice into many tiny remediation tasks unless a blocker genuinely requires it.
 5. Non-blocking technical debt that is safe to repair later must be recorded and deferred, not allowed to derail the active product slice.
-6. Do not add a major dependency, service, SDK, architecture, or canon change without explicit authorization.
+6. Do not add a major dependency, service, SDK, architecture, tool platform or canon change without explicit authorization.
 7. Do not rewrite unrelated code while implementing a task.
 8. If task instructions contradict repository authority/canon: **STOP + REPORT**. Do not guess.
-9. No `PASS` without the evidence required by the task.
+9. No `PASS` without the evidence required by the active task's `required_evidence` contract.
 10. No auto-merge. Human/Game Director is merge authority.
 11. Prefer deletion-friendly implementation over speculative frameworks.
-12. A commit on a task branch is a checkpoint, not acceptance and not merge. Commit intentionally so artifacts/evidence can be tied to an exact HEAD.
+12. A commit on a task branch is a checkpoint, not acceptance and not merge.
+13. Research is not closed until material findings have an explicit repository disposition: `INTEGRATED`, `PARTIALLY_INTEGRATED`, `TO_INTEGRATE`, `DEFERRED`, `REJECTED`, or `SUPERSEDED`.
+14. Research is evidence input, not an automatic implementation mandate.
+15. One mutable Unity worktree has one writer. Parallel writers require explicit independent scope and isolation.
 
 ## Human Gate — hard stop
 
@@ -87,19 +86,19 @@ BLOCKED_ON_HUMAN_GATE
 WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
 ```
 
-For physical mobile playtests, prefer one exact final human-facing APK per product slice. The Human installs/tests that exact artifact; do not silently rebuild after handoff.
+For physical mobile playtests, prefer one exact final human-facing artifact per product slice. The Human tests that exact artifact; do not silently rebuild after handoff.
 
 ## Review policy
 
 Independent review is **risk-based**, not mandatory after every low-risk prototype iteration.
 
-Independent review is required for high-risk architecture/network/security/legal/release changes and should normally be used for the aggregate P0A merge gate. Low-risk P0A gameplay/presentation iterations may use executor self-check + Final Foreman review + Human physical acceptance.
+Independent review is required for high-risk architecture/network/security/legal/release changes and for governance/harness/canon changes that alter future execution semantics. It should normally be used for aggregate product-proof merge gates. Low-risk gameplay/presentation/tuning iterations may use executor self-check + Final Foreman review + Human physical acceptance.
 
 A writer must never present its own self-review as independent review.
 
 ## Lifecycle guards
 
-Before edits:
+Before edits when the active task uses local execution:
 
 ```bash
 node scripts/hooks/pre-task.mjs
@@ -111,17 +110,17 @@ Before writing/moving/deleting files:
 node scripts/hooks/scope-gate.mjs <path> [path...]
 ```
 
-Before declaring a task complete when the active task contract uses the guard:
+Before declaring implementation completion when the task contract uses the guard:
 
 ```bash
 node scripts/hooks/pre-finish.mjs
 ```
 
-If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
+`pre-finish` validates the active task's declared `required_evidence`; it must not assume every task requires Android/Human evidence. Player-facing tasks should declare those fields explicitly. If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
 
 ## Governance self-test
 
-When modifying `AGENTS.md`, `.agents/`, `scripts/hooks/`, or `docs/governance/`, run when a compatible local execution surface is available:
+When modifying `AGENTS.md`, `.agents/`, `scripts/hooks/`, or `docs/governance/`, run when a compatible execution surface is available:
 
 ```bash
 node --test scripts/hooks/hooks.test.mjs
@@ -131,21 +130,15 @@ Do not claim a governance hook repair passes without a fresh successful run.
 
 ## Skills
 
-Use the smallest matching skill:
+Use the smallest matching process skill:
 
-- `.agents/skills/execute-task/SKILL.md` — `IMPLEMENT` state only. A `SPIKE`
-  use of this skill stays explicitly bounded/disposable and may not promote
-  production maturity or claim production completion. `DISCOVERY` state must
-  not invoke this skill's implementation path at all.
-- `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it, including `REVIEW`-state governance/decision candidates.
-- `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority.
+- `.agents/skills/execute-task/SKILL.md` — authorized `IMPLEMENT`; bounded `SPIKE` may reuse its mechanics without claiming production completion.
+- `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it.
+- `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority; default same-symptom repair budget is two rounds before re-plan/escalation.
 
 ## Craft skills
 
-Small project-local craft skills, one per player-facing craft domain. Load
-only the smallest relevant skill(s) for the work at hand; they do not
-replace or duplicate the process skills above, Unity documentation, or
-generic software-engineering rules.
+Load only the smallest relevant craft skill(s); they do not replace process skills, Unity documentation or generic software-engineering rules.
 
 - `.agents/skills/ttk-eastern-combat-direction/SKILL.md`
 - `.agents/skills/ttk-mobile-action-controls/SKILL.md`
@@ -156,8 +149,7 @@ generic software-engineering rules.
 - `.agents/skills/ttk-level-encounter-presentation/SKILL.md`
 - `.agents/skills/ttk-human-product-gate/SKILL.md`
 
-Governing doctrine for all eight: `docs/master/GAME_PRODUCTION_DOCTRINE.md`,
-`docs/master/PRODUCTION_FOUNDATION.md`.
+Governing product/craft sources: `docs/master/PRODUCT_FOUNDATION.md`, `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
 
 ## Required final report
 
@@ -165,9 +157,10 @@ Every implementation task reports:
 
 - exact branch and HEAD;
 - changed files;
-- player-visible/product changes;
-- focused tests/builds and results;
-- required device/playtest evidence;
+- player-visible/product changes or explicitly `NONE` for non-player-facing tasks;
+- focused verification and results;
+- required device/playtest evidence if declared by the task;
+- research dispositions if the task contains research;
 - deferred technical debt;
 - scope deviations;
 - final recommendation;
