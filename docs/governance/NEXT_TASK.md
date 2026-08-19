@@ -4,7 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
+  "state": "HUMAN_GATE",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
   "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001",
@@ -14,35 +14,32 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "workspace_policy": "REMOTE_GITHUB_BRANCH",
   "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-ROADMAP-REFRESH-001.md",
   "evidence_file": "docs/evidence/PRODUCT_PROOF_ROADMAP_REFRESH_REPORT.md",
-  "allowed_paths": [
-    "docs/master/MASTER_PLAN.md",
-    "docs/evidence/PRODUCT_PROOF_ROADMAP_REFRESH_REPORT.md"
-  ],
+  "allowed_paths": [],
   "forbidden_paths": [
     "Assets/",
     "Packages/",
     "ProjectSettings/",
-    "docs/master/PRODUCT_FOUNDATION.md",
-    "docs/master/RELEASE_TRACK.md",
-    "docs/governance/CURRENT_STATE.md"
+    "docs/"
   ],
   "required_evidence": {
     "live_main_identity": "PASS",
     "roadmap_coherence": "PASS",
     "scope_diff": "PASS"
   },
-  "stop_condition": "PRODUCT_PROOF_ROADMAP_REFRESH_READY_FOR_HUMAN_MERGE_GATE"
+  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
 }
 ```
 
 ## Current authority
 
-The Human/Game Director explicitly requested a roadmap refresh before proceeding with the intended Product Proof task.
+The Product Proof roadmap refresh writer work is complete and its evidence is PASS. No further repository mutation is authorized on this branch while it waits at the Human merge gate.
 
-This is a bounded docs-only reconciliation. It may update the operational roadmap to reflect the already-accepted Product Foundation and current program sequence. It does **not** activate Product Proof gameplay implementation.
+The roadmap now reflects the accepted solo-PvE-first Product Proof critical path and removes stale Product Feel Remediation execution wording while preserving historical P0A/Stage/Phase records.
 
-## Hard boundary
+## Human gate
 
-No gameplay/runtime/package/project-setting mutation is authorized. No R1 salvage/resumption, Unity Harness SPIKE, networking/PvP, Stage C, backend/service work, merge, or successor implementation authority is granted.
+Human/Game Director decides whether to merge the roadmap PR.
 
-The roadmap may name Product Proof Slice 001 as the next intended bounded product slice, but execution still requires a separate explicit Human/Game Director instruction and a fresh authority transition after this docs task closes.
+Merging this docs-only roadmap refresh does **not** activate Product Proof implementation. After any merge, a separate fresh Human/Game Director instruction and authority transition are still required before gameplay mutation.
+
+No R1, Unity Harness SPIKE, networking/PvP, Stage C, backend/services, gameplay/runtime/package mutation, or successor implementation authority is granted.
