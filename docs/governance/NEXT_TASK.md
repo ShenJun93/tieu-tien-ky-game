@@ -4,45 +4,64 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-PR19-POST-MERGE-CLEANUP-001",
+  "branch": "chore/pr19-post-merge-cleanup",
+  "baseline_ref": "bbb9fbf5768eb46463c974a9236f958f8f94c46e",
+  "authority_anchor_ref": "bbb9fbf5768eb46463c974a9236f958f8f94c46e",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PR19-POST-MERGE-CLEANUP-001.md",
+  "evidence_file": "docs/evidence/PR19_POST_MERGE_CLEANUP_REPORT.md",
+  "allowed_paths": [
+    "docs/governance/CURRENT_STATE.md",
+    "docs/evidence/PR19_POST_MERGE_CLEANUP_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "scripts/",
+    ".github/",
+    ".agents/",
+    "docs/master/",
+    "docs/decisions/",
+    "docs/architecture/",
+    "docs/governance/RISK_REGISTER.md",
+    "README.md",
+    "ASSET_SOURCES.csv",
+    "LICENSE",
+    "NOTICE",
+    "COPYING"
+  ],
+  "required_evidence": {
+    "authority_integrity": "PASS",
+    "live_main_identity": "PASS",
+    "pr19_merge_identity": "PASS",
+    "stale_prose_removed": "PASS",
+    "current_state_canonicalized": "PASS",
+    "scope_diff": "PASS",
+    "successor_authority": "NONE"
+  },
+  "stop_condition": "PR19_POST_MERGE_CLEANUP_READY_FOR_FINAL_FOREMAN_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-PR #19 Remediation 001 writer execution is closed.
+The Human/Game Director explicitly authorized `DUYỆT POST-MERGE CLEANUP PR #19`.
 
-The completed reconciliation now records:
+This authorizes only the bounded docs-only cleanup described by the active task contract:
 
-- AO-Lite v1 implementation integrated via PR #18;
-- `RISK-NETWORK-001` OPEN / P2 governance-product debt, unchanged by Remediation 001;
-- `RISK-IP-001` OPEN / P1 before external commercial commitment;
-- existing README public-development/licensing policy is explicitly acknowledged;
-- existing `ASSET_SOURCES.csv` provenance control is explicitly acknowledged;
-- remaining IP risk is incomplete/not-yet-validated repository-wide chain-of-title/provenance coverage, incomplete comprehensive third-party/contributor-obligation audit, and unresolved formal repository/release licensing + notice decision;
-- no package, root-license, README, `ASSET_SOURCES.csv`, product/runtime, or successor mutation was performed by Remediation 001.
+- record PR #19 as merged at `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
+- remove stale pre-merge wording from canonical state prose;
+- preserve non-mutating `DISCOVERY` as the required closeout state with zero successor authority.
 
-Remediation lineage:
+The writer may modify only `docs/governance/CURRENT_STATE.md` and the declared evidence report.
 
-- reviewed head: `2bf1042f8b783feaeff6e69ba7c6c37024fd7225`;
-- activation: `34e2b7ab55e674dbb67cbd8be75671654f2fec0b`;
-- content: `d9e379c96e3b0071759d6c0c2173670aaab5101f`;
-- evidence: `d2acfdb7252681ec7ba394507a311040fb8d95d8`.
+No `RISK_REGISTER`, README, `ASSET_SOURCES.csv`, root license/notice files, Packages, Assets, ProjectSettings, scripts, product canon, Product Proof, Unity/runtime/networking/PvP/co-op/Stage C/backend, or successor-task mutation is authorized.
 
-There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
+The active writer lineage remains unpublished while `state = IMPLEMENT`. Final Foreman may publish only after writer scope is closed back to non-mutating `DISCOVERY`.
 
-PR #19 requires exact-head Repository Gate and a fresh independent read-only re-review before any Human merge decision.
-
-Product Proof Slice 001 remains an intended roadmap slice, but it is **not** mutation authority. The recorded risks also do not authorize their own remediation.
-
-Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `PR19_POST_MERGE_CLEANUP_READY_FOR_FINAL_FOREMAN_CLOSEOUT`.
