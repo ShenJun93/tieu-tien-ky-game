@@ -4,14 +4,14 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "REVIEW",
+  "state": "HUMAN_GATE",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-001",
+  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-002",
   "branch": "chore/harness-vnext-canon-workflow-reconciliation",
   "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-001.md",
-  "evidence_file": "docs/evidence/HARNESS_VNEXT_PLATFORM_GATE_CLOSURE.md",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-002.md",
+  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_002_REPORT.md",
   "allowed_paths": [],
   "forbidden_paths": [
     "Assets/",
@@ -20,60 +20,42 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "Builds/"
   ],
   "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "authority_immutability_tests": "PASS",
-    "main_drift_guard_tests": "PASS",
-    "scope_diff": "PASS",
-    "remote_ci": "PASS",
-    "main_branch_protection": "PASS"
+    "activation_exact_content_tests": "PENDING",
+    "activation_history_rewrite_guard": "PENDING",
+    "evidence_contract_aggregate_tests": "PENDING",
+    "review_taxonomy_contract": "PENDING",
+    "governance_hook_tests": "PENDING",
+    "scope_diff": "PENDING",
+    "remote_ci": "PENDING"
   },
-  "stop_condition": "FRESH_INDEPENDENT_HARNESS_REVIEW_REQUIRED"
+  "stop_condition": "TASK_BRANCH_REWRITE_PROTECTION_REQUIRED_BEFORE_IMPLEMENTATION"
 }
 ```
 
-## Current authority
+## Human authority
 
-Harness vNext repository-side P1 hardening and its GitHub platform gates are complete:
+Human/Game Director explicitly approved **HARNESS REMEDIATION 002** after the fresh independent review returned `REMEDIATE` with three P1 findings and zero P0 findings.
 
-```text
-GOVERNANCE TESTS          = PASS 40/40 locally and remotely
-AUTHORITY IMMUTABILITY    = PASS
-LIVE MAIN DRIFT GUARD     = PASS
-WRITER SCOPE              = PASS
-PUBLIC REPOSITORY         = PASS
-REMOTE CI                 = PASS
-MAIN BRANCH PROTECTION    = PASS
-PLATFORM GATE             = GREEN
-```
+## Current state
 
-Repository mutation is stopped. `allowed_paths` is empty.
+Repository mutation remains stopped. `allowed_paths` is empty.
 
-## Authorized review action
+Remediation 002 is approved, but writer execution is intentionally not yet activated. Before an IMPLEMENT transition is created, the Harness task branch itself must be protected server-side against force-push/history rewrite and deletion so the later authority-transition commit cannot be replaced after publication.
 
-Run a **fresh independent read-only review** of PR #11 and the current Harness candidate. The reviewer should evaluate:
+## Only next action
 
-1. canon/workflow coherence;
-2. authority root-of-trust and writer lock semantics;
-3. main-drift protection;
-4. evidence contract integrity;
-5. GitHub workflow/repository gate design;
-6. branch-protection assumptions and Human merge authority;
-7. research-integration lifecycle;
-8. scope leakage or contradictions introduced by the public-readiness/platform closure work.
+Apply branch protection to:
 
-The reviewer must return one verdict:
+`chore/harness-vnext-canon-workflow-reconciliation`
 
-```text
-ACCEPT
-ACCEPT_WITH_NON_BLOCKING_NOTES
-REMEDIATE
-REJECT
-```
+with at minimum:
 
-and list findings by severity/evidence.
+- force pushes blocked;
+- branch deletion blocked;
+- administrator enforcement enabled / no admin bypass of those protections.
+
+After live verification of that platform condition, Final Foreman may create a fresh IMPLEMENT activation direct-child transition for this task.
 
 ## Hard stop
 
-The reviewer must not edit files, push commits, change repository settings, mark the PR ready, merge PR #11, or authorize Unity harness SPIKE, R1, Product Proof, gameplay, networking/PvP, Stage C, or any successor implementation.
-
-Only Human/Game Director may authorize remediation or merge after the independent review.
+Do not edit implementation files, merge PR #11, mark it ready, change gameplay/R1/Unity/package files, or authorize Product Proof, networking/PvP, Stage C, or successor work before the platform prerequisite is verified.
