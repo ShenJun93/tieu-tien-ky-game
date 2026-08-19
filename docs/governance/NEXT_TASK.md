@@ -4,15 +4,20 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "HUMAN_GATE",
+  "state": "IMPLEMENT",
   "task_mode": "SPEC",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003",
-  "branch": "chore/harness-vnext-canon-workflow-reconciliation",
-  "baseline_ref": "b2e160cb83c0dc74031081ca010eb2a7489c104d",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-P1-REMEDIATION-003.md",
-  "evidence_file": "docs/evidence/HARNESS_VNEXT_P1_REMEDIATION_003_REPORT.md",
-  "allowed_paths": [],
+  "task_id": "TASK-TIEU-TIEN-KY-HARNESS-VNEXT-POST-MERGE-RECONCILIATION-001",
+  "branch": "chore/harness-vnext-post-merge-reconciliation",
+  "baseline_ref": "d178447c27b357c9067e3c54911edfdb3233ce51",
+  "authority_anchor_ref": "d178447c27b357c9067e3c54911edfdb3233ce51",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-HARNESS-VNEXT-POST-MERGE-RECONCILIATION-001.md",
+  "evidence_file": "docs/evidence/HARNESS_VNEXT_POST_MERGE_RECONCILIATION_REPORT.md",
+  "allowed_paths": [
+    "docs/governance/CURRENT_STATE.md",
+    "docs/evidence/HARNESS_VNEXT_POST_MERGE_RECONCILIATION_REPORT.md"
+  ],
   "forbidden_paths": [
     "Assets/",
     "Packages/",
@@ -20,52 +25,29 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "Builds/"
   ],
   "required_evidence": {
-    "activation_single_parent_guard": "PASS",
-    "activation_anchor_diff_guard": "PASS",
-    "multi_parent_activation_regression": "PASS",
-    "governance_hook_tests": "PASS",
-    "scope_diff": "PASS",
-    "remote_ci": "PASS"
+    "live_main_identity": "PASS",
+    "pr11_merge_state": "PASS",
+    "canon_reconciliation": "PASS",
+    "writer_scope": "PASS"
   },
-  "independent_review_verdict": "ACCEPT",
-  "independent_review_p0": 0,
-  "independent_review_p1": 0,
-  "safe_to_move_to_human_merge_gate": true,
-  "stop_condition": "HUMAN_MERGE_DECISION_REQUIRED"
+  "stop_condition": "HARNESS_VNEXT_POST_MERGE_RECONCILIATION_READY_FOR_CONTROL_PLANE_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-Fresh independent read-only review of exact candidate `9366500600e6e73b47431348fe41865aa6c06b11` returned:
+The latest explicit Human/Game Director instruction authorizes one bounded recovery action only: reconcile the stale post-merge Harness vNext canonical state after PR #11 merged.
 
-```text
-VERDICT = ACCEPT
-P0      = 0
-P1      = 0
-SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE = YES
-```
+This `IMPLEMENT` authority exists only on `chore/harness-vnext-post-merge-reconciliation`, based on canonical `main@d178447c27b357c9067e3c54911edfdb3233ce51`.
 
-The sole prior evidence blocker was closed by a fresh Human live-read of the active task-branch protection:
+The writer may change only `docs/governance/CURRENT_STATE.md` and the reconciliation evidence report. The active `NEXT_TASK.md` and task contract are writer-locked after this activation commit.
 
-```text
-enforce_admins = true
-force_pushes   = false
-deletions      = false
-required_pull_request_reviews = null
-required_status_checks        = null
-```
+## Preserved hard boundaries
 
-Exact REVIEW-head Repository Gate run `32230791184` remains `SUCCESS` with 46/46 governance regressions passing.
+No gameplay, Product Proof, R1, Unity Harness SPIKE, networking/PvP, Stage C, `Assets/`, `Packages/`, `ProjectSettings/`, or `Builds/` mutation is authorized.
 
-Repository mutation is stopped. `allowed_paths` is empty.
+No successor task is inferred or granted.
 
-## Human Gate
+## Required closeout
 
-PR #11 is eligible for a Human/Game Director merge decision only. This state is not merge authorization.
-
-Human must explicitly choose whether to merge PR #11. No successor task, gameplay/R1/Product Proof/Unity Harness SPIKE/networking/PvP/Stage C authority is inferred or granted.
-
-## Hard stop
-
-Do not edit files, push implementation commits, change repository settings, mark PR #11 ready, merge it, or start successor implementation without separate explicit Human authority.
+After the bounded writer reconciliation is verified, a Human/Final-Foreman control-plane transition must return `NEXT_TASK.md` to non-mutating `DISCOVERY` with no active task/branch/path authority and stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
