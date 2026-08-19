@@ -1,6 +1,6 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19 (public-repo readiness remediation complete repo-side; local history verification gate)
+Updated: 2026-08-19 (public-repo readiness verified PASS; waiting explicit Human visibility approval)
 
 ## Repository
 
@@ -23,8 +23,6 @@ Updated: 2026-08-19 (public-repo readiness remediation complete repo-side; local
 - Primary Product Proof direction: **1-player solo PvE arena/run**.
 - Product bets: **Readable Chaos**, **Cultivation as Combat Physics**, **Retellable Run Moments**.
 - Human PvP is an optional hypothesis, not a current product dependency.
-- Product-level canon: `docs/master/PRODUCT_FOUNDATION.md`, `docs/decisions/001-product-foundation.md`.
-- Craft/quality canon: `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
 
 ## Gate status — current truth
 
@@ -38,23 +36,23 @@ STAGE_C                           = NOT AUTHORIZED
 HARNESS_VNEXT_REPO_SIDE           = PASS / HARDENED CANDIDATE
 HARNESS_AUTHORITY_LOCK            = PASS
 HARNESS_MAIN_DRIFT_GUARD          = PASS
-GOVERNANCE_REGRESSION_PREVIOUS    = PASS 40/40
+GOVERNANCE_REGRESSION_FRESH       = PASS 40/40
 GITHUB_ACTIONS_HOSTED_PRIVATE     = BLOCKED_BY_EXHAUSTED_QUOTA
 PRIVATE_MAIN_PROTECTION           = UNAVAILABLE/UNRESOLVED ON CURRENT PRIVATE FREE PATH
 PUBLIC_REPO_READINESS_AUDIT       = SAFE_TO_PUBLIC_AFTER_REMEDIATION
 PUBLIC_METADATA_CLEANUP           = PASS
 ASSET_PROVENANCE                  = PASS
 CURRENT_TREE_SECRET_SEARCH        = PASS
+FULL_HISTORY_SECRET_SCAN          = PASS / 132 COMMITS / NO LEAKS
 PUBLIC_READINESS_WRITER_SCOPE     = PASS
-FULL_HISTORY_SECRET_SCAN          = PENDING / HUMAN LOCAL GATE
-GOVERNANCE_REGRESSION_FRESH       = PENDING / HUMAN LOCAL GATE
-REPOSITORY_VISIBILITY_CHANGE      = NOT AUTHORIZED YET
-HARNESS_VNEXT_OVERALL             = BLOCKED_ON_PUBLIC_READINESS_LOCAL_GATE
+TTK_PUBLIC_REPO_READINESS         = SAFE_TO_PUBLIC
+REPOSITORY_VISIBILITY_CHANGE      = WAITING_EXPLICIT_HUMAN_APPROVAL
+HARNESS_VNEXT_OVERALL             = BLOCKED_ON_VISIBILITY_PLATFORM_GATE
 ```
 
 ## Public-repository strategy
 
-The current preferred zero-subscription infrastructure path is:
+Preferred zero-subscription infrastructure path:
 
 ```text
 GitHub public repository
@@ -65,34 +63,50 @@ GitHub public repository
 → Human merge gate
 ```
 
-Public visibility is not equivalent to an open-source license. `README.md` now records public-development intent and copyright posture. `ASSET_SOURCES.csv` records the existing 14 WAV files as project-generated procedural audio with no third-party source audio.
+Public visibility is not equivalent to an open-source license. `README.md` records public-development intent and copyright posture. `ASSET_SOURCES.csv` records the existing procedural WAV family as project-generated.
 
-Evidence: `docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md`.
+Public-readiness evidence: `docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md`.
 
-## Harness vNext / P1 hardening
+## Local verification evidence
 
-Harness vNext repository-side hardening remains intact:
+Clean verification checkout:
+
+`E:\GameDev\_verification\ttk-public-audit-20260819-124024`
+
+Verified head:
+
+`6f9bfaf4ee4bc1c2c24739d9d9dad577e2dc6ae8`
+
+Gitleaks:
 
 ```text
-self-modifiable authority  → authority_anchor_ref + single transition + writer locks
-stale long-running task    → live origin/main drift checks at start/finish
-scope root-of-trust        → writer completion scope begins after control-plane activation
+132 commits scanned
+~1.84 MB scanned
+no leaks found
+exit code 0
 ```
 
-The stable PR check remains `Repository Gate / repository-gate`. Its private-repo hosted runs were blocked before step 1 because the account's GitHub Actions quota is exhausted; this is a platform-capacity condition, not evidence of a workflow/test failure.
+Governance regression:
+
+```text
+tests 40
+pass 40
+fail 0
+exit code 0
+```
+
+Final checkout status was clean after removing the generated local report file.
 
 ## Quarantined R1 specimen
 
-The original local worktree `E:\GameDev\tieu-tien-ky-game` remains untouched with partial uncommitted R1 material on branch `feat/p0a-local-microfun-spike` over audited commit `3b9264196bb941033f4c16bc3a68341a9dc7d785`.
-
-Do not reset, clean, stash, commit, rebase, merge or modify it without separate explicit Human authority. Public-readiness verification must use a separate clean checkout/workspace on `E:`.
+The original local worktree `E:\GameDev\tieu-tien-ky-game` remains protected and untouched. Do not reset, clean, stash, commit, rebase, merge or modify it without separate explicit Human authority.
 
 ## Current authority / one next action
 
-`docs/governance/NEXT_TASK.md` is `state: HUMAN_GATE`.
+`docs/governance/NEXT_TASK.md` remains `state: HUMAN_GATE`.
 
 ONE NEXT ACTION:
 
-**Run full-history Gitleaks + fresh governance regression from a clean, non-quarantined checkout on `E:` and return the exact output.**
+**Human/Game Director explicitly approves or declines the private → public visibility transition.**
 
-Do not make the repository public, merge PR #11, start independent final review, Unity harness SPIKE, R1, Product Proof, PvP, Stage C or any successor implementation until this local gate is reconciled and explicit continuation authority is created.
+Until explicit approval, do not change repository visibility, merge PR #11, start independent final review, Unity harness SPIKE, R1, Product Proof, PvP, Stage C or any successor implementation.

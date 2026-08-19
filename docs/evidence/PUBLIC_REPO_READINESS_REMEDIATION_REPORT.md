@@ -1,7 +1,7 @@
 # TTK PUBLIC-REPO READINESS REMEDIATION — EVIDENCE REPORT
 
 Task: `TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001`  
-Status: **BLOCKED / HUMAN LOCAL VERIFICATION REQUIRED**  
+Status: **COMPLETE / SAFE_TO_PUBLIC / WAITING FOR EXPLICIT HUMAN VISIBILITY APPROVAL**  
 Branch: `chore/harness-vnext-canon-workflow-reconciliation`  
 Canonical main baseline: `b2e160cb83c0dc74031081ca010eb2a7489c104d`  
 Authority anchor: `e4a4fcb0f4dfec670debae9c0602e9bc1762752b`  
@@ -12,103 +12,100 @@ Writer verification head: `c0c6e642556e25ee65d2c8a61f4175ae5e4cb502`
 
 ```json
 {
-  "verdict": "BLOCKED_PENDING_LOCAL_SECRET_SCAN",
+  "verdict": "SAFE_TO_PUBLIC",
   "current_tree_secret_search": "PASS",
-  "full_history_secret_scan": "PENDING",
+  "full_history_secret_scan": "PASS",
   "public_metadata_cleanup": "PASS",
   "asset_provenance": "PASS",
-  "governance_hook_tests": "PENDING",
+  "governance_hook_tests": "PASS",
   "scope_diff": "PASS"
 }
 ```
 
 ## Public-readiness audit disposition
 
-The preceding read-only audit concluded `SAFE_TO_PUBLIC_AFTER_REMEDIATION`, not `SAFE_TO_PUBLIC` and not `DO_NOT_PUBLIC`.
+The initial read-only audit concluded `SAFE_TO_PUBLIC_AFTER_REMEDIATION`. The bounded remediation and required local verification are now complete. No known blocker remains in this task.
 
-No repository visibility change is authorized by this remediation. The repository remains private until a later explicit Human/Final-Foreman transition after all required evidence passes.
+This task still does **not** itself change repository visibility. Private → public remains a separate Human/Game Director decision.
 
 ## Current-tree secret search
 
-Fresh connector-backed code searches on the accessible current tree returned no results for these high-signal credential patterns:
+Fresh connector-backed searches returned no results for high-signal credential patterns including private-key markers, GitHub tokens, AWS access-key prefixes and OpenAI project-key prefixes.
 
-```text
-BEGIN PRIVATE KEY
-github_pat_
-ghp_
-AKIA
-sk-proj-
-```
-
-Result: **PASS as supporting current-tree evidence only**.
-
-This does not prove deleted historical blobs are clean and therefore cannot substitute for the required full-history Gitleaks scan.
+Result: **PASS** as supporting current-tree evidence.
 
 ## Public metadata cleanup
 
-`README.md` no longer states that the repository is private. It now records:
-
-- public-development intent;
-- source visibility does not itself grant an open-source license;
-- project-original code/design/docs/art/audio remain copyrighted unless a separate license says otherwise;
-- third-party content must retain its own license/redistribution terms;
-- working-title trademark/store/domain clearance remains outside current scope.
+`README.md` now records public-development intent, copyright/no-open-source-license posture, third-party-license responsibility and the working-title clearance caveat.
 
 Result: **PASS**.
 
 ## Asset provenance
 
-`ASSET_SOURCES.csv` now records:
-
-```text
-Assets/_Project/Resources/Audio/*.wav
-```
-
-as project-generated procedural synthesis via `Assets/Editor/StageABAudioBuilder.cs`, project-original/all-rights-reserved, commercial use allowed by the project owner, no attribution required, generated on 2026-08-18.
-
-The underlying implementation and commit history state that the 14 WAV files were synthesized locally from sine/square/triangle/noise primitives and simple envelopes with no source audio and no web sourcing.
+`ASSET_SOURCES.csv` records `Assets/_Project/Resources/Audio/*.wav` as project-generated procedural synthesis created by `Assets/Editor/StageABAudioBuilder.cs`, with no third-party source-audio claim and no attribution requirement.
 
 Result: **PASS**.
 
-## Full-history secret proof — REQUIRED
+## Full-history secret proof
 
-Status: **PENDING**.
+Verification workspace:
 
-Reason: the connected GitHub surface can inspect current files, branches, commit metadata and diffs, but it cannot provide an equivalent full Git object/history scan over every historical ref/deleted blob. This evidence must come from a clean, non-quarantined local checkout.
+`E:\GameDev\_verification\ttk-public-audit-20260819-124024`
 
-Requirements:
+Verified branch/head:
 
-1. Do **not** use the protected dirty R1 specimen at `E:\GameDev\tieu-tien-ky-game`.
-2. Use a fresh clean clone/worktree on `E:`.
-3. Fetch all remote refs.
-4. Run Gitleaks against full Git history / all refs.
-5. Zero unresolved findings are required.
-6. If any finding exists, STOP and report; do not rewrite history or rotate/delete secrets automatically inside this task.
+`6f9bfaf4ee4bc1c2c24739d9d9dad577e2dc6ae8`
 
-## Governance regression — REQUIRED
-
-Status: **PENDING**.
-
-From the same clean verification checkout, run:
+Gitleaks output supplied by the Human operator:
 
 ```text
-node --test scripts/hooks/hooks.test.mjs
+132 commits scanned
+scanned ~1836784 bytes (1.84 MB)
+no leaks found
+GITLEAKS_EXIT_CODE = 0
+GITLEAKS_FULL_HISTORY = PASS
 ```
 
-Expected result: all Harness vNext governance tests PASS.
+Command:
+
+```text
+gitleaks git -v --redact=100 .
+```
+
+Result: **PASS**.
+
+## Governance regression
+
+Fresh clean-checkout result supplied by the Human operator:
+
+```text
+tests 40
+pass 40
+fail 0
+cancelled 0
+skipped 0
+todo 0
+LAST EXIT CODE = 0
+```
+
+Verified head remained:
+
+`6f9bfaf4ee4bc1c2c24739d9d9dad577e2dc6ae8`
+
+The only temporary untracked file was the locally generated `gitleaks-report.json`; it was removed and final `git status --short` was empty.
+
+Result: **PASS**.
 
 ## Scope verification
 
-Writer scope was verified by exact remote comparison:
+Exact remote writer comparison after activation:
 
 ```text
 base = d7272d2ac483a775d574dcd083791e4c75abf786
 head = c0c6e642556e25ee65d2c8a61f4175ae5e4cb502
-ahead_by = 3
-behind_by = 0
 ```
 
-Exact writer paths:
+Writer paths were exactly:
 
 ```text
 ASSET_SOURCES.csv
@@ -116,19 +113,24 @@ README.md
 docs/evidence/PUBLIC_REPO_READINESS_REMEDIATION_REPORT.md
 ```
 
-No other writer path changed. In particular, no `Assets/`, `Packages/`, `ProjectSettings/`, `Builds/`, gameplay, Unity behavior, R1, networking or Stage C path changed.
+No `Assets/`, `Packages/`, `ProjectSettings/`, `Builds/`, gameplay, Unity behavior, R1, networking or Stage C path changed.
 
 Result: **PASS**.
 
-Control-plane activation paths are not writer scope:
+## Live reconciliation before closeout
+
+Final Foreman revalidated that:
+
+- repository visibility is still private;
+- PR #11 is still open, Draft and unmerged;
+- PR #11 base remains `main@b2e160cb83c0dc74031081ca010eb2a7489c104d`;
+- PR #11 head before this lifecycle reconciliation was `6f9bfaf4ee4bc1c2c24739d9d9dad577e2dc6ae8`;
+- Human/Game Director retains admin and visibility authority.
+
+## Final disposition
 
 ```text
-docs/governance/NEXT_TASK.md
-docs/tasks/TASK-TIEU-TIEN-KY-PUBLIC-REPO-READINESS-REMEDIATION-001.md
+TTK_PUBLIC_REPO_READINESS = SAFE_TO_PUBLIC
 ```
 
-## Stop
-
-Repository-side metadata/provenance remediation is complete. Do not make the repository public yet.
-
-The remaining gate is clean local evidence for full-history Gitleaks + governance regression, followed by a fresh Human visibility decision.
+No visibility mutation is implied. Next gate is explicit Human/Game Director approval to change repository visibility from private to public. After that separate approval, Final Foreman must revalidate repo/PR state, perform only the visibility/platform transition, then verify hosted `repository-gate` and configure protected `main` before independent Harness review.

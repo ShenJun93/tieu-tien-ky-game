@@ -21,13 +21,13 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   ],
   "required_evidence": {
     "current_tree_secret_search": "PASS",
-    "full_history_secret_scan": "PENDING",
+    "full_history_secret_scan": "PASS",
     "public_metadata_cleanup": "PASS",
     "asset_provenance": "PASS",
-    "governance_hook_tests": "PENDING",
+    "governance_hook_tests": "PASS",
     "scope_diff": "PASS"
   },
-  "stop_condition": "HUMAN_LOCAL_PUBLIC_READINESS_VERIFICATION_REQUIRED"
+  "stop_condition": "EXPLICIT_HUMAN_VISIBILITY_APPROVAL_REQUIRED"
 }
 ```
 
@@ -35,35 +35,28 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 Repository mutation is stopped.
 
-The bounded repository-side public-readiness remediation is complete:
+Public-repository readiness is fully verified:
 
 ```text
 CURRENT-TREE SECRET SEARCH = PASS
+FULL-HISTORY GITLEAKS      = PASS / 132 commits / no leaks / exit 0
 README PUBLIC METADATA     = PASS
 AUDIO PROVENANCE LEDGER    = PASS
+GOVERNANCE REGRESSION      = PASS 40/40
 WRITER SCOPE               = PASS
-FULL-HISTORY SECRET SCAN   = PENDING
-GOVERNANCE REGRESSION      = PENDING
+TTK PUBLIC READINESS       = SAFE_TO_PUBLIC
 ```
 
-No repository visibility change, PR merge, gameplay/R1 mutation, Unity package/runtime change, Product Proof, networking/PvP/Stage C or successor task is authorized.
+No repository visibility change, PR merge, gameplay/R1 mutation, Unity package/runtime change, Product Proof, networking/PvP/Stage C or successor task is authorized by this state.
 
-## Human/local verification action
+## Human visibility action
 
-Use a fresh clean checkout on `E:` that is **not** `E:\GameDev\tieu-tien-ky-game` (the protected dirty R1 specimen). Fetch all refs, run Gitleaks over full Git history/all refs, then run:
+Human/Game Director must explicitly approve or decline changing `ShenJun93/tieu-tien-ky-game` from private to public.
 
-```text
-node --test scripts/hooks/hooks.test.mjs
-```
-
-Zero unresolved secret findings and a full governance-test PASS are required.
-
-If Gitleaks reports any finding, STOP and report it. Do not rewrite history, rotate credentials or delete evidence automatically.
+If approved, Final Foreman must first live-revalidate repository visibility, `main`, PR #11 and permissions, then perform only the bounded visibility/platform transition. After the repository is public, verify a successful `Repository Gate / repository-gate` run and configure protected `main` before independent Harness review.
 
 ## Stop condition
 
 ```text
-BLOCKED_ON_HUMAN_LOCAL_VERIFICATION
+WAITING_FOR_EXPLICIT_HUMAN_VISIBILITY_APPROVAL
 ```
-
-After the required local evidence is supplied, Final Foreman must live-revalidate `main`, the branch head and evidence before creating any fresh authority for a private → public visibility change. Do not make the repository public yet.
