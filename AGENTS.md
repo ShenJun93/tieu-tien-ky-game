@@ -37,6 +37,12 @@ Full lifecycle: `docs/governance/WORKFLOW.md`.
 
 `task_mode` may describe execution shape (`MICRO`, `SLICE`, `SPEC`, `BATCH`, `SPIKE`, `PARALLEL`) but never grants write authority. Only `state` does that. A task mode may reduce unnecessary ceremony; it may not weaken scope, verification or Human authority.
 
+## Authority-transition lock
+
+For a mutating task, `authority_anchor_ref` is the immutable commit immediately **before** activation. Human/Final Foreman creates exactly one direct child authority-transition commit containing both `docs/governance/NEXT_TASK.md` and the active task contract.
+
+After that transition, the implementation writer must not modify either control-plane file. `scope-gate`, `pre-task`, and `pre-finish` fail closed on writer self-expansion/self-weakening. Lifecycle transitions back to `REVIEW`, `HUMAN_GATE`, `DISCOVERY`, or another task are Human/Final-Foreman control-plane actions, not implementation-writer work.
+
 ## Live operator precedence
 
 ```text
@@ -66,6 +72,8 @@ If a live Human instruction contradicts persisted `NEXT_TASK.md`: the live instr
 13. Research is not closed until material findings have an explicit repository disposition: `INTEGRATED`, `PARTIALLY_INTEGRATED`, `TO_INTEGRATE`, `DEFERRED`, `REJECTED`, or `SUPERSEDED`.
 14. Research is evidence input, not an automatic implementation mandate.
 15. One mutable Unity worktree has one writer. Parallel writers require explicit independent scope and isolation.
+16. An implementation writer never edits its active `NEXT_TASK.md` or active task contract after authority activation.
+17. Local task start/completion must verify live `origin/main` still equals the authorized immutable `baseline_ref`; drift requires explicit rebaseline, never silent continuation.
 
 ## Human Gate — hard stop
 
@@ -104,6 +112,8 @@ Before edits when the active task uses local execution:
 node scripts/hooks/pre-task.mjs
 ```
 
+`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted.
+
 Before writing/moving/deleting files:
 
 ```bash
@@ -116,7 +126,9 @@ Before declaring implementation completion when the task contract uses the guard
 node scripts/hooks/pre-finish.mjs
 ```
 
-`pre-finish` validates the active task's declared `required_evidence`; it must not assume every task requires Android/Human evidence. Player-facing tasks should declare those fields explicitly. If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
+`pre-finish` revalidates the authority lock, live main, writer-only committed scope, and the active task's declared `required_evidence`. It must not assume every task requires Android/Human evidence. Player-facing tasks should declare those fields explicitly. If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
+
+For `REMOTE_GITHUB_BRANCH`, the Final Foreman performs equivalent live repository/base/head checks around bounded GitHub mutations because local writer hooks intentionally reject that workspace policy.
 
 ## Governance self-test
 
