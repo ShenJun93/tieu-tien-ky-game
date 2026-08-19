@@ -120,20 +120,24 @@ authority_anchor_ref
   exact branch commit immediately before Human/Final-Foreman activation
 ```
 
-Activation is one direct child commit of `authority_anchor_ref` and must set both:
+Activation is one direct child commit of `authority_anchor_ref` and must change **exactly**:
 
 ```text
 docs/governance/NEXT_TASK.md
 active task contract
 ```
 
+No third path is permitted in the activation commit.
+
 After that activation commit:
 
-- the implementation writer must not edit either file;
+- the implementation writer must not edit either control-plane file;
 - `scope-gate` hard-blocks both paths even if they were accidentally listed in `allowed_paths`;
-- `pre-task` and `pre-finish` require exactly one authority transition after the anchor and exactly one matching active-task-contract transition;
+- `pre-task` and `pre-finish` require exactly one authority transition after the anchor, exactly one matching active-task-contract transition, and an activation changed-file set equal to exactly those two control-plane paths;
 - the writer diff used for completion starts **after** the authority-transition commit;
 - transitions to `REVIEW`, `HUMAN_GATE`, `DISCOVERY`, `CLOSED`, or a successor task are Final-Foreman/Human control-plane actions.
+
+Exact activation-content validation protects the boundary between control-plane activation and writer scope. It must be paired, for an active published task branch, with server-side branch controls that block force-push/history replacement and branch deletion while writer authority is active. Repository-local hooks do **not** claim to detect history that a privileged actor has already replaced before the local check; the server-side no-force-push boundary prevents that replacement path.
 
 This is intended to prevent accidental/agentic self-expansion or evidence weakening. It is not a cryptographic defense against a malicious repository administrator; GitHub-side branch controls provide the outer repository boundary.
 
@@ -177,6 +181,8 @@ Create a new remediation task only when the required fix materially crosses auth
 ## Verification contract
 
 Verification is task-specific. `NEXT_TASK.required_evidence` declares exactly what the active task must prove. `pre-finish.mjs` compares those requirements with the machine-readable evidence report rather than assuming every task requires Android/Human evidence.
+
+The active authority uses one singular `evidence_file`. That file must contain every machine-readable key declared in `required_evidence`; evidence spread across multiple prose reports does not satisfy the machine contract unless a future task explicitly introduces and authorizes a different aggregation mechanism.
 
 Examples:
 
@@ -248,7 +254,7 @@ Independent review is mandatory for high-risk architecture/network/security/lega
 
 For low-risk gameplay/presentation/tuning work, executor self-check + Final Foreman + Human physical evidence is normally sufficient unless risk, uncertainty, regression evidence or scope expansion justifies independence.
 
-A fresh reviewer should receive the task contract, diff and evidence; it need not inherit the writer's reasoning history.
+A fresh reviewer should receive the task contract, diff and evidence; it need not inherit the writer's reasoning history. The reusable review skill must use the verdict enum declared by the active review contract when one exists; only an undeclared contract falls back to the skill's default verdict vocabulary.
 
 ## Git
 
@@ -262,13 +268,20 @@ A fresh reviewer should receive the task contract, diff and evidence; it need no
 
 ## GitHub repository boundary
 
-Repository prose/hooks cannot stop an administrator from bypassing Git locally or pushing directly to an unprotected `main`. The durable outer boundary should therefore use GitHub branch protection/rules when the account plan supports them:
+Repository prose/hooks cannot stop an administrator from bypassing Git locally or pushing directly to an unprotected branch. The durable outer boundary should therefore use GitHub branch protection/rules where the active authority depends on published branch history:
 
 ```text
-require pull request before merging
-block force pushes
-block branch deletion
-require stable repository-gate status check once that check has produced a successful run
+main:
+  require pull request before merging
+  block force pushes
+  block branch deletion
+  require stable repository-gate status check once that check has produced a successful run
+
+active task branch when writer-lock depends on append-only history:
+  block force pushes/history replacement
+  block branch deletion
+  enforce the protection for administrators
+
 Human/Game Director remains merge authority
 ```
 

@@ -64,6 +64,21 @@ function revList(range, repoPath) {
   return text ? text.split(/\r?\n/).filter(Boolean) : [];
 }
 
+function changedPathsInCommit(commit) {
+  const text = run('git', ['show', '--pretty=format:', '--name-only', commit]);
+  return [...new Set(text.split(/\r?\n/).filter(Boolean).map((value) => value.replaceAll('\\', '/')))];
+}
+
+function requireExactActivationContent(transition, taskFile) {
+  const expected = [AUTHORITY_PATH, taskFile].sort();
+  const actual = changedPathsInCommit(transition).sort();
+  const exact = actual.length === expected.length && expected.every((value, index) => actual[index] === value);
+  if (!exact) {
+    fail(`authority-transition commit must change exactly ${expected.join(', ')}; got ${actual.join(', ') || '(none)'}`);
+  }
+  return actual;
+}
+
 function validateAuthorityTransition(authority, baseline) {
   const anchor = exactCommit(authority.authority_anchor_ref, 'authority_anchor_ref');
   requireAncestor(baseline, anchor, 'authority anchor does not contain the authorized baseline');
@@ -86,11 +101,7 @@ function validateAuthorityTransition(authority, baseline) {
     fail('active task contract must be created/updated exactly once in the same authority-transition commit');
   }
 
-  const changed = run('git', ['show', '--pretty=format:', '--name-only', transition])
-    .split(/\r?\n/).filter(Boolean).map((value) => value.replaceAll('\\', '/'));
-  if (!changed.includes(AUTHORITY_PATH) || !changed.includes(taskFile)) {
-    fail('authority-transition commit must contain both NEXT_TASK.md and the active task contract');
-  }
+  requireExactActivationContent(transition, taskFile);
 
   return { anchor, transition, taskFile };
 }

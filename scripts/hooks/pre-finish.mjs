@@ -61,6 +61,21 @@ function revList(range, repoPath) {
   return text ? text.split(/\r?\n/).filter(Boolean) : [];
 }
 
+function changedPathsInCommit(commit) {
+  const text = run('git', ['show', '--pretty=format:', '--name-only', commit]);
+  return [...new Set(text.split(/\r?\n/).filter(Boolean).map(normalizeRepoPath))];
+}
+
+function requireExactActivationContent(transition, taskFile) {
+  const expected = [AUTHORITY_PATH, taskFile].sort();
+  const actual = changedPathsInCommit(transition).sort();
+  const exact = actual.length === expected.length && expected.every((value, index) => actual[index] === value);
+  if (!exact) {
+    fail(`authority-transition commit must change exactly ${expected.join(', ')}; got ${actual.join(', ') || '(none)'}`);
+  }
+  return actual;
+}
+
 function validateAuthorityTransition(authority, baseline) {
   const anchor = exactCommit(authority.authority_anchor_ref, 'authority_anchor_ref');
   requireAncestor(baseline, anchor, 'authority anchor does not contain the authorized baseline');
@@ -81,6 +96,8 @@ function validateAuthorityTransition(authority, baseline) {
   if (taskCommits.length !== 1 || taskCommits[0] !== transition) {
     fail('active task contract changed outside the single authority-transition commit');
   }
+
+  requireExactActivationContent(transition, taskFile);
 
   return { anchor, transition, taskFile };
 }
@@ -123,8 +140,7 @@ const forbidden = (authority.forbidden_paths ?? []).map(normalizeRepoPath);
 if (allowed.length === 0) fail('allowed_paths is empty');
 
 // Writer scope starts after the Human/Final-Foreman authority-transition commit.
-// NEXT_TASK.md and the active task contract are intentionally excluded from
-// writer diff scope and are separately protected by validateAuthorityTransition.
+// The transition itself is separately constrained to exactly NEXT_TASK + active task contract.
 const changedText = run('git', ['diff', '--name-only', `${authorityLock.transition}...HEAD`]);
 const changed = changedText ? changedText.split(/\r?\n/).filter(Boolean).map(normalizeRepoPath) : [];
 const scopeErrors = [];

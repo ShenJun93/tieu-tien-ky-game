@@ -60,7 +60,7 @@ function writeEvidence(root, value) {
   write(root, 'docs/evidence/TASK_REPORT.md', `# evidence\n\n\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\`\n`);
 }
 
-function makeFixture(overrides = {}) {
+function makeFixture(overrides = {}, fixtureOptions = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-work-'));
   const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-remote-'));
   execFileSync('git', ['init', '--bare', '-q', remote]);
@@ -85,6 +85,9 @@ function makeFixture(overrides = {}) {
 
   write(root, 'docs/tasks/TASK.md', '# test task\n');
   writeAuthority(root, baseline, anchor, remote, overrides);
+  if (fixtureOptions.activationExtraPath) {
+    write(root, fixtureOptions.activationExtraPath, fixtureOptions.activationExtraContent ?? 'folded writer payload\n');
+  }
   commitAll(root, 'activate task');
   const activation = git(root, ['rev-parse', 'HEAD']);
 
@@ -371,4 +374,47 @@ test('pre-finish blocks SPIKE from claiming implementation completion', () => {
   const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /only IMPLEMENT may/);
+});
+
+test('pre-task blocks an activation commit containing an extra forbidden file', () => {
+  const fixture = makeFixture({}, {
+    activationExtraPath: 'UNAUTHORIZED.md',
+    activationExtraContent: 'must not be folded into activation\n'
+  });
+  const result = invoke(fixture.root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /authority-transition commit must change exactly/);
+  assert.match(result.stderr, /UNAUTHORIZED\.md/);
+});
+
+test('pre-finish blocks rewritten or squashed activation containing writer payload', () => {
+  const fixture = makeFixture({}, {
+    activationExtraPath: 'Assets/FoldedWriterPayload.cs',
+    activationExtraContent: '// payload folded into replacement activation\n'
+  });
+  const result = invoke(fixture.root, 'pre-finish.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /authority-transition commit must change exactly/);
+  assert.match(result.stderr, /Assets\/FoldedWriterPayload\.cs/);
+});
+
+test('pre-finish accepts one aggregate evidence file containing every required key', () => {
+  const required_evidence = {
+    activation_exact_content_tests: 'PASS',
+    evidence_contract_aggregate_tests: 'PASS',
+    scope_diff: 'PASS'
+  };
+  const fixture = makeFixture({ required_evidence });
+  writeEvidence(fixture.root, { verdict: 'PASS', ...required_evidence });
+  commitAll(fixture.root, 'aggregate evidence complete');
+  const result = invoke(fixture.root, 'pre-finish.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /activation_exact_content_tests, evidence_contract_aggregate_tests, scope_diff/);
+});
+
+test('review skill defers to active review contract verdict enum with a fallback only when undeclared', () => {
+  const skill = fs.readFileSync(path.join(sourceRoot, '.agents/skills/review-task/SKILL.md'), 'utf8');
+  assert.match(skill, /verdict enum declared by the \*\*active review contract\*\*/i);
+  assert.match(skill, /If the active review contract does not declare a verdict enum, use the fallback default/i);
+  assert.match(skill, /Do not invent a second competing taxonomy/i);
 });

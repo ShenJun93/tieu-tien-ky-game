@@ -15,7 +15,9 @@ Default mode is read-only.
 7. Check for current-canon vs historical-document drift.
 8. Separate blockers from safe deferred debt and from optional reviewer preferences.
 9. Report regressions, architecture/harness risk, overengineering, dependency changes and missing proof.
-10. Return one verdict: `PASS`, `PASS_WITH_REMEDIATION`, or `FAIL`.
+10. Return the verdict enum declared by the **active review contract** when that contract declares one. The active contract is authoritative for that review. If the active review contract does not declare a verdict enum, use the fallback default: `PASS`, `PASS_WITH_REMEDIATION`, or `FAIL`.
+
+Do not invent a second competing taxonomy when the active contract already provides one.
 
 ## Risk policy
 
