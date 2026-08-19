@@ -4,30 +4,57 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-AO-LITE-V1-IMPLEMENTATION-001",
+  "branch": "chore/ao-lite-v1-implementation",
+  "baseline_ref": "85a16196881203d73d7e1aaba968f584d563e02a",
+  "authority_anchor_ref": "85a16196881203d73d7e1aaba968f584d563e02a",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-AO-LITE-V1-IMPLEMENTATION-001.md",
+  "evidence_file": "docs/evidence/AO_LITE_V1_IMPLEMENTATION_REPORT.md",
+  "allowed_paths": [
+    ".gitignore",
+    "scripts/ao/",
+    "docs/evidence/AO_LITE_V1_IMPLEMENTATION_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "scripts/hooks/",
+    ".github/",
+    ".agents/",
+    "docs/master/",
+    "docs/decisions/",
+    "docs/architecture/",
+    "docs/governance/CURRENT_STATE.md"
+  ],
+  "required_evidence": {
+    "authority_integrity": "PASS",
+    "live_main_identity": "PASS",
+    "ao_tests": "PASS",
+    "governance_hook_tests": "PASS",
+    "candidate_self_verification": "PASS",
+    "read_only_git_status": "PASS",
+    "scope_diff": "PASS",
+    "prohibited_capabilities": "ABSENT"
+  },
+  "stop_condition": "AO_LITE_V1_IMPLEMENTATION_READY_FOR_INDEPENDENT_REVIEW"
 }
 ```
 
 ## Current authority
 
-AO-Lite v1 design post-merge reconciliation is complete. There is no active write task, no active branch authority, no writable path, and no successor implementation authority.
+Human/Game Director explicitly continued after accepted AO-Lite v1 design and post-merge reconciliation. This activates only the bounded AO-Lite v1 implementation defined by the accepted design.
 
-AO-Lite v1 design is accepted and integrated via PR #16, but design integration alone does not authorize `scripts/ao/**` implementation.
+The writer may modify only `.gitignore`, `scripts/ao/**`, and `docs/evidence/AO_LITE_V1_IMPLEMENTATION_REPORT.md`.
 
-Product Proof Slice 001 remains a separate paused candidate and is not current mutation authority.
+The active writer lineage remains **unpublished** while state is `IMPLEMENT`; no task branch ref or PR is published until Final-Foreman closeout, avoiding an unprotected published active-writer branch.
 
-No AO-Lite implementation, Product Proof mutation, R1, Unity Harness SPIKE, networking/PvP/co-op, Stage C, backend/services, gameplay/runtime/package mutation, or other successor work is authorized by this state.
+No Product Proof/gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package/project-setting/product-canon mutation is authorized.
 
-## One next action
+AO-Lite v1 itself must remain read-only-by-default and must not gain push/PR/merge/worker-dispatch/rebaseline/scope-expansion/workspace-creation/auto-repair capability.
 
-Human/Game Director explicitly chooses the next bounded action.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `AO_LITE_V1_IMPLEMENTATION_READY_FOR_INDEPENDENT_REVIEW`.
