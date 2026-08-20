@@ -4,42 +4,71 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SLICE",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001",
+  "branch": "feat/product-proof-slice-001-resume",
+  "baseline_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
+  "authority_anchor_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_001_REPORT.md",
+  "allowed_paths": [
+    "Assets/_Project/Gameplay/RunBlessingState.cs",
+    "Assets/_Project/Gameplay/LoiTramSkill.cs",
+    "Assets/_Project/Gameplay/PhongBoSkill.cs",
+    "Assets/_Project/Gameplay/HoTheSkill.cs",
+    "Assets/_Project/Gameplay/PlayerSkillController.cs",
+    "Assets/_Project/Gameplay/ArenaRunDirector.cs",
+    "Assets/_Project/Presentation/ProductionHud.cs",
+    "Assets/_Project/Gameplay/ProductProofRunStyle.cs",
+    "Assets/_Project/Gameplay/ProductProofRunStyle.cs.meta",
+    "Assets/_Project/Tests/EditMode/RunBlessingStateTests.cs",
+    "Assets/_Project/Tests/EditMode/ProductProofRunStyleTests.cs",
+    "Assets/_Project/Tests/EditMode/ProductProofRunStyleTests.cs.meta",
+    "Assets/_Project/Tests/PlayMode/ProductProofInteractionPlayModeTests.cs",
+    "Assets/_Project/Tests/PlayMode/ProductProofInteractionPlayModeTests.cs.meta",
+    "docs/evidence/PRODUCT_PROOF_SLICE_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Assets/_Project/Gameplay/NetworkArenaSceneBootstrap.cs",
+    "Assets/_Project/Gameplay/NetworkArenaSessionDirector.cs",
+    "Assets/_Project/Gameplay/NetworkPlayerActionGateway.cs",
+    "Assets/_Project/Gameplay/NetworkPlayerMovement.cs",
+    "Assets/_Project/Gameplay/NetworkSmokeTestDriver.cs",
+    "Assets/_Project/Gameplay/NetworkedCombatantSync.cs",
+    "Packages/",
+    "ProjectSettings/",
+    "docs/master/",
+    "docs/decisions/",
+    "docs/governance/",
+    "docs/tasks/"
+  ],
+  "required_evidence": {
+    "authority_integrity": "PASS",
+    "rebaseline_integrity": "PASS",
+    "focused_gameplay_tests": "PASS",
+    "editmode": "PASS",
+    "playmode": "PASS",
+    "android_build": "PASS",
+    "scope_diff": "PASS",
+    "human_playtest": "RECORDED"
+  },
+  "stop_condition": "PRODUCT_PROOF_SLICE_001_HUMAN_GATE"
 }
 ```
 
 ## Current authority
 
-PR #19 post-merge cleanup writer execution is closed.
+Human/Game Director explicitly authorized `DUYỆT RESUME PRODUCT PROOF SLICE 001` on 2026-08-20.
 
-The completed cleanup candidate records:
+This is a fresh authority transition from current canonical `main@2f9e457c0433b9e743891c3692a8161b4f31e32f` for the same bounded Product Proof Slice 001.
 
-- PR #19 merged/integrated at `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
-- stale pre-merge/in-progress wording removed from `docs/governance/CURRENT_STATE.md`;
-- PR #19 risk-reconciliation integration reflected in canonical state prose;
-- `RISK-NETWORK-001` and `RISK-IP-001` remain open with no new remediation authority;
-- Product Proof Slice 001 remains intended roadmap work but is not mutation authority;
-- no package, root-license, README, `ASSET_SOURCES.csv`, risk-register, product/runtime, or successor mutation was performed by this cleanup.
+The historical PR #13 candidate at `925d370fff00391331d9fd94d07aaf001abf430f` is preserved as read-only source lineage. Do not force-push, rewrite, merge, or treat its old control-plane files as current authority.
 
-Cleanup lineage:
+The implementation writer may port/repair only the already-authorized Product Proof gameplay/test/evidence scope onto this fresh branch. Current-main governance/AO/risk/roadmap changes remain authoritative and must not be overwritten.
 
-- canonical baseline / authority anchor: `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
-- activation: `5a6b3ff929a577e128f021677bfba1d77de5c781`;
-- content: `ba88fccd789a0aa9a7decfec745a4b6f229d9fef`;
-- evidence: `556aed886a0fb9aaedda123eb6b39a76cb2f329b`.
+## Stop
 
-There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
-
-The post-merge cleanup candidate requires an exact-head Repository Gate and a fresh independent read-only review before any Human merge decision.
-
-Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Use a clean isolated Unity-capable worktree for writer execution. After focused Product Proof tests, full EditMode, full PlayMode, and exact-final-SHA Android build pass, reach the hard Human physical/product gate. Do not merge or infer successor authority.
