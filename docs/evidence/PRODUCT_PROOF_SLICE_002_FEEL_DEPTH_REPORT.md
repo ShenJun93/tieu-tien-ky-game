@@ -12,15 +12,17 @@
   "editmode": "PASS",
   "playmode": "PASS",
   "android_build": "PASS",
-  "human_playtest": "PENDING",
-  "verdict": "TECHNICAL_GATE_GREEN_AWAITING_HUMAN_PHYSICAL_GATE"
+  "human_playtest": "RECORDED",
+  "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
 
 Technical gate (this report's own evidence, all six declared keys independently re-verified
-below) is GREEN. `human_playtest` is honestly recorded `PENDING`, not `RECORDED` — the exact
-final-SHA APK is built and ready for handoff, but no physical playtest has happened yet. Per
-Core Rule 9, no `PASS`/`RECORDED` is claimed without the actual check.
+below) is GREEN. `PRODUCT_PROOF_002_TECHNICAL_GATE = GREEN`,
+`PRODUCT_PROOF_002_PRODUCT_GATE = PARTIAL` — a genuine, narrower improvement over Slice 001's
+flat-negative product gate (see Human physical gate section below): the mechanic-depth
+question is now explicitly accepted; the feel/VFX question remains open. `verdict:
+PASS_WITH_REMEDIATION` reflects that split, same convention as the prior task.
 
 ## Execution surface
 
@@ -182,17 +184,46 @@ pure boundary check was instead added as a static method on `HoTheSkill` itself 
 allowed), reading `HoTheWindow`'s existing public `ActivatedAtTime` field rather than adding a
 method to that type.
 
-## Human physical gate — PENDING
+## Human physical gate — RECORDED
 
-Not yet performed. Per `AGENTS.md` Human Gate policy and this task's own
-`stop_condition: HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`: this report stops here. No `adb`
-polling, no device monitoring, no scheduled retry, no auto-install/launch. The exact final-SHA
-artifact for handoff is `Builds/Android/TieuTienKy-PPS002FD-51d82ec.apk`, built from commit
-`51d82ecc1dc25e6fadf1d4cd85fe095c08ab6dcf`. Resume only after an explicit new Human/Game Director
-message recording the physical playtest verdict against the task file's five acceptance
-questions.
+**Artifact tested:** `Builds/Android/TieuTienKy-PPS002FD-51d82ec.apk`, built from commit
+`51d82ecc1dc25e6fadf1d4cd85fe095c08ab6dcf`, installed via `adb install -r` on the same physical
+Android device used for the prior slice.
+
+**Human verdict, verbatim (Vietnamese, 2026-08-20):**
+
+> "Tất cả về đồ họa VFX animation mình thấy ko thay đổi nhiều cả nhưng về điểm cộng là
+> gameplay nền tảng thì ok nếu phát triển tiếp"
+> (translation: "Overall the VFX/animation graphics don't feel like they changed much, but
+> on the plus side the foundational gameplay is OK to keep developing.")
+
+**Mapping to the five acceptance questions.** Only what was explicitly stated is recorded;
+the rest is left `NOT_INDIVIDUALLY_ANSWERED` rather than inferred, per Core Rule 9:
+
+| # | Question | Recorded answer |
+|---|---|---|
+| 1 | Does Phản Chấn feel clearly distinct from a normal hit? | `NOT_INDIVIDUALLY_ANSWERED` |
+| 2 | Do Storm Control / Wind Ward now feel special vs. before? | **WEAK_NO** — covered by the explicit VFX/animation complaint: "không thay đổi nhiều" |
+| 3 | Does combat still feel "just a demo," or has it improved? | **IMPROVED (qualified)** — no longer the flat "chán" of Slice 001; explicitly framed as an "điểm cộng" (plus point) on the gameplay-foundation side, while the feel/VFX side remains the same as before |
+| 4 | Does Phản Chấn create a useful, exploitable opening? | `NOT_INDIVIDUALLY_ANSWERED` |
+| 5 | Do you want to keep playing / try another run? | `NOT_INDIVIDUALLY_ANSWERED` (a distinct, forward-looking signal was given instead — willingness to keep *developing*, not specifically to play another run right now; see Product verdict below) |
+
+**Product verdict:** technical gate GREEN (this report's own evidence above). **Product gate is
+PARTIAL, and narrower than Slice 001's:** the mechanic-depth remediation (Perfect Hộ Thể →
+Phản Chấn) is explicitly accepted as a sound foundation to build on — this closes the "cơ chế
+nông" half of the original "cả hai" verdict. The feel/VFX remediation (hitstop/VFX/camera/audio
+tuning on Phản Chấn, Storm Control, Wind Ward) did **not** land as a strongly felt
+improvement — the "hiệu ứng chán" half of the original verdict is **not yet closed**, despite
+genuine, independently-verified changes to all four presentation systems (see Phase 2 above).
+This is real evidence that *tuning existing primitive systems further* is unlikely to close the
+remaining gap — the next slice should treat this as a signal to consider real VFX/animation
+investment (per `docs/tasks/DRAFT-PRODUCT-PROOF-REPLAN-2026-08-20.md` §3.3 build-vs-buy
+research) rather than another tuning-only pass.
+
+**Disposition:** this task's own bounded scope (Phase 0–2 + Human Gate) is complete and the
+evidence above is truthful and final for this task.
 
 ```
-BLOCKED_ON_HUMAN_GATE
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+HUMAN_GATE_RECORDED
+TASK_COMPLETE_PENDING_MERGE_DECISION
 ```
