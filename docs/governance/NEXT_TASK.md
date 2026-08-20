@@ -4,42 +4,82 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SLICE",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001-REBASE",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "feat/product-proof-slice-001-rebase",
+  "baseline_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
+  "authority_anchor_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001-REBASE.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_001_REBASE_REPORT.md",
+  "allowed_paths": [
+    "Assets/_Project/Gameplay/HoTheSkill.cs",
+    "Assets/_Project/Gameplay/LoiTramSkill.cs",
+    "Assets/_Project/Gameplay/PhongBoSkill.cs",
+    "Assets/_Project/Gameplay/PlayerSkillController.cs",
+    "Assets/_Project/Gameplay/ProductProofRunStyle.cs",
+    "Assets/_Project/Gameplay/ProductProofRunStyle.cs.meta",
+    "Assets/_Project/Gameplay/ArenaVerticalSliceBootstrapper.cs",
+    "Assets/_Project/Input/TouchInputReader.cs",
+    "Assets/_Project/Presentation/ProductionHud.cs",
+    "Assets/_Project/Presentation/PlayerBlessingPresentation.cs",
+    "Assets/_Project/Presentation/SwordAttackView.cs",
+    "Assets/_Project/Prefabs/Characters/CultivatorProxy.prefab",
+    "Assets/_Project/Tests/EditMode/",
+    "Assets/_Project/Tests/PlayMode/",
+    "docs/evidence/PRODUCT_PROOF_SLICE_001_REBASE_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Packages/",
+    "ProjectSettings/",
+    "Assets/_Project/Scenes/",
+    "Assets/_Project/Prefabs/Network/",
+    "docs/master/",
+    ".agents/",
+    "scripts/",
+    "AGENTS.md"
+  ],
+  "required_evidence": {
+    "baseline_unity_compile": "PASS",
+    "baseline_editmode": "PASS",
+    "baseline_playmode": "PASS",
+    "baseline_android_build": "PASS",
+    "focused_product_proof_tests": "PASS",
+    "editmode": "PASS",
+    "playmode": "PASS",
+    "android_build": "PASS",
+    "human_playtest": "RECORDED"
+  },
+  "stop_condition": "HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF"
 }
 ```
 
 ## Current authority
 
-PR #19 post-merge cleanup writer execution is closed.
+Product Proof Slice 001 execution is reopened as a single bounded `IMPLEMENT / SLICE`
+task, authorized by explicit Human/Game Director instruction (2026-08-20) accepting the
+replan draft `docs/tasks/DRAFT-PRODUCT-PROOF-REPLAN-2026-08-20.md` r3 §8
+(`REPLAN_REVIEW = ACCEPT_WITH_NON_BLOCKING_SCOPING_NOTES`).
 
-The completed cleanup candidate records:
+The PR-19 post-merge cleanup lineage is closed: its candidate was merged as PR #20
+(`2f9e457c0433b9e743891c3692a8161b4f31e32f`), which is this task's canonical baseline
+and authority anchor.
 
-- PR #19 merged/integrated at `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
-- stale pre-merge/in-progress wording removed from `docs/governance/CURRENT_STATE.md`;
-- PR #19 risk-reconciliation integration reflected in canonical state prose;
-- `RISK-NETWORK-001` and `RISK-IP-001` remain open with no new remediation authority;
-- Product Proof Slice 001 remains intended roadmap work but is not mutation authority;
-- no package, root-license, README, `ASSET_SOURCES.csv`, risk-register, product/runtime, or successor mutation was performed by this cleanup.
+Task shape:
 
-Cleanup lineage:
+- **Phase V** — baseline revalidation on the exact baseline (Unity compile, full
+  EditMode, full PlayMode, Android build); any FAIL stops the task before Phase 1.
+- **Phase 1** — salvage/re-author the PR #13 gameplay delta (Storm Control, Wind Ward,
+  thumb-cluster controls) as authored input, add touch-over-UI suppression + regression
+  test, verify-then-fix `SwordAttackView` in the production scene, confirm-then-defer
+  `HazardObstacle` dead code, then focused tests → full EditMode → full PlayMode →
+  exact-final-SHA APK → hard Human physical gate.
 
-- canonical baseline / authority anchor: `bbb9fbf5768eb46463c974a9236f958f8f94c46e`;
-- activation: `5a6b3ff929a577e128f021677bfba1d77de5c781`;
-- content: `ba88fccd789a0aa9a7decfec745a4b6f229d9fef`;
-- evidence: `556aed886a0fb9aaedda123eb6b39a76cb2f329b`.
+Hard precondition: a Unity-capable execution surface. No AGENTS/hook/WORKFLOW,
+package, ProjectSettings, scene, network, governance-archival, Step-2+, PvP/co-op/
+Stage C, or R1 work is authorized by this task. PR #13 disposition remains a separate
+Human action.
 
-There is no active write task, branch authority, baseline, task/evidence pointer, or writable path.
-
-The post-merge cleanup candidate requires an exact-head Repository Gate and a fresh independent read-only review before any Human merge decision.
-
-Any dependency audit/removal, rights/provenance review, LICENSE decision, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation, or other successor work requires a fresh explicit Human/Game Director decision and valid authority transition.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`.
