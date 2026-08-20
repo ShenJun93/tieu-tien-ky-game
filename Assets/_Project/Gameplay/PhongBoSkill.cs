@@ -12,7 +12,12 @@ namespace TieuTienKy.Gameplay
         [SerializeField] float dashDistanceMeters = 3f;
         [SerializeField] float dashDurationSeconds = 0.15f;
         [SerializeField] Color windTrailColor = new Color(0.55f, 0.9f, 0.75f, 1f);
+        [SerializeField] Color galeCounterBurstColor = new Color(0.75f, 1f, 0.85f, 1f);
         [SerializeField] LayerMask galeCounterHittableLayers = ~0;
+        [SerializeField] float galeCounterHitStopSeconds = 0.1f;
+        [SerializeField] float galeCounterHitStopTimeScale = 0.04f;
+        [SerializeField] float galeCounterBurstLifetimeSeconds = 0.4f;
+        [SerializeField] float galeCounterCameraImpulse = 0.26f;
 
         CharacterController controller;
         Combatant selfCombatant;
@@ -25,6 +30,7 @@ namespace TieuTienKy.Gameplay
 
         public event System.Action Activated;
         public event System.Action RunTuningChanged;
+        public event System.Action GaleCounterTriggered;
 
         void Awake()
         {
@@ -131,7 +137,12 @@ namespace TieuTienKy.Gameplay
                 target.TakeHit(new HitInfo(0, DamageElement.Physical, direction * counter.PushImpulse));
             }
 
-            PrimitiveBurstVFX.SpawnAt(transform.position, counter.PushRadius, 0.3f, windTrailColor);
+            StartCoroutine(HitStop.Routine(galeCounterHitStopSeconds, galeCounterHitStopTimeScale));
+            PrimitiveBurstVFX.SpawnAt(transform.position, counter.PushRadius, galeCounterBurstLifetimeSeconds, galeCounterBurstColor);
+            CombatAudio.Play("PhongBoMove", transform.position, volume: 1.1f, pitch: 1.25f);
+            Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(galeCounterCameraImpulse);
+
+            GaleCounterTriggered?.Invoke();
         }
     }
 }

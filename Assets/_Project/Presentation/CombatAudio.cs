@@ -15,13 +15,37 @@ namespace TieuTienKy.Gameplay
         const string ResourceFolder = "Audio/";
         static readonly Dictionary<string, AudioClip> Cache = new Dictionary<string, AudioClip>();
 
-        public static void Play(string clipName, Vector3 position, float volume = 1f)
+        /// <summary>
+        /// `pitch` lets a feedback-tuning pass make an existing clip read as
+        /// heavier/sharper (e.g. a special-moment layer) without authoring a
+        /// new audio asset. Left at the default, this is exactly the prior
+        /// PlayClipAtPoint behavior; a non-default pitch falls back to a
+        /// short-lived manual AudioSource since PlayClipAtPoint itself has no
+        /// pitch parameter.
+        /// </summary>
+        public static void Play(string clipName, Vector3 position, float volume = 1f, float pitch = 1f)
         {
             AudioClip clip = Load(clipName);
-            if (clip != null)
+            if (clip == null)
+            {
+                return;
+            }
+
+            if (Mathf.Approximately(pitch, 1f))
             {
                 AudioSource.PlayClipAtPoint(clip, position, volume);
+                return;
             }
+
+            var oneShot = new GameObject("OneShotAudio_" + clipName);
+            oneShot.transform.position = position;
+            var source = oneShot.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.volume = volume;
+            source.pitch = pitch;
+            source.spatialBlend = 0f;
+            source.Play();
+            Object.Destroy(oneShot, clip.length / Mathf.Max(0.05f, Mathf.Abs(pitch)));
         }
 
         static AudioClip Load(string clipName)

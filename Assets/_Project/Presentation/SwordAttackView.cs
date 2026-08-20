@@ -17,14 +17,18 @@ namespace TieuTienKy.Gameplay
         static readonly int TintColorPropertyId = Shader.PropertyToID("_Color");
         static readonly Color BaseLightningTint = new Color(0.65f, 0.9f, 1f);
         static readonly Color EnhancedLightningTint = new Color(0.7f, 0.5f, 1f);
+        static readonly Color FusionGlowTint = new Color(1f, 0.85f, 0.35f, 1f);
+        const float FusionGlowScaleMultiplier = 1.35f;
 
         BasicAttack attack;
         Transform weaponSocket;
         Quaternion restRotation;
         Coroutine activeRoutine;
+        Coroutine fusionGlowRoutine;
 
         Transform swordTransform;
         Vector3 swordBaseScale = Vector3.one;
+        Color currentBaselineTint = BaseLightningTint;
 
         public void Initialize(BasicAttack basicAttack, Transform socket)
         {
@@ -65,7 +69,59 @@ namespace TieuTienKy.Gameplay
                 return;
             }
 
-            Color tint = Color.Lerp(BaseLightningTint, EnhancedLightningTint, Mathf.Clamp01(thunderStacks / 3f));
+            currentBaselineTint = Color.Lerp(BaseLightningTint, EnhancedLightningTint, Mathf.Clamp01(thunderStacks / 3f));
+            ApplyTint(renderer, currentBaselineTint);
+        }
+
+        /// <summary>
+        /// Brief distinct sword flare for a fusion/special moment (Phan Chan,
+        /// Storm Control, Wind Ward) - reuses the exact scale/tint mechanism
+        /// SetLightningStacks already uses, then returns to the sword's
+        /// current stack-driven baseline rather than a hardcoded rest state.
+        /// </summary>
+        public void PulseFusionGlow(float durationSeconds)
+        {
+            if (swordTransform == null)
+            {
+                return;
+            }
+
+            if (fusionGlowRoutine != null)
+            {
+                StopCoroutine(fusionGlowRoutine);
+            }
+
+            fusionGlowRoutine = StartCoroutine(FusionGlowRoutine(Mathf.Max(0.05f, durationSeconds)));
+        }
+
+        IEnumerator FusionGlowRoutine(float durationSeconds)
+        {
+            Vector3 baseScale = swordTransform.localScale;
+            var renderer = swordTransform.GetComponent<Renderer>();
+
+            swordTransform.localScale = baseScale * FusionGlowScaleMultiplier;
+            if (renderer != null)
+            {
+                ApplyTint(renderer, FusionGlowTint);
+            }
+
+            yield return new WaitForSeconds(durationSeconds);
+
+            if (swordTransform != null)
+            {
+                swordTransform.localScale = baseScale;
+            }
+
+            if (renderer != null)
+            {
+                ApplyTint(renderer, currentBaselineTint);
+            }
+
+            fusionGlowRoutine = null;
+        }
+
+        void ApplyTint(Renderer renderer, Color tint)
+        {
             var block = new MaterialPropertyBlock();
             renderer.GetPropertyBlock(block);
             block.SetColor(TintColorPropertyId, tint);

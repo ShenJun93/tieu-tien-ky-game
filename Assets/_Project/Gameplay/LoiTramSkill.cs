@@ -16,6 +16,10 @@ namespace TieuTienKy.Gameplay
         [SerializeField] LayerMask hittableLayers = ~0;
         [SerializeField] float hitStopSeconds = 0.07f;
         [SerializeField] float hitStopTimeScale = 0.05f;
+        [SerializeField] float stormHitStopSeconds = 0.11f;
+        [SerializeField] float stormHitStopTimeScale = 0.03f;
+        [SerializeField] float stormPulseBurstLifetimeSeconds = 0.5f;
+        [SerializeField] float stormPulseCameraImpulse = 0.28f;
 
         static readonly Color ImpactFlashColor = new Color(0.75f, 0.55f, 1f, 1f);
         static readonly Color StormPulseColor = new Color(0.35f, 0.8f, 1f, 1f);
@@ -27,6 +31,7 @@ namespace TieuTienKy.Gameplay
         public event System.Action Activated;
         public event System.Action HitLanded;
         public event System.Action RunTuningChanged;
+        public event System.Action StormControlTriggered;
 
         void Awake()
         {
@@ -91,7 +96,15 @@ namespace TieuTienKy.Gameplay
 
             if (landedAnyHit)
             {
-                StartCoroutine(HitStop.Routine(hitStopSeconds, hitStopTimeScale));
+                if (stormTriggered)
+                {
+                    StartCoroutine(HitStop.Routine(stormHitStopSeconds, stormHitStopTimeScale));
+                }
+                else
+                {
+                    StartCoroutine(HitStop.Routine(hitStopSeconds, hitStopTimeScale));
+                }
+
                 PrimitiveBurstVFX.SpawnAt(origin, radiusMeters, 0.3f, ImpactFlashColor);
                 CombatAudio.Play("LoiTramImpact", origin);
                 HitLanded?.Invoke();
@@ -120,7 +133,11 @@ namespace TieuTienKy.Gameplay
                 target.TakeHit(new HitInfo(0, DamageElement.Physical, direction * runStyle.StormPulseImpulse));
             }
 
-            PrimitiveBurstVFX.SpawnAt(origin, runStyle.StormPulseRadius, 0.32f, StormPulseColor);
+            PrimitiveBurstVFX.SpawnAt(origin, runStyle.StormPulseRadius, stormPulseBurstLifetimeSeconds, StormPulseColor);
+            CombatAudio.Play("LoiTramImpact", origin, volume: 1.15f, pitch: 0.8f);
+            Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(stormPulseCameraImpulse);
+
+            StormControlTriggered?.Invoke();
         }
     }
 }
