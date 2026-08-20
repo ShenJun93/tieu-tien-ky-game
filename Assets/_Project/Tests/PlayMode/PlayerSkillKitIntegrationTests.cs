@@ -20,6 +20,14 @@ namespace TieuTienKy.Gameplay.Tests
         [TearDown]
         public void TearDown()
         {
+            // Defensive: a test here can end (or its object can be
+            // destroyed) while a skill's real-time HitStop coroutine is
+            // still mid-flight, which aborts it before it restores
+            // Time.timeScale - silently leaving every later test in the
+            // batch running at the frozen scale. Reset unconditionally so
+            // this fixture never leaks that global state forward.
+            Time.timeScale = 1f;
+
             if (playerObject != null) Object.Destroy(playerObject);
             if (targetObject != null) Object.Destroy(targetObject);
         }

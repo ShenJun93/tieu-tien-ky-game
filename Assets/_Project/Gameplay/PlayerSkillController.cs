@@ -7,7 +7,10 @@ namespace TieuTienKy.Gameplay
     [RequireComponent(typeof(HoTheSkill))]
     public sealed class PlayerSkillController : MonoBehaviour
     {
+        const float FusionGlowDurationSeconds = 0.35f;
+
         CharacterPresentation presentation;
+        SwordAttackView swordView;
         readonly WindWardComboState windWardCombo = new WindWardComboState();
 
         public LoiTramSkill LoiTram { get; private set; }
@@ -21,6 +24,7 @@ namespace TieuTienKy.Gameplay
             LoiTram = GetComponent<LoiTramSkill>();
             PhongBo = GetComponent<PhongBoSkill>();
             HoThe = GetComponent<HoTheSkill>();
+            swordView = GetComponent<SwordAttackView>();
 
             LoiTram.Activated += () => presentation?.PlayCast();
             PhongBo.Activated += () => presentation?.PlayMobility();
@@ -30,6 +34,10 @@ namespace TieuTienKy.Gameplay
             LoiTram.RunTuningChanged += RefreshRunStyleFromTuning;
             PhongBo.RunTuningChanged += RefreshRunStyleFromTuning;
             HoThe.RunTuningChanged += RefreshRunStyleFromTuning;
+
+            HoThe.PhanChanTriggered += PulseSwordFusionGlow;
+            LoiTram.StormControlTriggered += PulseSwordFusionGlow;
+            PhongBo.GaleCounterTriggered += PulseSwordFusionGlow;
         }
 
         public void SetPresentation(CharacterPresentation characterPresentation) => presentation = characterPresentation;
@@ -74,5 +82,7 @@ namespace TieuTienKy.Gameplay
         {
             windWardCombo.RecordWardBlock();
         }
+
+        void PulseSwordFusionGlow() => swordView?.PulseFusionGlow(FusionGlowDurationSeconds);
     }
 }
