@@ -6,36 +6,28 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 {
   "state": "IMPLEMENT",
   "task_mode": "SLICE",
-  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-002-FEEL-DEPTH",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE",
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "feat/product-proof-slice-002-feel-depth",
-  "baseline_ref": "11e85ba6703826ac0eac3bc3ec089b26a358e0d6",
-  "authority_anchor_ref": "11e85ba6703826ac0eac3bc3ec089b26a358e0d6",
+  "branch": "feat/product-proof-slice-003-vfx-technique",
+  "baseline_ref": "1baa58dc541b5107026857720f123ba44a2278a8",
+  "authority_anchor_ref": "1baa58dc541b5107026857720f123ba44a2278a8",
   "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-002-FEEL-DEPTH.md",
-  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_002_FEEL_DEPTH_REPORT.md",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_003_VFX_TECHNIQUE_REPORT.md",
   "allowed_paths": [
-    "Assets/_Project/Gameplay/HoTheSkill.cs",
-    "Assets/_Project/Gameplay/LoiTramSkill.cs",
-    "Assets/_Project/Gameplay/PhongBoSkill.cs",
-    "Assets/_Project/Gameplay/PlayerSkillController.cs",
-    "Assets/_Project/Gameplay/ProductProofRunStyle.cs",
-    "Assets/_Project/Presentation/HitStop.cs",
     "Assets/_Project/Presentation/PrimitiveBurstVFX.cs",
-    "Assets/_Project/Presentation/PrimitiveTelegraphVFX.cs",
-    "Assets/_Project/Presentation/CombatAudio.cs",
-    "Assets/_Project/Presentation/PlayerFollowCamera.cs",
-    "Assets/_Project/Presentation/PlayerFollowCameraMath.cs",
-    "Assets/_Project/Presentation/SwordAttackView.cs",
+    "Assets/_Project/Materials/",
+    "Assets/_Project/Resources/Materials/",
     "Assets/_Project/Tests/EditMode/",
     "Assets/_Project/Tests/PlayMode/",
-    "docs/evidence/PRODUCT_PROOF_SLICE_002_FEEL_DEPTH_REPORT.md"
+    "docs/evidence/PRODUCT_PROOF_SLICE_003_VFX_TECHNIQUE_REPORT.md"
   ],
   "forbidden_paths": [
     "Packages/",
     "ProjectSettings/",
     "Assets/_Project/Scenes/",
     "Assets/_Project/Prefabs/Network/",
+    "Assets/_Project/Presentation/PrimitiveTelegraphVFX.cs",
     "Assets/Editor/StageABAudioBuilder.cs",
     "docs/master/",
     ".agents/",
@@ -43,11 +35,11 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "AGENTS.md"
   ],
   "required_evidence": {
-    "baseline_sanity": "PASS",
-    "focused_tests": "PASS",
+    "unity_compile": "PASS",
     "editmode": "PASS",
     "playmode": "PASS",
     "android_build": "PASS",
+    "device_particle_render_check": "PASS",
     "human_playtest": "RECORDED"
   },
   "stop_condition": "HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF"
@@ -56,37 +48,38 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001-REBASE` is closed. Its final state:
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-002-FEEL-DEPTH` is closed. Its final state:
 
-- merged via PR #21 at `11e85ba6703826ac0eac3bc3ec089b26a358e0d6` (`main`);
+- merged via PR #22 at `1baa58dc541b5107026857720f123ba44a2278a8` (`main`);
 - `pre-finish.mjs` independently PASSED on its final evidence commit;
-- Human physical gate **RECORDED**: verbatim verdict *"hiệu ứng chỉ là demo rất chán"*,
-  confirmed to span both VFX/feel and mechanic depth;
-- `verdict: PASS_WITH_REMEDIATION` — technical gate GREEN, product gate RED;
-- full record: `docs/evidence/PRODUCT_PROOF_SLICE_001_REBASE_REPORT.md`.
+- Human physical gate **RECORDED**: verbatim verdict *"Tất cả về đồ họa VFX animation
+  mình thấy ko thay đổi nhiều cả nhưng về điểm cộng là gameplay nền tảng thì ok nếu
+  phát triển tiếp"* — mechanic-depth remediation (Perfect Hộ Thể → Phản Chấn) accepted;
+  feel/VFX remediation did not land despite genuine presentation-system tuning;
+- `verdict: PASS_WITH_REMEDIATION` — technical gate GREEN, product gate PARTIAL;
+- full record: `docs/evidence/PRODUCT_PROOF_SLICE_002_FEEL_DEPTH_REPORT.md`.
 
-`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-002-FEEL-DEPTH` is reopened as a single bounded
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE` is reopened as a single bounded
 `IMPLEMENT / SLICE` task, authorized by explicit Human/Game Director instruction
-(2026-08-20) directly responding to that recorded verdict.
+(2026-08-20) responding directly to that recorded verdict: the remaining "chán" gap is
+feel/VFX, and Slice 002's own evidence shows parameter tuning of the existing
+primitive-cube VFX technique has a low ceiling — this task escalates the technique itself
+(real `ParticleSystem`, Unity built-in only, no new package/asset purchase), not the
+parameters.
 
-Task shape:
+Task shape: rewrite `PrimitiveBurstVFX.SpawnAt`'s internals only (public signature
+unchanged, so all 9 existing call sites upgrade automatically) from a scaling-cube
+primitive to a genuine particle burst, update the one test
+(`WaterZoneLightningIntegrationTests.cs`) whose expectations are coupled to the old
+implementation's incidental Collider-destroy log, verify on the physical Android device
+that the particle technique renders correctly (this codebase has twice previously hit
+IL2CPP/Android stripping surprises with primitives/shaders — do not assume, verify), then
+hard Human physical gate.
 
-- **Phase 0** — sanity confirmation on the exact baseline (live-main check, clean
-  compile, EditMode smoke). Baseline content is identical to the already fully-verified
-  `fdcafd3` tree from the prior task, so a full from-scratch revalidation is not
-  required.
-- **Phase 1** — Perfect Hộ Thể → Phản Chấn: a narrow perfect-timing sub-window inside
-  the existing Hộ Thể block, triggering a radial stagger reusing the existing
-  knockback/interrupt pipeline (no enemy-AI file changes).
-- **Phase 2** — feedback/juice tuning pass on **existing** presentation systems only
-  (hitstop, primitive VFX, camera impulse, audio layering of existing clips, sword
-  presentation) for three specific moments: Phản Chấn, Storm Control, Wind Ward — then
-  focused tests → full EditMode → full PlayMode → exact-final-SHA APK → hard Human
-  physical gate.
-
-Hard precondition: a Unity-capable execution surface. No new asset purchase, no new
-audio clip authoring, no WET/CHARGED/DISPLACED state model, no new Cơ Duyên content, no
-Kết Giới Sư, no enemy-AI/network/asmdef/governance/package/ProjectSettings/scene
-mutation is authorized by this task.
+Hard precondition: a Unity-capable execution surface with physical device access. No
+asset purchase, no new package, no `PrimitiveTelegraphVFX`/animation/character work, no
+governance/package/ProjectSettings/scene mutation is authorized by this task. A future
+asset-purchase decision (Animancer / VFX pack, if this technique-only pass still doesn't
+close the VFX gap) remains a separate, explicitly-deferred Human action.
 
 Stop condition: `HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`.
