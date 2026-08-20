@@ -9,6 +9,17 @@ scope; Step 2 split into 2A/2B with research figures downgraded to experiment ca
 Step G split into semantic-first/consolidation-later; §6 additions gated behind an
 adoption discipline; stale NEXT_TASK.md prose added to §7 (verified against live head);
 §7.4 absolutism corrected.
+Revision: **r3 (2026-08-20)** — final scoping per the Director's ACCEPT verdict:
+(1) no AGENTS.md/hook mutation inside Step V+1 — the activation commit may only change
+the two control-plane files, and rule/hook changes alter execution semantics and need
+their own independently-reviewed governance task; a Unity-capable machine is a task
+*precondition* instead; (2) Step G is deferred until after the Product Proof physical
+gate (one-write-task rule; no default parallel writer) — the stale NEXT_TASK prose is
+naturally replaced by the next activation itself; (3) "salvage 6 deltas" replaced by an
+exact allowed-path list (PR #13 actually changed 14 paths incl. metas/control-plane);
+(4) added §8 — proposed activation payload for the Human to use.
+**REPLAN_REVIEW = ACCEPT_WITH_NON_BLOCKING_SCOPING_NOTES. This document is final; the
+next action is Human activation, not another replan round.**
 
 This file is a proposal produced by an audit-and-replan discovery session. It grants no
 authority, changes no canonical state, and must not be treated as an active task contract.
@@ -269,10 +280,16 @@ no post-merge reconciliation task unless a real inconsistency is found.
 - **Goal:** get the already-authored playstyle proof (PR #13's Storm Control + Wind Ward +
   thumb-cluster controls) compiled, tested, built, and into the Director's hands —
   together with the statically-found defects that would poison the playtest.
-- **Scope (files):** salvage/re-author the 6 bounded runtime/test deltas of PR #13 on a
-  fresh branch from current `main` (PR #13's own conflicts are in governance files; its
-  code was honestly never compiled, so treat it as authored *input*, not verified code);
-  plus bounded fixes: (a) touch-over-UI suppression in `TouchInputReader` (+ a regression
+- **Precondition (not a rule change):** the task runs on a **Unity-capable machine**.
+  No AGENTS.md/hook mutation is part of this task — the activation commit may only
+  change the two control-plane files, and execution-semantics changes need their own
+  independently-reviewed governance task later.
+- **Scope (exact allowed-path list — see §8 for the full activation payload):**
+  salvage/re-author PR #13's gameplay/test delta on a fresh branch from current `main`
+  (PR #13 changed 14 paths in total; the non-control-plane runtime/test surface is the
+  skill/controller/HUD/ProductProofRunStyle files + their tests and metas; its code was
+  honestly never compiled, so treat it as authored *input*, not verified code); plus
+  bounded fixes: (a) touch-over-UI suppression in `TouchInputReader` (+ a regression
   test) so skill buttons cannot also fire Basic Attack; (b) verify in the running
   production scene that `SwordAttackView` is genuinely detached, then restore it.
 - **Explicitly NOT default scope:** `HazardObstacle.OnImpact`. Water Shift + Spirit Wind
@@ -340,8 +357,14 @@ Product Proof must prove Readable Chaos / Combat Physics / Retellable Moments �
 
 File count is not a KPI; the goal is that a skimming agent cannot be misled. Split:
 
-- **G1 — minimal semantic cleanup (small docs PR, parallel with Step V/1, must not block
-  Product Proof):**
+**Timing (r3):** Step G runs **after the Product Proof physical gate**, not in parallel
+with Step V/1 — the one-write-task rule means parallel writers require explicit
+independent-parallelism authorization, and velocity is better served by not spending it
+here. The stale `NEXT_TASK.md` prose (item 6b in §7.1) does not need a cleanup PR at
+all: the next Human activation commit rewrites `NEXT_TASK.md` and replaces it naturally.
+
+- **G1 — minimal semantic cleanup (small docs PR, after the Product Proof gate, must not
+  block product work):**
   1. Fix the **stale prose in `NEXT_TASK.md`** ("the post-merge cleanup candidate
      requires ... review before any Human merge decision" — that candidate is already
      merged as PR #20 = the current `main` head). Handle inside the next control-plane
@@ -384,10 +407,12 @@ evidence blocks) is untouched by both.
 
 ## 5. Recommended immediate next step
 
-**Authorize one combined bounded action: Step V + Step 1 as a single `IMPLEMENT` task on
-a Unity-capable machine** ("Product Proof Slice 001 — revalidate, repair, build, and
-physically play"), with Step G (governance simplification) as an optional cheap parallel
-or follow-up docs PR.
+**Authorize one combined bounded action: Step V + Step 1 as a single `IMPLEMENT / SLICE`
+task on a Unity-capable machine** ("Product Proof Slice 001 — revalidate, salvage,
+build, and physically play"), activated from `main@2f9e457c0433b9e743891c3692a8161b4f31e32f`.
+Step G follows *after* the Product Proof physical gate (one-write-task rule; the stale
+NEXT_TASK prose is replaced by the activation commit itself). A proposed activation
+payload is in §8.
 
 Why this and not something else:
 1. **It is the roadmap's own next intended step** (Product Proof Slice 001) — no new
@@ -507,8 +532,12 @@ slice with local repairs and executor self-check — **ship Product Proof with t
 mechanisms first**, and adopt each item only when it prevents a failure mode that has
 actually been observed, one at a time:
 
-- #2 (surface-capability rule) — already earned: PR #13 *is* the observed failure. Add
-  it as one AGENTS.md rule + one `pre-task` check at the next control-plane activation.
+- #2 (surface-capability rule) — the failure is real (PR #13), but **deferred past
+  Step V+1** (r3): the activation commit may only change `NEXT_TASK.md` + the task
+  contract, and an AGENTS.md/`pre-task` change alters execution semantics — that is
+  governance/harness work requiring its own independently-reviewed task. For now the
+  Unity-capable machine is written into the Step 1 contract as a *precondition*, which
+  achieves the same protection without a rule change.
 - #4 (asset-intake gate) — earned the moment the first third-party asset is approved for
   import (Step 3), not before.
 - #1 (Unity CI) — real gap, but **must not become the next detour**: Product Proof runs
@@ -581,6 +610,121 @@ applied, no further contradiction audit should be needed before gameplay work re
   remains required is **exact-head authority sanity at each activation, Unity baseline
   verification (Step V), and targeted in-Unity confirmation of the static risks named in
   §1.3** — the unknowns only a Unity run can answer.
+
+---
+
+## 8. Proposed activation payload (for Human/Game Director use only)
+
+**This section is a PROPOSAL.** Nothing here is active until the Human/Game Director
+performs the activation themselves: one single-parent commit, direct child of the chosen
+`authority_anchor_ref`, changing **exactly** `docs/governance/NEXT_TASK.md` + the task
+contract file — per the authority-transition lock. The Director may adjust any field.
+
+### 8.1 Proposed `NEXT_TASK.md` JSON block
+
+```json
+{
+  "state": "IMPLEMENT",
+  "task_mode": "SLICE",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001-REBASE",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "feat/product-proof-slice-001-rebase",
+  "baseline_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
+  "authority_anchor_ref": "<set at activation: commit immediately before the activation commit>",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-001-REBASE.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_001_REBASE_REPORT.md",
+  "allowed_paths": [
+    "Assets/_Project/Gameplay/HoTheSkill.cs",
+    "Assets/_Project/Gameplay/LoiTramSkill.cs",
+    "Assets/_Project/Gameplay/PhongBoSkill.cs",
+    "Assets/_Project/Gameplay/PlayerSkillController.cs",
+    "Assets/_Project/Gameplay/ProductProofRunStyle.cs",
+    "Assets/_Project/Gameplay/ProductProofRunStyle.cs.meta",
+    "Assets/_Project/Gameplay/ArenaVerticalSliceBootstrapper.cs",
+    "Assets/_Project/Input/TouchInputReader.cs",
+    "Assets/_Project/Presentation/ProductionHud.cs",
+    "Assets/_Project/Presentation/PlayerBlessingPresentation.cs",
+    "Assets/_Project/Presentation/SwordAttackView.cs",
+    "Assets/_Project/Prefabs/Characters/CultivatorProxy.prefab",
+    "Assets/_Project/Tests/EditMode/",
+    "Assets/_Project/Tests/PlayMode/",
+    "docs/evidence/PRODUCT_PROOF_SLICE_001_REBASE_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Packages/",
+    "ProjectSettings/",
+    "Assets/_Project/Scenes/",
+    "Assets/_Project/Prefabs/Network/",
+    "docs/master/",
+    ".agents/",
+    "scripts/",
+    "AGENTS.md"
+  ],
+  "required_evidence": {
+    "baseline_unity_compile": "PASS",
+    "baseline_editmode": "PASS",
+    "baseline_playmode": "PASS",
+    "baseline_android_build": "PASS",
+    "focused_product_proof_tests": "PASS",
+    "editmode": "PASS",
+    "playmode": "PASS",
+    "android_build": "PASS",
+    "human_playtest": "RECORDED"
+  },
+  "stop_condition": "HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF"
+}
+```
+
+Path-list rationale: the runtime surface = PR #13's non-control-plane changed files
+(skills, `PlayerSkillController`, `ProductProofRunStyle` + meta, `ProductionHud`, its
+EditMode/PlayMode tests + metas — covered by the two `Tests/` directory rules) plus the
+Step-1 fix surface (`TouchInputReader`; `ArenaVerticalSliceBootstrapper`/
+`PlayerBlessingPresentation`/`SwordAttackView`/`CultivatorProxy.prefab` for the
+SwordAttackView verify-then-fix, whichever attachment point the in-Unity confirmation
+shows is correct). `NEXT_TASK.md` and the task contract are writer-locked automatically.
+Scenes stay forbidden — the production scene is runtime-bootstrapped, so no scene edit
+should be needed; if the in-Unity check proves otherwise, that is a Director-approved
+scope amendment, not silent drift. The APK itself is an uncommitted artifact
+(`Builds/…`), so it needs no allowed-path entry.
+
+### 8.2 Task phases (contract summary)
+
+```text
+Phase V — baseline revalidation on exact main@2f9e457c…
+  Unity compile → full EditMode → full PlayMode → Android build
+  any FAIL → STOP; do not salvage PR #13 onto a broken baseline
+  (expected: last machine baseline was 184/184 EditMode, 36/36 PlayMode at 0065a18)
+
+Phase 1 — salvage + repair + build
+  fresh branch from verified main
+  → salvage/re-author PR #13 gameplay delta (Storm Control, Wind Ward, thumb cluster)
+  → touch-over-UI suppression + regression test
+  → verify SwordAttackView in the running production scene; fix only if detached
+  → HazardObstacle: confirm no-caller, then defer/delete; NOT wired by default
+  → focused tests → full EditMode → full PlayMode → exact-final-SHA APK
+  → BLOCKED_ON_HUMAN_GATE
+```
+
+### 8.3 Human gate questions (verbatim from the accepted plan)
+
+```text
+1. Do Storm Control and Wind Ward actually play differently?
+2. Can the fusion moment be deliberately created?
+3. Is the fusion moment memorable?
+4. Do skill taps still accidentally fire Basic Attack?
+5. Is build state readable during play?
+6. On the second run, did you want to build differently?
+```
+
+If these fail, fix Product Proof — do not advance to Step 2 on a technical PASS alone.
+
+### 8.4 Explicitly outside this task
+
+Step 2A/2B, asset purchases, performance rewrite, network asmdef work, Unity CI,
+AGENTS/hook redesign, WORKFLOW semantic changes, G1/G2 cleanup/archival, PvP/co-op/
+Stage C, R1. PR #13 disposition (close in favor of the fresh branch) is a Director
+action at their discretion.
 
 ---
 
