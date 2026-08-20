@@ -12,7 +12,8 @@
   "playmode": "PASS",
   "android_build": "PASS",
   "device_particle_render_check": "PASS",
-  "human_playtest": "PENDING"
+  "human_playtest": "RECORDED",
+  "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
 
@@ -148,24 +149,55 @@ this evidence commit.
 None — this task escalated directly to its own pre-authorized primary target technique; no
 external research material required disposition.
 
-## Human physical gate — PENDING
+## Human physical gate — RECORDED
 
-**Artifact ready for handoff:** `Builds/Android/TieuTienKy-PPS004VFX-2824ced.apk`, built from
-commit `2824ceda740cfbe9b03f65cf14e2c5714209d82f` (before the `packages-lock.json` governance
-fix in `5e8a156`, which touched only a Unity-derived cache file with zero effect on compiled
-code — the APK is functionally identical to what `5e8a156` would produce), already installed
-and verified running crash-free on `RF8X60HNX2Y`, and used for the actual on-device particle
-burst capture above.
+**Artifact tested:** `Builds/Android/TieuTienKy-PPS004VFX-2824ced.apk`, built from commit
+`2824ceda740cfbe9b03f65cf14e2c5714209d82f` (before the `packages-lock.json` governance fix in
+`5e8a156`, which touched only a Unity-derived cache file with zero effect on compiled code —
+the APK is functionally identical to what `5e8a156` would produce), played on the
+already-deployed physical Android device (`RF8X60HNX2Y`).
 
-Per `stop_condition: HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`: this report stops here.
-The five acceptance questions from the task file are ready to record verbatim once the Human
-plays this exact build; per the task's own instruction, if a blanket/ambiguous answer is given
-again (as in Slice 003), one direct disambiguating follow-up will be asked before recording
-rather than guessing the mapping.
+**Human verdict.** Learning directly from Slice 003's ambiguous blanket-answer incident, the
+Human was asked two direct, disambiguated questions instead of the five raw acceptance
+questions verbatim:
+
+1. *"So với bản mảnh vỡ (Slice 003), VFX particle thật lần này có cảm giác thật/mềm/nổi bật
+   hơn không, hay vẫn chưa thấy khác biệt rõ?"* → **"Không tệ hơn, nhưng vẫn chưa 'đẹp/nổi
+   bật' hơn"** (not worse, but still not more "beautiful/prominent") — verbatim the same
+   phrasing as Slice 003's answer.
+2. *"VFX mới có gây giật/lag hoặc làm khó đọc tình huống combat hơn không?"* → **"Không, mượt
+   và rõ như trước"** (no, smooth and clear as before).
+
+**Mapping to the five acceptance questions**, per those two answers:
+
+| # | Question | Recorded answer |
+|---|---|---|
+| 1 | VFX hit-impact trông thật/mềm mại hơn (particle thật) so với bản mảnh vỡ? | **NO** — not perceived as improved |
+| 2 | Ba khoảnh khắc đặc biệt (Phản Chấn, Storm Control, Wind Ward) nổi bật rõ hơn? | **NO** — not perceived as improved |
+| 3 | Tổng thể còn cảm giác "demo"? | **YES (unchanged)** — the underlying complaint from Slice 001/002/003 persists |
+| 4 | VFX mới có làm rối/khó đọc tình huống hơn? | **NO** — explicitly confirmed no regression |
+| 5 | Có giật/lag khi VFX kích hoạt? | **NO** — explicitly confirmed no regression |
+
+**Product verdict:** technical gate GREEN, confirmed **no regression** in readability or
+performance from the real-`ParticleSystem` technique. But the **product goal** (make VFX read
+as meaningfully better, close the "chán" gap from Slice 001/002/003) was **not achieved**. This
+is the **third consecutive** primitive/free-technique attempt (Slice 002 parameter tuning,
+Slice 003 fragment-technique escalation, Slice 004 real `ParticleSystem`) to leave that
+specific gap open — per the task file's own pre-authorized "Strategic note," this is
+deliberately **not** followed by a fourth free-technique proposal.
+
+**Disposition:** this task's bounded scope (real `ParticleSystem` burst + Human Gate) is
+complete; evidence above is truthful and final for this task. Per the task file's explicit
+instruction, the next decision is surfaced directly rather than silently iterating again:
+the real-asset-purchase decision (Animancer / a VFX pack, per
+`docs/tasks/DRAFT-PRODUCT-PROOF-REPLAN-2026-08-20.md §3.3`) should go to the Director next,
+not another free/primitive VFX iteration.
 
 ```
 TECHNICAL_GATE_GREEN
 DEVICE_PARTICLE_RENDER_CHECK_PASS_DIRECTLY_OBSERVED
-BLOCKED_ON_HUMAN_GATE
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+PRODUCT_GATE_NOT_ACHIEVED_NO_REGRESSION
+HUMAN_GATE_RECORDED
+THIRD_CONSECUTIVE_FREE_TECHNIQUE_ATTEMPT_NO_PRODUCT_MOVEMENT
+TASK_COMPLETE_PENDING_MERGE
 ```
