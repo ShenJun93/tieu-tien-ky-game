@@ -12,10 +12,17 @@
   "playmode": "PASS",
   "android_build": "PASS",
   "device_particle_render_check": "HUMAN_ACCEPTED_RISK",
-  "human_playtest": "PENDING",
-  "verdict": "TECHNICAL_GATE_GREEN_AWAITING_HUMAN_PHYSICAL_GATE"
+  "human_playtest": "RECORDED",
+  "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
+
+`PRODUCT_PROOF_003_TECHNICAL_GATE = GREEN` (no regression: readability and performance
+both confirmed unaffected). `PRODUCT_PROOF_003_PRODUCT_GATE = NOT_ACHIEVED` — the
+fragment-burst technique escalation did not close the VFX/feel gap left open by Slice
+002. This is the second consecutive primitive-based VFX attempt (Slice 002's parameter
+tuning, Slice 003's technique escalation) to leave that specific gap unresolved — real
+evidence the primitive-VFX ceiling has likely been reached, not just under-tuned.
 
 ## Execution surface
 
@@ -132,17 +139,55 @@ Both within `allowed_paths`. `forbidden_paths` untouched (`Packages/`, `ProjectS
 None — the fallback technique choice was made directly from the task file's own
 pre-authorized repair-budget clause; no external research material required disposition.
 
-## Human physical gate — PENDING
+## Human physical gate — RECORDED
 
-Per `stop_condition: HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`: the exact final-SHA
-artifact (`Builds/Android/TieuTienKy-PPS003VFX-3761714.apk`, built from commit
-`3761714b49c9b7ab84ebc8ca92b152c71fee7e25`) has been handed off and deployed to
-`RF8X60HNX2Y`. The five acceptance questions in the task file have **not yet** been put to
-the Human/Game Director as a playtest session, and no verdict has been recorded. This
-report is filed now to close out the technical evidence ahead of that session, per Core
-Rule 9 — no verdict is fabricated or inferred here.
+**Artifact tested:** `Builds/Android/TieuTienKy-PPS003VFX-3761714.apk`, built from commit
+`3761714b49c9b7ab84ebc8ca92b152c71fee7e25`, played on the already-deployed physical
+Android device (`RF8X60HNX2Y`).
+
+**Human verdict.** The Human's initial answer ("không" / "no" to all five acceptance
+questions) was ambiguous by construction — two of the five questions are phrased as
+regression checks (does X get *worse*), so a uniform "no" across all five would produce a
+self-contradictory record if mapped literally. Reconciled via one direct follow-up
+question rather than guessed: **"VFX mới có tệ đi/lag hơn/khó đọc hơn so với trước
+không, hay chỉ đơn giản là chưa thấy khá lên rõ rệt?"** Human's clarifying answer,
+verbatim: *"vẫn ổn như cũ, không tệ hơn, chỉ chưa 'đẹp/nổi bật' hơn"* (translation:
+"still fine as before, not worse, just not yet more 'beautiful/prominent'").
+
+**Mapping to the five acceptance questions**, per that clarification:
+
+| # | Question | Recorded answer |
+|---|---|---|
+| 1 | VFX hit-impact trông thật/kỹ thuật hơn? | **NO** — not perceived as improved |
+| 2 | Ba khoảnh khắc đặc biệt nổi bật hơn? | **NO** — not perceived as improved |
+| 3 | Tổng thể còn cảm giác "demo"? | **YES (unchanged)** — the underlying complaint from Slice 002 persists; the technique escalation did not move this |
+| 4 | VFX mới làm rối/khó đọc hơn (regression)? | **NO** — explicitly confirmed no regression ("không tệ hơn") |
+| 5 | Giật/lag khi VFX kích hoạt? | **NO** — explicitly confirmed no regression |
+
+**Product verdict:** technical gate GREEN, confirmed **no regression** in readability or
+performance from the fragment-burst technique — a genuine, if modest, positive result on
+its own. But the **product goal** (make VFX read as meaningfully better, close the
+"chán" gap from Slice 001/002) was **not achieved**. This is the second consecutive
+primitive-based attempt (parameter tuning in Slice 002, technique escalation in Slice 003)
+to leave that specific gap open — stronger evidence than either alone that the ceiling of
+primitive-based VFX (no real particle system, no real art asset) has likely been reached,
+not merely under-tuned or under-engineered.
+
+**Disposition:** this task's bounded scope (fragment-burst fallback + Human Gate) is
+complete; evidence above is truthful and final for this task. The task's own deferred
+debt already flags the real next lever: `com.unity.modules.particlesystem` is a **free,
+built-in Unity module** (not a paid asset, not a new external dependency in the
+AGENTS.md rule 6 sense — comparable to the physics/animation/audio built-in modules
+already referenced in `Packages/manifest.json`) that was out of reach only because this
+task's `forbidden_paths` blanket-excluded `Packages/` as a defensive default, not because
+enabling it was assessed and rejected. A narrowly-scoped follow-up task authorized to
+touch exactly that one manifest line, implementing the originally-intended real
+`ParticleSystem` burst, is the disciplined next step before considering a real
+asset-purchase decision (Animancer / VFX pack).
 
 ```
 TECHNICAL_GATE_GREEN
-HUMAN_GATE_PENDING
+PRODUCT_GATE_NOT_ACHIEVED_NO_REGRESSION
+HUMAN_GATE_RECORDED
+TASK_COMPLETE_PENDING_MERGE
 ```
