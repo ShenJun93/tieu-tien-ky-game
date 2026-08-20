@@ -3,12 +3,6 @@ using UnityEngine;
 
 namespace TieuTienKy.Gameplay
 {
-    /// <summary>
-    /// Skill 3 - Hộ Thể: an active bounded defensive window that fully
-    /// blocks incoming damage (not knockback) while open, with a visible
-    /// ward burst as its distinct active-hit feedback. A timing decision,
-    /// not a passive damage-reduction stat.
-    /// </summary>
     [RequireComponent(typeof(Combatant))]
     public sealed class HoTheSkill : MonoBehaviour
     {
@@ -23,24 +17,36 @@ namespace TieuTienKy.Gameplay
         bool windowOpen;
         float baseWindowDurationSeconds;
 
-        /// <summary>Fires on every successful activation - presentation binds PlayCast/SetBlessingVisual-style ward feedback here.</summary>
         public event System.Action Activated;
         public event System.Action WindowClosed;
+        public event System.Action BlockedHit;
+        public event System.Action RunTuningChanged;
 
         void Awake()
         {
             selfCombatant = GetComponent<Combatant>();
             baseWindowDurationSeconds = windowDurationSeconds;
             cooldown = new Cooldown(cooldownSeconds);
+            selfCombatant.Damaged += HandleCombatantDamaged;
         }
 
         public float CooldownDuration => cooldown?.Duration ?? cooldownSeconds;
         public float BaseWindowDurationSeconds => baseWindowDurationSeconds;
         public bool IsReady(float currentTime) => cooldown != null && cooldown.IsReady(currentTime);
         public bool IsWindowActive(float currentTime) => windowOpen && activeWindow.IsActive(currentTime);
+        public bool WardInvestmentActive => windowDurationSeconds > baseWindowDurationSeconds + 0.001f;
 
-        /// <summary>Run-blessing-driven window extension (Hộ Thể stacks). Callers compute the target duration from BaseWindowDurationSeconds so repeated blessing picks never compound. Takes effect on the next activation.</summary>
-        public void SetWindowDuration(float seconds) => windowDurationSeconds = Mathf.Max(0.05f, seconds);
+        public void SetWindowDuration(float seconds)
+        {
+            float clamped = Mathf.Max(0.05f, seconds);
+            if (Mathf.Approximately(clamped, windowDurationSeconds))
+            {
+                return;
+            }
+
+            windowDurationSeconds = clamped;
+            RunTuningChanged?.Invoke();
+        }
 
         public bool TryActivate(float currentTime)
         {
@@ -57,6 +63,14 @@ namespace TieuTienKy.Gameplay
 
             Activated?.Invoke();
             return true;
+        }
+
+        void HandleCombatantDamaged(int currentHealth, int maxHealth)
+        {
+            if (windowOpen && activeWindow.IsActive(Time.time))
+            {
+                BlockedHit?.Invoke();
+            }
         }
 
         void Update()

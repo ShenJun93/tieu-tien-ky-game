@@ -128,6 +128,11 @@ namespace TieuTienKy.Gameplay
 
                 PlayerController capturedController = playerController;
                 presentation.gameObject.AddComponent<PresentationMovementDriver>().Initialize(capturedController, presentation);
+
+                if (presentation.WeaponSocket != null)
+                {
+                    player.AddComponent<SwordAttackView>().Initialize(basicAttack, presentation.WeaponSocket);
+                }
             }
 
             return player;

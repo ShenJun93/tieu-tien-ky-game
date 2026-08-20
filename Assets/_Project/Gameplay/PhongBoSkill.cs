@@ -1,14 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using TieuTienKy.Core;
 using UnityEngine;
 
 namespace TieuTienKy.Gameplay
 {
-    /// <summary>
-    /// Skill 2 - Phong Bộ: a short controlled reposition, bounded by the
-    /// authoritative arena via PhongBoMotion/ArenaBounds so it can never
-    /// leave the arena. Usable against telegraphs (counterplay window).
-    /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public sealed class PhongBoSkill : MonoBehaviour
     {
@@ -16,19 +12,24 @@ namespace TieuTienKy.Gameplay
         [SerializeField] float dashDistanceMeters = 3f;
         [SerializeField] float dashDurationSeconds = 0.15f;
         [SerializeField] Color windTrailColor = new Color(0.55f, 0.9f, 0.75f, 1f);
+        [SerializeField] LayerMask galeCounterHittableLayers = ~0;
 
         CharacterController controller;
+        Combatant selfCombatant;
         Cooldown cooldown;
         ArenaBounds bounds;
         bool boundsConfigured;
         float baseCooldownSeconds;
+        bool galeCounterPrimed;
+        GaleCounterSpec galeCounterSpec;
 
-        /// <summary>Fires on every successful activation - presentation binds PlayMobility here.</summary>
         public event System.Action Activated;
+        public event System.Action RunTuningChanged;
 
         void Awake()
         {
             controller = GetComponent<CharacterController>();
+            selfCombatant = GetComponent<Combatant>();
             baseCooldownSeconds = cooldownSeconds;
             cooldown = new Cooldown(cooldownSeconds);
         }
@@ -36,6 +37,7 @@ namespace TieuTienKy.Gameplay
         public float CooldownDuration => cooldown?.Duration ?? cooldownSeconds;
         public float BaseCooldownSeconds => baseCooldownSeconds;
         public bool IsReady(float currentTime) => cooldown != null && cooldown.IsReady(currentTime);
+        public bool WindInvestmentActive => cooldownSeconds < baseCooldownSeconds - 0.001f;
 
         public void SetArenaBounds(ArenaBounds arenaBounds)
         {
@@ -43,7 +45,6 @@ namespace TieuTienKy.Gameplay
             boundsConfigured = true;
         }
 
-        /// <summary>Run-blessing-driven cooldown reduction (Phong Hành). Callers compute the target duration from BaseCooldownSeconds so repeated blessing picks never compound. Only takes effect immediately if currently ready, so an in-flight cooldown is never disrupted.</summary>
         public void SetCooldownDuration(float seconds, float currentTime)
         {
             float clamped = Mathf.Max(0.1f, seconds);
@@ -57,6 +58,14 @@ namespace TieuTienKy.Gameplay
             {
                 cooldown = new Cooldown(cooldownSeconds);
             }
+
+            RunTuningChanged?.Invoke();
+        }
+
+        public void PrimeGaleCounter(GaleCounterSpec spec)
+        {
+            galeCounterSpec = spec;
+            galeCounterPrimed = true;
         }
 
         public bool TryActivate(float currentTime)
@@ -66,19 +75,24 @@ namespace TieuTienKy.Gameplay
                 return false;
             }
 
+            bool useGaleCounter = galeCounterPrimed;
+            GaleCounterSpec counter = galeCounterSpec;
+            galeCounterPrimed = false;
+
+            float distance = dashDistanceMeters * (useGaleCounter ? counter.DashDistanceMultiplier : 1f);
             Vector3 destination = boundsConfigured
-                ? PhongBoMotion.ComputeDestination(transform.position, transform.forward, dashDistanceMeters, bounds)
-                : transform.position + transform.forward * dashDistanceMeters;
+                ? PhongBoMotion.ComputeDestination(transform.position, transform.forward, distance, bounds)
+                : transform.position + transform.forward * distance;
 
             PrimitiveBurstVFX.SpawnAt(transform.position, 0.7f, 0.25f, windTrailColor);
             CombatAudio.Play("PhongBoMove", transform.position);
 
-            StartCoroutine(DashRoutine(destination));
+            StartCoroutine(DashRoutine(destination, useGaleCounter, counter));
             Activated?.Invoke();
             return true;
         }
 
-        IEnumerator DashRoutine(Vector3 destination)
+        IEnumerator DashRoutine(Vector3 destination, bool useGaleCounter, GaleCounterSpec counter)
         {
             Vector3 start = transform.position;
             float elapsed = 0f;
@@ -88,10 +102,36 @@ namespace TieuTienKy.Gameplay
             {
                 elapsed += Time.deltaTime;
                 Vector3 next = Vector3.Lerp(start, destination, Mathf.Clamp01(elapsed / duration));
-                Vector3 delta = next - transform.position;
-                controller.Move(delta);
+                controller.Move(next - transform.position);
                 yield return null;
             }
+
+            if (useGaleCounter)
+            {
+                ApplyGaleCounterPulse(counter);
+            }
+        }
+
+        void ApplyGaleCounterPulse(GaleCounterSpec counter)
+        {
+            Collider[] hits = Physics.OverlapSphere(transform.position, counter.PushRadius, galeCounterHittableLayers);
+            var affected = new HashSet<Combatant>();
+
+            foreach (Collider hitCollider in hits)
+            {
+                Combatant target = hitCollider.GetComponentInParent<Combatant>();
+                if (target == null || target == selfCombatant || target.IsDefeated || !affected.Add(target))
+                {
+                    continue;
+                }
+
+                Vector3 direction = target.transform.position - transform.position;
+                direction.y = 0f;
+                direction = direction.sqrMagnitude > 0.0001f ? direction.normalized : transform.forward;
+                target.TakeHit(new HitInfo(0, DamageElement.Physical, direction * counter.PushImpulse));
+            }
+
+            PrimitiveBurstVFX.SpawnAt(transform.position, counter.PushRadius, 0.3f, windTrailColor);
         }
     }
 }

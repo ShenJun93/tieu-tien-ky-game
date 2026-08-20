@@ -94,5 +94,27 @@ namespace TieuTienKy.Gameplay.Tests
 
             Assert.IsTrue(reader.AttackTriggeredThisFrame);
         }
+
+        [Test]
+        public void RightTouchBegin_OverInteractiveUi_DoesNotTriggerAttack()
+        {
+            reader.IsPointerOverUiOverride = _ => true;
+
+            BeginTouch(2, new Vector2(rightX, midY));
+            reader.Update();
+
+            Assert.IsFalse(reader.AttackTriggeredThisFrame);
+        }
+
+        [Test]
+        public void RightTouchBegin_NotOverUi_StillTriggersAttack()
+        {
+            reader.IsPointerOverUiOverride = _ => false;
+
+            BeginTouch(2, new Vector2(rightX, midY));
+            reader.Update();
+
+            Assert.IsTrue(reader.AttackTriggeredThisFrame);
+        }
     }
 }

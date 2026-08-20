@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.InputSystem.Utilities;
@@ -25,6 +26,9 @@ namespace TieuTienKy.Input
 
         public Vector2 MoveInput { get; private set; }
         public bool AttackTriggeredThisFrame { get; private set; }
+
+        /// <summary>Test seam: overrides the EventSystem UI-hit probe so tests can simulate a touch beginning on interactive UI without a live Canvas.</summary>
+        public System.Func<int, bool> IsPointerOverUiOverride { get; set; }
 
         void OnEnable()
         {
@@ -85,7 +89,7 @@ namespace TieuTienKy.Input
                     moveTouchId = touch.touchId;
                     moveOrigin = touch.screenPosition;
                 }
-                else if (began && !isLeftHalf)
+                else if (began && !isLeftHalf && !IsPointerOverUi(touch.touchId))
                 {
                     attackThisFrame = true;
                 }
@@ -134,7 +138,7 @@ namespace TieuTienKy.Input
                     moveTouchActive = true;
                     moveOrigin = screenPos;
                 }
-                else
+                else if (!IsPointerOverUi(-1))
                 {
                     AttackTriggeredThisFrame = true;
                 }
@@ -154,6 +158,16 @@ namespace TieuTienKy.Input
             {
                 moveTouchActive = false;
             }
+        }
+
+        bool IsPointerOverUi(int pointerId)
+        {
+            if (IsPointerOverUiOverride != null)
+            {
+                return IsPointerOverUiOverride(pointerId);
+            }
+
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(pointerId);
         }
     }
 }
