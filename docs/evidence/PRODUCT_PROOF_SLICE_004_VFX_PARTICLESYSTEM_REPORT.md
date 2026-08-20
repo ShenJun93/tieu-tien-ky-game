@@ -142,7 +142,22 @@ this evidence commit.
 
 ## Deferred technical debt
 
-- None new. The primary target technique is now implemented; no fallback debt was created.
+Independent code review (`/code-review`, PR #24) surfaced three non-blocking items, deferred
+rather than fixed post-hoc since the Human already physically tested and accepted the exact
+commit `2824ced` — changing code now would break that evidence chain without re-running the
+full device gate:
+
+- `PrimitiveBurstVFX.SpawnAt` has no guard against `lifetimeSeconds <= 0` (would compute
+  `startSpeed = Infinity` and `main.duration = 0f`, which the stricter `ParticleSystem` API
+  likely rejects, unlike the old coroutine technique's graceful zero-iteration handling). No
+  current call site passes a non-positive value (all route through `BlessingPresentationMath`),
+  so this is theoretical, not a demonstrated defect.
+- The spawned burst GameObject is only scheduled for delayed destruction when
+  `Application.isPlaying` is true; a non-playing caller with no matching `TearDown` (an editor
+  preview button, a differently-structured future test) would leak it. Matches the old Slice
+  003 technique's practical behavior exactly — not a regression this task introduced.
+- `renderer.renderMode = ParticleSystemRenderMode.Billboard` is a redundant assignment
+  (`Billboard` is already `ParticleSystemRenderer`'s default) — purely cosmetic.
 
 ## Research dispositions
 
