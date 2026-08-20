@@ -16,11 +16,20 @@
     "editmode": "PASS",
     "playmode": "PASS",
     "android_build": "PASS",
-    "human_playtest": "NOT_TESTED"
+    "human_playtest": "RECORDED"
   },
-  "verdict": "TECHNICAL_PASS_AWAITING_HUMAN_GATE"
+  "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
+
+`PRODUCT_PROOF_001_REBASE_TECHNICAL_GATE = GREEN` (all 8 technical `required_evidence`
+keys PASS, independently re-verified below). `PRODUCT_PROOF_001_REBASE_PRODUCT_GATE =
+RED` (Human physical verdict below is negative on feel/depth). This mirrors the
+established `STAGE_AB_TECHNICAL_GATE` / `STAGE_AB_PRODUCT_GATE` split in
+`docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md` — `PASS_WITH_REMEDIATION`
+reflects that the code is sound and mergeable as a foundation, while the product
+question this slice was built to answer requires a following remediation slice before
+it can be called accepted.
 
 ## Execution surface
 
@@ -202,27 +211,52 @@ No scene edit was made or needed (production scene remains runtime-bootstrapped)
 - PR #13 gameplay delta (Storm Control / Wind Ward / thumb-cluster HUD) — `INTEGRATED`
   onto this branch via clean cherry-pick + full fresh verification.
 
-## Human physical gate
+## Human physical gate — RECORDED
 
-`human_playtest: NOT_TESTED`. Per `stop_condition: HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`,
-execution stops here. The exact artifact for the Human to install and test is:
+**Artifact tested:** `Builds/Android/TieuTienKy-PPS001R-fdcafd3.apk`, built from commit
+`fdcafd354143bb8a4af7503dff5c1033f8716f8a`, installed via `adb install` on a physical
+Android device by the Human/Game Director.
+
+**Human verdict, verbatim (Vietnamese, 2026-08-20):**
+
+> "hiệu ứng chỉ là demo rất chán"
+> (translation: "the effects are just a boring demo")
+
+On follow-up clarification (offered two candidate readings: presentation/VFX-feel vs.
+gameplay-mechanic depth), the Human confirmed: **"cả hai"** — both. The complaint spans
+(a) the visual/audio feedback quality of hits, telegraphs, camera impulse, and the
+Storm Control / Wind Ward fusion moments specifically, and (b) the perceived depth of
+system interaction — the new mechanics did not read as creating a distinctly different
+or memorable playstyle.
+
+**Mapping to the six acceptance questions** (per the task file). Only what was
+explicitly confirmed is recorded as answered; the rest is left `NOT_INDIVIDUALLY_ASKED`
+rather than inferred, per Core Rule 9 (no evidence without the actual check):
+
+| # | Question | Recorded answer |
+|---|---|---|
+| 1 | Do Storm Control and Wind Ward actually play differently? | **WEAK_NO** — did not read as distinctly different in feel; contributes directly to the "chán" verdict |
+| 2 | Can the fusion moment be deliberately created? | `NOT_INDIVIDUALLY_ASKED` |
+| 3 | Is the fusion moment memorable? | **NO** — explicitly named as part of "cả hai" (mechanic depth) |
+| 4 | Do skill taps still accidentally fire Basic Attack? | `NOT_INDIVIDUALLY_ASKED` |
+| 5 | Is build state readable during play? | `NOT_INDIVIDUALLY_ASKED` |
+| 6 | On the second run, did you want to build differently? | `NOT_INDIVIDUALLY_ASKED` |
+
+**Product verdict:** technical gate remains GREEN (this report's own evidence above);
+**product gate is RED** — the slice's central player-visible bet (two authored
+playstyles + one memorable fusion moment) is not yet felt by the Human, for two
+overlapping reasons: (a) presentation/feedback reads as unfinished/prototype-grade, and
+(b) the mechanic depth itself is not distinct enough to read as "a different playstyle"
+independent of presentation.
+
+**Disposition:** this task's own bounded scope (salvage + repair + build + Human Gate)
+is complete and the evidence above is truthful and final for this task. It does not
+retroactively claim the product question is answered positively — see
+`docs/tasks/DRAFT-PRODUCT-PROOF-REPLAN-2026-08-20.md` §5 fork logic ("if the Director's
+strongest complaint is still 'demo-like'... pull Step 3 forward") and the follow-up task
+this evidence motivates.
 
 ```
-Builds/Android/TieuTienKy-PPS001R-fdcafd3.apk
-built from commit fdcafd354143bb8a4af7503dff5c1033f8716f8a
-```
-
-Six acceptance questions to answer after playing (per the task file), verbatim including
-`YES_WITH_GAP` / `NOT_TESTED` states:
-
-1. Do Storm Control and Wind Ward actually play differently?
-2. Can the fusion moment be deliberately created?
-3. Is the fusion moment memorable?
-4. Do skill taps still accidentally fire Basic Attack?
-5. Is build state readable during play?
-6. On the second run, did you want to build differently?
-
-```
-BLOCKED_ON_HUMAN_GATE
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+HUMAN_GATE_RECORDED
+TASK_COMPLETE_PENDING_MERGE_DECISION
 ```
