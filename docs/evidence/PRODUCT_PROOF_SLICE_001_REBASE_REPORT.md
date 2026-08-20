@@ -7,17 +7,15 @@
   "baseline_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
   "authority_anchor_ref": "2f9e457c0433b9e743891c3692a8161b4f31e32f",
   "final_head": "fdcafd354143bb8a4af7503dff5c1033f8716f8a",
-  "required_evidence": {
-    "baseline_unity_compile": "PASS",
-    "baseline_editmode": "PASS",
-    "baseline_playmode": "PASS",
-    "baseline_android_build": "PASS",
-    "focused_product_proof_tests": "PASS",
-    "editmode": "PASS",
-    "playmode": "PASS",
-    "android_build": "PASS",
-    "human_playtest": "RECORDED"
-  },
+  "baseline_unity_compile": "PASS",
+  "baseline_editmode": "PASS",
+  "baseline_playmode": "PASS",
+  "baseline_android_build": "PASS",
+  "focused_product_proof_tests": "PASS",
+  "editmode": "PASS",
+  "playmode": "PASS",
+  "android_build": "PASS",
+  "human_playtest": "RECORDED",
   "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
