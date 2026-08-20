@@ -81,7 +81,6 @@ namespace TieuTienKy.Gameplay.Tests
         }
 
         const string MaterialLeakWarning = "Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.";
-        const string DestroyInEditModeWarning = "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently.";
 
         /// <summary>
         /// TakeHit's existing HitFeedbackFlash starts a coroutine that reads
@@ -112,17 +111,11 @@ namespace TieuTienKy.Gameplay.Tests
 
             // This path additionally reaches PrimitiveBurstVFX.SpawnAt
             // (tints via sharedMaterial + MaterialPropertyBlock, like
-            // GreyboxSceneBootstrapper.Tint - no renderer.material leak) and
-            // calls Object.Destroy on the burst's auto-added Collider (not
-            // allowed outside Play Mode). That Destroy call is not a real
-            // defect - Play Mode / the real device runs it with no error.
-            // LogAssert.Expect is a strict FIFO queue, so these two must be
-            // registered in the exact order TakeHit will emit them: the
-            // flash's material-leak warning fires first (HitFeedbackFlash's
-            // coroutine runs synchronously up to its first yield), then the
-            // burst's collider-destroy warning.
+            // GreyboxSceneBootstrapper.Tint - no renderer.material leak). The
+            // particle burst has no Collider, so unlike the old cube-based
+            // implementation there is nothing to Object.Destroy synchronously
+            // - only the flash's material-leak warning is expected here.
             LogAssert.Expect(LogType.Error, MaterialLeakWarning);
-            LogAssert.Expect(LogType.Error, DestroyInEditModeWarning);
             dummy.TakeHit(new HitInfo(1, DamageElement.Lightning, Vector3.zero, ConductiveKnockbackMultiplier));
 
             Assert.IsNotNull(GameObject.Find(BurstName), "Lightning hit inside the WaterZone must spawn a Conductive Burst");
