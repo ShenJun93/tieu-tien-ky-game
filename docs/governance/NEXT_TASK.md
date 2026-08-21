@@ -25,7 +25,9 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "Assets/_Project/Tests/EditMode/",
     "Assets/_Project/Tests/PlayMode/",
     "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_REPORT.md",
-    "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_SCREENSHOTS/"
+    "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_SCREENSHOTS/",
+    "docs/tasks/CHATGPT_WEB_VISUAL_PIPELINE_CONTRACT.md",
+    "docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md"
   ],
   "forbidden_paths": [
     "Packages/",
