@@ -51,9 +51,19 @@ HUMAN        = look, feel, readability, "does this feel like Tiểu Tiên Ký?" 
 7. **Readability budget**, priority order: enemy danger telegraph > player action/result
    > environment/system reaction > residual decoration > spectacle. When cutting
    clutter, cut decorative layers first.
-8. **Worst-case readability.** Never judge an effect only in isolation. Verification
-   should include a representative busy combat moment — enemy telegraph active,
-   multiple entities, HUD visible where practical.
+8. **Worst-case readability — scoped to what's being judged, capped in effort.**
+   For a VFX/timing-sensitive effect (new particle/shader/composition script, where
+   legibility depends on motion/timing/clutter): evidence must include one isolated
+   shot **plus** one representative busy combat moment (enemy telegraph active,
+   multiple entities, HUD visible). For a static presentation/art asset (character
+   sprite/model, environment texture, UI skin — where the judged property is a fixed
+   visual trait like silhouette/color/shape, not motion): 1-2 targeted screenshots are
+   sufficient — one comparison shot of the relevant subjects together, one
+   in-motion/in-combat sanity check. Do not search for a "perfect" frame across many
+   combat states. **Cap:** no more than 4 capture attempts before selecting from what
+   exists; if nothing clearly better emerges after 4 tries, stop and use the best
+   captured so far, and double-check the file actually committed under each evidence
+   filename still matches what its description claims before writing the report.
 9. **Mobile performance.** Measure transparent coverage/overdraw and material layering,
    not particle count alone. Prefer few meaningful shapes over many tiny particles.
 10. **Platform texture quality.** Verify thin rings, lightning edges, gradients, and
