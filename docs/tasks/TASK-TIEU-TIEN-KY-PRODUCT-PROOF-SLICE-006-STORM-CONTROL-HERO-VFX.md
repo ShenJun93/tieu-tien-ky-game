@@ -279,6 +279,27 @@ edges rendering as an opaque box (`Alpha Is Transparency` not honored), z-fighti
 incorrect draw order between the 4 layers, and frame-rate impact from simultaneous
 overdraw — report actual observations, not inferences.
 
+## Vision QA verification (Director, 2026-08-21) — screenshots are evidence, not just prose
+
+Per `docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md` §14: a text description of what
+the device showed is no longer sufficient on its own for `device_storm_control_render_check`.
+Commit **2-4 representative PNG frames** (not a video file) captured from the real
+on-device run to:
+
+```text
+docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_SCREENSHOTS/
+```
+
+Choose frames that show: (a) the busy-scene worst-case moment required above (enemy
+telegraph active, multiple entities on-screen) mid-Storm-Control, (b) at least one frame
+each from two different beats (e.g. Beat 2 ripple and Beat 4 shock ring) so the
+composition/sequencing claim is independently checkable frame-by-frame, not just
+asserted. Keep each frame a reasonably sized PNG (a few hundred KB to low single-digit
+MB is fine; do not commit raw uncompressed captures or the full screenrecord video). The
+merging session reads these images directly before merge — this is an additional,
+independent check on top of, not a replacement for, this task's own textual observation
+and the Human physical gate below.
+
 ## Repair-budget fallback
 
 If a genuine, unresolved rendering or performance regression is not resolved within the
