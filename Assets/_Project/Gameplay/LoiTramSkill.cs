@@ -133,7 +133,7 @@ namespace TieuTienKy.Gameplay
                 target.TakeHit(new HitInfo(0, DamageElement.Physical, direction * runStyle.StormPulseImpulse));
             }
 
-            PrimitiveBurstVFX.SpawnAt(origin, runStyle.StormPulseRadius, stormPulseBurstLifetimeSeconds, StormPulseColor);
+            StormControlVFX.SpawnAt(origin, runStyle.StormPulseRadius, stormPulseBurstLifetimeSeconds, StormPulseColor);
             CombatAudio.Play("LoiTramImpact", origin, volume: 1.15f, pitch: 0.8f);
             Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(stormPulseCameraImpulse);
 
