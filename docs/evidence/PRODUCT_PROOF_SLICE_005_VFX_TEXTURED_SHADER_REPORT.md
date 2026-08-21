@@ -12,8 +12,8 @@
   "playmode": "PASS",
   "android_build": "PASS",
   "device_particle_render_check": "PASS",
-  "human_playtest": "PENDING_HUMAN_GATE",
-  "verdict": "TECHNICAL_GATE_GREEN_AWAITING_HUMAN_PHYSICAL_GATE"
+  "human_playtest": "RECORDED",
+  "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
 
@@ -136,22 +136,55 @@ scope — the shared `SpawnAt` lifetime/`playOnAwake` guards, not touched here).
 None — this task is a direct, pre-authorized content-axis test; no external research
 material required disposition.
 
-## Human physical gate — PENDING
+## Human physical gate — RECORDED
 
-**Artifact for handoff:** `Builds/Android/TieuTienKy-PPS005VFX-b2e6142.apk`, built from
-final commit `b2e6142c92895dd96b8ea6ba674ebf9bb2bdabf6`.
+**Artifact tested:** `Builds/Android/TieuTienKy-PPS005VFX-b2e6142.apk`, built from final
+commit `b2e6142c92895dd96b8ea6ba674ebf9bb2bdabf6`, played on the already-deployed
+physical Android device (`RF8X60HNX2Y`).
 
-Per `stop_condition: HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`, the two required
-questions from the task file are pending the Director's verbatim answer:
+**Human verdict** (verbatim, then disambiguated per this task's own instruction not to
+guess an ambiguous mapping — the same lesson carried from Slice 003):
 
-1. So với bản ParticleSystem phẳng (Slice 004), VFX texture/glow mới có cảm giác
-   thật/mềm/nổi bật hơn rõ rệt không, hay vẫn chưa thấy khác biệt?
-2. VFX mới có gây giật/lag, render sai màu (hồng/đen), hoặc làm khó đọc tình huống
-   combat hơn không?
+1. *"So với bản ParticleSystem phẳng (Slice 004), VFX texture/glow mới có cảm giác
+   thật/mềm/nổi bật hơn rõ rệt không, hay vẫn chưa thấy khác biệt?"* →
+   **"Ko có gì khác biệt"** (no difference at all).
+2. *"VFX mới có gây giật/lag, render sai màu (hồng/đen), hoặc làm khó đọc tình huống
+   combat hơn không?"* → **"VFX cũng vậy thôi"** (blanket answer) → disambiguated with
+   one direct follow-up ("no regression — no lag, no color bug, no readability loss —
+   correct?") → **"Đúng, không có vấn đề gì mới"** (confirmed: no regression).
+
+**Mapping:**
+
+| # | Question | Recorded answer |
+|---|---|---|
+| 1 | VFX texture/glow mới có cảm giác thật/mềm/nổi bật hơn rõ rệt? | **NO** — no perceived difference from Slice 004 |
+| 2 | Gây giật/lag, lỗi màu, khó đọc combat hơn? | **NO** — explicitly confirmed no regression |
+
+**Product verdict:** technical gate GREEN, `device_particle_render_check` directly
+confirms the new textured/alpha-blended material renders correctly on-device (soft,
+alpha-blended sparkle, no magenta/black fallback) with **no regression** in performance
+or readability. But the **product goal** — this task's entire premise, that the
+*content/material* axis (as opposed to the *technique* axis already exhausted across
+Slices 002-004) was the real ceiling — was **not confirmed**: the Human perceives no
+visible difference from Slice 004's flat `ParticleSystem` burst at all.
+
+This closes out both axes this task's own framing distinguished: three consecutive
+free-*technique* iterations (Slice 002 tuning, Slice 003 fragment-burst, Slice 004 real
+`ParticleSystem`) and now one free-*content* iteration (Slice 005 textured/alpha shader)
+have each shipped a technically-correct, regression-free change without the Human
+perceiving the VFX as more "real/soft/prominent." Per `AGENTS.md` core rule 8 (contradiction
+between task instructions and repository authority/canon → STOP + REPORT, do not guess),
+and per this task's own text ("the next decision is surfaced directly rather than silently
+iterating again" — carried from Slice 004's identical framing), the next step should go to
+the Director rather than a fifth free iteration on either axis. The paid-asset options the
+Director already declined once (Animancer Pro, Feel, Epic Toon FX — Slice 004 evidence)
+remain the only untried axis.
 
 ```
 TECHNICAL_GATE_GREEN
 DEVICE_PARTICLE_RENDER_CHECK_PASS_DIRECTLY_OBSERVED
-HUMAN_GATE_PENDING
-WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE
+PRODUCT_GATE_NOT_ACHIEVED_NO_REGRESSION
+HUMAN_GATE_RECORDED
+FOURTH_CONSECUTIVE_FREE_ITERATION_TECHNIQUE_AND_CONTENT_AXES_BOTH_EXHAUSTED
+TASK_COMPLETE_PENDING_MERGE
 ```
