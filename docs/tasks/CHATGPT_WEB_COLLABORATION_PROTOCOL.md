@@ -195,3 +195,34 @@ own textual observation and the Human physical gate. This does not change who ow
 Human Gate itself: subjective "is it fun/does it feel right" acceptance is still the
 Human's alone; this only upgrades how the objective "does it render as claimed, is there
 an obvious visual defect" layer gets verified.
+
+## 15. Human Gate narrows as Vision QA/self-check expand (2026-08-21)
+
+Direct consequence of §14, applied to how future Human Gate question sets get designed —
+not a reduction in the Human's authority, a reduction in redundant duty. Per §12, Human
+attention is the scarce resource; once Vision QA (cloud) and the executor's own sync
+self-check (local) both independently look at the actual captured frames before a build
+reaches the Human, an obvious static-visual defect (wrong color, broken/missing
+material, magenta-shader fallback, an occluded telegraph visible in a still frame) should
+already be caught and fixed *before* the Human is ever handed the APK — it is a process
+failure, not an expected Human-Gate finding, if the Human is the one who first spots it.
+
+**When designing future Human Gate question sets**, sort each candidate question into one
+of two buckets:
+
+- **Static-checkable** (a still frame could answer it — wrong color, missing/broken
+  asset, an occluded telegraph, incorrect scale/silhouette): this should be resolved by
+  Vision QA/self-check *before* Human Gate, not asked of the Human as a first-line check.
+  Keep it in the Human Gate only as a final confirmation, not the primary way it gets
+  caught.
+- **Requires live/dynamic observation** (stutter/frame-rate feel, whether an effect's
+  timing reads as "landing" in real-time play, whether the overall pacing of a combo
+  feels right, general "does this feel like Tiểu Tiên Ký" fun/fantasy/replay judgment):
+  no screenshot can answer these — they stay squarely and only the Human's, exactly as
+  before. Do not attempt to infer these from static evidence.
+
+This does not authorize skipping, shortening, or fabricating Human Gate answers under
+any circumstance — that line (established at the start of this collaboration) is
+unchanged. It only means the Human should increasingly be asked to judge feel and
+fantasy, not to also serve as the first line of defense for bugs a screenshot could have
+caught.
