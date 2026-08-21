@@ -326,6 +326,29 @@ reversion explicitly — do not ship a broken or unacceptably slow multi-layer e
 (screenshot or screenrecord frame) showing the beat sequence rendering — not an
 inference from adjacent evidence, same discipline as every prior slice's device check.
 
+## Executor self-check before writing PASS (Director, 2026-08-21)
+
+Two additions to how this task's evidence gets written, based on the same 2026 market
+research behind `CHATGPT_WEB_COLLABORATION_PROTOCOL.md` §14:
+
+- **Sync self-check, not a bare "PASS."** Before writing `device_storm_control_render_check:
+  PASS`, look at the actual captured frames/video yourself and describe *specifically*
+  what you observed per beat (e.g. "Beat 2 ripple visible as a cyan ring expanding from
+  origin at frame X, Beat 4 shock ring visible thinning outward by frame Y") — the same
+  concrete-observation discipline already used in prior slices' evidence reports, now
+  made an explicit requirement rather than a habit. This is the executor's own
+  independent look; the merging session separately reads the same committed screenshots
+  before merge (see "Vision QA verification" above) — two independent checks on the same
+  artifact, not one check described twice.
+- **Report the player-visible delta, not just the diff.** In the evidence report, include
+  a short `PLAYER_VISIBLE_DELTA` / `BEHAVIORAL_DELTA` / `TECHNICAL_DELTA` breakdown (per
+  `CHATGPT_WEB_COLLABORATION_PROTOCOL.md` §5) alongside the usual technical
+  verification table — what will the Human actually see differently, what (if anything)
+  should change about how they play, and what changed under the hood. If this task's
+  Human Gate verdict comes back negative, this breakdown is also exactly the input
+  ChatGPT Web needs for diagnosis under §10 without the Director having to reconstruct
+  it from scratch.
+
 ## Human physical gate (after APK handoff) — exact questions, do not paraphrase
 
 ```text
