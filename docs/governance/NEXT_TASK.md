@@ -24,7 +24,8 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "Assets/_Project/Gameplay/LoiTramSkill.cs",
     "Assets/_Project/Tests/EditMode/",
     "Assets/_Project/Tests/PlayMode/",
-    "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_REPORT.md"
+    "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_SCREENSHOTS/"
   ],
   "forbidden_paths": [
     "Packages/",
