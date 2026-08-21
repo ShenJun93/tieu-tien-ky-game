@@ -13,28 +13,36 @@ namespace TieuTienKy.Gameplay
     /// không tệ hơn, chỉ chưa 'đẹp/nổi bật' hơn" on the Human physical gate -
     /// no regression, but no product improvement either.
     ///
-    /// Simulation (radial travel, size decay, tumble, a light gravity pull)
-    /// is now owned entirely by ParticleSystem itself instead of a hand-
-    /// rolled coroutine - real per-particle physics, the product gap this
-    /// slice targets. Rendered as small camera-facing billboard quads (the
-    /// engine's default particle render mode) rather than the fragment
-    /// fallback's tumbling Cube mesh, for a softer, more particle-like
-    /// silhouette.
+    /// PRODUCT_PROOF_SLICE_005_VFX_TEXTURED_SHADER escalated again after
+    /// Slice 004's real ParticleSystem burst hit the same verdict a third
+    /// time: the evidence diagnosed the actual ceiling as content, not
+    /// technique - every burst rendered through P0A_Unlit, a flat-color-only,
+    /// RenderType=Opaque shader with no texture sampling or blending, so no
+    /// mechanism could ever look soft. This burst now renders a Human-
+    /// provided transparent glow/sparkle texture through a new, separate,
+    /// alpha-blended shader (TieuTienKy/P0A_UnlitTexturedAlpha) instead of a
+    /// flat-tinted quad, with a ColorOverLifetime alpha fade the old opaque
+    /// shader could never support (only a size-to-zero shrink could fake
+    /// disappearing before).
     ///
-    /// Tinted via MaterialPropertyBlock on the shared P0A_Greybox material
-    /// (TieuTienKy/P0A_Unlit shader) exactly like
-    /// GreyboxSceneBootstrapper.Tint and the Slice 003 fragment technique -
-    /// never renderer.material, which would leak a material instance. The
-    /// shader's frag() unconditionally returns the material's constant
-    /// _Color and never reads a vertex/particle color, so
-    /// ParticleSystem.MainModule.startColor alone would have no visible
-    /// effect here; the property block is what actually tints the burst.
+    /// Simulation (radial travel, size decay, tumble, a light gravity pull)
+    /// is owned entirely by ParticleSystem itself, not a hand-rolled
+    /// coroutine - real per-particle physics.
+    ///
+    /// Tinted via MaterialPropertyBlock on the shared P0A_ParticleGlow
+    /// material, exactly like GreyboxSceneBootstrapper.Tint and every prior
+    /// slice's technique - never renderer.material, which would leak a
+    /// material instance. P0A_UnlitTexturedAlpha's frag() multiplies the
+    /// sampled texture by the material's constant _Color and never reads a
+    /// vertex/particle color, so ParticleSystem.MainModule.startColor alone
+    /// would have no visible effect here; the property block is what
+    /// actually tints the burst.
     /// </summary>
     public static class PrimitiveBurstVFX
     {
-        const string PrimitiveMaterialResourcePath = "Materials/P0A_Greybox";
+        const string PrimitiveMaterialResourcePath = "Materials/P0A_ParticleGlow";
         const int ParticleCount = 20;
-        const float ParticleSize = 0.12f;
+        const float ParticleSize = 0.35f;
         const float GravityModifier = 0.3f;
         const float SpinDegreesPerSecond = 720f;
 
@@ -56,7 +64,6 @@ namespace TieuTienKy.Gameplay
             system.Stop(withChildren: true, stopBehavior: ParticleSystemStopBehavior.StopEmittingAndClear);
 
             var renderer = burst.GetComponent<ParticleSystemRenderer>();
-            renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.sharedMaterial = PrimitiveMaterial();
 
             var block = new MaterialPropertyBlock();
@@ -85,6 +92,17 @@ namespace TieuTienKy.Gameplay
             ParticleSystem.SizeOverLifetimeModule sizeOverLifetime = system.sizeOverLifetime;
             sizeOverLifetime.enabled = true;
             sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0f));
+
+            // Real alpha fade, only possible now that the material actually
+            // blends - the old opaque P0A_Unlit path could only fake this by
+            // shrinking size to zero.
+            ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            var fadeGradient = new Gradient();
+            fadeGradient.SetKeys(
+                new[] { new GradientColorKey(Color.white, 0f) },
+                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) });
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(fadeGradient);
 
             ParticleSystem.RotationOverLifetimeModule rotationOverLifetime = system.rotationOverLifetime;
             rotationOverLifetime.enabled = true;
