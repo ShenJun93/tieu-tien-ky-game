@@ -4,55 +4,93 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SLICE",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-005-VFX-TEXTURED-SHADER",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "feat/product-proof-slice-005-vfx-textured-shader",
+  "baseline_ref": "ef9224ddf9a889d0f3ce01b221f61f3660369839",
+  "authority_anchor_ref": "ef9224ddf9a889d0f3ce01b221f61f3660369839",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-005-VFX-TEXTURED-SHADER.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_005_VFX_TEXTURED_SHADER_REPORT.md",
+  "allowed_paths": [
+    "Assets/_Project/Resources/Textures.meta",
+    "Assets/_Project/Resources/Textures/VFX.meta",
+    "Assets/_Project/Resources/Textures/VFX/",
+    "Assets/_Project/Shaders/P0A_UnlitTexturedAlpha.shader",
+    "Assets/_Project/Shaders/P0A_UnlitTexturedAlpha.shader.meta",
+    "Assets/_Project/Resources/Materials/",
+    "Assets/_Project/Presentation/PrimitiveBurstVFX.cs",
+    "Assets/_Project/Tests/EditMode/",
+    "Assets/_Project/Tests/PlayMode/",
+    "docs/evidence/PRODUCT_PROOF_SLICE_005_VFX_TEXTURED_SHADER_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "Packages/",
+    "Packages/packages-lock.json",
+    "ProjectSettings/",
+    "Assets/_Project/Scenes/",
+    "Assets/_Project/Prefabs/Network/",
+    "Assets/_Project/Shaders/P0A_Unlit.shader",
+    "Assets/_Project/Resources/Materials/P0A_Greybox.mat",
+    "Assets/_Project/Presentation/PrimitiveTelegraphVFX.cs",
+    "Assets/Editor/StageABAudioBuilder.cs",
+    "docs/master/",
+    ".agents/",
+    "scripts/",
+    "AGENTS.md"
+  ],
+  "required_evidence": {
+    "unity_compile": "PASS",
+    "editmode": "PASS",
+    "playmode": "PASS",
+    "android_build": "PASS",
+    "device_particle_render_check": "PASS",
+    "human_playtest": "RECORDED"
+  },
+  "stop_condition": "HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-004-VFX-PARTICLESYSTEM` is closed. Its final state:
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-004-VFX-PARTICLESYSTEM` is closed (see the prior
+closure entry, merged as PR #25 / `ef9224d`). Its finding: technical gate GREEN, but the
+third consecutive free-technique attempt still didn't close the "feels like a demo" VFX
+gap.
 
-- merged via PR #24 at `c7838efc4559f94012fa5eb190566b8c281ec427` (`main`), merged directly by
-  the Human/Game Director;
-- `com.unity.modules.particlesystem` (free Unity built-in module) enabled;
-  `PrimitiveBurstVFX.SpawnAt` rewritten around a genuine `UnityEngine.ParticleSystem` — the
-  technique Slice 003 originally targeted but could not reach;
-- technical gate GREEN on all six required-evidence keys, including a literal
-  `device_particle_render_check: PASS` (directly observed on-device, not
-  `HUMAN_ACCEPTED_RISK` like Slice 003);
-- Human physical gate **RECORDED** via two disambiguated follow-up questions (learning from
-  Slice 003's ambiguous blanket-answer incident): no regression in readability or performance,
-  but the product goal — VFX reading as meaningfully better — was **not achieved**;
-- `verdict: PASS_WITH_REMEDIATION` — technical gate GREEN, product gate NOT achieved;
-- full record: `docs/evidence/PRODUCT_PROOF_SLICE_004_VFX_PARTICLESYSTEM_REPORT.md`.
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-005-VFX-TEXTURED-SHADER` is now reopened as a
+single bounded `IMPLEMENT / SLICE` task, authorized by explicit Human/Game Director
+instruction (2026-08-21). Presented with the real-asset-purchase decision the Slice 004
+strategic note called for (Animancer Pro ~$99, Feel $25, Epic Toon FX $20 — all
+re-verified current prices), the Director explicitly chose **not** to purchase yet and
+instead authorized one more zero-cost pass — but on a different axis than the prior
+three: Slice 004's own evidence diagnosed that `P0A_Unlit.shader` is flat-color-only
+(no texture sampling, no alpha blending), which every VFX technique so far has been
+rendering through regardless of burst *mechanism*. This task adds a texture (produced by
+the Director via their own ChatGPT Plus subscription, not purchased or agent-generated)
+and a new alpha-blended textured shader — additive, not a modification of the existing
+shared shader — to test whether the *content/material* axis, not the *technique* axis,
+was the real ceiling.
 
-This is the **third consecutive** Product Proof slice (002 parameter tuning, 003 technique
-escalation, 004 real `ParticleSystem`) to leave the "feels like a demo" VFX/feel gap open,
-despite each one being a genuine, verified, non-regressive improvement in technique. Per
-`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-004-VFX-PARTICLESYSTEM.md`'s own pre-authorized
-strategic note, this is deliberately **not** followed by a fourth free/primitive-technique
-proposal. The free-technique ceiling for this specific product gap is considered reached.
+This is a genuinely new diagnosis, not a fourth iteration of the same free-technique
+loop the Slice 004 strategic note said to stop; it is explicitly Human-authorized in the
+same conversation that reviewed and declined the paid-asset options.
 
-There is no active write task, branch authority, baseline, task/evidence pointer, or writable
-path.
+## Scope correction (same task, no re-anchor)
 
-The next decision is the real-asset-purchase question flagged across Slices 002-004: whether
-to authorize a paid VFX/animation asset (e.g. Animancer, a VFX pack) per the build-vs-buy
-research in `docs/tasks/DRAFT-PRODUCT-PROOF-REPLAN-2026-08-20.md` §3.3. This is a Human/Game
-Director budget and direction decision, not a technique any further free implementation
-iteration can resolve — no successor `IMPLEMENT` authority is granted here.
+The original activation's `allowed_paths` named the logical new assets
+(`Assets/_Project/Resources/Textures/VFX/`, the new shader, the new material directory)
+but omitted their Unity-mandatory sibling `.meta` files: `Textures.meta` and
+`Textures/VFX.meta` (folder metas — Unity requires one per new folder, matching the
+existing `Materials.meta`/`Audio.meta` convention already in this repo) and
+`P0A_UnlitTexturedAlpha.shader.meta` (holds the shader's GUID; without it, a fresh
+checkout regenerates a different GUID and the new material's shader reference breaks —
+exactly the class of asset-reference corruption this repo's governance exists to catch).
+This was an authoring omission in the activation, not a scope decision — the executor
+correctly stopped at `pre-finish.mjs`/`scope-gate.mjs` instead of bypassing the block.
+Corrected by adding the three missing `.meta` paths above; `task_id`, `branch`,
+`baseline_ref`, and `authority_anchor_ref` are unchanged — this is not a new activation.
 
-Any dependency audit/removal, rights/provenance review, asset-purchase authorization, Product
-Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package
-mutation, or other successor work requires a fresh explicit Human/Game Director decision and
-valid authority transition.
-
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`.
