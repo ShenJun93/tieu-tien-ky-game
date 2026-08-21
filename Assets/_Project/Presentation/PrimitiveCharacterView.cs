@@ -3,19 +3,32 @@ using UnityEngine;
 namespace TieuTienKy.Gameplay
 {
     /// <summary>
-    /// Replaceable full-body primitive presentation: builds a child
-    /// CharacterView (Head/Body/Arms/Legs/WeaponSocket[/Sword]) out of
-    /// Android-safe primitives only (Cube/Capsule - never Sphere, whose
-    /// SphereCollider IL2CPP strips on Android, see PrimitiveBurstVFX).
-    /// Gameplay code must target the actor root/combat components, never
-    /// these child meshes directly, so a future imported character model can
-    /// replace CharacterView without touching combat/run logic.
+    /// Replaceable full-body presentation: builds a child CharacterView under
+    /// this transform. When a chibi sprite resource matching the actor's
+    /// GameObject name exists (Player/Pursuer/Lancer), renders that as a
+    /// single camera-facing SpriteRenderer; otherwise falls back to the
+    /// original Head/Body/Arms/Legs built from Android-safe primitives only
+    /// (Cube/Capsule - never Sphere, whose SphereCollider IL2CPP strips on
+    /// Android, see PrimitiveBurstVFX). WeaponSocket[/Sword] is always built
+    /// either way - SwordAttackView's thunder-stack visual feedback depends
+    /// on it regardless of body representation. Gameplay code must target the
+    /// actor root/combat components, never these child visuals directly.
     /// </summary>
     public sealed class PrimitiveCharacterView : MonoBehaviour
     {
         const string PrimitiveMaterialResourcePath = "Materials/P0A_Greybox";
+        const string ChibiSpriteResourcePathFormat = "Textures/Characters/{0}_Chibi_01";
+
+        // Matches the previous primitive body's approximate vertical
+        // footprint (Head top ~1.02, LeftLeg/RightLeg bottom ~-0.9) so the
+        // sprite swap preserves existing camera framing/ground alignment.
+        const float ChibiSpriteWorldHeight = 1.92f;
+        const float ChibiSpriteFootLocalY = -0.9f;
+
         static readonly int TintColorPropertyId = Shader.PropertyToID("_Color");
         static Material s_PrimitiveMaterial;
+
+        Transform chibiSpriteFacing;
 
         public Transform WeaponSocket { get; private set; }
 
@@ -31,12 +44,21 @@ namespace TieuTienKy.Gameplay
             var view = new GameObject("CharacterView");
             view.transform.SetParent(transform, false);
 
-            BuildPart(view.transform, "Head", PrimitiveType.Cube, new Vector3(0f, 0.82f, 0f), new Vector3(0.42f, 0.4f, 0.4f), bodyColor, visualScale);
-            BuildPart(view.transform, "Body", PrimitiveType.Capsule, new Vector3(0f, 0.15f, 0f), new Vector3(0.42f, 0.32f, 0.32f), bodyColor, visualScale);
-            BuildPart(view.transform, "LeftArm", PrimitiveType.Capsule, new Vector3(-0.4f, 0.25f, 0f), new Vector3(0.16f, 0.3f, 0.16f), bodyColor, visualScale);
-            BuildPart(view.transform, "RightArm", PrimitiveType.Capsule, new Vector3(0.4f, 0.25f, 0f), new Vector3(0.16f, 0.3f, 0.16f), bodyColor, visualScale);
-            BuildPart(view.transform, "LeftLeg", PrimitiveType.Capsule, new Vector3(-0.18f, -0.55f, 0f), new Vector3(0.18f, 0.35f, 0.18f), bodyColor, visualScale);
-            BuildPart(view.transform, "RightLeg", PrimitiveType.Capsule, new Vector3(0.18f, -0.55f, 0f), new Vector3(0.18f, 0.35f, 0.18f), bodyColor, visualScale);
+            chibiSpriteFacing = null;
+            Sprite chibiSprite = Resources.Load<Sprite>(string.Format(ChibiSpriteResourcePathFormat, gameObject.name));
+            if (chibiSprite != null)
+            {
+                chibiSpriteFacing = BuildChibiSprite(view.transform, chibiSprite, visualScale);
+            }
+            else
+            {
+                BuildPart(view.transform, "Head", PrimitiveType.Cube, new Vector3(0f, 0.82f, 0f), new Vector3(0.42f, 0.4f, 0.4f), bodyColor, visualScale);
+                BuildPart(view.transform, "Body", PrimitiveType.Capsule, new Vector3(0f, 0.15f, 0f), new Vector3(0.42f, 0.32f, 0.32f), bodyColor, visualScale);
+                BuildPart(view.transform, "LeftArm", PrimitiveType.Capsule, new Vector3(-0.4f, 0.25f, 0f), new Vector3(0.16f, 0.3f, 0.16f), bodyColor, visualScale);
+                BuildPart(view.transform, "RightArm", PrimitiveType.Capsule, new Vector3(0.4f, 0.25f, 0f), new Vector3(0.16f, 0.3f, 0.16f), bodyColor, visualScale);
+                BuildPart(view.transform, "LeftLeg", PrimitiveType.Capsule, new Vector3(-0.18f, -0.55f, 0f), new Vector3(0.18f, 0.35f, 0.18f), bodyColor, visualScale);
+                BuildPart(view.transform, "RightLeg", PrimitiveType.Capsule, new Vector3(0.18f, -0.55f, 0f), new Vector3(0.18f, 0.35f, 0.18f), bodyColor, visualScale);
+            }
 
             var weaponSocketGO = new GameObject("WeaponSocket");
             weaponSocketGO.transform.SetParent(view.transform, false);
@@ -48,6 +70,39 @@ namespace TieuTienKy.Gameplay
             {
                 BuildPart(WeaponSocket, "Sword", PrimitiveType.Cube, new Vector3(0f, 0.35f, 0f), new Vector3(0.06f, 0.55f, 0.1f), accentColor, 1f);
             }
+        }
+
+        /// <summary>Keeps the chibi sprite facing the fixed gameplay camera regardless of the actor root's movement/attack-facing rotation (PlayerController/EnemyCombatController rotate the root at runtime; the camera itself never rotates - see PlayerFollowCamera).</summary>
+        void LateUpdate()
+        {
+            if (chibiSpriteFacing == null)
+            {
+                return;
+            }
+
+            Camera mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                return;
+            }
+
+            chibiSpriteFacing.rotation = mainCamera.transform.rotation;
+        }
+
+        static Transform BuildChibiSprite(Transform parent, Sprite sprite, float visualScale)
+        {
+            var go = new GameObject("ChibiSprite");
+            go.transform.SetParent(parent, false);
+
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+
+            float nativeHeight = sprite.bounds.size.y;
+            float scale = nativeHeight > 0f ? (ChibiSpriteWorldHeight * visualScale) / nativeHeight : visualScale;
+            go.transform.localScale = Vector3.one * scale;
+            go.transform.localPosition = new Vector3(0f, ChibiSpriteFootLocalY * visualScale, 0f);
+
+            return go.transform;
         }
 
         static void BuildPart(Transform parent, string name, PrimitiveType primitiveType, Vector3 localPosition, Vector3 localScale, Color color, float visualScale)
