@@ -4,75 +4,59 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SLICE",
-  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-007-ACTOR-PRESENTATION-CHIBI-SPRITES",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "feat/product-proof-slice-007-actor-presentation-chibi-sprites",
-  "baseline_ref": "d8729296a0b50b3480c4ea69c41957721f4cb4f4",
-  "authority_anchor_ref": "d8729296a0b50b3480c4ea69c41957721f4cb4f4",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-007-ACTOR-PRESENTATION-CHIBI-SPRITES.md",
-  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_REPORT.md",
-  "allowed_paths": [
-    "Assets/_Project/Resources/Textures/Characters/",
-    "Assets/_Project/Presentation/PrimitiveCharacterView.cs",
-    "Assets/_Project/Tests/EditMode/",
-    "Assets/_Project/Tests/PlayMode/",
-    "docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_REPORT.md",
-    "docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_SCREENSHOTS/"
-  ],
-  "forbidden_paths": [
-    "Packages/",
-    "ProjectSettings/",
-    "Assets/_Project/Scenes/",
-    "Assets/_Project/Prefabs/",
-    "Assets/_Project/Gameplay/GreyboxSceneBootstrapper.cs",
-    "Assets/_Project/Gameplay/ArenaRunDirector.cs",
-    "Assets/_Project/Gameplay/ArenaVerticalSliceBootstrapper.cs",
-    "Assets/_Project/Gameplay/LoiTramSkill.cs",
-    "Assets/_Project/Gameplay/HoTheSkill.cs",
-    "Assets/_Project/Gameplay/PhongBoSkill.cs",
-    "Assets/_Project/Gameplay/BasicAttack.cs",
-    "Assets/_Project/Gameplay/Combatant.cs",
-    "Assets/_Project/Gameplay/PlayerController.cs",
-    "Assets/_Project/Gameplay/EnemyCombatController.cs",
-    "Assets/_Project/Presentation/PrimitiveBurstVFX.cs",
-    "Assets/_Project/Presentation/PrimitiveTelegraphVFX.cs",
-    "Assets/_Project/Presentation/CharacterPresentation.cs",
-    "Assets/_Project/Presentation/HitStop.cs",
-    "Assets/_Project/Presentation/PlayerFollowCamera.cs",
-    "Assets/_Project/Presentation/CombatAudio.cs",
-    "Assets/_Project/Presentation/SwordAttackView.cs",
-    "Assets/_Project/Presentation/StormControlVFX.cs",
-    "Assets/_Project/Shaders/",
-    "Assets/_Project/Resources/Materials/",
-    "Assets/Editor/StageABAudioBuilder.cs",
-    "docs/master/",
-    ".agents/",
-    "scripts/",
-    "AGENTS.md"
-  ],
-  "required_evidence": {
-    "unity_compile": "PASS",
-    "editmode": "PASS",
-    "playmode": "PASS",
-    "android_build": "PASS",
-    "device_actor_sprite_render_check": "PASS"
-  },
-  "stop_condition": "SELF_MERGE_ON_GREEN_MACHINE_EVIDENCE_HUMAN_GATE_IS_POST_MERGE_FOLLOWUP_THIS_SLICE_ONLY"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-007-ACTOR-PRESENTATION-CHIBI-SPRITES` is active.
-Authorized 2026-08-21 by explicit Director instruction transcribing ChatGPT Web's
-`B-LITE` recommendation (chibi sprite swap for Player/Pursuer/Lancer via
-`PrimitiveCharacterView.cs` only). Director exception for this slice only: Human Gate is
-a post-merge follow-up, not a merge-blocking precondition — see the task file's
-"Director decision for SLICE-007 specifically" section. Full detail:
-`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-007-ACTOR-PRESENTATION-CHIBI-SPRITES.md`.
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-007-ACTOR-PRESENTATION-CHIBI-SPRITES` is closed.
+Its final state:
+
+- merged via PR #33 at `b25ffb0` (`main`), under the Director's standing
+  delegated-merge authorization, self-merged on green machine evidence per the
+  Director's explicit exception scoping Human Gate to a post-merge follow-up for this
+  slice only;
+- `PrimitiveCharacterView.Build()` now renders Player/Pursuer/Lancer as a single
+  camera-facing chibi `SpriteRenderer` (looked up by actor GameObject name), falling
+  back to the original primitive Head/Body/Arms/Legs for any unmatched name (MiniBoss
+  and everything else, unchanged); `WeaponSocket`/`Sword` still build unconditionally
+  either way. Gameplay/colliders/movement/AI/damage/skill logic untouched — a
+  presentation-layer swap only, per ChatGPT Web's `B-LITE` recommendation;
+- technical gate GREEN: `unity_compile`/`editmode` (172/172)/`playmode` (29/31, 2
+  pre-existing skips)/`android_build` all PASS;
+- `device_actor_sprite_render_check`: **PASS** — 3 on-device screenshots committed and
+  reviewed showing Player + an enemy chibi sprite rendering together and the MiniBoss
+  primitive fallback correctly unchanged;
+- `verdict: PASS_WITH_REMEDIATION` — machine gate clean, but two items disclosed rather
+  than hidden: (1) a real WaterZone/sprite transparency-sorting artifact (enemy sprite
+  can be visually cut off by the WaterZone's semi-transparent quad — the old opaque
+  primitive body depth-tested correctly against it, the new alpha-blended
+  `SpriteRenderer` does not), not fixed in this task (would need either an untested
+  `sortingOrder` tune or a cutout sprite shader, both left for a separately-scoped
+  follow-up); (2) an apparent pre-existing early-`Defeat`-at-`00:03`-with-`Kills:0`
+  behavior observed during device testing, reproducing across a full app
+  uninstall/reinstall, unrelated to this task's scope and not diagnosed under its
+  authority. Full detail in
+  `docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_REPORT.md`;
+- `human_playtest`: **PENDING_POST_MERGE_FOLLOWUP** — the Director's genuine B-LITE
+  Human Gate playtest (5 exact questions in the task file / evidence report) happens
+  after this closure, as a disclosed follow-up, not fabricated or inferred here. Per
+  the task's escalation clause, the result of that playtest decides whether minimal
+  animation/ground-water pass is worth pursuing next, or whether to stop the actor-art
+  axis and re-evaluate.
+
+Two follow-ups are open and unclaimed by any successor authority yet: the WaterZone
+sprite-sorting fix, and the early-defeat behavior investigation. Neither is
+implementation authority — each requires its own bounded task activation.
 
 ## Prior authority — SLICE-006 closure (superseded)
 
@@ -118,18 +102,22 @@ flagged that 2D texture-asset generation via ChatGPT Web is now demonstrated at
 effectively zero cost (per this exact slice's 4 source textures), which changes the
 cost calculus that originally justified staying in greybox — but full 3D character
 models/rigging/animation remain a materially different, harder problem ChatGPT Web
-image generation cannot produce directly. This distinction has not yet been resolved
-into a bounded implementation task.
+image generation cannot produce directly.
+
+This distinction resolved into SLICE-007 above (the `B-LITE` actor-sprite proof), which
+is now itself closed. Its two open follow-ups and the Director's still-pending genuine
+Human Gate playtest are the current unresolved threads — see "Current authority" at the
+top of this file.
+
+## Current stop condition
 
 There is no active write task, branch authority, baseline, task/evidence pointer, or
-writable path.
-
-Any dependency audit/removal, rights/provenance review, art-direction authorization,
-Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/Stage C/
-backend/package mutation, or other successor work requires a fresh explicit
-Human/Game Director decision and valid authority transition — in this case, most
-likely a ChatGPT Web design-collaboration round (per
-`docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md`) on NPC/environment art direction
-and scope, before any `IMPLEMENT` task is activated.
+writable path. Any dependency audit/removal, rights/provenance review, art-direction
+authorization, Product Proof continuation, gameplay/runtime/Unity/networking/PvP/co-op/
+Stage C/backend/package mutation, or other successor work requires a fresh explicit
+Human/Game Director decision and valid authority transition — most likely either the
+Director's B-LITE playtest result (deciding whether to pursue minimal animation/
+ground-water pass next, per the task's escalation clause) or a bounded follow-up task
+for one of the two disclosed SLICE-007 remediation items.
 
 Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
