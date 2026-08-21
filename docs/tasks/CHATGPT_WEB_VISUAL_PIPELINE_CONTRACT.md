@@ -20,6 +20,17 @@ HUMAN        = look, feel, readability, "does this feel like Tiểu Tiên Ký?" 
    size, straight transparency/alpha intent, pivot, orientation, tint policy,
    padding/crop intent, gameplay role. Claude may normalize (resize/crop/import
    settings) but must not redesign the silhouette.
+
+   **Delivery mechanics (2026-08-21, learned from Slice 006):** the asset-request
+   prompt sent to ChatGPT Web must state the exact final filename for each texture
+   (matching whatever the target task file already specifies, e.g.
+   `StormControl_IgnitionFlash_01.png`) and explicitly ask ChatGPT to name the files
+   that way itself, rather than letting it choose descriptive names (Slice 006's actual
+   delivery came back as `icy_blue_energy_starburst.png` etc. — functionally fine, but
+   required a manual rename pass before the task's precondition check would pass). When
+   requesting more than one file in a batch, also explicitly ask for delivery as a
+   single `.zip` containing all of them, not separate individual downloads — one
+   download-and-extract instead of N individual saves-and-renames.
 2. **Blend mode is per layer, not a global default.** Do not make every VFX additive.
    Candidate defaults: ignition = additive/soft-additive; lightning = additive; water
    ripple = alpha; shock ring = alpha or soft-additive; residual = additive. Choose per
