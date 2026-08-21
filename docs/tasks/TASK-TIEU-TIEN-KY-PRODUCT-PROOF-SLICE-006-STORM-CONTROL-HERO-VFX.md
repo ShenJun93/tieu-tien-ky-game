@@ -123,6 +123,46 @@ Only create more than two material assets, or the optional additive shader varia
 the actual textures or blend requirements genuinely force it — and if so, say why in the
 evidence report rather than defaulting to one-material-per-texture out of habit.
 
+## Visual pipeline contract addendum (Director, 2026-08-21)
+
+Full standing guidance for all future visual work:
+`docs/tasks/CHATGPT_WEB_VISUAL_PIPELINE_CONTRACT.md` (reference, not itself
+authorization). The points below directly change how this task's execution should
+behave — read them before implementing, not after a Human Gate failure:
+
+- **Blend mode is per layer, not one global choice.** Do not force every layer into
+  "1 additive material" out of habit. Candidate defaults: ignition = additive/soft-
+  additive; lightning = additive; water ripple = alpha; shock ring = alpha or soft-
+  additive; residual = additive (via the existing `PrimitiveBurstVFX`/`P0A_ParticleGlow`
+  path, unchanged). The "Implementation minimalism directive" above still holds — target
+  the smallest number of material assets — but minimalism means *reuse via
+  `MaterialPropertyBlock`*, not *forcing an incorrect blend mode onto a layer that needs
+  a different one*.
+- **Sequential by default.** Fire the 5 beats in the CAUSE → REACTION → PAYOFF → DECAY
+  order they're specified in, not simultaneously, unless you have a specific reason tied
+  to visual review to overlap two of them.
+- **Sync the peak.** `ApplyStormControlPulse` already fires `HitStop.Routine`,
+  `CombatAudio.Play`, and `PlayerFollowCamera.ApplyImpulse` (all untouched, out of
+  scope) at its call site. Author `StormControlVFX`'s own beat timing so its visual peak
+  (Beat 3/4, lightning + shock ring) lands on the same instant those already-existing
+  effects fire — do not just start all 5 beats when the method is called and let them
+  land wherever.
+- **World-space scale is real, not decorative.** The Beat 4 shock ring must visually
+  scale to `runStyle.StormPulseRadius` (the exact field `ApplyStormControlPulse` already
+  uses for `Physics.OverlapSphere` targeting) — read this value, don't invent a fixed
+  ring size.
+- **Worst-case readability capture.** The device evidence for
+  `device_storm_control_render_check` must include at least one capture of Storm Control
+  triggering during a busy moment (an enemy telegraph active, more than one entity
+  on-screen) — not only an isolated, uncluttered trigger.
+- **Texture quality is verified after compression, on-device.** Editor Game-view
+  appearance of the 4 textures is not evidence; check the actual compressed result on
+  the physical device, same as every prior slice's device-check discipline.
+- **Failure classification, if the Human Gate verdict is negative.** Before proposing any
+  change, classify the failure in the evidence report as one of: SHAPE / TIMING /
+  COLOR-VALUE / SCALE / COMPOSITION / TECHNICAL. Do not default to "make it bigger/
+  brighter" without that classification.
+
 ## Technical freedom (from the Director's handoff)
 
 Quads, `ParticleSystem`, texture rotate/scale, combining alpha and additive materials,
