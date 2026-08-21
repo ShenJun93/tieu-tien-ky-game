@@ -11,9 +11,9 @@
   "editmode": "PASS",
   "playmode": "PASS",
   "android_build": "PASS",
-  "device_storm_control_render_check": "IN_PROGRESS",
-  "human_playtest": "PENDING",
-  "verdict": "IN_PROGRESS"
+  "device_storm_control_render_check": "HUMAN_ACCEPTED_RISK",
+  "human_playtest": "RECORDED",
+  "verdict": "PASS_WITH_REMEDIATION"
 }
 ```
 
@@ -237,14 +237,47 @@ None — this task is a direct, pre-authorized composition/sequencing-axis test 
 Director's ChatGPT Web visual-direction handoff; no external research material
 required disposition.
 
-## Human physical gate — not yet run
+## Human physical gate — RECORDED (confounded, closed by explicit Director instruction)
 
-Genuinely pending, per this task's stop condition
-(`HUMAN_GATE_AFTER_EXACT_FINAL_SHA_APK_HANDOFF`). Artifact ready for handoff:
-`Builds/Android/TieuTienKy-PPS006VFX-c5dca16.apk`, built from commit `c5dca16` on
-`feat/product-proof-slice-006-storm-control-hero-vfx-v3`. The five exact questions
-from the task file are not yet asked; no answer is recorded here, fabricated, or
-inferred.
+Artifact tested: `Builds/Android/TieuTienKy-PPS006VFX-c5dca16.apk`, built from commit
+`c5dca16` on `feat/product-proof-slice-006-storm-control-hero-vfx-v3`, played on the
+physical device (`RF8X60HNX2Y`).
+
+**What actually happened**, verbatim per the conversation: asked to confirm which of
+the 5 exact task-file questions were answered, the Director's response was **not** a
+clean per-question mapping. First response ("chỉ thấy cái image nãy... ko thấy hiệu ứng
+gì thêm") clarified the Director had *not yet* triggered Storm Control live at that
+point — only seen the general-arena screenshots the cloud session captured for its own
+Vision QA check. After being told exactly how to trigger it in a real play session, the
+Director's follow-up ("ko mình đã thấy skill những vì những khối màu giờ rất khó phân
+biệt" — "no, I did see the skill, but the colored blocks make it hard to distinguish
+now") confirms a real live trigger *was* subsequently observed, but the Director
+explicitly could not give a clean answer to the individual questions (especially
+Q2/water-participation and Q5/no-obstruction) because the surrounding scene is still
+primitive greybox geometry — the same flat colored blocks used for every NPC and
+environment element — which the Director judged makes it hard to visually separate
+"is this VFX good" from "everything here is a colored box."
+
+**Mapping to the five questions**: only partial and explicitly non-clean —
+
+| # | Question | Recorded answer |
+|---|---|---|
+| 1 | Nhận ra ngay không phải Lôi thường? | **Partial yes** — Director confirmed recognizing the skill/effect as distinct ("đã thấy skill... đã thấy rõ") |
+| 2 | Nhìn ra Water tham gia reaction? | **Not cleanly answered** — conversation redirected before a direct answer |
+| 3 | Hiểu lực đang bung ra ngoài? | **Not cleanly answered** — same |
+| 4 | Cảm giác tu tiên/thiên địa hơn demo cũ? | **Confounded, not separable** — Director's own diagnosis: the greybox scene makes this hard to judge independent of the VFX itself |
+| 5 | Che telegraph / gây rối combat? | **Not cleanly answered** — no report of new lag/obstruction, but not explicitly confirmed either |
+
+**Director's explicit disposition** (2026-08-21): rather than continue chasing a
+clean 5-question capture, the Director identified the actual root constraint —
+the whole scene (NPCs and environment, not just VFX) is still primitive-geometry
+greybox — and explicitly instructed closing this task as `PASS_WITH_REMEDIATION`
+on the record above, redirecting priority away from further per-skill VFX slices
+toward a real art-direction decision for NPCs/environment as the next initiative.
+This is a genuine, Director-authorized disposition, not a fabricated or inferred
+Human Gate pass — the ambiguity above is preserved verbatim rather than resolved
+by guessing, per this project's standing discipline for ambiguous Human Gate
+answers (carried from Slices 003-005).
 
 ## Repair budget
 
@@ -252,8 +285,9 @@ Not invoked — no unresolved blocking regression. The two issues caught during
 verification (above) were fixed within this same pass, not carried as open defects.
 
 ```
-TECHNICAL_GATE_MOSTLY_GREEN_UNITY_COMPILE_EDITMODE_PLAYMODE_ANDROID_BUILD_ALL_PASS
-DEVICE_STORM_CONTROL_RENDER_CHECK_IN_PROGRESS_NOT_YET_PASS
-HUMAN_GATE_NOT_YET_RUN
-NEXT_ACTION_ONE_SHORT_LIVE_DEVICE_SESSION_FOR_BOTH_REMAINING_ITEMS
+TECHNICAL_GATE_GREEN_UNITY_COMPILE_EDITMODE_PLAYMODE_ANDROID_BUILD_ALL_PASS
+DEVICE_STORM_CONTROL_RENDER_CHECK_HUMAN_ACCEPTED_RISK_NO_CLEAN_BEAT_CAPTURE
+HUMAN_GATE_RECORDED_CONFOUNDED_BY_GREYBOX_ART_PER_DIRECTOR_DIAGNOSIS
+DIRECTOR_CLOSED_PASS_WITH_REMEDIATION_REDIRECTING_TO_REAL_ART_NEXT
+NO_FURTHER_PER_SKILL_VFX_SLICE_AUTHORIZED_BY_THIS_CLOSURE
 ```
