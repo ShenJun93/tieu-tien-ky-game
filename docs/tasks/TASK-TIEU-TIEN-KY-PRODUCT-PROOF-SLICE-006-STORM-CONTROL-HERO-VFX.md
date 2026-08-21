@@ -197,9 +197,9 @@ repository            ShenJun93/tieu-tien-ky-game
 state                 IMPLEMENT
 task_mode             SLICE
 task_id               TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-006-STORM-CONTROL-HERO-VFX
-branch                feat/product-proof-slice-006-storm-control-hero-vfx
-baseline_ref          32abfedbd36e70486a52c18c0ce97b408b1d475b
-authority_anchor_ref  32abfedbd36e70486a52c18c0ce97b408b1d475b
+branch                feat/product-proof-slice-006-storm-control-hero-vfx-v2
+baseline_ref          12120c0d355be6633076f389084e74ee7b022dd0
+authority_anchor_ref  12120c0d355be6633076f389084e74ee7b022dd0
 workspace_policy      ISOLATED_WORKTREE
 evidence_file         docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_REPORT.md
 ```
