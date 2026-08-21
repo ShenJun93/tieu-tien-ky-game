@@ -100,6 +100,29 @@ opaque filled discs; hiding enemy telegraphs; leaning on extra camera shake to
 compensate for weak visuals (do not touch `PlayerFollowCamera.cs`/`HitStop.cs` in this
 task — their current tuning stays as-is).
 
+## Implementation minimalism directive (Director refinement, 2026-08-21)
+
+The four source textures below are **visual source primitives**, not a spec for four
+materials. Do not default to "one material + one shader per texture." The goal is:
+
+```
+4 visual source primitives
+  → smallest implementation that renders all 5 beats correctly
+  → 1 hero effect
+  → verified on Android
+  → Human sees a clear difference
+```
+
+Look at the actual supplied textures before deciding material/shader count. The target
+to aim for — and prefer over anything more elaborate — is **exactly one alpha-blended
+material and one additive material, shared across all four textures**, swapping which
+texture each layer samples via `MaterialPropertyBlock.SetTexture("_MainTex", ...)` at
+spawn time (the identical pattern this codebase already uses for `_Color` via
+`MaterialPropertyBlock.SetColor` — no material instancing, no `renderer.material`).
+Only create more than two material assets, or the optional additive shader variant, if
+the actual textures or blend requirements genuinely force it — and if so, say why in the
+evidence report rather than defaulting to one-material-per-texture out of habit.
+
 ## Technical freedom (from the Director's handoff)
 
 Quads, `ParticleSystem`, texture rotate/scale, combining alpha and additive materials,
@@ -147,8 +170,10 @@ evidence_file         docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_V
 - `Assets/_Project/Resources/Textures/VFX/` — the 4 new textures above (+ their
   `.meta`, covered by this directory prefix since the folder itself already exists on
   `main`; no folder-level `.meta` needed this time).
-- `Assets/_Project/Resources/Materials/` — up to 4 new material assets (one per new
-  texture); do not modify `P0A_Greybox.mat` or `P0A_ParticleGlow.mat`.
+- `Assets/_Project/Resources/Materials/` — new material assets; target exactly 2 (one
+  alpha-blended, one additive) shared across all four textures via
+  `MaterialPropertyBlock.SetTexture` — see "Implementation minimalism directive" below
+  before creating more. Do not modify `P0A_Greybox.mat` or `P0A_ParticleGlow.mat`.
 - `Assets/_Project/Shaders/P0A_UnlitTexturedAlpha.shader` — reuse (read-only reference)
   for standard alpha-blended layers; do not modify its contents.
 - `Assets/_Project/Shaders/P0A_UnlitTexturedAdditive.shader` (new file, optional — only
