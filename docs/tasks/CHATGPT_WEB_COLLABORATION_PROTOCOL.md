@@ -172,3 +172,26 @@ whether the delta is perceptible, whether a mechanic is too generic, or whether 
 purchase is justified — explicitly request `INDEPENDENT_DESIGN_REVIEW` before
 implementation. Better than implementing first and discovering at the Human Gate that
 the hypothesis itself was weak.
+
+## 14. Claude Vision QA verification (2026-08-21)
+
+Adopted after market research on 2026 AI-assisted game production: the fastest-growing
+category in mobile visual QA in 2026 is Vision AI — an AI model looking directly at a
+rendered screen the way a human tester does, instead of trusting a text description of
+what the screen showed. Two independent findings converge on this: (a) industry data
+shows AI is *weakest* on creative/technical-art tasks precisely like this project's
+repeated VFX slices — an extra, cheap layer of independent verification is warranted
+where AI is known-weak, not skipped; (b) across Slices 001-005 the cloud session verified
+every device render check from the executor's *textual* description alone, never from
+the actual captured frame, despite already having image-reading capability.
+
+**Going forward:** any task whose `required_evidence` includes a device render/visual
+check (`device_*_render_check` or similar) must have its `allowed_paths` include a
+directory for 2-4 representative on-device screenshot frames (PNG, not full video) to be
+committed alongside the evidence markdown — not merely described in prose. The verifying
+session (cloud, or whichever session holds merge authority) reads those images directly
+before merge, as an independent check on top of — not a replacement for — the executor's
+own textual observation and the Human physical gate. This does not change who owns the
+Human Gate itself: subjective "is it fun/does it feel right" acceptance is still the
+Human's alone; this only upgrades how the objective "does it render as claimed, is there
+an obvious visual defect" layer gets verified.
