@@ -73,10 +73,15 @@ frames committed to
 `docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_SCREENSHOTS/`:
 
 1. **`01_player_chibi_sprite_closeup.png`** — Player's chibi sprite rendering cleanly
-   at close range next to the WaterZone and an arena wall: correct silhouette (upright,
+   at a fresh Wave 1 spawn, no Defeat/Victory overlay: correct silhouette (upright,
    sword forward, blue-accented cultivation robe matching `PlayerAccentColor`), correct
    alpha transparency (no opaque box around the sprite), feet grounded, no visible
    compression/material artifacts.
+   ***Correction (2026-08-22, via SLICE-008):*** the file originally committed here
+   was actually a Defeat screen, not a clean closeup, as caught by independent
+   Vision QA review. This entry and the underlying file were both corrected in
+   SLICE-008's post-merge closure; see
+   `docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md` for detail.
 2. **`02_player_and_enemy_chibi_sprites_wave1.png`** — Wave 1 start (`HP 5/5, Wave 1,
    Enemies: 1, 00:00`): Player and an enemy chibi sprite both visible simultaneously —
    the busy-scene/multi-entity frame this check calls for. This frame is also where a
