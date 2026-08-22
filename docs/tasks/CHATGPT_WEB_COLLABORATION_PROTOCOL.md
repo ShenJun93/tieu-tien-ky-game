@@ -230,3 +230,55 @@ any circumstance — that line (established at the start of this collaboration) 
 unchanged. It only means the Human should increasingly be asked to judge feel and
 fantasy, not to also serve as the first line of defense for bugs a screenshot could have
 caught.
+
+## 16. Local-first / cloud-reviewer operational routing (2026-08-22)
+
+Recorded by `TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001`. This section
+is a routing preference for which execution surface (Claude Code local vs. Claude Code
+cloud) normally handles a given piece of work — **it is an operational preference, not
+authority.** The durable execution contract stays model/tool-agnostic: `AGENTS.md`'s
+execution identity contract already states worker/model identity is deliberately not
+part of durable repository authority, and this section does not change that. Human/Game
+Director instruction and `docs/governance/NEXT_TASK.md` remain the sole authority for
+what may be mutated; Human/Game Director remains sole merge authority. Cloud does **not**
+own merge authority under this routing. This section does not require a Cloud→Local
+handoff for normal implementation, and does not require a new worktree merely because a
+new chat/session was started (`docs/governance/WORKFLOW.md` and
+`docs/governance/RESEARCH_INTEGRATION_LEDGER.md` R-009 already establish that a new
+session alone does not require a new worktree).
+
+```text
+LOCAL_PREFERRED_FOR =
+  - Unity Editor dependent work
+  - actual local C# checkout implementation
+  - scenes / prefabs / materials / shaders / VFX
+  - EditMode / PlayMode
+  - build
+  - Android SDK
+  - adb / physical device
+  - local runtime logs/screenshots/evidence
+  - explicitly authorized inspection of uncommitted local state
+
+CLOUD_PREFERRED_FOR =
+  - fresh exact-SHA independent review
+  - PR/diff/evidence review
+  - repository-only analysis
+  - governance/docs research
+  - bounded work solvable correctly from repository/GitHub state alone
+```
+
+## 17. Memory/plugin state is not repository authority (2026-08-22)
+
+Recorded by `TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001`. Memory systems
+such as `.remember`, plugin memory, cached state, session summaries, previous handoffs,
+and historical task text may assist orientation but **must not** establish current
+repository authority.
+
+For authority-sensitive work, re-read live repository truth before acting:
+
+- `docs/governance/CURRENT_STATE.md`
+- `docs/governance/NEXT_TASK.md`
+- the active task contract it points to
+- live `origin/main` when an exact baseline matters
+
+If memory disagrees with live repository authority: **live repository authority wins.**

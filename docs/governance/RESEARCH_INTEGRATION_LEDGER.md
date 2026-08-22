@@ -1,6 +1,6 @@
 # RESEARCH INTEGRATION LEDGER — TIỂU TIÊN KÝ
 
-Updated: 2026-08-19
+Updated: 2026-08-22 (R-009 extended with local-first/cloud-reviewer routing disposition)
 
 ## Purpose
 
@@ -224,6 +224,32 @@ More agents are not automatically better. Parallelism is useful when work is gen
 **Rejected**
 
 - large permanent “AI studio” with dozens of always-on agents for current TTK scale.
+
+**2026-08-22 extension — local-first / cloud-reviewer routing**
+
+`TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001` reconciled standing docs
+with the now-adopted operational routing: Claude Code local as the preferred writer for
+Unity Editor / local filesystem / builds / Android SDK / adb / device-dependent work, and
+Claude Code cloud as the preferred independent reader for fresh exact-SHA/PR review and
+repository-only analysis. See `docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md` §16-17.
+
+```text
+INTEGRATED =
+  - local preferred for machine/Unity/device-dependent writer execution
+  - cloud preferred for fresh repository-only independent review
+  - one primary writer remains default (unchanged from the original R-009 finding)
+  - worker/model identity remains outside durable authority (unchanged)
+  - memory/cache cannot substitute for live authority
+
+REJECTED / NOT ADOPTED =
+  - mandatory Cloud→Local orchestration chain
+  - permanent model-specific repository authority
+  - second Claude-specific governance/control plane
+```
+
+This is an operational preference, not a change to repository authority semantics: it
+does not modify `AGENTS.md`, `docs/governance/WORKFLOW.md`, the `NEXT_TASK.md` state
+machine, writer-lock, or Human merge authority.
 
 ---
 

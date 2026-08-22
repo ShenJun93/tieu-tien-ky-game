@@ -1,6 +1,7 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-20 (AO-Lite v1 implementation and PR #19 post-merge risk reconciliation integrated)
+Updated: 2026-08-22 (Local-First Workflow Reconciliation 001 — Product Proof
+Slices 006/007/008 closure and Slice 001/PR #13 supersession reconciled)
 
 ## Repository / canonical integration anchors
 
@@ -12,12 +13,10 @@ Updated: 2026-08-20 (AO-Lite v1 implementation and PR #19 post-merge risk reconc
 - PR #14 merge commit / roadmap integration anchor: `6af043cf07b2528d19553c60a68d78504153824a`
 - Roadmap version integrated by PR #14: `docs/master/MASTER_PLAN.md` **v0.1.6 Product-Proof Roadmap Refresh**
 - Harness vNext PR #11 and its post-merge reconciliation PR #12 remain merged historical foundations.
-- AO-Lite v1 design PR #16 — **MERGED / ACCEPTED DESIGN**
-- PR #16 merge commit / AO-Lite design integration anchor: `1ccce9970fa5f8fae2fdb1ca2f1eab0a6c2ba0ed`
-- AO-Lite v1 implementation PR #18 — **MERGED / ACCEPTED IMPLEMENTATION**
-- PR #18 merge commit / AO-Lite v1 implementation integration anchor: `ff6ace93a33b2a2a8c097dec2d039053218659c1`
-- AO-Lite post-merge risk reconciliation PR #19 — **MERGED / INTEGRATED**
-- PR #19 merge commit / risk-reconciliation integration anchor: `bbb9fbf5768eb46463c974a9236f958f8f94c46e`
+- AO-Lite v1 design PR #16 and implementation PR #18, plus post-merge risk reconciliation PR #19, remain merged historical foundations (see "AO-Lite v1 status" below).
+- Product Proof Slice 006 (Storm Control hero VFX) — **MERGED / CLOSED**, PR #30 (`5cf00fc30be79d2ff4235dc33ec3b046b52ee652`).
+- Product Proof Slice 007 (actor-presentation chibi sprites) — **MERGED / CLOSED**, PR #33 (`b25ffb0`).
+- Product Proof Slice 008 (Slice-007 follow-up fixes) — **MERGED / CLOSED**, PRs #36/#37 (`e61ec17` / `962a635`).
 - Accepted AO-Lite v1 design: `docs/superpowers/specs/2026-08-19-ao-lite-v1-design.md`
 - Canonical project risks: `docs/governance/RISK_REGISTER.md`
 - Human/Game Director remains merge authority for future repository PRs.
@@ -38,19 +37,23 @@ POST_MERGE_RISK_RECONCILIATION       = ACCEPTED / INTEGRATED VIA PR #19
 MAIN_BRANCH_PROTECTION               = PASS / repository-gate REQUIRED
 RISK_NETWORK_001                     = OPEN / P2 GOVERNANCE-PRODUCT DEBT
 RISK_IP_001                          = OPEN / P1 BEFORE EXTERNAL COMMERCIAL COMMITMENT
-PRODUCT_PROOF_SLICE_001              = DRAFT PR #13 / PAUSED / NOT MERGE-READY
-PRODUCT_PROOF_UNITY_VERIFICATION     = REQUIRED BEFORE RESUME
-PRODUCT_PROOF_HUMAN_PHYSICAL_GATE    = NOT REACHED
+PRODUCT_PROOF_SLICE_001              = SUPERSEDED / PR #13 REMAINS DRAFT-PAUSED, NOT CURRENT EXECUTION REALITY
+PRODUCT_PROOF_SLICE_006              = CLOSED / INTEGRATED VIA PR #30
+PRODUCT_PROOF_SLICE_007              = CLOSED / INTEGRATED VIA PR #33
+PRODUCT_PROOF_SLICE_008              = CLOSED / INTEGRATED VIA PR #36 + PR #37
+EARLY_DEFEAT_AT_00_03_INVESTIGATION  = CLOSED / CONFIRMED NOT A DEFECT
+WATERZONE_DEPTH_OCCLUSION            = OPEN / UNCLAIMED FOLLOW-UP
+PRODUCT_PROOF_HUMAN_PHYSICAL_GATE    = PENDING / GENUINE B-LITE PLAYTEST NOT YET RUN
 R1 DIRTY SPECIMEN                    = QUARANTINED / DO NOT TOUCH
 STAGE_C                              = NOT AUTHORIZED
 PvP / CO-OP / NETWORK SCALE          = NOT AUTHORIZED
 COMMERCIAL_RIGHTS_REVIEW             = REQUIRED BEFORE EXTERNAL COMMERCIAL COMMITMENT
-SUCCESSOR_IMPLEMENTATION_AUTHORITY   = NONE
+SUCCESSOR_IMPLEMENTATION_AUTHORITY   = NONE BEYOND THE ACTIVE RECONCILIATION TASK'S OWN NARROW DOCS SCOPE
 ```
 
 ## AO-Lite v1 status
 
-AO-Lite v1 is now integrated as a repository-owned, read-only-by-default mechanical verification layer beneath existing TTK authority.
+AO-Lite v1 is integrated as a repository-owned, read-only-by-default mechanical verification layer beneath existing TTK authority.
 
 Integrated v1 boundary:
 
@@ -96,16 +99,17 @@ Before an external commercialization, publisher, or store-release commitment tha
 
 ## Product-Proof roadmap position
 
-The product critical path remains:
+The product critical path has advanced beyond Slice 001:
 
 ```text
 completed local/vertical-slice foundations
 → accepted solo-PvE Product Foundation
 → Harness vNext execution foundation
-→ Product Proof Slice 001
-→ technical verification
-→ Human physical/product gate
-→ evidence-backed product decision
+→ Product Proof Slices 002-006 (feel/VFX iteration; superseded by Slice 006 pivot)
+→ Product Proof Slice 007 (actor-presentation chibi sprites) — CLOSED
+→ Product Proof Slice 008 (Slice-007 follow-up fixes) — CLOSED
+→ two open unclaimed threads: WaterZone depth-occlusion fix; genuine B-LITE Human physical gate
+→ next bounded action requires a fresh explicit Human/Game Director decision
 ```
 
 AO-Lite is workflow tooling and does not replace or promote itself into the product critical path because it is integrated.
@@ -114,15 +118,30 @@ Stage C, PvP, co-op, hosted real-Internet work, backend/service scale, permanent
 
 The risk register records debt/gates; it does not itself create Product Proof or remediation authority.
 
-## Existing Product Proof candidate — PR #13
+## Superseded Product Proof candidate — PR #13 (Slice 001)
 
-PR #13 (`feat(product-proof): add bounded solo PvE playstyle proof`) remains **open / draft / paused / unmerged** at its recorded historical head:
+PR #13 (`feat(product-proof): add bounded solo PvE playstyle proof`) is **superseded as current execution reality** by the accepted Slice 006/007/008 history above. It remains open / draft / paused / unmerged at its recorded historical head:
 
 `925d370fff00391331d9fd94d07aaf001abf430f`
 
-Its original base anchor was `62f20934c6fb01b2fa01d8fee408867b58eeeffb`. It contains a bounded test-first Product Proof candidate, but its recorded Unity-dependent evidence remains blocked/not tested. It is not current mutation authority and must not be merged in that state.
+Its original base anchor was `62f20934c6fb01b2fa01d8fee408867b58eeeffb`. It contains a bounded test-first Product Proof candidate, but its recorded Unity-dependent evidence remains blocked/not tested. It is not current mutation authority, is not the current next execution reality, and must not be merged in that state.
 
 Any later continuation requires a fresh explicit Human/Game Director decision plus live main/head/evidence revalidation and a valid rebaseline/synchronization decision before mutation. Existing candidate code does not self-authorize continuation.
+
+## Product Proof Slices 006-008 — accepted history
+
+- **Slice 006** (Storm Control hero VFX): merged PR #30. Technical gate GREEN. Device render check `HUMAN_ACCEPTED_RISK` (no clean capture obtained, transparently disclosed). Human playtest recorded but genuinely confounded by greybox scene fidelity, not cleanly pass/fail. This closure redirected priority away from further per-skill VFX iteration toward actor/environment art direction, which produced Slice 007.
+- **Slice 007** (actor-presentation chibi sprites): merged PR #33. Technical gate GREEN. `device_actor_sprite_render_check`: PASS with 3 on-device screenshots. Two items disclosed at closure: a WaterZone/sprite depth-sorting artifact, and an apparent early-Defeat-at-00:03 behavior observed during device testing. Genuine B-LITE Human Gate playtest deferred to a disclosed post-merge follow-up.
+- **Slice 008** (Slice-007 follow-up fixes): merged PR #36 + PR #37. Priority 1 (early-Defeat-at-00:03) **CLOSED, confirmed not a code defect** — a deterministic PlayMode test and 4 independent live on-device reproductions confirm Wave 1's two-Pursuer pincer working exactly as coded against a fully idle player. Priority 2 (WaterZone depth occlusion): a `sortingOrder` fix was applied, but this task's own shader analysis found `WaterZone` is fully opaque (`ZWrite On`, no `Blend`), so `sortingOrder` alone cannot fully resolve a real depth-occlusion issue — **remains OPEN and unclaimed**, needing its own bounded follow-up task. Priority 3 (evidence screenshot correction): CLOSED.
+
+Full detail remains in each slice's own evidence report under `docs/evidence/`.
+
+## Two open, unclaimed threads
+
+Neither of the following is implementation authority; each requires its own bounded task activation or an explicit Human/Game Director decision:
+
+1. **WaterZone depth-occlusion fix** — most likely a `WaterZone`-only `ZWrite Off` material instance requiring a small scoped `P0A_Unlit.shader` property addition, or a level/hazard placement change.
+2. **Genuine B-LITE Human physical gate playtest** (deferred from Slice 007) — its result decides whether a minimal animation/ground-water pass is worth pursuing next, or whether to stop the actor-art axis and re-evaluate.
 
 ## Historical network / R1 status
 
@@ -130,21 +149,18 @@ The NGO + Unity Transport Stage-B foundation remains accepted historical technic
 
 The local R1 specimen remains quarantined and must not be reset, cleaned, stashed, committed, rebased, merged, or otherwise modified without separate explicit Human authority.
 
-## Canonical post-merge authority state
+## Canonical current authority state
 
-PR #19 is integrated. Canonical authority remains non-mutating `DISCOVERY`:
+Canonical repository authority is non-mutating `DISCOVERY` once the active `TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001` reconciliation task (see `docs/governance/NEXT_TASK.md`) closes:
 
-- no active task;
-- no active branch authority;
-- no baseline/authority anchor;
-- no task/evidence pointer;
-- no writable paths;
-- stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+- no active product/gameplay task;
+- no active product-mutation branch authority;
+- no baseline/authority anchor beyond this task's own narrow docs/governance scope while it remains active;
+- no writable paths beyond this task's own `allowed_paths` while it remains active;
+- stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY` for any product/gameplay successor.
 
 Current next-action boundary:
 
-**Human/Game Director explicitly chooses the next bounded action.**
+**Human/Game Director explicitly chooses the next bounded action** — most likely either the still-pending genuine B-LITE Human physical gate playtest, or a bounded follow-up task for the WaterZone depth-occlusion fix.
 
-Product Proof Slice 001 remains the next intended product slice, but roadmap position, AO-Lite integration, the two open risks, PR #13, and the integration of PR #19 do not create mutation authority.
-
-No successor implementation authority is inferred by PR #18 or PR #19.
+Successor implementation authority beyond this reconciliation task's own narrow docs/governance scope remains **NONE**. This task's `IMPLEMENT` state is itself a narrow, self-contained exception scoped to docs/governance reconciliation — it is not, and must not be read as, a reopening of product-mutation authority. No successor implementation authority is inferred by the closure of Slices 006, 007, or 008.
