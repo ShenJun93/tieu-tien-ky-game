@@ -65,6 +65,7 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.NotNull(renderer);
             Assert.NotNull(renderer.sprite);
             Assert.AreEqual("Player_Chibi_01", renderer.sprite.name);
+            Assert.Greater(renderer.sortingOrder, 0, "Chibi sprite must render above sortingOrder 0 (SLICE-008 WaterZone occlusion mitigation).");
 
             Assert.IsNull(root.transform.Find("CharacterView/Head"), "Sprite mode must not also build primitive limbs.");
             Assert.NotNull(root.transform.Find("CharacterView/WeaponSocket/Sword"), "WeaponSocket/Sword must still build unconditionally for SwordAttackView's thunder-stack feedback.");

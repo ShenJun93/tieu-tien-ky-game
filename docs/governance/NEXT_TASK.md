@@ -4,15 +4,67 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SLICE",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-008-FOLLOWUP-FIXES",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "feat/product-proof-slice-008-followup-fixes",
+  "baseline_ref": "6c5bc47bb3df35ba50ae9a8e53a3e5790ca2fda6",
+  "authority_anchor_ref": "6c5bc47bb3df35ba50ae9a8e53a3e5790ca2fda6",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-008-FOLLOWUP-FIXES.md",
+  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md",
+  "allowed_paths": [
+    "Assets/_Project/Presentation/PrimitiveCharacterView.cs",
+    "Assets/_Project/Tests/PlayMode/",
+    "Assets/_Project/Tests/EditMode/",
+    "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_SCREENSHOTS/"
+  ],
+  "forbidden_paths": [
+    "Assets/_Project/Gameplay/ArenaRunDirector.cs",
+    "Assets/_Project/Gameplay/Combatant.cs",
+    "Assets/_Project/Gameplay/EnemyCombatController.cs",
+    "Assets/_Project/Gameplay/EnemyAttackCycle.cs",
+    "Assets/_Project/Gameplay/EnemyCombatProfile.cs",
+    "Assets/_Project/Gameplay/ActorHealth.cs",
+    "Assets/_Project/Gameplay/WaterZone.cs",
+    "Assets/_Project/Gameplay/HazardObstacle.cs",
+    "Assets/_Project/Gameplay/GreyboxSceneBootstrapper.cs",
+    "Assets/_Project/Gameplay/ArenaVerticalSliceBootstrapper.cs",
+    "Assets/_Project/Gameplay/ArenaSpawnPlanner.cs",
+    "Assets/_Project/Gameplay/ArenaBounds.cs",
+    "Assets/_Project/Gameplay/PlayerController.cs",
+    "Assets/_Project/Gameplay/BasicAttack.cs",
+    "Assets/_Project/Presentation/CharacterPresentation.cs",
+    "Assets/_Project/Presentation/PrimitiveBurstVFX.cs",
+    "Assets/_Project/Presentation/PrimitiveTelegraphVFX.cs",
+    "Assets/_Project/Presentation/HitStop.cs",
+    "Assets/_Project/Presentation/RunHud.cs",
+    "Assets/_Project/Presentation/PlayerFollowCamera.cs",
+    "Assets/_Project/Presentation/CombatAudio.cs",
+    "Assets/_Project/Presentation/SwordAttackView.cs",
+    "Assets/_Project/Presentation/StormControlVFX.cs",
+    "Assets/_Project/Shaders/",
+    "Assets/_Project/Resources/Materials/",
+    "Assets/_Project/Resources/Textures/",
+    "docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_SCREENSHOTS/",
+    "docs/master/",
+    ".agents/",
+    "scripts/",
+    "AGENTS.md",
+    "Packages/",
+    "ProjectSettings/",
+    "Assets/_Project/Scenes/",
+    "Assets/_Project/Prefabs/"
+  ],
+  "required_evidence": {
+    "unity_compile": "PASS",
+    "editmode": "PASS",
+    "playmode": "PASS",
+    "android_build": "PASS"
+  },
+  "stop_condition": "SELF_MERGE_ON_GREEN_MACHINE_EVIDENCE_NO_HUMAN_GATE_NEEDED_THIS_TASK_IS_TECHNICAL_ONLY"
 }
 ```
 
