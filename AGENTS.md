@@ -160,6 +160,7 @@ Load only the smallest relevant craft skill(s); they do not replace process skil
 - `.agents/skills/ttk-build-identity-replayability/SKILL.md`
 - `.agents/skills/ttk-level-encounter-presentation/SKILL.md`
 - `.agents/skills/ttk-human-product-gate/SKILL.md`
+- `.agents/skills/ttk-narrative-lore-consistency/SKILL.md`
 
 Governing product/craft sources: `docs/master/PRODUCT_FOUNDATION.md`, `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
 

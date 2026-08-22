@@ -69,6 +69,10 @@ OPTIONS_CLAUDE_SEES =
 WHAT_CLAUDE_NEEDS_FROM_CHATGPT =
   (visual direction / mechanic hypothesis / UX review / market research / naming /
    playtest diagnosis / etc.)
+LORE_FACTS_ALREADY_ESTABLISHED =
+  (for CONTENT/NARRATIVE questions only — names, ranks, relationships, world rules
+   from the story bible that ChatGPT must not contradict or reinvent; see
+   docs/tasks/NARRATIVE_LORE_CONSISTENCY_PROTOCOL.md, added 2026-08-22)
 ```
 
 ## 4. ChatGPT Web does not override repo reality

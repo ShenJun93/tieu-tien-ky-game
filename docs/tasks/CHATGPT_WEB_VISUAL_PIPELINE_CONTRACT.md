@@ -84,3 +84,27 @@ HUMAN        = look, feel, readability, "does this feel like Tiểu Tiên Ký?" 
 15. **No generic VFX framework.** Visual *language* may be systematic across skills over
     time, but code should not be generalized into a shared framework until demonstrated
     reuse actually justifies it — one bespoke script per authored effect is fine.
+16. **Master-illustration-first pipeline (2026-08-22, from East/West AI-agent-skill
+    research).** For a character/actor that needs multiple related visual variants
+    (e.g. a chibi presentation plus later battle-pose/expression variants), request
+    ONE master illustration first, then derive the variants *from* that master via
+    ChatGPT Web's own consistency features, rather than requesting each variant as an
+    independent generation. This is the direct fix for the exact problem Slice 007's
+    3 independently-generated chibi sprites had (inconsistent foot-anchor/pivot
+    offsets across Player/Pursuer/Lancer, caught by Vision QA and corrected manually
+    at Unity-import time) — deriving from one master reduces this class of
+    inconsistency at the source instead of normalizing it after the fact every time.
+
+    **Why this matters beyond convenience:** visible, inconsistent AI-generated art
+    carries real reputational risk with this project's own audience. Two independent
+    real-world precedents — a Western game losing awards-eligibility over generative
+    AI use, and an Eastern anime/gacha-adjacent game facing an organized player
+    boycott over inconsistent AI-generated art — converge on the same lesson:
+    consistency (and, if ever asked, disclosure) matters more than raw generation
+    capability. This project's wuxia/cultivation audience overlaps with the
+    anime/gacha-adjacent demographic shown to organize this kind of backlash, so
+    treat this as a real risk to manage, not a hypothetical one. Point 1's existing
+    normalization discipline (Claude may resize/crop/adjust import settings but must
+    not redesign the silhouette) is the right response at the Unity-import stage;
+    this point addresses the same goal one step earlier, at the source-asset-request
+    stage.
