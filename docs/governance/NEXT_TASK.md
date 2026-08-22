@@ -4,61 +4,49 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "task_id": "TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "chore/local-first-workflow-reconciliation-001",
-  "baseline_ref": "a2fc3b08e4eee46899997b928b2200dc3c805044",
-  "authority_anchor_ref": "a2fc3b08e4eee46899997b928b2200dc3c805044",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_LOCAL_FIRST_WORKFLOW_RECONCILIATION_001.md",
-  "evidence_file": "docs/evidence/LOCAL_FIRST_WORKFLOW_RECONCILIATION_001_REPORT.md",
-  "allowed_paths": [
-    "docs/governance/CURRENT_STATE.md",
-    "docs/governance/RESEARCH_INTEGRATION_LEDGER.md",
-    "docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md",
-    "docs/evidence/LOCAL_FIRST_WORKFLOW_RECONCILIATION_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "AGENTS.md",
-    "docs/governance/WORKFLOW.md",
-    "docs/governance/NEXT_TASK.md",
-    "scripts/hooks/",
-    ".agents/",
-    ".github/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Tests/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "scope_diff": "PASS",
-    "current_state_reconciled": "PASS",
-    "local_cloud_routing_documented": "PASS",
-    "memory_not_authority_rule_documented": "PASS",
-    "research_disposition_recorded": "PASS",
-    "repo_authority_semantics_unchanged": "PASS"
-  },
-  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001` is active. This is a
-docs/governance-only reconciliation task, not a product slice: it updates
-`CURRENT_STATE.md` so it no longer presents Slice 001/PR #13 as current
-execution reality, documents an operational (not authority-granting)
-local-preferred / cloud-preferred routing preference in the ChatGPT Web
-collaboration protocol, records the memory-is-not-authority rule, and logs its
-own research disposition in the ledger. It does **not** change `AGENTS.md`,
-`WORKFLOW.md`, hooks, merge authority, or the `NEXT_TASK.md` state machine
-itself. `stop_condition: INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE` — the
-implementation writer must not self-present its own review as independent
-review; a fresh reviewer must read the task contract, diff, and evidence
-before this reaches the Human merge decision.
+`TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001` is closed. Its
+final state:
+
+- merged via PR #39 at `456f68fd85c934940eec839e9ba4a3325def9d2d` (`main`),
+  merged 2026-08-22T12:26:08Z; docs/governance-only reconciliation, not a
+  product slice — it does not change `AGENTS.md`, `WORKFLOW.md`, hooks, merge
+  authority, or the `NEXT_TASK.md` state machine itself;
+- `CURRENT_STATE.md` reconciled so it no longer presents Slice 001/PR #13 as
+  current execution reality, and now accurately reflects Slices 006/007/008 as
+  closed history;
+- an operational (not authority-granting) local-preferred / cloud-preferred
+  routing preference was documented in
+  `docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md`;
+- the memory-is-not-authority rule was recorded (agent memory/`.remember`/
+  session summaries/plugin memory must never be treated as proof of current
+  authority; live repository state — `CURRENT_STATE.md`, `NEXT_TASK.md`, the
+  active task contract, live `origin/main` — always wins on disagreement);
+- research disposition logged in `RESEARCH_INTEGRATION_LEDGER.md`, extending
+  R-009/R-010 rather than inventing a new framework;
+- required evidence all `PASS`: `governance_hook_tests`, `scope_diff`,
+  `current_state_reconciled`, `local_cloud_routing_documented`,
+  `memory_not_authority_rule_documented`, `research_disposition_recorded`,
+  `repo_authority_semantics_unchanged`. Full detail in
+  `docs/evidence/LOCAL_FIRST_WORKFLOW_RECONCILIATION_001_REPORT.md`;
+- this closure grants **no** successor implementation authority. Two threads
+  remain open and unclaimed, exactly as before this task: the WaterZone
+  depth-occlusion fix, and the Director's still-pending genuine B-LITE Human
+  physical gate playtest. Either requires its own fresh explicit Human/Game
+  Director decision and bounded task activation before any further mutation.
 
 ## Prior authority — SLICE-008 closure (superseded)
 
@@ -199,19 +187,15 @@ threads — see "Current authority" at the top of this file.
 
 ## Current stop condition
 
-The active write task is docs/governance-only, per "Current authority" above:
-`TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001`, scoped to
-`docs/governance/CURRENT_STATE.md`, `docs/governance/RESEARCH_INTEGRATION_LEDGER.md`,
-`docs/tasks/CHATGPT_WEB_COLLABORATION_PROTOCOL.md`, and its own evidence report. It
-does not grant, and must not be read as granting, any dependency audit/removal,
-rights/provenance review, art-direction authorization, Product Proof continuation, or
-gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation. Those
-remain blocked on a fresh explicit Human/Game Director decision — most likely either
-the Director's still-pending B-LITE playtest result (deciding whether to pursue
-minimal animation/ground-water pass next, per SLICE-007's escalation clause) or a
-bounded follow-up task for the one remaining open product item: the WaterZone
-depth-occlusion fix.
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. This does not grant, and must
+not be read as granting, any dependency audit/removal, rights/provenance
+review, art-direction authorization, Product Proof continuation, or
+gameplay/runtime/Unity/networking/PvP/co-op/Stage C/backend/package mutation.
+Those remain blocked on a fresh explicit Human/Game Director decision — most
+likely either the Director's still-pending B-LITE playtest result (deciding
+whether to pursue minimal animation/ground-water pass next, per SLICE-007's
+escalation clause) or a bounded follow-up task for the one remaining open
+product item: the WaterZone depth-occlusion fix.
 
-Stop condition for this task: `INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`.
-Stop condition for successor product authority beyond this task's narrow scope
-remains: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
