@@ -1,5 +1,22 @@
 # EVIDENCE — LOCAL-FIRST WORKFLOW RECONCILIATION 001
 
+```json
+{
+  "task_id": "TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001",
+  "branch": "chore/local-first-workflow-reconciliation-001",
+  "baseline_ref": "a2fc3b08e4eee46899997b928b2200dc3c805044",
+  "authority_anchor_ref": "a2fc3b08e4eee46899997b928b2200dc3c805044",
+  "governance_hook_tests": "PASS",
+  "scope_diff": "PASS",
+  "current_state_reconciled": "PASS",
+  "local_cloud_routing_documented": "PASS",
+  "memory_not_authority_rule_documented": "PASS",
+  "research_disposition_recorded": "PASS",
+  "repo_authority_semantics_unchanged": "PASS",
+  "verdict": "PASS"
+}
+```
+
 Task: `TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001`
 Branch: `chore/local-first-workflow-reconciliation-001`
 Baseline / authority anchor: `a2fc3b08e4eee46899997b928b2200dc3c805044`
