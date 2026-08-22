@@ -4,70 +4,62 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "MICRO",
-  "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-PROJECT-BRIDGE-PILOT-001",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "chore/claude-project-bridge-pilot-001",
-  "baseline_ref": "737b71a47c93fa15d4c02ff69b998674d807eb92",
-  "authority_anchor_ref": "737b71a47c93fa15d4c02ff69b998674d807eb92",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_CLAUDE_PROJECT_BRIDGE_PILOT_001.md",
-  "evidence_file": "docs/evidence/CLAUDE_PROJECT_BRIDGE_PILOT_001_REPORT.md",
-  "allowed_paths": [
-    "CLAUDE.md",
-    "docs/evidence/CLAUDE_PROJECT_BRIDGE_PILOT_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "AGENTS.md",
-    "docs/governance/WORKFLOW.md",
-    "docs/governance/NEXT_TASK.md",
-    ".agents/skills/",
-    ".claude/",
-    ".gitignore",
-    "scripts/hooks/",
-    "scripts/ao/",
-    ".github/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Tests/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "claude_md_minimal_bridge": "PASS",
-    "agents_md_not_duplicated": "PASS",
-    "canonical_skill_source_unchanged": "PASS",
-    "no_claude_skills_created": "PASS",
-    "no_game_or_unity_change": "PASS",
-    "fresh_session_context_load": "PASS",
-    "fresh_session_authority_orientation": "PASS"
-  },
-  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-CLAUDE-PROJECT-BRIDGE-PILOT-001` is active. This is a
-single-file, docs/root-only pilot: create exactly one root `CLAUDE.md` whose
-primary behavior is `@AGENTS.md` (import, not copy), plus minimal
-Claude-specific clarification that `AGENTS.md` remains canonical repository
-operating authority, `.agents/skills/` remains canonical Skill content, and
-this file grants no repository authority. Native `.claude/skills/`
-discovery, Skill adapters, and symlinks are explicitly **not** part of this
-task — a separate future Human decision. Does not touch `.agents/skills/`,
-`.gitignore`, `scripts/ao/`, or the separate, still-inert
-`chore/game-production-skill-pack-v1-001` branch/worktree.
-`stop_condition: INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE` — this
-changes how every future Claude Local session orients itself, so the
-implementation writer must not self-present its own review as independent
-review; a fresh reviewer must read the task contract, diff, and evidence
-report before the Human merge decision. The fresh-session evidence
-(`fresh_session_context_load`, `fresh_session_authority_orientation`) can
-only come from a genuinely new session, never from the session that wrote
-`CLAUDE.md`.
+`TASK-TIEU-TIEN-KY-CLAUDE-PROJECT-BRIDGE-PILOT-001` is closed. Its final
+state:
+
+- merged via PR #41 at `5970515b81b6181eb984e8d1dbe1eb423b03d834` (`main`);
+  single-file docs/root pilot — a root `CLAUDE.md` importing `AGENTS.md`
+  (`@AGENTS.md`) rather than duplicating it, plus minimal Claude-specific
+  clarification that `AGENTS.md` remains canonical repository operating
+  authority, `.agents/skills/` remains canonical Skill content, and
+  Claude-specific configuration grants no repository authority;
+- required evidence all `PASS`: `governance_hook_tests` (46/46),
+  `exact_scope_diff`, `claude_md_minimal_bridge`, `agents_md_not_duplicated`,
+  `canonical_skill_source_unchanged`, `no_claude_skills_created`,
+  `no_game_or_unity_change`, `fresh_session_context_load`,
+  `fresh_session_authority_orientation` — the two fresh-session keys were
+  obtained from a genuinely new Claude Local session, not self-certified by
+  the implementing session. Full detail in
+  `docs/evidence/CLAUDE_PROJECT_BRIDGE_PILOT_001_REPORT.md`;
+- independent review was performed in a separate Claude Cloud session
+  outside GitHub (no GitHub PR review/comment exists on PR #41 itself — this
+  disposition is recorded as relayed by the Human/Game Director, not as
+  independently verified from this repository/GitHub by this closeout).
+  Per the Director's report: fresh read-only review of exact candidate
+  `d5699307bb6222d0dffcd71ba4b9232c4c575290` (the PR branch's evidence-report
+  commit, confirmed present in this repository's history), revalidating live
+  main, PR state/base/head, full commit chain, activation integrity,
+  writer-lock, full PR diff vs. writer scope diff, `CLAUDE.md` contents, task
+  contract, evidence report, 46/46 governance tests, `pre-finish` PASS, and
+  exact-head `repository-gate` PASS; verdict `ACCEPT`, P0/P1 none,
+  `SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE: YES`; fresh-session evidence classified
+  conservatively as `SUPPORTED_BY_RECORDED_HUMAN_EVIDENCE`; the review
+  performed no mutation and granted no successor authority;
+- the Human/Game Director then merged PR #41;
+- this closure grants **no** successor implementation authority. Native
+  `.claude/skills/` discovery, Skill adapters, and symlinks remain
+  unauthorized (a separate future Human decision); the Game Production Skill
+  Pack v1 branch/worktree remains unauthorized/inert; `ttk-runtime-verify`
+  and `ttk-asset-intake` remain unauthorized; MCP/plugin installation, Unity
+  execution, gameplay/product mutation, WaterZone, B-LITE, and
+  networking/PvP/co-op/backend/Stage C work all remain unauthorized unless
+  separately Human-authorized. The two pre-existing open unclaimed threads
+  (WaterZone depth-occlusion fix; pending genuine B-LITE Human physical gate
+  playtest) are unaffected and remain open.
 
 ## Prior authority — LOCAL-FIRST-WORKFLOW-RECONCILIATION-001 closure (superseded)
 
@@ -240,19 +232,18 @@ threads — see "Current authority" at the top of this file.
 
 ## Current stop condition
 
-The active write task is a single-file docs/root pilot, per "Current
-authority" above: `TASK-TIEU-TIEN-KY-CLAUDE-PROJECT-BRIDGE-PILOT-001`,
-scoped to exactly `CLAUDE.md` and its own evidence report. It does not grant,
-and must not be read as granting, any Skill-adapter/native-discovery work,
-dependency audit/removal, rights/provenance review, art-direction
-authorization, Product Proof continuation, or gameplay/runtime/Unity/
-networking/PvP/co-op/Stage C/backend/package mutation. Those remain blocked
-on a fresh explicit Human/Game Director decision — most likely either the
-Director's still-pending B-LITE playtest result (deciding whether to pursue
-minimal animation/ground-water pass next, per SLICE-007's escalation clause)
-or a bounded follow-up task for the one remaining open product item: the
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. This does not grant, and must
+not be read as granting, any Skill-adapter/native-discovery work, dependency
+audit/removal, rights/provenance review, art-direction authorization,
+Product Proof continuation, or gameplay/runtime/Unity/networking/PvP/co-op/
+Stage C/backend/package mutation. Those remain blocked on a fresh explicit
+Human/Game Director decision — most likely either the Director's
+still-pending B-LITE playtest result (deciding whether to pursue minimal
+animation/ground-water pass next, per SLICE-007's escalation clause) or a
+bounded follow-up task for the one remaining open product item: the
 WaterZone depth-occlusion fix.
 
-Stop condition for this task: `INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`.
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
 Stop condition for successor product authority beyond this task's narrow
 scope remains: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
