@@ -4,71 +4,61 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SLICE",
-  "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-008-FOLLOWUP-FIXES",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "feat/product-proof-slice-008-followup-fixes",
-  "baseline_ref": "6c5bc47bb3df35ba50ae9a8e53a3e5790ca2fda6",
-  "authority_anchor_ref": "6c5bc47bb3df35ba50ae9a8e53a3e5790ca2fda6",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-008-FOLLOWUP-FIXES.md",
-  "evidence_file": "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md",
-  "allowed_paths": [
-    "Assets/_Project/Presentation/PrimitiveCharacterView.cs",
-    "Assets/_Project/Tests/PlayMode/",
-    "Assets/_Project/Tests/EditMode/",
-    "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md",
-    "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_SCREENSHOTS/"
-  ],
-  "forbidden_paths": [
-    "Assets/_Project/Gameplay/ArenaRunDirector.cs",
-    "Assets/_Project/Gameplay/Combatant.cs",
-    "Assets/_Project/Gameplay/EnemyCombatController.cs",
-    "Assets/_Project/Gameplay/EnemyAttackCycle.cs",
-    "Assets/_Project/Gameplay/EnemyCombatProfile.cs",
-    "Assets/_Project/Gameplay/ActorHealth.cs",
-    "Assets/_Project/Gameplay/WaterZone.cs",
-    "Assets/_Project/Gameplay/HazardObstacle.cs",
-    "Assets/_Project/Gameplay/GreyboxSceneBootstrapper.cs",
-    "Assets/_Project/Gameplay/ArenaVerticalSliceBootstrapper.cs",
-    "Assets/_Project/Gameplay/ArenaSpawnPlanner.cs",
-    "Assets/_Project/Gameplay/ArenaBounds.cs",
-    "Assets/_Project/Gameplay/PlayerController.cs",
-    "Assets/_Project/Gameplay/BasicAttack.cs",
-    "Assets/_Project/Presentation/CharacterPresentation.cs",
-    "Assets/_Project/Presentation/PrimitiveBurstVFX.cs",
-    "Assets/_Project/Presentation/PrimitiveTelegraphVFX.cs",
-    "Assets/_Project/Presentation/HitStop.cs",
-    "Assets/_Project/Presentation/RunHud.cs",
-    "Assets/_Project/Presentation/PlayerFollowCamera.cs",
-    "Assets/_Project/Presentation/CombatAudio.cs",
-    "Assets/_Project/Presentation/SwordAttackView.cs",
-    "Assets/_Project/Presentation/StormControlVFX.cs",
-    "Assets/_Project/Shaders/",
-    "Assets/_Project/Resources/Materials/",
-    "Assets/_Project/Resources/Textures/",
-    "docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_SCREENSHOTS/",
-    "docs/master/",
-    ".agents/",
-    "scripts/",
-    "AGENTS.md",
-    "Packages/",
-    "ProjectSettings/",
-    "Assets/_Project/Scenes/",
-    "Assets/_Project/Prefabs/"
-  ],
-  "required_evidence": {
-    "unity_compile": "PASS",
-    "editmode": "PASS",
-    "playmode": "PASS",
-    "android_build": "PASS"
-  },
-  "stop_condition": "SELF_MERGE_ON_GREEN_MACHINE_EVIDENCE_NO_HUMAN_GATE_NEEDED_THIS_TASK_IS_TECHNICAL_ONLY"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
+
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-008-FOLLOWUP-FIXES` is closed. Its final
+state:
+
+- merged via PR #36 at `e61ec17` (`main`), under the Director's standing
+  delegated-merge authorization; machine-only required evidence (no Human Gate —
+  a technical investigation/bugfix task, not an art/design judgment);
+- **Priority 1 (early-Defeat-at-00:03): CLOSED, confirmed not a code defect.**
+  A deterministic PlayMode test (`ArenaAfkDefeatInvestigationTests`) and 4
+  independent live on-device reproductions (Galaxy A15, wireless adb) both
+  confirm this is Wave 1's two-Pursuer pincer working exactly as coded against a
+  fully idle player — not a bug. No gameplay/balance code changed. No further
+  follow-up needed;
+- **Priority 2 (WaterZone/chibi sprite occlusion): code change applied, root
+  cause corrected, still open.** `ChibiSprite`'s `SpriteRenderer.sortingOrder`
+  was bumped as the Director requested, but this task's own analysis of
+  `P0A_Unlit.shader` found SLICE-007's "transparency-sorting" diagnosis was
+  wrong — `WaterZone` is fully opaque (`ZWrite On`, no `Blend`), so this is a
+  real depth occlusion that `sortingOrder` cannot fully resolve alone.
+  On-device visual confirmation was attempted (4 capture attempts, per the
+  visual-pipeline contract's cap) but not obtained — Wave 1's pincer ended each
+  run first. **Still open**, needs its own bounded follow-up (most likely a
+  `WaterZone`-only `ZWrite Off` material instance, requiring a small scoped
+  `P0A_Unlit.shader` property addition — or a level/hazard placement change);
+- **Priority 3 (evidence screenshot correction): CLOSED.** Two corrected clean
+  on-device screenshots captured; the mismatched
+  `docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_
+  SCREENSHOTS/01_player_chibi_sprite_closeup.png` (previously an uncaught
+  Defeat screen, not the clean closeup its description claimed) was replaced in
+  this same closure, with its description corrected;
+- technical gate GREEN: `unity_compile`/`editmode` (172/172)/`playmode` (30/32, 2
+  pre-existing skips)/`android_build` all PASS;
+- `verdict: PASS_WITH_REMEDIATION` — Priority 2's fix is applied but unverified.
+  Full detail in `docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md`.
+
+One follow-up remains open and unclaimed by any successor authority: the
+WaterZone depth-occlusion fix. It is not implementation authority — it requires
+its own bounded task activation. The Director's still-pending genuine B-LITE
+Human Gate playtest (from SLICE-007) is unaffected by this closure and remains
+the other open thread.
+
+## Prior authority — SLICE-007 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-007-ACTOR-PRESENTATION-CHIBI-SPRITES` is closed.
 Its final state:
@@ -110,7 +100,7 @@ Two follow-ups are open and unclaimed by any successor authority yet: the WaterZ
 sprite-sorting fix, and the early-defeat behavior investigation. Neither is
 implementation authority — each requires its own bounded task activation.
 
-## Prior authority — SLICE-006 closure (superseded)
+## Prior authority — SLICE-006 closure (doubly superseded)
 
 `TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-006-STORM-CONTROL-HERO-VFX` is closed. Its final
 state:
@@ -156,10 +146,12 @@ cost calculus that originally justified staying in greybox — but full 3D chara
 models/rigging/animation remain a materially different, harder problem ChatGPT Web
 image generation cannot produce directly.
 
-This distinction resolved into SLICE-007 above (the `B-LITE` actor-sprite proof), which
-is now itself closed. Its two open follow-ups and the Director's still-pending genuine
-Human Gate playtest are the current unresolved threads — see "Current authority" at the
-top of this file.
+This distinction resolved into SLICE-007 (the `B-LITE` actor-sprite proof), which is
+also now closed — see "Prior authority — SLICE-007 closure" above. SLICE-008 then
+closed one of its two disclosed follow-ups (the early-Defeat investigation) and
+corrected its evidence screenshot; the WaterZone depth-occlusion fix and the
+Director's still-pending genuine Human Gate playtest are the current unresolved
+threads — see "Current authority" at the top of this file.
 
 ## Current stop condition
 
@@ -170,6 +162,6 @@ Stage C/backend/package mutation, or other successor work requires a fresh expli
 Human/Game Director decision and valid authority transition — most likely either the
 Director's B-LITE playtest result (deciding whether to pursue minimal animation/
 ground-water pass next, per the task's escalation clause) or a bounded follow-up task
-for one of the two disclosed SLICE-007 remediation items.
+for the one remaining open item: the WaterZone depth-occlusion fix.
 
 Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
