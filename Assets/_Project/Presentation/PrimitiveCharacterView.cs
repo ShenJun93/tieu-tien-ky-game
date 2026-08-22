@@ -25,6 +25,13 @@ namespace TieuTienKy.Gameplay
         const float ChibiSpriteWorldHeight = 1.92f;
         const float ChibiSpriteFootLocalY = -0.9f;
 
+        // Attempted mitigation for the WaterZone occlusion artifact disclosed in
+        // SLICE-007 (see SLICE-008's task file "Priority 2" for the corrected root
+        // cause - WaterZone is fully opaque and depth-writes, so this cannot fully
+        // fix a genuine depth occlusion; kept as a safe, zero-risk nudge pending a
+        // properly-scoped follow-up).
+        const int ChibiSpriteSortingOrder = 10;
+
         static readonly int TintColorPropertyId = Shader.PropertyToID("_Color");
         static Material s_PrimitiveMaterial;
 
@@ -96,6 +103,7 @@ namespace TieuTienKy.Gameplay
 
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
+            renderer.sortingOrder = ChibiSpriteSortingOrder;
 
             float nativeHeight = sprite.bounds.size.y;
             float scale = nativeHeight > 0f ? (ChibiSpriteWorldHeight * visualScale) / nativeHeight : visualScale;
