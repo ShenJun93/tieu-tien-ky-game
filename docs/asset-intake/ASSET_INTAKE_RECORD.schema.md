@@ -41,9 +41,11 @@ and does not encode a full legal rules engine.
   repository control; nothing has been decided yet. Provenance/rights
   fields may legitimately be `"UNKNOWN"`.
 - `ADOPT` — the record asserts this asset is ready to be used as-is.
-  **Fails closed** unless `rights_basis`, `license_name`, and
-  `license_locator` are all present and not `"UNKNOWN"`, and
-  `destination_if_adopted` is a valid repository-relative path.
+  **Fails closed** unless `source_name`, `source_locator`,
+  `source_version_or_ref`, `source_fingerprint`, `rights_basis`,
+  `license_name`, and `license_locator` are all present and not
+  `"UNKNOWN"`, and `destination_if_adopted` is a valid repository-relative
+  path.
 - `ADAPT` — the record asserts this asset will be modified before use.
   Same fail-closed provenance/rights/destination requirement as `ADOPT`.
 - `REJECT` — the candidate asset was considered and rejected. Provenance/

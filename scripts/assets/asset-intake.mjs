@@ -82,9 +82,8 @@ function validateDestinationPath(dest, errors, fieldLabel) {
     errors.push(`${fieldLabel} must not be an absolute Windows path: ${dest}`);
     return;
   }
-  const normalized = path.posix.normalize(raw);
-  if (normalized === '..' || normalized.startsWith('../')) {
-    errors.push(`${fieldLabel} must not traverse outside the repository (..): ${dest}`);
+  if (raw.split('/').includes('..')) {
+    errors.push(`${fieldLabel} must not contain a ".." path segment: ${dest}`);
   }
 }
 
@@ -186,6 +185,15 @@ export function validateRecord(record) {
     }
     if (!isNonEmptyString(record.source_name) || isUnknown(record.source_name)) {
       errors.push(`disposition ${disposition} requires a resolved source_name (not empty/UNKNOWN)`);
+    }
+    if (!isNonEmptyString(record.source_locator) || isUnknown(record.source_locator)) {
+      errors.push(`disposition ${disposition} requires a resolved source_locator (not empty/UNKNOWN)`);
+    }
+    if (!isNonEmptyString(record.source_version_or_ref) || isUnknown(record.source_version_or_ref)) {
+      errors.push(`disposition ${disposition} requires a resolved source_version_or_ref (not empty/UNKNOWN)`);
+    }
+    if (!isNonEmptyString(record.source_fingerprint) || isUnknown(record.source_fingerprint)) {
+      errors.push(`disposition ${disposition} requires a resolved source_fingerprint (not empty/UNKNOWN)`);
     }
     if (destination === null || destination === undefined || !isNonEmptyString(destination)) {
       errors.push(`disposition ${disposition} requires ${destinationField} (must not be null/empty)`);

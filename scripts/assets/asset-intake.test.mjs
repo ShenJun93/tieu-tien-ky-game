@@ -119,6 +119,38 @@ test('ADAPT with insufficient provenance fails closed', () => {
   assert.ok(result.errors.some((e) => e.includes('resolved license_locator')));
 });
 
+test('ADOPT with empty source_locator fails closed', () => {
+  const result = validateRecord(baseAdoptRecord({ source_locator: '' }));
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((e) => e.includes('resolved source_locator')));
+});
+
+test('ADOPT with UNKNOWN source_locator fails closed', () => {
+  const result = validateRecord(baseAdoptRecord({ source_locator: 'UNKNOWN' }));
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((e) => e.includes('resolved source_locator')));
+});
+
+test('ADOPT with UNKNOWN source_version_or_ref fails closed', () => {
+  const result = validateRecord(baseAdoptRecord({ source_version_or_ref: 'UNKNOWN' }));
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((e) => e.includes('resolved source_version_or_ref')));
+});
+
+test('ADAPT with UNKNOWN source_fingerprint fails closed', () => {
+  const result = validateRecord(baseAdoptRecord({
+    disposition: 'ADAPT',
+    source_fingerprint: 'UNKNOWN',
+  }));
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((e) => e.includes('resolved source_fingerprint')));
+});
+
+test('ADOPT with fully resolved provenance passes', () => {
+  const result = validateRecord(baseAdoptRecord());
+  assert.equal(result.ok, true, result.errors.join('; '));
+});
+
 test('ADOPT without destination fails closed', () => {
   const result = validateRecord(baseAdoptRecord({ destination_if_adopted: null }));
   assert.equal(result.ok, false);
@@ -128,7 +160,19 @@ test('ADOPT without destination fails closed', () => {
 test('traversal destination fails closed', () => {
   const result = validateRecord(baseAdoptRecord({ destination_if_adopted: '../../etc/passwd' }));
   assert.equal(result.ok, false);
-  assert.ok(result.errors.some((e) => e.includes('must not traverse outside the repository')));
+  assert.ok(result.errors.some((e) => e.includes('".." path segment')));
+});
+
+test('normalizing-away dot-dot segment (POSIX slashes) fails closed', () => {
+  const result = validateRecord(baseAdoptRecord({ destination_if_adopted: 'Assets/Foo/../Bar' }));
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((e) => e.includes('".." path segment')));
+});
+
+test('normalizing-away dot-dot segment (Windows backslashes) fails closed', () => {
+  const result = validateRecord(baseAdoptRecord({ destination_if_adopted: 'Assets\\Foo\\..\\Bar' }));
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((e) => e.includes('".." path segment')));
 });
 
 test('absolute Windows destination fails closed', () => {
