@@ -34,6 +34,38 @@
 }
 ```
 
+## Remediation 001 (post-independent-review)
+
+Independent review of candidate `6050fe50c2490ee9d9c7edf418303c501bef711b`
+returned **VERDICT = REMEDIATE**, P0 = none, one P1:
+
+```text
+P1 CLEAN_INSTALL_SAFETY — cmdCleanInstall accepted --apk/--package and could
+perform adb uninstall/adb install without internally enforcing the task
+contract's required preflight (artifact verification, authoritative
+package-id derivation, mismatch check); it relied on Skill call ordering,
+which is insufficient at a destructive boundary.
+```
+
+**Fix**: `clean-install` now performs its own internal preflight before any
+destructive `adb` call — see "Clean-install safety preflight" below for the
+exact refactor, new pure decision function, tests, and real-device
+fail-closed proof. `SKILL.md` §6 wording was also corrected (see that
+section) so it no longer reads as depending on the caller having run
+`verify-artifact`/`resolve-package-id` first.
+
+```text
+OLD_CANDIDATE_HEAD (reviewed, REMEDIATE verdict) = 6050fe50c2490ee9d9c7edf418303c501bef711b
+NEW_CANDIDATE_HEAD (this remediation)            = recorded in "Closeout" below, once committed
+```
+
+The original run's evidence (device identity, artifact verification,
+install/launch/screenshot transcript) below is **preserved as-is, not
+erased** — it remains accurate for what it actually tested. Only the APK
+provenance wording (a factual error caught by review) is corrected in place
+further down, and the clean-install-specific evidence is supplemented with
+a fresh post-remediation real-device run in its own section.
+
 ## Summary
 
 Delivered the smallest durable Device Verification Foundation V1: a
@@ -132,11 +164,55 @@ time, and only accepts the result if exactly one line looks like a
 package — any zero-candidate or multi-candidate result is `null` (FAIL
 CLOSED, never a guess).
 
+## Clean-install safety preflight (Remediation 001)
+
+`cmdCleanInstall` (the `clean-install` CLI command) now enforces its own
+destructive-boundary safety internally, rather than depending on a caller
+having run `verify-artifact`/`resolve-package-id` first:
+
+```text
+1. computeArtifactIdentity(apkPath)          — same lookup verify-artifact uses
+2. resolveAuthoritativePackageId(...)         — same lookup resolve-package-id uses
+3. evaluateCleanInstallPreflight({            — pure decision function, no I/O
+     artifact, authoritativePackageId, suppliedPackage })
+4. if preflight.ok !== true → fail(), function returns — zero adb
+   uninstall/install calls have executed
+5. only if preflight.ok === true → proceed to pm list / uninstall / install,
+   driven by preflight.packageId (the authoritative id), never the raw
+   --package argument
+```
+
+Code-inspection guarantee: in `scripts/device/device-verify.mjs`, both
+`runAdb(['uninstall', ...])` and `runAdb(['install', ...])` inside
+`cmdCleanInstall` are lexically located after the
+`if (!preflight.ok) { return fail(...); }` early return — there is no code
+path from function entry to either destructive call that does not pass
+through a successful `evaluateCleanInstallPreflight` result first.
+
+`evaluateCleanInstallPreflight` itself is pure (plain objects in, plain
+object out, zero child-process/fs calls) and shared by nothing else —
+it exists solely to make this one safety decision unit-testable without a
+mocking framework:
+
+```js
+if (!artifact || artifact.ok !== true)           → { ok:false, reason:'INVALID_ARTIFACT' }
+if (!authoritativePackageId)                      → { ok:false, reason:'PACKAGE_ID_UNREADABLE' }
+if (suppliedPackage && suppliedPackage !== authoritativePackageId)
+                                                    → { ok:false, reason:'PACKAGE_MISMATCH' }
+otherwise                                          → { ok:true, packageId: authoritativePackageId }
+```
+
+`--package` remains an accepted CLI flag for explicitness (per the
+remediation's own allowance) but is now cross-checked against the live
+`ProjectSettings/ProjectSettings.asset` value on every invocation, never
+trusted alone; omitting it is also fine — the authoritative id alone then
+drives the operation.
+
 ## Focused helper tests — `scripts/device/device-verify.test.mjs`
 
 ```text
 node --test scripts/device/device-verify.test.mjs
-25/25 PASS, 0 failed
+31/31 PASS, 0 failed   (25 original + 6 new for Remediation 001's clean-install preflight)
 ```
 
 Covers, with plain string fixtures (no real adb call, no mocking library —
@@ -160,6 +236,15 @@ just Node's built-in `node:test`/`node:assert`):
   package, e.g. a `.debug` suffix variant).
 - `isProcessAlive`: numeric pid alive, empty output not alive, garbage
   output not alive.
+
+- `evaluateCleanInstallPreflight` (Remediation 001, P1 CLEAN_INSTALL_SAFETY):
+  valid artifact + authoritative package == supplied → allowed; valid
+  artifact with no `--package` supplied → allowed (authoritative id alone
+  drives it); authoritative != supplied → rejected `PACKAGE_MISMATCH`
+  before any mutation; unreadable/unparseable `ProjectSettings` package →
+  rejected `PACKAGE_ID_UNREADABLE`; invalid artifact identity → rejected
+  `INVALID_ARTIFACT` regardless of package match; missing artifact result
+  entirely → rejected, never treated as valid by default.
 
 Per the task's own instruction, these mocks/unit tests cannot and do not
 replace the real-device evidence below.
@@ -201,15 +286,51 @@ exist in this repository (`git cat-file -t 9dadab46ced2a2f7f5a77a734b87569b1da7f
 → `commit`; `git log -1 --format="%H %s"` →
 `feat(runtime-verify): add ttk-runtime-verify Skill and stable Android build entry point`).
 
-**Honesty note, per the task's explicit instruction not to pretend an older
-APK came from current `main`**: this APK's source commit
-(`9dadab46ced2a2f7f5a77a734b87569b1da7fca2`) is an ancestor of current `main`
-(it was squash-merged into `main` as `21f447d` via PR #43), but the APK
-itself predates this task's own `baseline_ref`
+**Corrected honesty note (Remediation 001, per independent review)**: the
+original evidence for this task's first candidate
+(`6050fe50c2490ee9d9c7edf418303c501bef711b`) incorrectly stated this APK's
+source commit "is an ancestor of current `main`". Independent review
+established that is false, and this correction was independently
+reverified directly (`git merge-base --is-ancestor
+9dadab46ced2a2f7f5a77a734b87569b1da7fca2 origin/main` → exit `1`, not an
+ancestor; `git branch -a --contains 9dadab46ced2a2f7f5a77a734b87569b1da7fca2`
+→ only `chore/runtime-verify-foundation-v1-001` / its remote tracking
+branch, never `main`). The accurate record:
+
+```text
+- the commit object 9dadab46ced2a2f7f5a77a734b87569b1da7fca2 currently
+  exists locally and is resolvable (git cat-file -t → "commit");
+- it is NOT reachable from current main or any branch/tag ref other than
+  chore/runtime-verify-foundation-v1-001 itself;
+- it is NOT an ancestor of current main;
+- squash-merge PR #43 produced main commit 21f447d42779fde8da6b86914bd184b90786c8a6
+  — a different, newly-synthesized commit object with equivalent tree
+  content, not this one;
+- independent review compared the source trees and found the relevant
+  source content equivalent between 9dadab4 and 21f447d except for the
+  evidence-file difference expected from a squash merge;
+- therefore the consumed APK remains acceptable evidence for validating the
+  Device Verification mechanism itself, but its source SHA must not be
+  described as main-history ancestry.
+```
+
+The APK itself also predates this task's own `baseline_ref`
 (`3fff06f84e421bdcc889460be11c20426f137d5b`) and was not rebuilt against
-that exact baseline. It is a real, verifiable, exact-SHA artifact — just not
-one built from *this* task's own baseline commit. No Unity build was
-performed by this task; none was authorized.
+that exact baseline. It is a real, verifiable, exact-SHA artifact bound to a
+real (if now branch-only, dangling-from-main) commit object — just not one
+built from *this* task's own baseline commit, and not one reachable from
+`main`. No Unity build was performed by this task; none was authorized.
+
+**Disclosed future hardening debt (not addressed by this remediation, per
+explicit instruction)**: `verify-artifact`/`computeArtifactIdentity`
+currently proves only that the encoded short SHA resolves to *some* commit
+object in this repository (`git rev-parse --verify <sha>^{commit}`) — it
+does not prove that commit is reachable from any trusted ref (`main`, a
+release tag, etc.). Adding a trusted-ref reachability requirement was
+explicitly classified `NON_BLOCKING` by this remediation's own instructions,
+and would have invalidated this exact historical pre-squash artifact for a
+different reason than the one being fixed here. Left for a future,
+separately-authorized hardening task.
 
 ## Package identity
 
@@ -367,6 +488,81 @@ Per the task's screenshot contract, this image proves machine
 capture/provenance only. It does **not** certify fun, gameplay quality,
 readability, art quality, TTK identity, or Human acceptance.
 
+### Clean-install safety revalidation (Remediation 001, real device)
+
+Device re-confirmed `state=device` before this revalidation
+(`adb -s 192.168.1.7:42675 get-state` → `device`).
+
+**Fail-closed mismatch proof — deliberately wrong package, before any real
+clean-install:**
+
+```text
+$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+    --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" --package com.definitely.fake.ttk.package
+{
+  "ok": false,
+  "message": "clean-install preflight failed: PACKAGE_MISMATCH",
+  "reason": "PACKAGE_MISMATCH",
+  "suppliedPackage": "com.definitely.fake.ttk.package",
+  "authoritativePackageId": "com.shenjun93.tieutienky.p0a",
+  "artifact": { "ok": true, "sha256": "3a8d13b27810cfe35382f8d425e4f3df61d046f1d9fb0b9c62cef42dcea32e05", ... },
+  "packageIdResult": { "ok": true, "packageId": "com.shenjun93.tieutienky.p0a", ... }
+}
+exit=1
+```
+
+Zero `adb uninstall`/`adb install` calls occurred — command exited on the
+preflight check alone. Confirmed the existing real package remained
+installed and untouched immediately afterward:
+
+```text
+$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
+```
+
+**Valid remediated clean-install — authoritative package id:**
+
+```text
+$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+    --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" --package com.shenjun93.tieutienky.p0a
+{
+  "ok": true,
+  "serial": "192.168.1.7:42675",
+  "package": "com.shenjun93.tieutienky.p0a",
+  "artifactSha256": "3a8d13b27810cfe35382f8d425e4f3df61d046f1d9fb0b9c62cef42dcea32e05",
+  "artifactFullSourceSha": "9dadab46ced2a2f7f5a77a734b87569b1da7fca2",
+  "wasAlreadyInstalled": true,
+  "uninstallResult": "Success",
+  "installResult": "Performing Streamed Install\r\nSuccess"
+}
+```
+
+**Reconfirmed the remaining chain, all real, all fresh after remediation:**
+
+```text
+$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+{ "ok": true, ..., "installed": true }
+
+$ node scripts/device/device-verify.mjs resolve-launch-component --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+{ "ok": true, ..., "component": "com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity" }
+
+$ node scripts/device/device-verify.mjs launch --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+{
+  "ok": true,
+  "component": "com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity",
+  "amStartOutput": "Starting: Intent { cmp=com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity }",
+  "delayMs": 1500,
+  "processAlive": true,
+  "pid": "18347"
+}
+```
+
+No new screenshot was captured for this remediation (not required per the
+remediation's own instruction; the original screenshot above already proves
+the capture mechanism against this exact device/artifact/package). No
+scripted input was performed. The device transport did not disconnect at
+any point during this revalidation.
+
 ## MSYS_NO_PATHCONV handling
 
 Every `adb`/`adb shell` invocation the helper makes (including the
@@ -437,6 +633,21 @@ HUMAN_GAMEPLAY_GATE  = NOT_REACHED — this task stops before it, per its own sc
   re-authorization.
 - Scripted input (tap/swipe/keyevent) — never added, never needed.
 - Any polling/monitoring/auto-repair/auto-resume automation.
+
+## Closeout (Remediation 001)
+
+```text
+OLD_CANDIDATE_HEAD (independent review verdict: REMEDIATE) = 6050fe50c2490ee9d9c7edf418303c501bef711b
+NEW_CANDIDATE_HEAD (this remediation commit)               = see PR #47 head / git log -1 on
+                                                                chore/device-verification-foundation-v1-001
+                                                                after this commit (this file cannot self-
+                                                                reference its own not-yet-computed SHA)
+```
+
+This new candidate has **not** been independently reviewed yet — the prior
+`REMEDIATE` verdict applies only to `6050fe50c2490ee9d9c7edf418303c501bef711b`.
+A fresh independent read-only follow-up review is required before any Human
+merge decision, per this task's unchanged stop condition below.
 
 ## Stop condition
 

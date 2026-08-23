@@ -8,7 +8,18 @@ import {
   parseResolvedLaunchComponent,
   isPackageListed,
   isProcessAlive,
+  evaluateCleanInstallPreflight,
 } from './device-verify.mjs';
+
+const VALID_ARTIFACT = {
+  ok: true,
+  apkPath: '/tmp/TieuTienKy-RTVerifyV1-9dadab4.apk',
+  filename: 'TieuTienKy-RTVerifyV1-9dadab4.apk',
+  sizeBytes: 34717862,
+  sha256: '3a8d13b27810cfe35382f8d425e4f3df61d046f1d9fb0b9c62cef42dcea32e05',
+  shortSha: '9dadab4',
+  fullSourceSha: '9dadab46ced2a2f7f5a77a734b87569b1da7fca2',
+};
 
 test('parseAdbDevicesOutput: zero devices', () => {
   const devices = parseAdbDevicesOutput('List of devices attached\n\n');
@@ -168,4 +179,72 @@ test('isProcessAlive: empty output -> not alive', () => {
 
 test('isProcessAlive: non-numeric output -> not alive (never treat garbage as a live pid)', () => {
   assert.equal(isProcessAlive('no such process'), false);
+});
+
+// --- clean-install destructive-boundary preflight (Remediation 001, P1 CLEAN_INSTALL_SAFETY) ---
+// These prove the *decision* the destructive command must reach before any
+// uninstall/install is permitted — no adb/git/fs mocking needed, since
+// evaluateCleanInstallPreflight is pure and takes already-computed inputs.
+
+test('evaluateCleanInstallPreflight: valid artifact + authoritative == supplied -> allowed', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.packageId, 'com.shenjun93.tieutienky.p0a');
+});
+
+test('evaluateCleanInstallPreflight: valid artifact, no --package supplied -> allowed (authoritative id alone drives it)', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: undefined,
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.packageId, 'com.shenjun93.tieutienky.p0a');
+});
+
+test('evaluateCleanInstallPreflight: authoritative != supplied -> rejected before any mutation', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.definitely.fake.package',
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'PACKAGE_MISMATCH');
+  assert.equal(result.authoritativePackageId, 'com.shenjun93.tieutienky.p0a');
+  assert.equal(result.suppliedPackage, 'com.definitely.fake.package');
+});
+
+test('evaluateCleanInstallPreflight: missing/unparseable ProjectSettings package -> rejected', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: null,
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'PACKAGE_ID_UNREADABLE');
+});
+
+test('evaluateCleanInstallPreflight: invalid artifact identity -> rejected regardless of package match', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: { ok: false, reason: 'APK_SHA_NOT_A_COMMIT' },
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'INVALID_ARTIFACT');
+  assert.equal(result.detail, 'APK_SHA_NOT_A_COMMIT');
+});
+
+test('evaluateCleanInstallPreflight: missing artifact result entirely -> rejected, never treated as valid', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: undefined,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'INVALID_ARTIFACT');
 });

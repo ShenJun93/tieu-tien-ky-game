@@ -53,10 +53,17 @@ task's `required_evidence` declares real-device evidence keys (e.g.
 5. Read the authoritative package id live from committed
    `ProjectSettings/ProjectSettings.asset` at run time — never trust a
    hardcoded/remembered value. Fail closed if it cannot be parsed.
-6. Clean install targets exactly that one verified package id: check
-   whether it is currently installed, uninstall only that exact package if
-   present, then install only the verified APK. No wildcard uninstall, no
-   `pm clear`, no unrelated package mutation.
+6. Clean install targets exactly one authoritative package id. This safety
+   is enforced **inside the `clean-install` command itself**, not by
+   whoever calls it having run steps 4-5 as separate commands first: before
+   any destructive `adb uninstall`/`adb install`, `clean-install`
+   internally re-verifies the artifact and re-reads the authoritative
+   package id, and fails closed on any artifact defect or on a mismatch
+   between a caller-supplied `--package` and that authoritative id. Only
+   after that internal preflight passes does it check current install
+   state, uninstall only that exact package if present, then install only
+   the verified APK. No wildcard uninstall, no `pm clear`, no unrelated
+   package mutation.
 7. Resolve the launch component from the installed package on the device
    itself (a read-only package-query command), immediately before use —
    never hardcode an inferred fully-qualified activity class as canon. If

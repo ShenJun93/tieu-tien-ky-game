@@ -137,6 +137,36 @@ export function sha256OfBuffer(buffer) {
   return createHash('sha256').update(buffer).digest('hex');
 }
 
+/**
+ * Pure, dependency-free safety decision for `clean-install`'s destructive
+ * boundary. Takes already-computed artifact/package-id lookups (never
+ * performs I/O itself) and decides whether device mutation may proceed.
+ * Directly unit-testable with plain objects — no adb/git/fs mocking needed.
+ *
+ * `artifact` is the shape returned by the artifact-identity lookup:
+ *   { ok: true, ... }  or  { ok: false, reason: '...' }
+ * `authoritativePackageId` is the shape returned by the package-id lookup:
+ *   the package id string, or null/undefined if it could not be read.
+ * `suppliedPackage` is the caller's `--package` argument (optional).
+ */
+export function evaluateCleanInstallPreflight({ artifact, authoritativePackageId, suppliedPackage }) {
+  if (!artifact || artifact.ok !== true) {
+    return { ok: false, reason: 'INVALID_ARTIFACT', detail: artifact && artifact.reason };
+  }
+  if (!authoritativePackageId) {
+    return { ok: false, reason: 'PACKAGE_ID_UNREADABLE' };
+  }
+  if (suppliedPackage && suppliedPackage !== authoritativePackageId) {
+    return {
+      ok: false,
+      reason: 'PACKAGE_MISMATCH',
+      suppliedPackage,
+      authoritativePackageId,
+    };
+  }
+  return { ok: true, packageId: authoritativePackageId, artifact };
+}
+
 // ---------------------------------------------------------------------------
 // CLI / child-process layer — only exercised when this file is run directly
 // ---------------------------------------------------------------------------
@@ -254,50 +284,75 @@ function cmdVerifyConnected(args) {
   ok({ serial: device.serial, state: device.state });
 }
 
-function cmdVerifyArtifact(args) {
-  const apkPath = args.apk;
-  if (!apkPath) return fail('missing --apk <path>');
-  if (!existsSync(apkPath)) return fail(`APK not found: ${apkPath}`);
+/**
+ * Shared artifact-identity lookup used by both `verify-artifact` and
+ * `clean-install`'s internal preflight — one implementation, no duplicated
+ * parsing rules. Performs I/O (fs + git) and returns a structured result;
+ * never calls fail()/ok() itself so callers can enforce their own order.
+ */
+function computeArtifactIdentity(apkPath) {
+  if (!apkPath) return { ok: false, reason: 'MISSING_APK_PATH' };
+  if (!existsSync(apkPath)) return { ok: false, reason: 'APK_NOT_FOUND', apkPath };
 
   const buffer = readFileSync(apkPath);
-  if (buffer.length === 0) return fail(`APK is empty: ${apkPath}`);
-  const sha256 = sha256OfBuffer(buffer);
+  if (buffer.length === 0) return { ok: false, reason: 'APK_EMPTY', apkPath };
+
   const filename = path.basename(apkPath);
   const shortSha = parseApkShortSha(filename);
-  if (!shortSha) {
-    return fail(`could not parse a short SHA from APK filename: ${filename}`);
-  }
+  if (!shortSha) return { ok: false, reason: 'APK_FILENAME_NO_SHA', apkPath, filename };
 
-  const repoRoot = process.cwd();
-  const resolve = runGit(['rev-parse', '--verify', `${shortSha}^{commit}`], repoRoot);
+  const resolve = runGit(['rev-parse', '--verify', `${shortSha}^{commit}`], process.cwd());
   if (resolve.status !== 0) {
-    return fail(`encoded short SHA does not resolve to a commit in this repository: ${shortSha}`, {
+    return {
+      ok: false,
+      reason: 'APK_SHA_NOT_A_COMMIT',
+      apkPath,
+      filename,
+      shortSha,
       gitStderr: resolve.stderr?.trim(),
-    });
+    };
   }
-  const fullSha = resolve.stdout.trim();
 
-  ok({
+  return {
+    ok: true,
     apkPath,
     filename,
     sizeBytes: buffer.length,
-    sha256,
+    sha256: sha256OfBuffer(buffer),
     shortSha,
-    fullSourceSha: fullSha,
-  });
+    fullSourceSha: resolve.stdout.trim(),
+  };
+}
+
+/**
+ * Shared authoritative-package-id lookup used by both `resolve-package-id`
+ * and `clean-install`'s internal preflight. Returns the package id string,
+ * or null if it could not be read/parsed — never calls fail()/ok() itself.
+ */
+function resolveAuthoritativePackageId(projectSettingsPath) {
+  const resolvedPath = projectSettingsPath || 'ProjectSettings/ProjectSettings.asset';
+  if (!existsSync(resolvedPath)) return { ok: false, reason: 'PROJECT_SETTINGS_NOT_FOUND', path: resolvedPath };
+  const text = readFileSync(resolvedPath, 'utf8');
+  const packageId = parsePackageIdFromProjectSettings(text);
+  if (!packageId) return { ok: false, reason: 'PACKAGE_ID_UNPARSEABLE', path: resolvedPath };
+  return { ok: true, packageId, source: resolvedPath };
+}
+
+function cmdVerifyArtifact(args) {
+  if (!args.apk) return fail('missing --apk <path>');
+  const identity = computeArtifactIdentity(args.apk);
+  if (!identity.ok) {
+    return fail(`artifact verification failed: ${identity.reason}`, identity);
+  }
+  ok(identity);
 }
 
 function cmdResolvePackageId(args) {
-  const projectSettingsPath = args['project-settings'] || 'ProjectSettings/ProjectSettings.asset';
-  if (!existsSync(projectSettingsPath)) {
-    return fail(`ProjectSettings.asset not found: ${projectSettingsPath}`);
+  const result = resolveAuthoritativePackageId(args['project-settings']);
+  if (!result.ok) {
+    return fail(`package id resolution failed: ${result.reason}`, result);
   }
-  const text = readFileSync(projectSettingsPath, 'utf8');
-  const packageId = parsePackageIdFromProjectSettings(text);
-  if (!packageId) {
-    return fail(`could not parse applicationIdentifier/Android from ${projectSettingsPath}`);
-  }
-  ok({ packageId, source: projectSettingsPath });
+  ok(result);
 }
 
 function cmdResolveLaunchComponent(args) {
@@ -322,11 +377,32 @@ function cmdResolveLaunchComponent(args) {
 function cmdCleanInstall(args) {
   const device = requireSelectedDevice(args);
   if (!device) return;
-  const apkPath = args.apk;
-  const packageId = args.package;
-  if (!apkPath) return fail('missing --apk <path>');
-  if (!packageId) return fail('missing --package <id>');
-  if (!existsSync(apkPath)) return fail(`APK not found: ${apkPath}`);
+  if (!args.apk) return fail('missing --apk <path>');
+
+  // --- Preflight: zero destructive adb calls may occur before this whole
+  // block succeeds. Reuses the exact same artifact/package-id lookups as
+  // `verify-artifact`/`resolve-package-id` (no duplicated parsing rules),
+  // then hands the results to the pure `evaluateCleanInstallPreflight`
+  // decision — the destructive command enforces its own safety, it does
+  // not trust that a caller ran those commands first.
+  const artifact = computeArtifactIdentity(args.apk);
+  const packageIdResult = resolveAuthoritativePackageId(args['project-settings']);
+  const preflight = evaluateCleanInstallPreflight({
+    artifact,
+    authoritativePackageId: packageIdResult.ok ? packageIdResult.packageId : null,
+    suppliedPackage: args.package,
+  });
+  if (!preflight.ok) {
+    return fail(`clean-install preflight failed: ${preflight.reason}`, {
+      ...preflight,
+      artifact,
+      packageIdResult,
+    });
+  }
+  // --- End preflight. Only the authoritative, preflight-verified package id
+  // drives the destructive operation below — never the raw --package
+  // argument, even though it was already confirmed to match.
+  const packageId = preflight.packageId;
 
   const listed = runAdb(['shell', 'pm', 'list', 'packages', packageId], { serial: device.serial });
   const alreadyInstalled = isPackageListed(listed.stdout, packageId);
@@ -340,7 +416,7 @@ function cmdCleanInstall(args) {
     }
   }
 
-  const install = runAdb(['install', apkPath], { serial: device.serial });
+  const install = runAdb(['install', artifact.apkPath], { serial: device.serial });
   const installResult = install.stdout.trim() || install.stderr.trim();
   if (!/success/i.test(installResult)) {
     return fail(`install did not report Success`, { installResult });
@@ -349,6 +425,8 @@ function cmdCleanInstall(args) {
   ok({
     serial: device.serial,
     package: packageId,
+    artifactSha256: artifact.sha256,
+    artifactFullSourceSha: artifact.fullSourceSha,
     wasAlreadyInstalled: alreadyInstalled,
     uninstallResult,
     installResult,
