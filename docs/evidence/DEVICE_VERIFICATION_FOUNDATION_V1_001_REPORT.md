@@ -56,7 +56,7 @@ section) so it no longer reads as depending on the caller having run
 
 ```text
 OLD_CANDIDATE_HEAD (reviewed, REMEDIATE verdict) = 6050fe50c2490ee9d9c7edf418303c501bef711b
-NEW_CANDIDATE_HEAD (this remediation)            = recorded in "Closeout" below, once committed
+NEW_CANDIDATE_HEAD (Remediation 001 result)      = 118c10707933ab22454a6a969efe3e3a4d58098f
 ```
 
 The original run's evidence (device identity, artifact verification,
@@ -65,6 +65,40 @@ erased** — it remains accurate for what it actually tested. Only the APK
 provenance wording (a factual error caught by review) is corrected in place
 further down, and the clean-install-specific evidence is supplemented with
 a fresh post-remediation real-device run in its own section.
+
+## Remediation 002 (post-followup-review)
+
+Follow-up review of candidate `118c10707933ab22454a6a969efe3e3a4d58098f`
+found Remediation 001's fix incomplete:
+
+```text
+FINDING — `resolveAuthoritativePackageId(args['project-settings'])` inside
+cmdCleanInstall still let a caller redefine which file counts as
+authoritative: `--project-settings <arbitrary-file> --package <package-from-
+that-file>` could make the preflight accept a caller-chosen package as
+"authoritative" before adb uninstall/install. This violates the task
+contract's intended sole source of authority (committed
+ProjectSettings/ProjectSettings.asset).
+```
+
+**Fix**: `clean-install` now (a) calls `resolveAuthoritativePackageId()`
+with **no argument at all** — it always resolves the canonical
+`ProjectSettings/ProjectSettings.asset` path, so a caller's
+`--project-settings` value is never read for this destructive command
+regardless of what it contains, and (b) separately detects whether
+`--project-settings` was supplied at all and explicitly fails closed with
+`PROJECT_SETTINGS_OVERRIDE_FORBIDDEN` if so — the attempt itself is
+rejected, not merely ignored. This check is evaluated first, before the
+artifact/package-match checks, inside the same pure
+`evaluateCleanInstallPreflight` decision function used by Remediation 001.
+The separate read-only `resolve-package-id` command is unaffected and may
+still accept `--project-settings` for test/debug purposes, since it never
+mutates a device.
+
+```text
+OLD_CANDIDATE_HEAD (this remediation's starting point) = 118c10707933ab22454a6a969efe3e3a4d58098f
+NEW_CANDIDATE_HEAD (this remediation's result)         = recorded in "Closeout" below, once committed
+```
 
 ## Summary
 
@@ -208,11 +242,42 @@ remediation's own allowance) but is now cross-checked against the live
 trusted alone; omitting it is also fine — the authoritative id alone then
 drives the operation.
 
+## Clean-install authoritative-source lock (Remediation 002)
+
+`cmdCleanInstall` no longer passes `args['project-settings']` to
+`resolveAuthoritativePackageId` at all:
+
+```js
+// Remediation 002 — clean-install always resolves the canonical committed
+// path; a caller's --project-settings value is never read here.
+const projectSettingsOverrideAttempted = Object.prototype.hasOwnProperty.call(args, 'project-settings');
+const packageIdResult = resolveAuthoritativePackageId();   // <- no argument, ever
+```
+
+`evaluateCleanInstallPreflight` checks `projectSettingsOverrideAttempted`
+**first**, before the artifact/package checks, and fails closed with
+`PROJECT_SETTINGS_OVERRIDE_FORBIDDEN` if it is `true` — regardless of what
+`authoritativePackageId` or `suppliedPackage` were computed to be. This
+means an override attempt is rejected on two independent levels: the
+caller-supplied path is structurally never read for this command, *and*
+merely attempting to supply one is its own hard failure, evaluated before
+any destructive `adb` call. `resolve-package-id` (the separate, read-only
+command) is untouched by this restriction — it may still accept
+`--project-settings` for test/debug inspection, since it never mutates a
+device.
+
+Code-inspection guarantee (updated): the only path from `cmdCleanInstall`'s
+entry to `runAdb(['uninstall', ...])`/`runAdb(['install', ...])` still runs
+through `evaluateCleanInstallPreflight`, which now rejects override
+attempts before it ever reaches the artifact/package-mismatch checks
+Remediation 001 added.
+
 ## Focused helper tests — `scripts/device/device-verify.test.mjs`
 
 ```text
 node --test scripts/device/device-verify.test.mjs
-31/31 PASS, 0 failed   (25 original + 6 new for Remediation 001's clean-install preflight)
+37/37 PASS, 0 failed   (25 original + 6 for Remediation 001's clean-install preflight
+                        + 6 for Remediation 002's project-settings-override rejection)
 ```
 
 Covers, with plain string fixtures (no real adb call, no mocking library —
@@ -245,6 +310,16 @@ just Node's built-in `node:test`/`node:assert`):
   rejected `PACKAGE_ID_UNREADABLE`; invalid artifact identity → rejected
   `INVALID_ARTIFACT` regardless of package match; missing artifact result
   entirely → rejected, never treated as valid by default.
+- `evaluateCleanInstallPreflight` (Remediation 002, `--project-settings`
+  override rejection): **(A)** canonical package match, no override
+  attempted → allowed; **(B)** supplied `--package` mismatch, no override
+  attempted → rejected `PACKAGE_MISMATCH`; **(C)** override attempted →
+  rejected `PROJECT_SETTINGS_OVERRIDE_FORBIDDEN` even with an otherwise-
+  valid artifact and a matching package; **(D)** override attempted with a
+  fake authoritative id already substituted in (worst case) → still
+  rejected on the override flag alone, the fake id is never reached/used;
+  **(E1)**/**(E2)** invalid-artifact and unreadable-canonical-package-id
+  protections still fail closed when no override is attempted.
 
 Per the task's own instruction, these mocks/unit tests cannot and do not
 replace the real-device evidence below.
@@ -314,12 +389,25 @@ branch, never `main`). The accurate record:
   described as main-history ancestry.
 ```
 
+**Further terminology correction (Remediation 002)**: the prior wording
+above ("branch-only, dangling-from-main") was itself imprecise — a commit
+is only truly *dangling* when no live ref contains it at all, which is not
+the case here. Live-checked again for this remediation:
+`git merge-base --is-ancestor 9dadab46ced2a2f7f5a77a734b87569b1da7fca2 origin/chore/runtime-verify-foundation-v1-001`
+→ exit `0` (is an ancestor of / reachable from that branch), while the same
+check against `origin/main` still returns exit `1`. Accurate statement:
+`9dadab46ced2a2f7f5a77a734b87569b1da7fca2` is **not** an ancestor of and
+**not** reachable from current `main`, but **is** currently reachable from
+the live branch `chore/runtime-verify-foundation-v1-001` (both local and
+its `origin` remote-tracking branch exist) — it is not dangling.
+
 The APK itself also predates this task's own `baseline_ref`
 (`3fff06f84e421bdcc889460be11c20426f137d5b`) and was not rebuilt against
 that exact baseline. It is a real, verifiable, exact-SHA artifact bound to a
-real (if now branch-only, dangling-from-main) commit object — just not one
-built from *this* task's own baseline commit, and not one reachable from
-`main`. No Unity build was performed by this task; none was authorized.
+real commit object, currently reachable from the still-live
+`chore/runtime-verify-foundation-v1-001` branch — just not one built from
+*this* task's own baseline commit, and not one reachable from `main`. No
+Unity build was performed by this task; none was authorized.
 
 **Disclosed future hardening debt (not addressed by this remediation, per
 explicit instruction)**: `verify-artifact`/`computeArtifactIdentity`
@@ -563,6 +651,59 @@ the capture mechanism against this exact device/artifact/package). No
 scripted input was performed. The device transport did not disconnect at
 any point during this revalidation.
 
+### Project-settings-override rejection — real device, non-destructive (Remediation 002)
+
+Device re-confirmed `state=device` before this demonstration. A temporary
+fake `ProjectSettings`-like file was written to OS temp (never inside the
+repo, never committed), pointing at a completely different, fictitious
+package:
+
+```text
+# C:/Users/PACMAP/AppData/Local/Temp/ttk-device-verify/fake-project-settings.asset
+PlayerSettings:
+  applicationIdentifier:
+    Android: com.attacker.controlled.package
+```
+
+```text
+$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+    --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" \
+    --project-settings "C:/Users/PACMAP/AppData/Local/Temp/ttk-device-verify/fake-project-settings.asset" \
+    --package com.attacker.controlled.package
+{
+  "ok": false,
+  "message": "clean-install preflight failed: PROJECT_SETTINGS_OVERRIDE_FORBIDDEN",
+  "reason": "PROJECT_SETTINGS_OVERRIDE_FORBIDDEN",
+  "artifact": { "ok": true, "sha256": "3a8d13b27810cfe35382f8d425e4f3df61d046f1d9fb0b9c62cef42dcea32e05", ... },
+  "packageIdResult": { "ok": true, "packageId": "com.shenjun93.tieutienky.p0a", "source": "ProjectSettings/ProjectSettings.asset" }
+}
+exit=1
+```
+
+**Proof the override had zero effect, not merely that it failed**:
+`packageIdResult` in the output above shows the command still resolved the
+*real, canonical* package id (`com.shenjun93.tieutienky.p0a` from the
+committed `ProjectSettings/ProjectSettings.asset`) — the fake file's content
+(`com.attacker.controlled.package`) was never read at all, exactly as the
+code change intends (`resolveAuthoritativePackageId()` is called with no
+argument inside `cmdCleanInstall`). No `adb uninstall`/`adb install` ran.
+
+Confirmed the real package remained installed and untouched immediately
+after:
+
+```text
+$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
+```
+
+The temporary fake settings file was deleted after this demonstration. No
+destructive real-device rerun of the *valid* clean-install path was
+performed for this remediation — Remediation 001's real-device clean
+install/launch/process-check above already covers that, and this
+remediation's code change does not alter the valid-path behavior (only
+tightens the rejection path). No scripted input was performed. No transport
+switch, no reconnect. Device did not disconnect during this demonstration.
+
 ## MSYS_NO_PATHCONV handling
 
 Every `adb`/`adb shell` invocation the helper makes (including the
@@ -638,16 +779,25 @@ HUMAN_GAMEPLAY_GATE  = NOT_REACHED — this task stops before it, per its own sc
 
 ```text
 OLD_CANDIDATE_HEAD (independent review verdict: REMEDIATE) = 6050fe50c2490ee9d9c7edf418303c501bef711b
-NEW_CANDIDATE_HEAD (this remediation commit)               = see PR #47 head / git log -1 on
-                                                                chore/device-verification-foundation-v1-001
-                                                                after this commit (this file cannot self-
-                                                                reference its own not-yet-computed SHA)
+NEW_CANDIDATE_HEAD (Remediation 001 commit)                 = 118c10707933ab22454a6a969efe3e3a4d58098f
 ```
 
-This new candidate has **not** been independently reviewed yet — the prior
-`REMEDIATE` verdict applies only to `6050fe50c2490ee9d9c7edf418303c501bef711b`.
-A fresh independent read-only follow-up review is required before any Human
-merge decision, per this task's unchanged stop condition below.
+## Closeout (Remediation 002)
+
+```text
+OLD_CANDIDATE_HEAD (follow-up review found this incomplete) = 118c10707933ab22454a6a969efe3e3a4d58098f
+NEW_CANDIDATE_HEAD (this remediation commit)                = see PR #47 head / git log -1 on
+                                                                 chore/device-verification-foundation-v1-001
+                                                                 after this commit (this file cannot self-
+                                                                 reference its own not-yet-computed SHA)
+```
+
+This new candidate has **not** been independently reviewed yet. The
+`REMEDIATE` verdict on `6050fe50c2490ee9d9c7edf418303c501bef711b` and the
+follow-up finding on `118c10707933ab22454a6a969efe3e3a4d58098f` (both now
+addressed) do not carry forward as approval of this candidate. A fresh
+independent read-only follow-up review is required before any Human merge
+decision, per this task's unchanged stop condition below.
 
 ## Stop condition
 

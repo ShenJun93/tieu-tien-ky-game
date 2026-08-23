@@ -149,7 +149,21 @@ export function sha256OfBuffer(buffer) {
  *   the package id string, or null/undefined if it could not be read.
  * `suppliedPackage` is the caller's `--package` argument (optional).
  */
-export function evaluateCleanInstallPreflight({ artifact, authoritativePackageId, suppliedPackage }) {
+export function evaluateCleanInstallPreflight({
+  artifact,
+  authoritativePackageId,
+  suppliedPackage,
+  projectSettingsOverrideAttempted,
+}) {
+  // Checked first, before even looking at the artifact/package results:
+  // clean-install must never let a caller redefine which file is the
+  // authoritative package-id source (Remediation 002). This is a distinct,
+  // higher-priority rejection from a package mismatch — an override attempt
+  // is refused on its own terms, regardless of what that alternate file
+  // might have said.
+  if (projectSettingsOverrideAttempted) {
+    return { ok: false, reason: 'PROJECT_SETTINGS_OVERRIDE_FORBIDDEN' };
+  }
   if (!artifact || artifact.ok !== true) {
     return { ok: false, reason: 'INVALID_ARTIFACT', detail: artifact && artifact.reason };
   }
@@ -385,12 +399,24 @@ function cmdCleanInstall(args) {
   // then hands the results to the pure `evaluateCleanInstallPreflight`
   // decision — the destructive command enforces its own safety, it does
   // not trust that a caller ran those commands first.
+  //
+  // Remediation 002: clean-install must never let the caller redefine the
+  // authoritative package-id source. Unlike the read-only
+  // `resolve-package-id` command (which may accept `--project-settings` as
+  // a test/debug override since it never mutates a device),
+  // `resolveAuthoritativePackageId()` here is called with NO argument —
+  // always the canonical committed `ProjectSettings/ProjectSettings.asset`
+  // — so even if a caller supplies `--project-settings`, that value is
+  // never read for this destructive command. The attempt itself is also
+  // explicitly rejected below, rather than merely ignored.
+  const projectSettingsOverrideAttempted = Object.prototype.hasOwnProperty.call(args, 'project-settings');
   const artifact = computeArtifactIdentity(args.apk);
-  const packageIdResult = resolveAuthoritativePackageId(args['project-settings']);
+  const packageIdResult = resolveAuthoritativePackageId();
   const preflight = evaluateCleanInstallPreflight({
     artifact,
     authoritativePackageId: packageIdResult.ok ? packageIdResult.packageId : null,
     suppliedPackage: args.package,
+    projectSettingsOverrideAttempted,
   });
   if (!preflight.ok) {
     return fail(`clean-install preflight failed: ${preflight.reason}`, {

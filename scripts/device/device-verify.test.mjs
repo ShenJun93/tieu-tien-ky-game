@@ -248,3 +248,79 @@ test('evaluateCleanInstallPreflight: missing artifact result entirely -> rejecte
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'INVALID_ARTIFACT');
 });
+
+// --- Remediation 002: caller must not be able to redefine the authoritative
+// package-id source for clean-install (a --project-settings override
+// bypass). These prove the pure decision rejects the *attempt* itself,
+// independent of whatever alternate file/package the caller supplied.
+
+test('evaluateCleanInstallPreflight: (A) canonical package match, no override attempted -> allowed', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+    projectSettingsOverrideAttempted: false,
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.packageId, 'com.shenjun93.tieutienky.p0a');
+});
+
+test('evaluateCleanInstallPreflight: (B) supplied --package mismatch, no override attempted -> rejected PACKAGE_MISMATCH', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.other.app',
+    projectSettingsOverrideAttempted: false,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'PACKAGE_MISMATCH');
+});
+
+test('evaluateCleanInstallPreflight: (C) --project-settings override attempted -> rejected PROJECT_SETTINGS_OVERRIDE_FORBIDDEN, even with an otherwise-valid artifact and matching package', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+    projectSettingsOverrideAttempted: true,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'PROJECT_SETTINGS_OVERRIDE_FORBIDDEN');
+});
+
+test('evaluateCleanInstallPreflight: (D) override attempted with a fake authoritative id from the alternate file -> still rejected, the fake id is never trusted', () => {
+  // Simulates a caller pointing --project-settings at an alternate file
+  // that "resolves" to a completely different package. Even though that
+  // fake id is passed in as authoritativePackageId here (worst case: the
+  // caller's alternate lookup already ran), the override-attempted flag
+  // alone must reject before that value could ever be compared/used.
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: 'com.attacker.controlled.package',
+    suppliedPackage: 'com.attacker.controlled.package',
+    projectSettingsOverrideAttempted: true,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'PROJECT_SETTINGS_OVERRIDE_FORBIDDEN');
+});
+
+test('evaluateCleanInstallPreflight: (E1) invalid artifact still fails closed when no override is attempted', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: { ok: false, reason: 'APK_EMPTY' },
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+    projectSettingsOverrideAttempted: false,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'INVALID_ARTIFACT');
+});
+
+test('evaluateCleanInstallPreflight: (E2) unreadable canonical package id still fails closed when no override is attempted', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: VALID_ARTIFACT,
+    authoritativePackageId: null,
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+    projectSettingsOverrideAttempted: false,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'PACKAGE_ID_UNREADABLE');
+});
