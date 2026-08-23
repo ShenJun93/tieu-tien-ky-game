@@ -4,19 +4,93 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-DEVICE-VERIFICATION-FOUNDATION-V1-001",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "chore/device-verification-foundation-v1-001",
+  "baseline_ref": "3fff06f84e421bdcc889460be11c20426f137d5b",
+  "authority_anchor_ref": "3fff06f84e421bdcc889460be11c20426f137d5b",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_DEVICE_VERIFICATION_FOUNDATION_V1_001.md",
+  "evidence_file": "docs/evidence/DEVICE_VERIFICATION_FOUNDATION_V1_001_REPORT.md",
+  "allowed_paths": [
+    "AGENTS.md",
+    "scripts/device/",
+    ".agents/skills/ttk-android-device-verification/",
+    "docs/evidence/DEVICE_VERIFICATION_FOUNDATION_V1_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/WORKFLOW.md",
+    ".agents/skills/ttk-runtime-verify/",
+    ".claude/",
+    "scripts/ao/",
+    "scripts/hooks/",
+    ".github/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "device_helper_present": "PASS",
+    "device_skill_present": "PASS",
+    "agents_skill_index_updated": "PASS",
+    "adb_resolves": "PASS",
+    "exactly_one_device_selected": "PASS",
+    "device_identity_recorded": "PASS",
+    "exact_sha_apk_consumed": "PASS",
+    "apk_sha256_recorded": "PASS",
+    "package_identity_verified": "PASS",
+    "launch_component_verified": "PASS",
+    "clean_install_real_device": "PASS",
+    "launch_real_device": "PASS",
+    "launched_process_verified": "PASS",
+    "screenshot_capture_real_device": "PASS",
+    "screenshot_provenance_bound": "PASS",
+    "msys_pathconv_handled": "PASS",
+    "human_gate_not_automated": "PASS",
+    "no_polling_or_auto_resume": "PASS",
+    "no_scripted_input_added": "PASS",
+    "runtime_verify_not_duplicated": "PASS",
+    "no_unity_execution": "PASS",
+    "no_gameplay_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
 }
 ```
 
 ## Current authority
+
+`TASK-TIEU-TIEN-KY-DEVICE-VERIFICATION-FOUNDATION-V1-001` is active. V1
+(Option B) of the Device Verification Foundation recommended by the prior
+read-only Discovery pass: a deterministic adb helper under `scripts/device/`
+(`device-info`, `verify-connected`, `verify-artifact`, `clean-install`,
+`launch`, `verify-installed-package`, `verify-launched-process`,
+`capture-screenshot` — explicitly no scripted input, no polling/monitoring/
+retry, no Unity build invocation, no logcat pipeline unless a concrete
+blocking need is found and separately re-authorized), one thin process Skill
+(`ttk-android-device-verification`), and one `AGENTS.md` index line. Real
+device required and present: `192.168.1.7:42675` (model `SM-A155F`, Android
+15/API 35, hardware serial `RF8X60HNX2Y`), Human/Director-authorized and
+independently identity-confirmed at activation; all of this task's own
+real-device validation runs must target that exact serial explicitly,
+never the mDNS transport for the same device, never a default/ambiguous
+selection. Consumes an already-built exact-SHA APK; never invokes Unity or
+rebuilds it. Screenshot capture is machine evidence only (capture/provenance
+succeeded), never Human/product judgment. Does not touch
+`.agents/skills/ttk-runtime-verify/`, `docs/governance/WORKFLOW.md`,
+`scripts/ao/`, `scripts/hooks/`, `.claude/`, `Assets/`, `Packages/`,
+`ProjectSettings/`, gameplay/scenes/prefabs/materials, WaterZone, B-LITE,
+asset-intake, Runtime Observer/Unity MCP, networking/PvP/co-op/backend/
+Stage C, or the separate, still-inert Game Production Skill Pack v1
+branch/worktree. `stop_condition: INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`
+— this adds durable device-execution automation; the implementation writer
+must not self-present its own review as independent review.
+
+## Prior authority — GITIGNORE-BUILD-ANCHOR-FIX-001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-GITIGNORE-BUILD-ANCHOR-FIX-001` is closed. Its final
 state:
@@ -356,16 +430,20 @@ threads — see "Current authority" at the top of this file.
 
 ## Current stop condition
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. This does not grant, and must
-not be read as granting, any device automation, native `.claude/skills`
-adoption, dependency audit/removal, rights/provenance review, art-direction
-authorization, Product Proof continuation, or gameplay/networking/PvP/co-op/
-Stage C/backend/package mutation. Those remain blocked on a fresh explicit
-Human/Game Director decision — most likely either the Director's
-still-pending B-LITE playtest result (deciding whether to pursue minimal
-animation/ground-water pass next, per SLICE-007's escalation clause) or a
-bounded follow-up task for the one remaining open product item: the
-WaterZone depth-occlusion fix.
+The active write task is a bounded device-verification foundation, per
+"Current authority" above: `TASK-TIEU-TIEN-KY-DEVICE-VERIFICATION-FOUNDATION-V1-001`,
+scoped to exactly `AGENTS.md` (index line only), `scripts/device/`,
+`.agents/skills/ttk-android-device-verification/`, and its own evidence
+report. It does not grant, and must not be read as granting, any scripted
+device input, native `.claude/skills` adoption, dependency audit/removal,
+rights/provenance review, art-direction authorization, Product Proof
+continuation, or gameplay/networking/PvP/co-op/Stage C/backend/package
+mutation. Those remain blocked on a fresh explicit Human/Game Director
+decision — most likely either the Director's still-pending B-LITE playtest
+result (deciding whether to pursue minimal animation/ground-water pass next,
+per SLICE-007's escalation clause) or a bounded follow-up task for the one
+remaining open product item: the WaterZone depth-occlusion fix.
 
-Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition for this task: `INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`.
+Stop condition for successor product authority beyond this task's narrow
+scope remains: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
