@@ -4,79 +4,91 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "task_id": "TASK-TIEU-TIEN-KY-RUNTIME-VERIFY-FOUNDATION-V1-001",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "chore/runtime-verify-foundation-v1-001",
-  "baseline_ref": "d9645ee3809f223c1565274a9ea7891f47a50ffa",
-  "authority_anchor_ref": "d9645ee3809f223c1565274a9ea7891f47a50ffa",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_RUNTIME_VERIFY_FOUNDATION_V1_001.md",
-  "evidence_file": "docs/evidence/RUNTIME_VERIFY_FOUNDATION_V1_001_REPORT.md",
-  "allowed_paths": [
-    "AGENTS.md",
-    ".agents/skills/ttk-runtime-verify/",
-    "Assets/_Project/Editor/Build/",
-    "docs/evidence/RUNTIME_VERIFY_FOUNDATION_V1_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "docs/governance/NEXT_TASK.md",
-    "docs/governance/WORKFLOW.md",
-    ".claude/",
-    "scripts/device/",
-    "scripts/ao/",
-    "scripts/hooks/",
-    ".github/",
-    "Packages/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "runtime_verify_skill_present": "PASS",
-    "agents_skill_index_updated": "PASS",
-    "required_evidence_gating_semantics": "PASS",
-    "honest_not_tested_semantics": "PASS",
-    "human_gate_not_automated": "PASS",
-    "unity_compile": "PASS",
-    "editmode": "PASS",
-    "playmode": "PASS",
-    "stable_android_build_entrypoint": "PASS",
-    "android_build_via_stable_entrypoint": "PASS",
-    "test_invocation_quit_safety": "PASS",
-    "build_invocation_quit_safety": "PASS",
-    "sha_bound_android_artifact": "PASS",
-    "no_device_automation_added": "PASS",
-    "no_gameplay_change": "PASS"
-  },
-  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-RUNTIME-VERIFY-FOUNDATION-V1-001` is active. Core of the
-Runtime Verification Foundation V1 recommended by the prior read-only
-Discovery pass: one process Skill (`ttk-runtime-verify`) encoding
-required-evidence-gated verification policy (never run a stage the active
-task doesn't require; honest `PASS`/`FAIL`/`NOT_TESTED`/
-`BLOCKED_ON_HUMAN_GATE`; the proven asymmetric `-quit` rule — omit for
-tests, require for builds); one durable Unity Editor Android build entry
-point under `Assets/_Project/Editor/Build/**` replacing the repeated
-throwaway per-task build scripts found by Discovery; and real Unity
-execution (compile/EditMode/PlayMode/Android build) to validate both against
-this exact candidate — not grep-only, not re-reading old evidence. Device
-automation (adb helper/polling/screenrecord/logcat) and Claude-native
-`/run`/`/verify`/`/run-skill-generator`/`.claude/skills` adoption are
-explicitly **not** part of this task — both remain separately-evaluated
-future decisions. Does not touch `docs/governance/WORKFLOW.md`, existing
-`.agents/skills/**` outside the new `ttk-runtime-verify` path, `scripts/ao/`,
-`scripts/hooks/`, `.claude/**`, `Packages/`, gameplay/scenes/prefabs/
-materials, or the separate, still-inert `chore/game-production-skill-pack-v1-001`
-branch/worktree. `stop_condition: INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`
-— this changes `AGENTS.md` Skill routing and adds reusable execution
-semantics and durable Unity build tooling; the implementation writer must
-not self-present its own review as independent review.
+`TASK-TIEU-TIEN-KY-RUNTIME-VERIFY-FOUNDATION-V1-001` is closed. Its final
+state:
+
+- merged via PR #43 (squash) at `21f447d42779fde8da6b86914bd184b90786c8a6`
+  (`main`); Core of Runtime Verification Foundation V1 — one process Skill
+  (`.agents/skills/ttk-runtime-verify/SKILL.md`) encoding
+  required-evidence-gated verification policy (never run a stage the active
+  task doesn't require; honest `PASS`/`FAIL`/`NOT_TESTED`/
+  `BLOCKED_ON_HUMAN_GATE`; the proven asymmetric `-quit` rule — omit for
+  tests, require for builds), registered in `AGENTS.md`'s Skill index; one
+  durable Unity Editor Android build entry point
+  (`Assets/_Project/Editor/Build/AndroidBuildEntryPoint.cs`, own
+  `TieuTienKy.Editor.Build` asmdef) replacing the repeated throwaway
+  per-task build scripts Discovery found; and real Unity execution
+  (compile/EditMode/PlayMode/Android build via the new stable entry point)
+  validated against this exact candidate, not grep-only;
+- required evidence all `PASS` per
+  `docs/evidence/RUNTIME_VERIFY_FOUNDATION_V1_001_REPORT.md`:
+  `governance_hook_tests`, `exact_scope_diff`, `runtime_verify_skill_present`,
+  `agents_skill_index_updated`, `required_evidence_gating_semantics`,
+  `honest_not_tested_semantics`, `human_gate_not_automated`,
+  `unity_compile`, `editmode`, `playmode`, `stable_android_build_entrypoint`,
+  `android_build_via_stable_entrypoint`, `test_invocation_quit_safety`,
+  `build_invocation_quit_safety`, `sha_bound_android_artifact`,
+  `no_device_automation_added`, `no_gameplay_change`;
+- independent review was performed in a separate Claude Cloud session
+  outside GitHub (no GitHub PR review/comment exists on PR #43 itself — this
+  disposition is recorded as relayed by the Human/Game Director, not as
+  independently re-verified from GitHub by this closeout). Per the
+  Director's report: fresh read-only review of exact candidate
+  `3ffb74efd5d84c448cf05a1a1439d7e03dc152f3` (confirmed present in this
+  repository's history), against implementation-verification subject
+  `9dadab46ced2a2f7f5a77a734b87569b1da7fca2` (also confirmed present);
+  revalidating authority chain, activation remediation, writer-lock, full PR
+  diff vs. writer scope diff, `ttk-runtime-verify` Skill semantics,
+  required-evidence gating, Human-Gate integrity, test/build `-quit` safety,
+  Android build entry point, SHA-bound artifact, evidence integrity, and
+  `repository-gate`, all `PASS`; verdict `ACCEPT_WITH_NON_BLOCKING_NOTES`,
+  P0/P1 none, `SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE: YES`. The Cloud environment
+  could not independently re-execute Unity compile/EditMode tests itself and
+  accepted the runtime claims based on the internally consistent exact-SHA
+  evidence report — recorded here exactly as disclosed, not upgraded to a
+  stronger claim;
+- the Human/Game Director then merged PR #43;
+- **one material non-blocking debt preserved, not resolved**: `.gitignore`'s
+  unanchored `[Bb]uild/` pattern (line 5) collides with
+  `Assets/_Project/Editor/Build/` — independently reproduced by this
+  closeout (`git check-ignore --no-index` confirms the pattern matches; the
+  new files only survived because they were already added to the index
+  before the ignore rule could block them). `NON_BLOCKING_DEBT` — any
+  *future* new file under that directory will need an explicit `git add -f`
+  or a `.gitignore` fix, neither of which this closeout performs or
+  authorizes. A future explicit Human/Game Director decision is required
+  before touching `.gitignore`;
+- other low-severity hardening notes recorded compactly, not elevated to
+  tasks: `TTK_BUILD_LABEL` sanitization, `ResolveShortSha` working-directory
+  assumption, and `ttk-runtime-verify`'s "etc." wording tightening — all
+  non-blocking, none actioned here;
+- one PlayMode test flake was disclosed in the evidence report and accepted
+  by the reviewer as `ACCEPTABLE_NON_BLOCKING`, not silently hidden;
+- this closure grants **no** successor implementation authority. Device
+  automation (adb helper/polling/screenrecord/logcat), a Device Verification
+  Foundation, `ttk-android-device-verification`, `ttk-asset-intake`, native
+  `/run`/`/verify` integration, `/run-skill-generator`, `.claude/skills`,
+  a Runtime Observer/Unity MCP pilot, the `.gitignore` correction itself,
+  WaterZone, B-LITE, gameplay/product continuation,
+  networking/PvP/co-op/backend/Stage C, and the still-inert Game Production
+  Skill Pack v1 branch/worktree all remain unauthorized unless separately
+  Human-authorized. The two pre-existing open unclaimed threads (WaterZone
+  depth-occlusion fix; pending genuine B-LITE Human physical gate playtest)
+  are unaffected and remain open.
 
 ## Prior authority — CLAUDE-PROJECT-BRIDGE-PILOT-001 closure (superseded)
 
@@ -294,20 +306,16 @@ threads — see "Current authority" at the top of this file.
 
 ## Current stop condition
 
-The active write task is a bounded knowledge/tooling foundation, per "Current
-authority" above: `TASK-TIEU-TIEN-KY-RUNTIME-VERIFY-FOUNDATION-V1-001`,
-scoped to exactly `AGENTS.md` (skill-index line only),
-`.agents/skills/ttk-runtime-verify/**`, `Assets/_Project/Editor/Build/**`,
-and its own evidence report. It does not grant, and must not be read as
-granting, any device automation, native `.claude/skills` adoption, dependency
-audit/removal, rights/provenance review, art-direction authorization,
-Product Proof continuation, or gameplay/networking/PvP/co-op/Stage C/backend/
-package mutation. Those remain blocked on a fresh explicit Human/Game
-Director decision — most likely either the Director's still-pending B-LITE
-playtest result (deciding whether to pursue minimal animation/ground-water
-pass next, per SLICE-007's escalation clause) or a bounded follow-up task for
-the one remaining open product item: the WaterZone depth-occlusion fix.
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. This does not grant, and must
+not be read as granting, any device automation, native `.claude/skills`
+adoption, `.gitignore` correction, dependency audit/removal, rights/
+provenance review, art-direction authorization, Product Proof continuation,
+or gameplay/networking/PvP/co-op/Stage C/backend/package mutation. Those
+remain blocked on a fresh explicit Human/Game Director decision — most
+likely either the Director's still-pending B-LITE playtest result (deciding
+whether to pursue minimal animation/ground-water pass next, per SLICE-007's
+escalation clause) or a bounded follow-up task for the one remaining open
+product item: the WaterZone depth-occlusion fix.
 
-Stop condition for this task: `INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`.
-Stop condition for successor product authority beyond this task's narrow
-scope remains: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
