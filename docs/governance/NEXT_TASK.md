@@ -4,63 +4,67 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "task_id": "TASK-TIEU-TIEN-KY-GITIGNORE-BUILD-ANCHOR-FIX-001",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "chore/gitignore-build-anchor-fix-001",
-  "baseline_ref": "5aed2dfd17719af97bd34410d3ee4ba194481f56",
-  "authority_anchor_ref": "5aed2dfd17719af97bd34410d3ee4ba194481f56",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_GITIGNORE_BUILD_ANCHOR_FIX_001.md",
-  "evidence_file": "docs/evidence/GITIGNORE_BUILD_ANCHOR_FIX_001_REPORT.md",
-  "allowed_paths": [
-    ".gitignore",
-    "docs/evidence/GITIGNORE_BUILD_ANCHOR_FIX_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "AGENTS.md",
-    "docs/governance/WORKFLOW.md",
-    "docs/governance/NEXT_TASK.md",
-    ".agents/skills/",
-    ".claude/",
-    "scripts/",
-    ".github/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "root_build_output_ignored": "PASS",
-    "root_builds_output_ignored": "PASS",
-    "nested_build_source_visible": "PASS",
-    "ttk_editor_build_source_visible": "PASS",
-    "existing_android_build_entrypoint_tracked": "PASS",
-    "no_force_add_required_for_future_editor_build_source": "PASS",
-    "no_gameplay_change": "PASS"
-  },
-  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-GITIGNORE-BUILD-ANCHOR-FIX-001` is active. Fixes exactly
-the `.gitignore` collision disclosed as `NON_BLOCKING_DEBT` by the Runtime
-Verify Foundation V1 closure: unanchored `[Bb]uild/`/`[Bb]uilds/` (lines 5-6)
-shadow nested source directories such as `Assets/_Project/Editor/Build/`.
-Root-anchoring (`/[Bb]uild/`, `/[Bb]uilds/`) was pre-activation-confirmed
-safe against live `git check-ignore` behavior and `.gitignore` history — no
-nested-directory ignore was ever intentional; the only real generated
-Android artifact path (`AndroidBuildEntryPoint.cs`'s `OutputDirectory =
-"Builds/Android"`) is repo-root-relative. Exactly one semantic correction
-class, nothing else — no `.gitignore` reorganization, no exception-rule
-workaround, no build code/Unity settings change. `stop_condition:
-INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE` — this changes
-repository-wide file-visibility semantics; the implementation writer must
-not self-present its own review as independent review.
+`TASK-TIEU-TIEN-KY-GITIGNORE-BUILD-ANCHOR-FIX-001` is closed. Its final
+state:
+
+- merged via PR #45 (squash) at `56beeb91c98428af584eb02c950434aadb0e331f`
+  (`main`); root-anchored `.gitignore`'s two generated-build-output rules
+  (`[Bb]uild/` → `/[Bb]uild/`, `[Bb]uilds/` → `/[Bb]uilds/`) so they only
+  match repo-root output, no longer shadowing nested source directories such
+  as `Assets/_Project/Editor/Build/` — the exact `NON_BLOCKING_DEBT` the
+  Runtime Verify Foundation V1 closure disclosed;
+- required evidence all `PASS` per
+  `docs/evidence/GITIGNORE_BUILD_ANCHOR_FIX_001_REPORT.md`:
+  `governance_hook_tests`, `exact_scope_diff`, `root_build_output_ignored`,
+  `root_builds_output_ignored`, `nested_build_source_visible`,
+  `ttk_editor_build_source_visible`,
+  `existing_android_build_entrypoint_tracked`,
+  `no_force_add_required_for_future_editor_build_source`,
+  `no_gameplay_change`;
+- independent review was performed in a separate fresh Claude Cloud
+  read-only session (no GitHub PR review/comment exists on PR #45 itself —
+  this disposition is recorded as relayed by the Human/Game Director, not as
+  independently re-verified from GitHub by this closeout). Per the
+  Director's report: fresh review of exact candidate
+  `aaecd78fda89e85527b873467f759e69f77b1d1a` (confirmed present in this
+  repository's history); revalidating authority chain, writer-lock, full PR
+  diff vs. writer scope diff, root-output-still-ignored, nested-source-now-
+  visible, `AndroidBuildEntryPoint.cs` tracking, no-force-add-needed,
+  evidence integrity, and `repository-gate`, all `PASS`; verdict `ACCEPT`,
+  P0/P1 none, regression risk `NONE_FOUND`,
+  `SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE: YES`;
+- this closeout independently re-verified the live fix after fast-forwarding
+  `main` (`git check-ignore --no-index`):
+  `Assets/_Project/Editor/Build/FutureBuildTool.cs` → not ignored (fixed);
+  `Build/sentinel.tmp` → still ignored (root output preserved);
+- the Human/Game Director then merged PR #45;
+- root `Build/`/`Builds/` output remains ignored; nested `Build`-named
+  source directories remain visible; no `git add -f` is required for future
+  source under `Assets/_Project/Editor/Build/`; no gameplay/Unity runtime
+  change was made;
+- this closure grants **no** successor implementation authority. Device
+  automation, `ttk-android-device-verification`, `ttk-asset-intake`, native
+  `/run`/`/verify`, `.claude/skills`, Unity MCP/Runtime Observer, WaterZone,
+  B-LITE, gameplay/product continuation,
+  networking/PvP/co-op/backend/Stage C, and the still-inert Game Production
+  Skill Pack v1 branch/worktree all remain unauthorized unless separately
+  Human-authorized. The two pre-existing open unclaimed threads (WaterZone
+  depth-occlusion fix; pending genuine B-LITE Human physical gate playtest)
+  are unaffected and remain open.
 
 ## Prior authority — RUNTIME-VERIFY-FOUNDATION-V1-001 closure (superseded)
 
@@ -352,10 +356,9 @@ threads — see "Current authority" at the top of this file.
 
 ## Current stop condition
 
-The active write task is a single-file tooling correction, per "Current
-authority" above: `TASK-TIEU-TIEN-KY-GITIGNORE-BUILD-ANCHOR-FIX-001`, scoped
-to exactly `.gitignore` and its own evidence report. It does not grant, and
-must not be read as granting, any device automation, native `.claude/skills`
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. This does not grant, and must
+not be read as granting, any device automation, native `.claude/skills`
 adoption, dependency audit/removal, rights/provenance review, art-direction
 authorization, Product Proof continuation, or gameplay/networking/PvP/co-op/
 Stage C/backend/package mutation. Those remain blocked on a fresh explicit
@@ -365,6 +368,4 @@ animation/ground-water pass next, per SLICE-007's escalation clause) or a
 bounded follow-up task for the one remaining open product item: the
 WaterZone depth-occlusion fix.
 
-Stop condition for this task: `INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE`.
-Stop condition for successor product authority beyond this task's narrow
-scope remains: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
+Stop condition: `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY`.
