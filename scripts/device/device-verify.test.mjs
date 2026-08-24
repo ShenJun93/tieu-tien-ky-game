@@ -28,20 +28,20 @@ test('parseAdbDevicesOutput: zero devices', () => {
 
 test('parseAdbDevicesOutput: one device with -l props', () => {
   const raw =
-    'List of devices attached\n192.168.1.7:42675 device product:a15nsxx model:SM_A155F device:a15 transport_id:3\n';
+    'List of devices attached\n192.0.2.10:5555 device product:test_product model:TEST_MODEL device:test_device transport_id:3\n';
   const devices = parseAdbDevicesOutput(raw);
   assert.equal(devices.length, 1);
-  assert.equal(devices[0].serial, '192.168.1.7:42675');
+  assert.equal(devices[0].serial, '192.0.2.10:5555');
   assert.equal(devices[0].state, 'device');
-  assert.equal(devices[0].props.model, 'SM_A155F');
+  assert.equal(devices[0].props.model, 'TEST_MODEL');
   assert.equal(devices[0].props.transport_id, '3');
 });
 
 test('parseAdbDevicesOutput: multiple transports for the same physical device', () => {
   const raw = [
     'List of devices attached',
-    '192.168.1.7:42675 device product:a15nsxx model:SM_A155F device:a15 transport_id:3',
-    'adb-RF8X60HNX2Y-GTKkrP._adb-tls-connect._tcp device product:a15nsxx model:SM_A155F device:a15 transport_id:1',
+    '192.0.2.10:5555 device product:test_product model:TEST_MODEL device:test_device transport_id:3',
+    'adb-TESTSERIAL-Example._adb-tls-connect._tcp device product:test_product model:TEST_MODEL device:test_device transport_id:1',
     '',
   ].join('\n');
   const devices = parseAdbDevicesOutput(raw);

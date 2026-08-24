@@ -1,5 +1,13 @@
 # TASK — DEVICE VERIFICATION FOUNDATION V1 001
 
+> Public-evidence data-minimization pass applied to the current tree
+> (post-merge, task already closed). Device network endpoint, ADB/mDNS
+> transport identifier, hardware serial, and device-model-specific
+> identifiers that appeared in this file have been replaced with stable
+> `REDACTED` labels below. The engineering facts they supported (device
+> class, Android version/API, PASS/FAIL results) are preserved unchanged.
+> This is a current-tree edit only — it does not rewrite Git history.
+
 ## Authorization
 
 Human/Game Director authored a control-plane activation request (relayed via
@@ -37,23 +45,23 @@ task may activate):**
 
 ```text
 adb devices -l:
-  192.168.1.7:42675                              device  product:a15nsxx model:SM_A155F device:a15 transport_id:3
-  adb-RF8X60HNX2Y-GTKkrP._adb-tls-connect._tcp    device  product:a15nsxx model:SM_A155F device:a15 transport_id:1
+  DEVICE_ENDPOINT_REDACTED                              device  product:REDACTED model:REDACTED device:REDACTED transport_id:3
+  MDNS_TRANSPORT_REDACTED    device  product:REDACTED model:REDACTED device:REDACTED transport_id:1
 
 Two transports, same physical device (Human/Director-confirmed and
 independently cross-checked below). Explicit authorized serial for this
-task: 192.168.1.7:42675. The mDNS transport is NOT used, per explicit
+task: DEVICE_ENDPOINT_REDACTED. The mDNS transport is NOT used, per explicit
 instruction not to silently switch transports.
 
-Read-only identity checks, explicitly targeted (adb -s 192.168.1.7:42675 ...):
-  ro.product.model          = SM-A155F
+Read-only identity checks, explicitly targeted (adb -s DEVICE_ENDPOINT_REDACTED ...):
+  ro.product.model          = REDACTED
   ro.build.version.release  = 15
   ro.build.version.sdk      = 35
-  ro.serialno               = RF8X60HNX2Y   (real hardware serial — matches
+  ro.serialno               = REDACTED   (real hardware serial — matches
                                               the mDNS transport's name suffix,
                                               confirming both transports are
                                               indeed the same physical device)
-  ro.product.device         = a15
+  ro.product.device         = REDACTED
 
 GATE RESULT: PASS. Device is state=device, uniquely identified, model/API/
 serial confirmed. Activation proceeds.
@@ -75,7 +83,7 @@ Runtime Verify Core (existing, unmodified by this task):
 
 Device Verification Foundation (this task):
   consumes exact existing APK
-  identifies exactly one device (explicit serial: 192.168.1.7:42675 for
+  identifies exactly one device (explicit serial: DEVICE_ENDPOINT_REDACTED for
     this task's own real-device validation runs, unless the Human
     explicitly changes it)
   validates artifact/device/package identity
@@ -169,14 +177,14 @@ copy on this machine) into repo code — that path is local-machine-specific,
 not portable.
 
 **Device targeting for this task's own real-device validation runs**: every
-device command must explicitly target `-s 192.168.1.7:42675` (the
+device command must explicitly target `-s DEVICE_ENDPOINT_REDACTED` (the
 Human/Director-authorized serial for this activation) — never rely on
 adb's default single-device behavior, and never silently switch to the
-`adb-RF8X60HNX2Y-GTKkrP._adb-tls-connect._tcp` mDNS transport for the same
+`MDNS_TRANSPORT_REDACTED` mDNS transport for the same
 physical device. The helper's `verify-connected`/device-selection logic
 itself, as durable code, must remain serial-parameterized (not
 hardcoded to this one serial) — this task's own validation runs are what's
-pinned to `192.168.1.7:42675`, not the helper's design.
+pinned to `DEVICE_ENDPOINT_REDACTED`, not the helper's design.
 
 ## MSYS_NO_PATHCONV
 
@@ -272,8 +280,8 @@ node --test scripts/hooks/hooks.test.mjs
 ## Real device verification — required, not optional
 
 Must use the physically connected device present at task start
-(`192.168.1.7:42675`, model `SM-A155F`, Android 15/API 35, hardware serial
-`RF8X60HNX2Y`). Record exact serial/model/API in the evidence report. Do not
+(`DEVICE_ENDPOINT_REDACTED`, model `REDACTED`, Android 15/API 35, hardware serial
+`REDACTED`). Record exact serial/model/API in the evidence report. Do not
 substitute mock-only tests for real-device evidence. Mocks/unit-style tests
 are welcome for helper parsing/error paths, but they cannot replace
 `clean_install_real_device`, `launch_real_device`,

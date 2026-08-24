@@ -90,10 +90,12 @@ final state:
   (`docs/evidence/DEVICE_VERIFICATION_FOUNDATION_V1_001_REPORT.md`);
 - focused helper tests 37/37 PASS; governance tests 46/46 PASS; exact-head
   `repository-gate` PASS;
-- real-device evidence (device `192.168.1.7:42675`, `SM-A155F`, Android
-  15/API 35, hw serial `RF8X60HNX2Y`): clean install, package identity,
-  launch-component resolution, launch, process verification, and screenshot
-  capture all `PASS` as recorded;
+- real-device evidence (device endpoint/hardware serial redacted from this
+  public surface per the Device Verification data-minimization policy,
+  Android 15/API 35): clean install, package identity, launch-component
+  resolution, launch, process verification, and screenshot capture all
+  `PASS` as recorded — see the current-tree-redacted evidence report for
+  the full transcript;
 - destructive-boundary remediation applied during review: `clean-install`
   internally verifies the artifact and the canonical package source before
   uninstall/install; the caller cannot redefine the authoritative package
