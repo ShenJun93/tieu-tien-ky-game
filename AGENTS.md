@@ -43,6 +43,10 @@ For a mutating task, `authority_anchor_ref` is the immutable commit immediately 
 
 After that transition, the implementation writer must not modify either control-plane file. `scope-gate`, `pre-task`, and `pre-finish` fail closed on writer self-expansion/self-weakening. Lifecycle transitions back to `REVIEW`, `HUMAN_GATE`, `DISCOVERY`, or another task are Human/Final-Foreman control-plane actions, not implementation-writer work.
 
+### Terminal closeout authorship
+
+Once implementation verification and any required independent review / Human Gate have accepted an exact implementation candidate, Human/Game Director or Final Foreman acting as control-plane authority may append one terminal closeout commit to the **same task branch**, touching `docs/governance/NEXT_TASK.md` only. The implementation writer/session must never author that commit. It transitions authority to `DISCOVERY` or another explicitly allowed non-mutating terminal state and must never activate a successor task. The final PR head still requires Repository Gate, and Human/Game Director remains merge authority. Full mechanics: `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`.
+
 ## Live operator precedence
 
 ```text

@@ -141,6 +141,30 @@ Exact activation-content validation protects the boundary between control-plane 
 
 This is intended to prevent accidental/agentic self-expansion or evidence weakening. It is not a cryptographic defense against a malicious repository administrator; GitHub-side branch controls provide the outer repository boundary.
 
+## Terminal closeout — same-PR default
+
+The default governed-task lifecycle closes on the same task branch instead of a routine second closeout PR:
+
+```text
+main = DISCOVERY
+→ Human/Final Foreman activation
+→ writer implementation
+→ focused verification / pre-finish
+→ required independent review and/or Human Gate
+→ exact implementation candidate accepted
+→ Human-directed terminal closeout commit on SAME branch
+→ NEXT_TASK = DISCOVERY
+→ Repository Gate on final PR head
+→ Human squash merge
+→ main remains DISCOVERY
+```
+
+A second post-merge closeout PR is no longer routine. Legacy post-merge closeout remains allowed only when a task has already merged without a terminal closeout, or an explicit exceptional reason exists.
+
+This default changes nothing about writer lock: the implementation writer still cannot edit `docs/governance/NEXT_TASK.md` or the active task contract after activation. Any implementation, evidence, or active-task-contract mutation after independent review stales that review. The terminal `NEXT_TASK.md`-only commit does not itself modify the reviewed implementation payload, but Human must inspect the final closeout diff and the exact-head Repository Gate before merge. No terminal closeout may activate a successor task.
+
+Full mechanics, review-binding record format, and merge-method detail: `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`.
+
 ## Live-main drift guard
 
 An immutable baseline is not enough if `main` moves while a task is active.
