@@ -28,7 +28,7 @@ evidence the primitive-VFX ceiling has likely been reached, not just under-tuned
 
 Unity `6000.3.21f1` (`E:\Tools\Unity\Hub\Editor\6000.3.21f1\Editor\Unity.exe`), worktree
 `E:\GameDev\ttk-product-proof-rebase`, `workspace_policy: ISOLATED_WORKTREE`. Device:
-physical Android, adb serial `RF8X60HNX2Y`.
+physical Android, adb serial `DEVICE_SERIAL_REDACTED`.
 
 ## Technique — repair-budget fallback used, not the primary target
 
@@ -78,7 +78,7 @@ actually mutated.
 satisfied by *actually observing the burst render correctly on the physical device*, not
 inferred. That direct observation was not obtained:
 
-- The APK was installed (`adb install -r`) and launched successfully on `RF8X60HNX2Y`.
+- The APK was installed (`adb install -r`) and launched successfully on `DEVICE_SERIAL_REDACTED`.
 - A capture attempt was made around a Lôi Trảm attack (`screenshots/burst.mp4`,
   `04_loitram_tap.png`), but the device screen locked partway through the session
   (`06_dismiss_keyguard.png`, `07_check.png` are both solid black — confirmed by direct
@@ -143,7 +143,7 @@ pre-authorized repair-budget clause; no external research material required disp
 
 **Artifact tested:** `Builds/Android/TieuTienKy-PPS003VFX-3761714.apk`, built from commit
 `3761714b49c9b7ab84ebc8ca92b152c71fee7e25`, played on the already-deployed physical
-Android device (`RF8X60HNX2Y`).
+Android device (`DEVICE_SERIAL_REDACTED`).
 
 **Human verdict.** The Human's initial answer ("không" / "no" to all five acceptance
 questions) was ambiguous by construction — two of the five questions are phrased as

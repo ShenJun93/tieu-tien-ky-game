@@ -64,7 +64,7 @@ built-in `Sprites-Default` material.
 
 ## Device evidence — screenshots (per Vision QA discipline, §14)
 
-Device: Galaxy A15, `RF8X60HNX2Y` (same device as every prior slice). APK:
+Device: DEVICE_MODEL_REDACTED, `DEVICE_SERIAL_REDACTED` (same device as every prior slice). APK:
 `TieuTienKy-PPS007ChibiSprites-167cfaf.apk`, built from `167cfaf` on
 `feat/product-proof-slice-007-actor-presentation-chibi-sprites`, installed fresh
 (`adb install -r`, then a clean uninstall/reinstall to rule out stale state) and
