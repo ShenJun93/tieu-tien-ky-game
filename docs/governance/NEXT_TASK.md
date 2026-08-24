@@ -4,23 +4,70 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "BATCH",
+  "task_id": "TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "chore/public-evidence-privacy-cleanup-001",
+  "baseline_ref": "b7e998c793ae8071b72ce5b0c8e36140ad3d23bf",
+  "authority_anchor_ref": "b7e998c793ae8071b72ce5b0c8e36140ad3d23bf",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_PUBLIC_EVIDENCE_PRIVACY_CLEANUP_001.md",
+  "evidence_file": "docs/evidence/PUBLIC_EVIDENCE_PRIVACY_CLEANUP_001_REPORT.md",
+  "allowed_paths": [
+    ".agents/skills/ttk-android-device-verification/SKILL.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_003_VFX_TECHNIQUE_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_004_VFX_PARTICLESYSTEM_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_005_VFX_TEXTURED_SHADER_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_006_STORM_CONTROL_HERO_VFX_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_007_ACTOR_PRESENTATION_CHIBI_SPRITES_REPORT.md",
+    "docs/evidence/PRODUCT_PROOF_SLICE_008_FOLLOWUP_FIXES_REPORT.md",
+    "docs/evidence/PUBLIC_EVIDENCE_PRIVACY_CLEANUP_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "AGENTS.md",
+    "scripts/",
+    ".github/",
+    ".claude/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "targeted_reports_scanned": "PASS",
+    "prohibited_identifiers_redacted": "PASS",
+    "historical_evidence_preserved": "PASS",
+    "skill_scan_coverage": "PASS",
+    "no_runtime_change": "PASS",
+    "no_gameplay_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001` is active. See
+`docs/tasks/TASK_TIEU_TIEN_KY_PUBLIC_EVIDENCE_PRIVACY_CLEANUP_001.md` for the
+full contract. Purpose: current-tree public-evidence data-minimization pass
+over six historical Product Proof/VFX evidence reports (Slices 003-008) plus
+a wording fix to the `ttk-android-device-verification` Skill's pre-commit
+data-minimization checklist so it explicitly covers all prohibited
+identifier categories. No Git history rewrite; no gameplay, Assets/,
+Packages/, ProjectSettings/, Unity, Runtime Observer, WaterZone, B-LITE,
+networking, or trusted-ref-hardening change. This is the first real use of
+the same-PR terminal closeout policy adopted via PR #52
+(`docs/governance/TERMINAL_CLOSEOUT_POLICY.md`): terminal closeout will be
+appended to this same task branch by a separate Human/Final-Foreman
+control-plane action after independent review and Human acceptance, not by
+this implementation writer.
 
 ## Prior authority — ASSET-INTAKE-FOUNDATION-V1-001 closure (superseded)
 
