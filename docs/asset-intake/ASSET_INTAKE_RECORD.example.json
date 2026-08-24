@@ -1,0 +1,20 @@
+{
+  "asset_id": "example-oss-foley-pack-001",
+  "display_name": "EXAMPLE — Synthetic Placeholder OSS Foley Pack",
+  "source_type": "OSS",
+  "source_name": "Example Synthetic Source (not a real project)",
+  "source_locator": "https://example.invalid/synthetic-oss-foley-pack",
+  "source_version_or_ref": "UNKNOWN",
+  "source_fingerprint": "UNKNOWN",
+  "rights_basis": "UNKNOWN",
+  "license_name": "UNKNOWN",
+  "license_locator": "UNKNOWN",
+  "attribution_required": false,
+  "technical_notes": "This is a synthetic example record, not a real asset. It demonstrates a STAGE disposition where provenance/rights are not yet resolved.",
+  "dependencies": [],
+  "render_pipeline": "UNKNOWN",
+  "mobile_risk": "UNKNOWN",
+  "disposition": "STAGE",
+  "destination_if_adopted": null,
+  "notes": "SYNTHETIC EXAMPLE ONLY — no real third-party asset is referenced by this record. It exists to demonstrate the ASSET_INTAKE_RECORD.schema.md shape and validates cleanly for STAGE, where unresolved provenance/rights fields are allowed."
+}

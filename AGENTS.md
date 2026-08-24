@@ -149,6 +149,7 @@ Use the smallest matching process skill:
 - `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority; default same-symptom repair budget is two rounds before re-plan/escalation.
 - `.agents/skills/ttk-runtime-verify/SKILL.md` — required-evidence-gated Unity runtime verification (compile/EditMode/PlayMode/Android build); run only the stages the active task's `required_evidence` declares, report `PASS`/`FAIL`/`NOT_TESTED`/`BLOCKED_ON_HUMAN_GATE` honestly.
 - `.agents/skills/ttk-android-device-verification/SKILL.md` — device-level verification of an already-built SHA-bound APK via `scripts/device/device-verify.mjs` (explicit-serial device selection, clean install, launch-component resolution, bounded process/screenshot evidence); never rebuilds the artifact or invokes Unity, and stops before the Human physical gate.
+- `.agents/skills/ttk-asset-intake/SKILL.md` — process guidance for staging, provenance/rights recording, and technical screening of a candidate external asset via `scripts/assets/asset-intake.mjs` before any `ADOPT`/`ADAPT`/`REJECT`/`DEFER` disposition; grants no authority to import/copy/move asset files into `Assets/`, and is not legal advice.
 
 ## Craft skills
 

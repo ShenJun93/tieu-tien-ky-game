@@ -4,19 +4,76 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-ASSET-INTAKE-FOUNDATION-V1-001",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "chore/asset-intake-foundation-v1-001",
+  "baseline_ref": "82a5c2a55c9e3a4b79abefd2dc16cb98a462e506",
+  "authority_anchor_ref": "82a5c2a55c9e3a4b79abefd2dc16cb98a462e506",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_ASSET_INTAKE_FOUNDATION_V1_001.md",
+  "evidence_file": "docs/evidence/ASSET_INTAKE_FOUNDATION_V1_001_REPORT.md",
+  "allowed_paths": [
+    "AGENTS.md",
+    "scripts/assets/",
+    ".agents/skills/ttk-asset-intake/",
+    "docs/asset-intake/",
+    "docs/evidence/ASSET_INTAKE_FOUNDATION_V1_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/WORKFLOW.md",
+    ".claude/",
+    "scripts/hooks/",
+    "scripts/ao/",
+    ".github/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "asset_intake_skill_present": "PASS",
+    "agents_skill_index_updated": "PASS",
+    "intake_record_format_present": "PASS",
+    "validator_present": "PASS",
+    "focused_validator_tests": "PASS",
+    "provenance_required": "PASS",
+    "rights_basis_required_for_adopt": "PASS",
+    "license_identity_required_for_adopt": "PASS",
+    "unknown_rights_fail_closed_for_adopt": "PASS",
+    "staged_not_equal_adopted": "PASS",
+    "destination_path_guard": "PASS",
+    "secret_field_guard": "PASS",
+    "no_auto_download": "PASS",
+    "no_asset_file_import": "PASS",
+    "no_unity_execution": "PASS",
+    "no_package_change": "PASS",
+    "no_gameplay_change": "PASS",
+    "no_successor_authority": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
 }
 ```
 
 ## Current authority
+
+`TASK-TIEU-TIEN-KY-ASSET-INTAKE-FOUNDATION-V1-001` is active. See
+`docs/tasks/TASK_TIEU_TIEN_KY_ASSET_INTAKE_FOUNDATION_V1_001.md` for the
+full contract. Purpose: a thin, durable Asset Intake Foundation (process
+Skill + machine-readable intake record format + deterministic fail-closed
+validator + focused tests) so future external assets can be staged,
+provenance-checked, rights/license-recorded, technically screened, and
+explicitly `ADOPT`/`ADAPT`/`REJECT`/`DEFER` decided before becoming normal
+TTK production assets. This task imports no real third-party asset, creates
+no art, and grants no authority to import/copy/move asset files into
+`Assets/`.
+
+## Prior authority — DEVICE-VERIFICATION-FOUNDATION-V1-001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-DEVICE-VERIFICATION-FOUNDATION-V1-001` is closed. Its
 final state:
