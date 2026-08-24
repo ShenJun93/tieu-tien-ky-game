@@ -4,74 +4,77 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "task_id": "TASK-TIEU-TIEN-KY-ASSET-INTAKE-FOUNDATION-V1-001",
-  "repository": "ShenJun93/tieu-tien-ky-game",
-  "branch": "chore/asset-intake-foundation-v1-001",
-  "baseline_ref": "82a5c2a55c9e3a4b79abefd2dc16cb98a462e506",
-  "authority_anchor_ref": "82a5c2a55c9e3a4b79abefd2dc16cb98a462e506",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_ASSET_INTAKE_FOUNDATION_V1_001.md",
-  "evidence_file": "docs/evidence/ASSET_INTAKE_FOUNDATION_V1_001_REPORT.md",
-  "allowed_paths": [
-    "AGENTS.md",
-    "scripts/assets/",
-    ".agents/skills/ttk-asset-intake/",
-    "docs/asset-intake/",
-    "docs/evidence/ASSET_INTAKE_FOUNDATION_V1_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "docs/governance/NEXT_TASK.md",
-    "docs/governance/WORKFLOW.md",
-    ".claude/",
-    "scripts/hooks/",
-    "scripts/ao/",
-    ".github/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Build/",
-    "Builds/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "asset_intake_skill_present": "PASS",
-    "agents_skill_index_updated": "PASS",
-    "intake_record_format_present": "PASS",
-    "validator_present": "PASS",
-    "focused_validator_tests": "PASS",
-    "provenance_required": "PASS",
-    "rights_basis_required_for_adopt": "PASS",
-    "license_identity_required_for_adopt": "PASS",
-    "unknown_rights_fail_closed_for_adopt": "PASS",
-    "staged_not_equal_adopted": "PASS",
-    "destination_path_guard": "PASS",
-    "secret_field_guard": "PASS",
-    "no_auto_download": "PASS",
-    "no_asset_file_import": "PASS",
-    "no_unity_execution": "PASS",
-    "no_package_change": "PASS",
-    "no_gameplay_change": "PASS",
-    "no_successor_authority": "PASS"
-  },
-  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_HUMAN_MERGE"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-ASSET-INTAKE-FOUNDATION-V1-001` is active. See
-`docs/tasks/TASK_TIEU_TIEN_KY_ASSET_INTAKE_FOUNDATION_V1_001.md` for the
-full contract. Purpose: a thin, durable Asset Intake Foundation (process
-Skill + machine-readable intake record format + deterministic fail-closed
-validator + focused tests) so future external assets can be staged,
-provenance-checked, rights/license-recorded, technically screened, and
-explicitly `ADOPT`/`ADAPT`/`REJECT`/`DEFER` decided before becoming normal
-TTK production assets. This task imports no real third-party asset, creates
-no art, and grants no authority to import/copy/move asset files into
-`Assets/`.
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. See "Current stop condition"
+at the bottom of this file for what this does and does not grant.
+
+## Prior authority — ASSET-INTAKE-FOUNDATION-V1-001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-ASSET-INTAKE-FOUNDATION-V1-001` is closed. Its final
+state:
+
+- merged via PR #49 (squash) at `e5e6a0b3feeae5580e547b4dfe935260a6d0381d`
+  (`main`); independently reviewed exact final candidate
+  `d643e764b6108ae0f9be88a9ef1f85868ebfdc10`; authority transition
+  `fb32521e0dfad5e048b0bdc3ca38e0a907d2e48e`;
+- delivered a thin, durable Asset Intake Foundation: a process Skill
+  (`.agents/skills/ttk-asset-intake/SKILL.md`), a machine-readable intake
+  record format (`docs/asset-intake/ASSET_INTAKE_RECORD.schema.md`,
+  `docs/asset-intake/ASSET_INTAKE_RECORD.example.json`), a deterministic
+  fail-closed validator (`scripts/assets/asset-intake.mjs`) with its focused
+  test suite (`scripts/assets/asset-intake.test.mjs`), and evidence
+  (`docs/evidence/ASSET_INTAKE_FOUNDATION_V1_001_REPORT.md`);
+- focused validator tests: 25/25 PASS (18 original + 7 net new from
+  Remediation 001); governance hook tests: 46/46 PASS; exact-head
+  Repository Gate: PASS;
+- no external asset downloaded/imported; no `Assets/` mutation; no
+  `Packages/` mutation; no Unity execution; no gameplay change;
+- **Remediation 001 resolved both reviewed implementation gaps:**
+  1. `ADOPT`/`ADAPT` provenance now fails closed on `source_name`,
+     `source_locator`, `source_version_or_ref`, `source_fingerprint`, plus
+     rights/license identity — previously only `source_name` was enforced;
+  2. `destination_if_adopted` now rejects any literal `..` segment on both
+     `/` and `\` slash styles before later consumption — previously only
+     some traversal forms were caught;
+- fresh independent Claude Cloud review of the exact final candidate
+  (`d643e764b6108ae0f9be88a9ef1f85868ebfdc10`), performed in a separate
+  session outside GitHub — no GitHub-native PR review/comment object exists
+  on PR #49 itself; this disposition is recorded as relayed by the
+  Human/Game Director, not as independently re-verified from GitHub by this
+  closeout. Per the Director's report: verdict `ACCEPT`, P0 none, P1 none,
+  `REMEDIATION_001: RESOLVED`, regression risk `NONE_FOUND`,
+  `SAFE_TO_MOVE_TO_HUMAN_MERGE_GATE: YES`;
+- the Human/Game Director then merged PR #49;
+- non-blocking notes preserved, not actioned here: secret-shaped field
+  detection intentionally biases fail-closed and may over-match future field
+  names; the destination guard checks literal path syntax only — any future
+  tool that actually copies/moves files must independently validate its own
+  destination rather than trusting a persisted intake record;
+  `ASSET_SOURCES.csv` remains separate retrospective audit data, not
+  replaced or modified by this task;
+- this closure grants **no** successor implementation authority. Actual
+  third-party asset import, copying/moving assets into `Assets/`, an Asset
+  Intake staging directory/tool, Runtime Observer/Unity MCP, WaterZone,
+  B-LITE continuation, gameplay continuation,
+  networking/PvP/co-op/backend/Stage C, and any other successor
+  implementation task all remain unauthorized unless separately
+  Human-authorized. The two pre-existing open unclaimed threads (WaterZone
+  depth-occlusion fix; pending genuine B-LITE Human physical gate playtest)
+  are unaffected and remain open.
 
 ## Prior authority — DEVICE-VERIFICATION-FOUNDATION-V1-001 closure (superseded)
 
