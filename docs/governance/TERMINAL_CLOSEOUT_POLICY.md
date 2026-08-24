@@ -48,7 +48,7 @@ No second closeout PR is required.
 
 The implementation writer **must not** create or edit the terminal closeout commit.
 
-Only Human/Game Director or Final Foreman acting as control-plane authority may append it after the implementation/evidence/review gates required by the task have been satisfied.
+The implementation writer/session cannot author it under any circumstance. Human/Game Director may author the terminal closeout commit directly, or explicitly direct a separate Final-Foreman/control-plane operator context to author it, only after the implementation/evidence/review gates required by the task have been satisfied.
 
 Writer rules remain:
 
@@ -84,7 +84,7 @@ The terminal commit must:
 ```
 
 4. grant no successor task or additional writable path;
-5. keep historical detail out of `NEXT_TASK.md`; task history remains in the task contract, evidence, PR and Git history;
+5. preserve existing historical authority continuity and unresolved/open/unclaimed thread pointers already recorded in `NEXT_TASK.md` — including WaterZone depth-occlusion and pending B-LITE Human Gate playtest tracking while either remains open. It may add or update the just-closed task's own concise closure record, but must not delete, truncate, or otherwise lose unrelated historical or open-thread content;
 6. be followed by a green `repository-gate` on the final PR head;
 7. be inspected by the Human merge authority as part of the same PR.
 
@@ -128,9 +128,11 @@ If `main` drifts after implementation verification/review but before merge, foll
 
 ## Migration
 
-PR #50 (`Asset Intake Foundation V1 001 — post-merge closeout`) is the last already-created legacy closeout PR and remains a separate PR because its implementation PR #49 has already merged.
+PR #50 (`Asset Intake Foundation V1 001 — post-merge closeout`) and PR #51 (device-identifier redaction) have already merged to `main`. PR #50 is retained here only as the historical final example of the legacy two-PR closeout pattern this policy replaces; it required a separate PR because its implementation, PR #49, had already merged before this policy existed.
 
-After this policy is accepted, new governed tasks should use same-PR terminal closeout by default. A second post-merge closeout PR should require an explicit reason, not be routine ceremony.
+Going forward, new governed tasks should use same-PR terminal closeout by default. A second post-merge closeout PR should require an explicit reason, not be routine ceremony.
+
+This policy does not decide `docs/governance/NEXT_TASK.md` history simplification (trimming, archiving, or otherwise reducing prior closure prose already recorded in that file). That remains a separate, explicitly Human-authorized future governance task; it is not decided or implied by adopting same-PR terminal closeout.
 
 ## What this policy does not change
 
@@ -141,7 +143,8 @@ After this policy is accepted, new governed tasks should use same-PR terminal cl
 - no successor-task authorization;
 - no change to product/gameplay scope;
 - no permission to bypass independent review or Human Gate;
-- no requirement to preserve historical closure prose in the live authority file.
+- no permission to delete, truncate, or otherwise lose historical closure prose, authority continuity, or open-thread tracking (e.g. WaterZone, B-LITE) already recorded in `docs/governance/NEXT_TASK.md`;
+- no decision on `docs/governance/NEXT_TASK.md` history simplification — see "Migration".
 
 ## Success criterion
 
