@@ -1,7 +1,5 @@
 # TERMINAL CLOSEOUT POLICY — SAME-PR DEFAULT
 
-Status: **PROPOSED GOVERNANCE EXTENSION / INDEPENDENT REVIEW REQUIRED**
-
 This policy narrows one lifecycle behavior in `docs/governance/WORKFLOW.md` without changing writer authority, hooks, evidence requirements, or Human merge authority.
 
 ## Problem
