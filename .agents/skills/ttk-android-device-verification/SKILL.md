@@ -95,6 +95,18 @@ task's `required_evidence` declares real-device evidence keys (e.g.
 13. Report every stage as exactly what actually happened — honest
     `PASS`/`FAIL`, never a fabricated `PASS` when evidence is missing or a
     stage could not be run.
+14. **Public-evidence data minimization is mandatory.** Raw command output may
+    contain values needed transiently to select and verify the device, but
+    committed/public evidence must not publish device network endpoints,
+    ADB/mDNS transport identifiers, hardware serials, local workstation
+    usernames or absolute local paths, or transient process ids. Replace
+    those values with stable redaction labels while retaining the engineering
+    fact being proved (for example: `DEVICE_ENDPOINT=REDACTED`, platform/API,
+    artifact SHA-256, source commit, PASS/FAIL, and failure reason). Device
+    model names should be omitted unless the active task explicitly requires
+    model-specific compatibility evidence. Before committing evidence, search
+    the changed evidence/PR text for the actual selected serial/endpoint and
+    hardware serial and fail the closeout if either remains.
 
 ## Explicitly not this Skill's job
 
