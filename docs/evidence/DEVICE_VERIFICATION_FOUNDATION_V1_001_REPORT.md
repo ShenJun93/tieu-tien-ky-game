@@ -1,5 +1,15 @@
 # EVIDENCE — DEVICE VERIFICATION FOUNDATION V1 001
 
+> Public-evidence data-minimization pass applied to the current tree
+> (post-merge, task already closed). Device network endpoint, ADB/mDNS
+> transport identifier, hardware serial, device-model-specific identifiers,
+> local-machine username/paths, and transient process ids that appeared in
+> this file have been replaced with stable `REDACTED` labels below. The
+> engineering facts they supported (device class, Android version/API,
+> artifact SHA-256, source commit, PASS/FAIL results) are preserved
+> unchanged. This is a current-tree edit only — it does not rewrite Git
+> history, and does not claim prior Git objects/forks/caches are erased.
+
 ```json
 {
   "task_id": "TASK-TIEU-TIEN-KY-DEVICE-VERIFICATION-FOUNDATION-V1-001",
@@ -30,6 +40,7 @@
   "runtime_verify_not_duplicated": "PASS",
   "no_unity_execution": "PASS",
   "no_gameplay_change": "PASS",
+  "public_evidence_identifiers_redacted": "PASS",
   "verdict": "PASS"
 }
 ```
@@ -432,13 +443,13 @@ time (`applicationIdentifier: / Android: com.shenjun93.tieutienky.p0a`) —
 matches the task's currently-expected value; no `ProjectSettings` mutation
 was made or required.
 
-## Real device verification — serial `192.168.1.7:42675`
+## Real device verification — serial `DEVICE_ENDPOINT_REDACTED`
 
 ### Device selection / identity
 
 ```text
-$ node scripts/device/device-verify.mjs verify-connected --serial 192.168.1.7:42675
-{ "ok": true, "serial": "192.168.1.7:42675", "state": "device" }
+$ node scripts/device/device-verify.mjs verify-connected --serial DEVICE_ENDPOINT_REDACTED
+{ "ok": true, "serial": "DEVICE_ENDPOINT_REDACTED", "state": "device" }
 
 $ node scripts/device/device-verify.mjs verify-connected            (no --serial, two transports present)
 { "ok": false, "message": "device selection failed: MULTIPLE_DEVICES_NO_EXPLICIT_SERIAL",
@@ -447,28 +458,28 @@ $ node scripts/device/device-verify.mjs verify-connected            (no --serial
 
 Confirms the fail-closed multi-transport rule against the real device fleet
 this task activated with (the same two transports recorded at activation:
-`192.168.1.7:42675` and `adb-RF8X60HNX2Y-GTKkrP._adb-tls-connect._tcp`), and
+`DEVICE_ENDPOINT_REDACTED` and `MDNS_TRANSPORT_REDACTED`), and
 that the mDNS transport was never automatically used.
 
 ```text
-$ node scripts/device/device-verify.mjs device-info --serial 192.168.1.7:42675
+$ node scripts/device/device-verify.mjs device-info --serial DEVICE_ENDPOINT_REDACTED
 {
   "ok": true,
-  "serial": "192.168.1.7:42675",
+  "serial": "DEVICE_ENDPOINT_REDACTED",
   "state": "device",
-  "transportProps": { "product": "a15nsxx", "model": "SM_A155F", "device": "a15", "transport_id": "3" },
-  "model": "SM-A155F",
+  "transportProps": { "product": "REDACTED", "model": "REDACTED", "device": "REDACTED", "transport_id": "3" },
+  "model": "REDACTED",
   "androidRelease": "15",
   "androidApi": "35",
-  "hardwareSerial": "RF8X60HNX2Y",
-  "productDevice": "a15"
+  "hardwareSerial": "REDACTED",
+  "productDevice": "REDACTED"
 }
 ```
 
 ```text
-DEVICE_SERIAL          = 192.168.1.7:42675
-DEVICE_HARDWARE_SERIAL = RF8X60HNX2Y
-DEVICE_MODEL           = SM-A155F
+DEVICE_SERIAL          = DEVICE_ENDPOINT_REDACTED
+DEVICE_HARDWARE_SERIAL = REDACTED
+DEVICE_MODEL           = REDACTED
 ANDROID_API            = 35 (Android 15)
 ```
 
@@ -477,11 +488,11 @@ Matches the pre-activation gate's independently-recorded identity exactly.
 ### Clean install
 
 ```text
-$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+$ node scripts/device/device-verify.mjs clean-install --serial DEVICE_ENDPOINT_REDACTED \
     --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" --package com.shenjun93.tieutienky.p0a
 {
   "ok": true,
-  "serial": "192.168.1.7:42675",
+  "serial": "DEVICE_ENDPOINT_REDACTED",
   "package": "com.shenjun93.tieutienky.p0a",
   "wasAlreadyInstalled": true,
   "uninstallResult": "Success",
@@ -497,11 +508,11 @@ mutation.
 ### Installed-package / launch-component verification
 
 ```text
-$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
-{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
+$ node scripts/device/device-verify.mjs verify-installed-package --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "DEVICE_ENDPOINT_REDACTED", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
 
-$ node scripts/device/device-verify.mjs resolve-launch-component --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
-{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a",
+$ node scripts/device/device-verify.mjs resolve-launch-component --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "DEVICE_ENDPOINT_REDACTED", "package": "com.shenjun93.tieutienky.p0a",
   "component": "com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity" }
 ```
 
@@ -513,34 +524,34 @@ inferred/guessed.
 ### Launch + process verification
 
 ```text
-$ node scripts/device/device-verify.mjs launch --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+$ node scripts/device/device-verify.mjs launch --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
 {
   "ok": true,
-  "serial": "192.168.1.7:42675",
+  "serial": "DEVICE_ENDPOINT_REDACTED",
   "package": "com.shenjun93.tieutienky.p0a",
   "component": "com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity",
   "amStartOutput": "Starting: Intent { cmp=com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity }",
   "delayMs": 1500,
   "processAlive": true,
-  "pid": "29999"
+  "pid": "REDACTED"
 }
 
-$ node scripts/device/device-verify.mjs verify-launched-process --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
-{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a", "processAlive": true, "pid": "29999" }
+$ node scripts/device/device-verify.mjs verify-launched-process --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "DEVICE_ENDPOINT_REDACTED", "package": "com.shenjun93.tieutienky.p0a", "processAlive": true, "pid": "REDACTED" }
 ```
 
 `am start`'s own success text was not treated as sufficient proof — the
 bounded post-launch process check (one delay, one `pidof` read, no polling)
-independently confirmed PID `29999` alive, then a second standalone
+independently confirmed PID (redacted) alive, then a second standalone
 `verify-launched-process` call reconfirmed the same PID immediately after.
 
 ### Screenshot capture — machine evidence only
 
 ```text
-$ node scripts/device/device-verify.mjs capture-screenshot --serial 192.168.1.7:42675 --out <path>
+$ node scripts/device/device-verify.mjs capture-screenshot --serial DEVICE_ENDPOINT_REDACTED --out <path>
 {
   "ok": true,
-  "serial": "192.168.1.7:42675",
+  "serial": "DEVICE_ENDPOINT_REDACTED",
   "outPath": "<path>",
   "sizeBytes": 15197,
   "sha256": "ca2e7ef708be4e086e78c6921ab25cbd9b871744c1c983089c7de250f7104528",
@@ -550,7 +561,7 @@ $ node scripts/device/device-verify.mjs capture-screenshot --serial 192.168.1.7:
 
 Captured via `adb exec-out screencap -p` (no `/sdcard` intermediate file).
 Verified as a well-formed PNG: `1080x2340, 8-bit/color RGBA,
-non-interlaced` (matches the SM-A155F's known display resolution) — not
+non-interlaced` (matches the device's known display resolution) — not
 truncated or corrupted.
 
 **Storage note**: the capture was first written inside the worktree, under
@@ -558,18 +569,18 @@ truncated or corrupted.
 generally was ignored — a real `git check-ignore` check afterward showed
 only `.local/ao/` is actually covered by `.gitignore`, not `.local/` in
 general. The file was moved to OS temp
-(`C:/Users/PACMAP/AppData/Local/Temp/ttk-device-verify/screenshot-9dadab4.png`)
+(`LOCAL_MACHINE_PATH_REDACTED/screenshot-9dadab4.png`)
 instead, and the SHA-256 was re-verified identical
 (`ca2e7ef708be4e086e78c6921ab25cbd9b871744c1c983089c7de250f7104528`) after
 the move — confirming no corruption and no accidental repo tracking. The
 image is **not** committed by this task.
 
 ```text
-SCREENSHOT_PATH    = C:/Users/PACMAP/AppData/Local/Temp/ttk-device-verify/screenshot-9dadab4.png  (OS temp, not committed)
+SCREENSHOT_PATH    = LOCAL_MACHINE_PATH_REDACTED/screenshot-9dadab4.png  (OS temp, not committed)
 SCREENSHOT_SHA256  = ca2e7ef708be4e086e78c6921ab25cbd9b871744c1c983089c7de250f7104528
 SESSION_BINDING    = same verification session as the clean-install/launch above — device serial
-                      192.168.1.7:42675, APK source SHA 9dadab46ced2a2f7f5a77a734b87569b1da7fca2,
-                      package com.shenjun93.tieutienky.p0a, PID 29999
+                      DEVICE_ENDPOINT_REDACTED, APK source SHA 9dadab46ced2a2f7f5a77a734b87569b1da7fca2,
+                      package com.shenjun93.tieutienky.p0a, PID REDACTED
 ```
 
 Per the task's screenshot contract, this image proves machine
@@ -579,13 +590,13 @@ readability, art quality, TTK identity, or Human acceptance.
 ### Clean-install safety revalidation (Remediation 001, real device)
 
 Device re-confirmed `state=device` before this revalidation
-(`adb -s 192.168.1.7:42675 get-state` → `device`).
+(`adb -s DEVICE_ENDPOINT_REDACTED get-state` → `device`).
 
 **Fail-closed mismatch proof — deliberately wrong package, before any real
 clean-install:**
 
 ```text
-$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+$ node scripts/device/device-verify.mjs clean-install --serial DEVICE_ENDPOINT_REDACTED \
     --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" --package com.definitely.fake.ttk.package
 {
   "ok": false,
@@ -604,18 +615,18 @@ preflight check alone. Confirmed the existing real package remained
 installed and untouched immediately afterward:
 
 ```text
-$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
-{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
+$ node scripts/device/device-verify.mjs verify-installed-package --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "DEVICE_ENDPOINT_REDACTED", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
 ```
 
 **Valid remediated clean-install — authoritative package id:**
 
 ```text
-$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+$ node scripts/device/device-verify.mjs clean-install --serial DEVICE_ENDPOINT_REDACTED \
     --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" --package com.shenjun93.tieutienky.p0a
 {
   "ok": true,
-  "serial": "192.168.1.7:42675",
+  "serial": "DEVICE_ENDPOINT_REDACTED",
   "package": "com.shenjun93.tieutienky.p0a",
   "artifactSha256": "3a8d13b27810cfe35382f8d425e4f3df61d046f1d9fb0b9c62cef42dcea32e05",
   "artifactFullSourceSha": "9dadab46ced2a2f7f5a77a734b87569b1da7fca2",
@@ -628,20 +639,20 @@ $ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675
 **Reconfirmed the remaining chain, all real, all fresh after remediation:**
 
 ```text
-$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+$ node scripts/device/device-verify.mjs verify-installed-package --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
 { "ok": true, ..., "installed": true }
 
-$ node scripts/device/device-verify.mjs resolve-launch-component --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+$ node scripts/device/device-verify.mjs resolve-launch-component --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
 { "ok": true, ..., "component": "com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity" }
 
-$ node scripts/device/device-verify.mjs launch --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
+$ node scripts/device/device-verify.mjs launch --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
 {
   "ok": true,
   "component": "com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity",
   "amStartOutput": "Starting: Intent { cmp=com.shenjun93.tieutienky.p0a/com.unity3d.player.UnityPlayerGameActivity }",
   "delayMs": 1500,
   "processAlive": true,
-  "pid": "18347"
+  "pid": "REDACTED"
 }
 ```
 
@@ -659,16 +670,16 @@ repo, never committed), pointing at a completely different, fictitious
 package:
 
 ```text
-# C:/Users/PACMAP/AppData/Local/Temp/ttk-device-verify/fake-project-settings.asset
+# LOCAL_MACHINE_PATH_REDACTED/fake-project-settings.asset
 PlayerSettings:
   applicationIdentifier:
     Android: com.attacker.controlled.package
 ```
 
 ```text
-$ node scripts/device/device-verify.mjs clean-install --serial 192.168.1.7:42675 \
+$ node scripts/device/device-verify.mjs clean-install --serial DEVICE_ENDPOINT_REDACTED \
     --apk ".../TieuTienKy-RTVerifyV1-9dadab4.apk" \
-    --project-settings "C:/Users/PACMAP/AppData/Local/Temp/ttk-device-verify/fake-project-settings.asset" \
+    --project-settings "LOCAL_MACHINE_PATH_REDACTED/fake-project-settings.asset" \
     --package com.attacker.controlled.package
 {
   "ok": false,
@@ -692,8 +703,8 @@ Confirmed the real package remained installed and untouched immediately
 after:
 
 ```text
-$ node scripts/device/device-verify.mjs verify-installed-package --serial 192.168.1.7:42675 --package com.shenjun93.tieutienky.p0a
-{ "ok": true, "serial": "192.168.1.7:42675", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
+$ node scripts/device/device-verify.mjs verify-installed-package --serial DEVICE_ENDPOINT_REDACTED --package com.shenjun93.tieutienky.p0a
+{ "ok": true, "serial": "DEVICE_ENDPOINT_REDACTED", "package": "com.shenjun93.tieutienky.p0a", "installed": true }
 ```
 
 The temporary fake settings file was deleted after this demonstration. No
@@ -763,7 +774,7 @@ pre_finish             : run after this evidence report is committed (see Closeo
 PLAYER_VISIBLE_DELTA = NONE
 TECHNICAL_DELTA      = one dependency-free device helper + one process Skill + one AGENTS.md index line
 UNITY_EXECUTION      = NOT_PERFORMED, NOT_REQUIRED
-DEVICE_EVIDENCE      = PASS (real device, serial 192.168.1.7:42675, see above)
+DEVICE_EVIDENCE      = PASS (real device, serial DEVICE_ENDPOINT_REDACTED, see above)
 HUMAN_GAMEPLAY_GATE  = NOT_REACHED — this task stops before it, per its own scope
 ```
 
