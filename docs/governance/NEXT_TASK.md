@@ -4,23 +4,66 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001",
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "branch": "chore/device-artifact-trusted-ref-hardening-001",
+  "baseline_ref": "5f1264d7879c0cba3780ef5441a75ff222cf28e7",
+  "authority_anchor_ref": "5f1264d7879c0cba3780ef5441a75ff222cf28e7",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_DEVICE_ARTIFACT_TRUSTED_REF_HARDENING_001.md",
+  "evidence_file": "docs/evidence/DEVICE_ARTIFACT_TRUSTED_REF_HARDENING_001_REPORT.md",
+  "allowed_paths": [
+    "scripts/device/device-verify.mjs",
+    "scripts/device/device-verify.test.mjs",
+    ".agents/skills/ttk-android-device-verification/SKILL.md",
+    "docs/evidence/DEVICE_ARTIFACT_TRUSTED_REF_HARDENING_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "AGENTS.md",
+    ".github/",
+    ".claude/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "device_verify_tests": "PASS",
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "trusted_main_tip": "PASS",
+    "trusted_main_ancestor": "PASS",
+    "feature_branch_only_rejected": "PASS",
+    "untrusted_commit_object_rejected": "PASS",
+    "approved_immutable_tag_supported": "PASS",
+    "moved_approved_tag_rejected": "PASS",
+    "caller_ref_cannot_expand_trust": "PASS",
+    "clean_install_uses_same_trust_boundary": "PASS",
+    "historical_branch_only_case_fail_closed": "PASS",
+    "no_unity_change": "PASS",
+    "no_gameplay_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001` is active. See
+`docs/tasks/TASK_TIEU_TIEN_KY_DEVICE_ARTIFACT_TRUSTED_REF_HARDENING_001.md`
+for the full contract. Purpose: harden Android APK artifact provenance so an
+APK source commit is accepted only when reachable from an internally trusted
+repository ref (`main`, or an explicitly approved immutable release/tag
+pinned by internal, non-caller-controlled policy), and apply the same trust
+boundary to `clean-install`'s internal destructive preflight. No Unity,
+gameplay, Assets/, Packages/, ProjectSettings/, networking, or successor
+product authority is granted.
 
 ## Prior authority — PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001 closure (superseded)
 
