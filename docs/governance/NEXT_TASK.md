@@ -4,23 +4,74 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "repository": "ShenJun93/tieu-tien-ky-game",
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002",
+  "branch": "chore/ttk-readonly-reviewer-pilot-002",
+  "baseline_ref": "cc345bb1929af57f9a731756e30b70af59221b29",
+  "authority_anchor_ref": "cc345bb1929af57f9a731756e30b70af59221b29",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002.md",
+  "evidence_file": "docs/evidence/TTK_READONLY_REVIEWER_PILOT_002_REPORT.md",
+  "allowed_paths": [
+    ".claude/agents/ttk-readonly-reviewer.md",
+    "docs/evidence/TTK_READONLY_REVIEWER_PILOT_002_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    ".agents/skills/review-task/",
+    ".agents/",
+    "scripts/",
+    ".github/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "claude_project_agent_discovery": "PASS",
+    "reviewer_tool_surface": "PASS",
+    "reviewer_plan_mode_dogfood": "RECORDED",
+    "review_policy_dogfood": "RECORDED",
+    "review_policy_verdict": "PASS",
+    "tracked_mutation_after_review": "NONE",
+    "review_task_skill_unchanged": "PASS",
+    "a2_review_binding": "NOT_IMPLEMENTED",
+    "no_game_or_unity_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_OF_EXACT_A1_V2_CANDIDATE_REQUIRED_BEFORE_HUMAN_MERGE"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002` is active on branch
+`chore/ttk-readonly-reviewer-pilot-002`, `state: IMPLEMENT`, in an isolated
+worktree at baseline `cc345bb1929af57f9a731756e30b70af59221b29` (confirmed
+identical to live `origin/main` at activation). Human/Game Director
+authorized recreating the previously validated TTK read-only reviewer
+concept as a bounded, isolated pilot: exactly one project-level Claude Code
+subagent (`.claude/agents/ttk-readonly-reviewer.md`) that performs
+independent read-only governance review, plus its evidence report. The
+historical local recovery candidate `0eb72ac5f6003c7f6cd3f45ab4695e282a91ce49`
+is explicitly **not** reused as a current candidate — this is a fresh
+recreation against current live `main`. A2 (reviewed-SHA enforcement, review
+receipts, CandidateGate binding, terminal review-token binding, automatic
+exact-review enforcement) is explicitly out of scope and is recorded as
+`NOT_IMPLEMENTED`, not silently deferred. `NEXT_TASK.md` and the active task
+contract are writer-locked until terminal closeout. This closure/activation
+grants no gameplay/Unity/Assets/Packages/ProjectSettings mutation, no
+Dynamic Workflows or agent-team authority, no DAITHIEN integration, no
+auto-merge, and no successor-task activation.
 
 ## Prior authority — GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001 closure (superseded)
 
