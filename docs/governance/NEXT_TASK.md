@@ -4,23 +4,61 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "repository": "https://github.com/ShenJun93/tieu-tien-ky-game",
+  "state": "IMPLEMENT",
+  "task_mode": "MICRO",
+  "task_id": "TASK-TIEU-TIEN-KY-GITHUB-NATIVE-SECURITY-BASELINE-001",
+  "branch": "chore/github-native-security-baseline-001",
+  "baseline_ref": "0452bd94f9edbe7a8dc02a212591d4c81a95123c",
+  "authority_anchor_ref": "0452bd94f9edbe7a8dc02a212591d4c81a95123c",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_GITHUB_NATIVE_SECURITY_BASELINE_001.md",
+  "evidence_file": "docs/evidence/GITHUB_NATIVE_SECURITY_BASELINE_001_REPORT.md",
+  "allowed_paths": [
+    ".github/workflows/governance-hooks.yml",
+    ".github/dependabot.yml",
+    "SECURITY.md",
+    "docs/evidence/GITHUB_NATIVE_SECURITY_BASELINE_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "AGENTS.md",
+    ".claude/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/",
+    "docs/governance/CURRENT_STATE.md"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "checkout_sha_pinned": "PASS",
+    "checkout_provenance_verified": "PASS",
+    "dependabot_github_actions_only": "PASS",
+    "security_md_no_invented_promises": "PASS",
+    "permissions_unchanged": "PASS",
+    "no_unity_or_gameplay_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-GITHUB-NATIVE-SECURITY-BASELINE-001` is active on branch
+`chore/github-native-security-baseline-001`, `state: IMPLEMENT`, scoped to
+exactly the four `allowed_paths` above. Purpose: harden the existing
+GitHub-native security/supply-chain baseline (Actions SHA-pin, Dependabot for
+GitHub Actions, minimal `SECURITY.md`) without touching Unity/gameplay/
+product behavior and without mutating any GitHub-native repository Settings
+(those remain a separate Human/Game Director manual action, per the task
+contract). Full contract: `docs/tasks/TASK_TIEU_TIEN_KY_GITHUB_NATIVE_SECURITY_BASELINE_001.md`.
+Security/supply-chain change — independent review required before terminal
+closeout; the implementation writer must not author that closeout commit.
 
 ## Prior authority — DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001 closure (superseded)
 
