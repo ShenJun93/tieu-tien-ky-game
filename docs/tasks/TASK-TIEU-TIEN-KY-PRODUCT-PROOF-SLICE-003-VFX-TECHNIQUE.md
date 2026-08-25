@@ -115,7 +115,7 @@ evidence report; do not silently substitute it.
 
 `device_particle_render_check` is a distinct, explicitly-named key (matching this
 project's established convention of naming a historically-risky check on its own,
-e.g. the original vivo/Galaxy A15 device gates) — it must be satisfied by actually
+e.g. the original DEVICE_MODEL_REDACTED device gates) — it must be satisfied by actually
 observing the burst render correctly on the physical Android device (not visibly missing,
 not a pink/magenta "shader missing" fallback), not inferred from Editor Play Mode alone.
 This can be folded into the same device session as the Human physical gate below if

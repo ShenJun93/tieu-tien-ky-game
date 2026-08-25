@@ -318,7 +318,7 @@ Do not rewrite historical pre-Human evidence.
 
 ```json
 {
-  "device": "Samsung Galaxy A15",
+  "device": "DEVICE_MODEL_REDACTED",
   "apk": "Builds/Android/TieuTienKy-StageAB-0065a18.apk",
   "build_head": "0065a18d9cfa901f03f228171681bf707ead23af",
   "looks_like_a_game": "YES",

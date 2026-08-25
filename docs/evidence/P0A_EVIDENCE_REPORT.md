@@ -391,7 +391,7 @@ build/test scratch output — not part of this checkpoint commit).
   a temporary debugging tool and has since been removed; it is not present in the working
   tree and is not part of this checkpoint.
 - **Physical Android gates already observed (prior build/install cycle, same session)**:
-  an earlier APK build was installed on a real device (vivo V2250, Android 15) and the
+  an earlier APK build was installed on a real device (DEVICE_MODEL_REDACTED, Android 15) and the
   on-screen diagnostic overlay (`P0ADiagnosticOverlay`) was confirmed actually rendering,
   after an initial "invisible overlay" symptom was root-caused to a stale installed APK
   rather than a rendering defect.
@@ -407,7 +407,7 @@ build/test scratch output — not part of this checkpoint commit).
   `PrimitiveBurstVFX` Sphere→Cube/shader fix (for IL2CPP `SphereCollider` stripping under
   the Standard shader), and the new `PlayerFollowCamera` — have so far only been
   validated via EditMode tests (batch-mode Editor, no real device), not by installing and
-  running the latest build on the vivo device. `adb`/USB device access was blocked in the
+  running the latest build on the DEVICE_MODEL_REDACTED device. `adb`/USB device access was blocked in the
   most recent local session; that is why this reconciliation does not claim a fresh
   install/run pass. This gap is recorded here as deferred technical debt for the next
   physical verification pass, not as a reopened regression.
