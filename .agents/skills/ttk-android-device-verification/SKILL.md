@@ -50,6 +50,23 @@ task's `required_evidence` declares real-device evidence keys (e.g.
    commit in this repository via `git`. Record the SHA-256 and the full
    source commit. Never accept a different artifact after Human handoff;
    never silently rebuild one.
+
+   The resolved source commit must also carry **trusted provenance**, not
+   merely exist as a commit object: it is accepted only when it equals or is
+   an ancestor of trusted `main` (`refs/remotes/origin/main`), or is
+   reachable from an explicitly approved immutable release/tag pinned by an
+   internal, committed allowlist inside `device-verify.mjs` (both the exact
+   ref name and the exact expected commit are pinned; a moved/recreated tag
+   fails closed). Feature-branch-only provenance fails closed — a commit
+   that exists in this repository but is reachable only from a non-trusted
+   branch is rejected, not merely a commit that fails to resolve at all. The
+   caller can never nominate an arbitrary ref as trusted: there is no
+   `--trusted-ref`/`--allow-ref`/`--source-ref`/environment-variable
+   mechanism, by design — trusted-root identity is internal, fixed policy
+   only. `clean-install`'s internal preflight (step 6 below) enforces this
+   exact same trust boundary through the same shared artifact-identity
+   lookup, not a separate/weaker check — an untrusted artifact is rejected
+   there too, before any destructive `adb` call.
 5. Read the authoritative package id live from committed
    `ProjectSettings/ProjectSettings.asset` at run time — never trust a
    hardcoded/remembered value. Fail closed if it cannot be parsed.
@@ -57,13 +74,15 @@ task's `required_evidence` declares real-device evidence keys (e.g.
    is enforced **inside the `clean-install` command itself**, not by
    whoever calls it having run steps 4-5 as separate commands first: before
    any destructive `adb uninstall`/`adb install`, `clean-install`
-   internally re-verifies the artifact and re-reads the authoritative
-   package id, and fails closed on any artifact defect or on a mismatch
-   between a caller-supplied `--package` and that authoritative id. Only
-   after that internal preflight passes does it check current install
-   state, uninstall only that exact package if present, then install only
-   the verified APK. No wildcard uninstall, no `pm clear`, no unrelated
-   package mutation.
+   internally re-verifies the artifact — including trusted-provenance
+   (step 4), via the exact same shared artifact-identity lookup
+   `verify-artifact` uses, not a duplicated or weaker check — and re-reads
+   the authoritative package id, and fails closed on any artifact defect,
+   untrusted source commit, or a mismatch between a caller-supplied
+   `--package` and that authoritative id. Only after that internal
+   preflight passes does it check current install state, uninstall only
+   that exact package if present, then install only the verified APK. No
+   wildcard uninstall, no `pm clear`, no unrelated package mutation.
 7. Resolve the launch component from the installed package on the device
    itself (a read-only package-query command), immediately before use —
    never hardcode an inferred fully-qualified activity class as canon. If

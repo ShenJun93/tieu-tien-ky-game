@@ -1,5 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import {
   parseAdbDevicesOutput,
   selectDevice,
@@ -9,6 +13,12 @@ import {
   isPackageListed,
   isProcessAlive,
   evaluateCleanInstallPreflight,
+  getTrustedProvenancePolicy,
+  createGitRefOps,
+  resolveApprovedTagRoot,
+  evaluateTrustedProvenance,
+  evaluateArtifactSourceTrust,
+  computeArtifactIdentity,
 } from './device-verify.mjs';
 
 const VALID_ARTIFACT = {
@@ -323,4 +333,290 @@ test('evaluateCleanInstallPreflight: (E2) unreadable canonical package id still 
   });
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'PACKAGE_ID_UNREADABLE');
+});
+
+test('evaluateCleanInstallPreflight: untrusted-provenance artifact rejected before any device mutation, same shared trust boundary as verify-artifact', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: { ok: false, reason: 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF', fullSourceSha: 'deadbeef'.repeat(5) },
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+    projectSettingsOverrideAttempted: false,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'INVALID_ARTIFACT');
+  assert.equal(result.detail, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+// ---------------------------------------------------------------------------
+// Device Artifact Trusted-Ref Hardening 001
+//
+// Requires: an APK source commit is accepted only when it is reachable from
+// an internally trusted repository ref (`main`, or an explicitly approved
+// immutable release/tag pinned by internal, non-caller-controlled policy).
+// Trust root selection must never be caller-controlled (no --trusted-ref /
+// --allow-ref / --source-ref / env var). `verify-artifact` and
+// `clean-install`'s internal preflight must share one trust boundary.
+// ---------------------------------------------------------------------------
+
+test('getTrustedProvenancePolicy: internal fixed policy, main ref is refs/remotes/origin/main, unaffected by environment variables', () => {
+  const before = getTrustedProvenancePolicy();
+  assert.equal(before.trustedMainRef, 'refs/remotes/origin/main');
+  assert.ok(Array.isArray(before.approvedTags));
+
+  process.env.TTK_TRUSTED_REF = 'refs/heads/feature/foo';
+  process.env.TRUSTED_REF = 'refs/heads/feature/foo';
+  process.env.TTK_ALLOW_REF = 'refs/heads/feature/foo';
+  const after = getTrustedProvenancePolicy();
+  delete process.env.TTK_TRUSTED_REF;
+  delete process.env.TRUSTED_REF;
+  delete process.env.TTK_ALLOW_REF;
+
+  assert.deepEqual(after, before);
+  assert.equal(after.trustedMainRef, 'refs/remotes/origin/main');
+});
+
+test('computeArtifactIdentity: caller-supplied trust-override-shaped extra options are ignored, only cwd is honored', () => {
+  const apkPath = path.join(tmpdir(), `TieuTienKy-bogus-${'a'.repeat(40)}.apk`);
+  const withoutOverride = computeArtifactIdentity(apkPath);
+  const withOverrideAttempt = computeArtifactIdentity(apkPath, {
+    trustedMainRef: 'refs/heads/feature/foo',
+    allowRef: 'refs/heads/feature/foo',
+    policy: { trustedMainRef: 'refs/heads/feature/foo', approvedTags: [] },
+  });
+  // Neither call can resolve a git commit or find the file, but the point is
+  // that the (bogus, unsupported) override-shaped keys have zero effect: both
+  // calls fail for the same reason as the no-override call.
+  assert.deepEqual(withOverrideAttempt, withoutOverride);
+});
+
+// --- Real-repository regression: the historical Runtime Verify artifact
+// source commit, previously recorded as branch-only provenance, must now
+// fail closed. Uses this checkout's actual shared object database/refs
+// rather than synthetic data, per the task's live-reproduction requirement.
+
+test('evaluateArtifactSourceTrust: historical branch-only commit (9dadab46...) fails closed against the real repository', () => {
+  const HISTORICAL_BRANCH_ONLY_SHA = '9dadab46ced2a2f7f5a77a734b87569b1da7fca2';
+  const result = evaluateArtifactSourceTrust(HISTORICAL_BRANCH_ONLY_SHA, { cwd: process.cwd() });
+  assert.equal(result.trusted, false);
+  assert.equal(result.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('evaluateArtifactSourceTrust: live origin/main tip is trusted against the real repository', () => {
+  const ops = createGitRefOps(process.cwd());
+  const mainTip = ops.resolveRef('refs/remotes/origin/main');
+  assert.ok(mainTip, 'refs/remotes/origin/main must resolve in this checkout');
+  const result = evaluateArtifactSourceTrust(mainTip, { cwd: process.cwd() });
+  assert.equal(result.trusted, true);
+  assert.equal(result.rootType, 'main');
+});
+
+// --- Synthetic temporary-Git-repository integration: proves real git
+// ancestry/ref/tag semantics (not string/prefix comparison), independent of
+// this repository's own history, for every required case in one shared
+// deterministic fixture built once at module load.
+
+function git(args, cwd) {
+  const result = spawnSync('git', args, {
+    cwd,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      GIT_AUTHOR_NAME: 'TTK Test',
+      GIT_AUTHOR_EMAIL: 'ttk-test@example.invalid',
+      GIT_COMMITTER_NAME: 'TTK Test',
+      GIT_COMMITTER_EMAIL: 'ttk-test@example.invalid',
+    },
+  });
+  if (result.status !== 0) {
+    throw new Error(`git ${args.join(' ')} failed: ${result.stderr}`);
+  }
+  return result.stdout.trim();
+}
+
+function buildFixtureRepo() {
+  const dir = mkdtempSync(path.join(tmpdir(), 'ttk-trust-fixture-'));
+  git(['init', '--quiet'], dir);
+  git(['config', 'user.email', 'ttk-test@example.invalid'], dir);
+  git(['config', 'user.name', 'TTK Test'], dir);
+
+  const commit = (name) => {
+    writeFileSync(path.join(dir, name), `${name}\n`);
+    git(['add', name], dir);
+    git(['commit', '--quiet', '-m', name], dir);
+    return git(['rev-parse', 'HEAD'], dir);
+  };
+
+  const shaA = commit('a.txt');
+  const shaB = commit('b.txt');
+  const shaC = commit('c.txt'); // trusted main tip
+  git(['update-ref', 'refs/remotes/origin/main', shaC], dir);
+
+  git(['checkout', '--quiet', '-b', 'feature/foo'], dir);
+  const shaD = commit('d.txt'); // feature-branch-only, parent = C, NOT an ancestor of C
+  const shaF = commit('f.txt'); // parent = D; will be the approved-tag target
+  git(['tag', 'v1.0.0-test', shaF], dir);
+
+  // Unreferenced (dangling but still resolvable) commit object: detached
+  // from C, then abandoned — no branch/tag ever points at it.
+  git(['checkout', '--quiet', '--detach', shaC], dir);
+  const shaE = commit('e.txt');
+  git(['checkout', '--quiet', 'feature/foo'], dir);
+
+  return { dir, shaA, shaB, shaC, shaD, shaE, shaF };
+}
+
+const fixture = buildFixtureRepo();
+
+test('evaluateTrustedProvenance: (A) source == trusted main tip -> trusted', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaC, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    approvedTags: [],
+  });
+  assert.equal(result.trusted, true);
+  assert.equal(result.rootType, 'main');
+  assert.equal(result.rootCommit, fixture.shaC);
+});
+
+test('evaluateTrustedProvenance: (B) source is an ancestor of trusted main -> trusted', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaB, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    approvedTags: [],
+  });
+  assert.equal(result.trusted, true);
+  assert.equal(result.rootType, 'main');
+});
+
+test('evaluateTrustedProvenance: (C) source exists only on a feature branch -> FAIL with explicit reason', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaD, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    approvedTags: [],
+  });
+  assert.equal(result.trusted, false);
+  assert.equal(result.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('evaluateTrustedProvenance: (D) source commit exists but no trusted ref contains it (dangling object) -> FAIL', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaE, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    approvedTags: [],
+  });
+  assert.equal(result.trusted, false);
+  assert.equal(result.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('resolveApprovedTagRoot: approved tag resolves to exactly its pinned commit -> ok', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = resolveApprovedTagRoot({ ref: 'refs/tags/v1.0.0-test', commit: fixture.shaF }, ops);
+  assert.equal(result.ok, true);
+  assert.equal(result.commit, fixture.shaF);
+});
+
+test('resolveApprovedTagRoot: (F) tag resolves to a commit different from the pinned expected commit -> FAIL', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = resolveApprovedTagRoot({ ref: 'refs/tags/v1.0.0-test', commit: fixture.shaC }, ops);
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'APPROVED_TAG_MISMATCH');
+});
+
+test('evaluateTrustedProvenance: (E) source reachable from a correctly-pinned approved tag, NOT from main -> trusted via approved_tag, independent of main', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaD, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    approvedTags: [{ ref: 'refs/tags/v1.0.0-test', commit: fixture.shaF }],
+  });
+  assert.equal(result.trusted, true);
+  assert.equal(result.rootType, 'approved_tag');
+  assert.equal(result.ref, 'refs/tags/v1.0.0-test');
+});
+
+test('evaluateTrustedProvenance: moved/mismatched approved tag cannot act as a trust root even when source is reachable from its actual commit', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaD, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    // pinned commit (shaC) != actual tag commit (shaF) -> tag mismatch, must not become a root
+    approvedTags: [{ ref: 'refs/tags/v1.0.0-test', commit: fixture.shaC }],
+  });
+  assert.equal(result.trusted, false);
+  assert.equal(result.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('evaluateArtifactSourceTrust: (G) a bare trustedMainRef/approvedTags override attempt has zero effect — only { cwd, policy } are honored, and the CLI never supplies policy', () => {
+  const withoutOverride = evaluateArtifactSourceTrust(fixture.shaD, { cwd: fixture.dir });
+  const withBogusOverrideAttempt = evaluateArtifactSourceTrust(fixture.shaD, {
+    cwd: fixture.dir,
+    trustedMainRef: 'refs/heads/feature/foo',
+    approvedTags: [{ ref: 'refs/heads/feature/foo', commit: fixture.shaD }],
+  });
+  assert.deepEqual(withBogusOverrideAttempt, withoutOverride);
+  assert.equal(withBogusOverrideAttempt.trusted, false);
+  assert.equal(withBogusOverrideAttempt.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('evaluateTrustedProvenance: (H) trusted main ref missing/unresolvable -> FAIL CLOSED, never falls back to HEAD/feature branch', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(fixture.shaD, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/DOES_NOT_EXIST',
+    approvedTags: [],
+  });
+  assert.equal(result.trusted, false);
+  assert.equal(result.reason, 'TRUSTED_MAIN_REF_UNRESOLVABLE');
+});
+
+test('evaluateTrustedProvenance: missing source SHA -> FAIL closed', () => {
+  const ops = createGitRefOps(fixture.dir);
+  const result = evaluateTrustedProvenance(null, {
+    ops,
+    trustedMainRef: 'refs/remotes/origin/main',
+    approvedTags: [],
+  });
+  assert.equal(result.trusted, false);
+});
+
+test('computeArtifactIdentity: source == trusted main tip in a real fixture repo -> ok, trust fields present', () => {
+  const filename = `TieuTienKy-fixture-${fixture.shaC}.apk`;
+  const apkPath = path.join(fixture.dir, filename);
+  writeFileSync(apkPath, Buffer.from('not a real apk but non-empty'));
+  const identity = computeArtifactIdentity(apkPath, { cwd: fixture.dir });
+  assert.equal(identity.ok, true);
+  assert.equal(identity.fullSourceSha, fixture.shaC);
+  assert.equal(identity.trustRootType, 'main');
+});
+
+test('computeArtifactIdentity: source only on feature branch in a real fixture repo -> rejected, untrusted provenance', () => {
+  const filename = `TieuTienKy-fixture-${fixture.shaD}.apk`;
+  const apkPath = path.join(fixture.dir, filename);
+  writeFileSync(apkPath, Buffer.from('not a real apk but non-empty'));
+  const identity = computeArtifactIdentity(apkPath, { cwd: fixture.dir });
+  assert.equal(identity.ok, false);
+  assert.equal(identity.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('evaluateCleanInstallPreflight: fixture-repo untrusted artifact is rejected via the exact shared computeArtifactIdentity result, before any device mutation', () => {
+  const filename = `TieuTienKy-fixture-${fixture.shaD}.apk`;
+  const apkPath = path.join(fixture.dir, filename);
+  writeFileSync(apkPath, Buffer.from('not a real apk but non-empty'));
+  const artifact = computeArtifactIdentity(apkPath, { cwd: fixture.dir });
+  const result = evaluateCleanInstallPreflight({
+    artifact,
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: undefined,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'INVALID_ARTIFACT');
+  assert.equal(result.detail, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('cleanup: remove temporary fixture repository', () => {
+  rmSync(fixture.dir, { recursive: true, force: true });
 });
