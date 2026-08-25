@@ -22,6 +22,89 @@ No task is active. Repository authority is `DISCOVERY`: read/research/compare
 only, repository mutation forbidden by default. See "Current stop condition"
 at the bottom of this file for what this does and does not grant.
 
+## Prior authority — GITHUB-NATIVE-SECURITY-BASELINE-001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-GITHUB-NATIVE-SECURITY-BASELINE-001` is closed via
+same-PR terminal closeout. Its final state:
+
+- PR #55, branch `chore/github-native-security-baseline-001`; base
+  `0452bd94f9edbe7a8dc02a212591d4c81a95123c` (`main`); activation
+  `211371790d77e05ef5708b3a215c0c6e5efe5d45`; accepted implementation
+  candidate `a2722b39b8700566c7cb2da3dc1a96c7662c391b`
+  (`REVIEWED_IMPLEMENTATION_SHA`). This terminal closeout commit is appended
+  directly on top of that exact candidate as the sole next commit on the
+  same branch, and its own resulting SHA is the `FINAL_CLOSEOUT_SHA`
+  recorded on PR #55; it touches only this file and does not alter the
+  reviewed implementation payload;
+- Phase B task B1 (GitHub-native security/supply-chain baseline) —
+  repository-file portion only: `.github/workflows/governance-hooks.yml`'s
+  movable `actions/checkout@v4` tag replaced with its resolved,
+  provenance-verified commit SHA (`11d5960a326750d5838078e36cf38b85af677262`
+  == tag `v4.4.0` on the canonical, non-fork `actions/checkout` repository);
+  `.github/dependabot.yml` added, scoped to the `github-actions` ecosystem
+  only; a minimal `SECURITY.md` added pointing to GitHub Private
+  Vulnerability Reporting, with no invented contact/SLA/bounty/CVE
+  commitment. `permissions: contents: read` unchanged; no unrelated Actions
+  added; no Unity GitHub Action added; no Unity/gameplay/product file
+  touched;
+- required evidence all `PASS` per
+  `docs/evidence/GITHUB_NATIVE_SECURITY_BASELINE_001_REPORT.md`:
+  `governance_hook_tests`, `exact_scope_diff`, `checkout_sha_pinned`,
+  `checkout_provenance_verified`, `dependabot_github_actions_only`,
+  `security_md_no_invented_promises`, `permissions_unchanged`,
+  `no_unity_or_gameplay_change`; governance hook tests 46/46 PASS;
+  `pre-finish` PASS; exact-head `repository-gate` run `32821479043` PASS on
+  candidate `a2722b39b8700566c7cb2da3dc1a96c7662c391b`;
+- **historical governance-sequencing deviation, explicitly accepted by
+  Human exception**: the task branch was pushed to GitHub before
+  server-side task-branch protection existed on it (a real ~17-minute
+  window), which the task contract's own failure behavior says should have
+  stopped activation publication. The Human/Game Director explicitly
+  accepted this specific historical sequencing deviation as a bounded
+  exception, recorded durably and GitHub-reviewably as PR #55 issue comment
+  `5408867668` (authored by repository owner `ShenJun93`, `OWNER`
+  association), which binds exactly this activation SHA and this
+  implementation candidate SHA and explicitly does **not** waive: exact-SHA
+  candidate binding, ongoing branch protection, scope restrictions,
+  Repository Gate, independent review, terminal closeout requirements,
+  Human merge authority, or auto-activation of B2/other successor work.
+  Protection was subsequently established via repository ruleset
+  `Protect PR55 task branch` (id `21394625`, `enforcement: active`,
+  `deletion` + `non_fast_forward` rules, `bypass_actors: []`,
+  `current_user_can_bypass: never`), confirmed still active at closeout, and
+  no implementation/branch commit was added as a side effect of establishing
+  that protection;
+- two independent read-only reviews accepted this candidate: a first review
+  of the implementation itself (`ACCEPT_WITH_NON_BLOCKING_NOTES`, P0 0, P1
+  0, activation-commit control-plane paths noted as expected governance
+  convention, not scope creep), and a second, narrower review specifically
+  re-checking the sequencing-deviation P1 after the Human exception comment
+  was posted (`P1 CLOSED`, P0 0, P1 0 remaining,
+  `SAFE_TO_MOVE_TO_HUMAN_ACCEPTANCE: YES`);
+- the Human/Game Director explicitly accepted implementation candidate
+  `a2722b39b8700566c7cb2da3dc1a96c7662c391b` and authorized this terminal
+  closeout for PR #55. PR #55 remains **open, draft, unmerged** as of this
+  commit — Human/Game Director retains sole merge authority; squash merge is
+  the default for the same-PR terminal closeout pattern, contingent on a
+  green `repository-gate` on this exact final PR head and final Human
+  inspection;
+- **the following GitHub-native repository Settings are explicitly NOT
+  activated by this closure and remain separate Human/manual post-merge
+  work, not successor repository-file implementation authority**: Actions
+  require-full-SHA policy, CodeQL Default Setup, secret scanning, secret
+  scanning push protection, Private Vulnerability Reporting, Dependabot
+  alerts. As of this closure none of the six have been changed from their
+  audited BEFORE state (all disabled/not-configured); none is claimed ON
+  without an independent read-back;
+- this closure grants **no** successor implementation authority. B2
+  (public evidence privacy cleanup), B3 (repository truth/issue hygiene),
+  B4 (branch retention/hygiene), the six GitHub-native Settings above,
+  gameplay/product/Unity continuation, and any other successor
+  implementation task all remain unauthorized unless separately
+  Human-authorized. The two pre-existing open unclaimed threads (WaterZone
+  depth-occlusion fix; pending genuine B-LITE Human physical gate playtest)
+  are unaffected and remain open.
+
 ## Prior authority — DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001` is closed via
