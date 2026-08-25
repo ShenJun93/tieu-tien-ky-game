@@ -22,6 +22,63 @@ No task is active. Repository authority is `DISCOVERY`: read/research/compare
 only, repository mutation forbidden by default. See "Current stop condition"
 at the bottom of this file for what this does and does not grant.
 
+## Prior authority — PUBLIC-EVIDENCE-PRIVACY-CLEANUP-002 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-002` is closed via
+same-PR terminal closeout. Its final state:
+
+- PR #57, branch `chore/public-evidence-privacy-cleanup-002`; base
+  `be144ddefa4ee8122e2b653161b457660d513c75` (`main`); activation
+  `6eaafd630c8e04d949b89d72421522ec478a5a2a`; accepted implementation
+  candidate `1003156ee7c0638c4a0205f253f713516451c726`
+  (`REVIEWED_IMPLEMENTATION_SHA`). This terminal closeout commit is appended
+  directly on top of that exact candidate as the sole next commit on the
+  same branch, and its own resulting SHA is the `FINAL_CLOSEOUT_SHA`
+  recorded on PR #57; it touches only this file and does not alter the
+  reviewed implementation payload;
+- current-tree public-evidence data-minimization pass over exactly three
+  historical docs files: two occurrences in
+  `docs/evidence/P0A_EVIDENCE_REPORT.md`, one occurrence in
+  `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, and one
+  historical-convention occurrence in
+  `docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE.md`
+  were replaced in place with the stable `DEVICE_MODEL_REDACTED` label. No
+  Git history rewrite; no gameplay/Assets/Packages/ProjectSettings/Unity/
+  networking/Actions/CodeQL/branch-protection/PR-hygiene/issue-hygiene/
+  branch-deletion change;
+- required evidence all `PASS` per
+  `docs/evidence/PUBLIC_EVIDENCE_PRIVACY_CLEANUP_002_REPORT.md`:
+  `governance_hook_tests`, `exact_scope_diff`, `residuals_redacted`,
+  `historical_evidence_preserved`, `no_history_rewrite`,
+  `no_runtime_change`, `no_gameplay_change`; governance hook tests 46/46
+  PASS; `pre-finish` PASS; exact-head implementation-candidate
+  `repository-gate` run `32857589990` PASS;
+- fresh independent review of exact candidate
+  `1003156ee7c0638c4a0205f253f713516451c726`: `PASS`, P0 none, P1 none,
+  one non-blocking stylistic note,
+  `SAFE_TO_MOVE_TO_HUMAN_ACCEPTANCE: YES`;
+- the Human/Game Director explicitly accepted implementation candidate
+  `1003156ee7c0638c4a0205f253f713516451c726` and authorized this separate
+  Final-Foreman/control-plane terminal closeout, recorded durably on PR #57
+  as issue comment `5411783768`;
+- this control-plane closeout also resolves the task's previously classified
+  `CONTROL_PLANE_REDACTION_REQUIRED` residual inside this file's SLICE-008
+  historical-closure prose, replacing only that device-model literal with
+  `DEVICE_MODEL_REDACTED`. This is a control-plane-only data-minimization
+  edit; the surrounding historical engineering conclusion and open-thread
+  tracking are preserved;
+- PR #57 remains **open, draft, unmerged** as of this commit — Human/Game
+  Director retains merge authority; per
+  `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`, squash merge is the default,
+  contingent on a green `repository-gate` on this exact final PR head and
+  final Human inspection;
+- this closure grants **no** successor implementation authority. B3
+  (repository truth/issue hygiene), B4 (branch retention/hygiene), further
+  gameplay/product/Unity work, and any other successor task remain
+  unauthorized unless separately Human-authorized. The two pre-existing
+  open unclaimed threads (WaterZone depth-occlusion fix; pending genuine
+  B-LITE Human physical gate playtest) are unaffected and remain open.
+
 ## Prior authority — GITHUB-NATIVE-SECURITY-BASELINE-001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-GITHUB-NATIVE-SECURITY-BASELINE-001` is closed via
@@ -594,7 +651,7 @@ state:
   a technical investigation/bugfix task, not an art/design judgment);
 - **Priority 1 (early-Defeat-at-00:03): CLOSED, confirmed not a code defect.**
   A deterministic PlayMode test (`ArenaAfkDefeatInvestigationTests`) and 4
-  independent live on-device reproductions (Galaxy A15, wireless adb) both
+  independent live on-device reproductions (DEVICE_MODEL_REDACTED, wireless adb) both
   confirm this is Wave 1's two-Pursuer pincer working exactly as coded against a
   fully idle player — not a bug. No gameplay/balance code changed. No further
   follow-up needed;
