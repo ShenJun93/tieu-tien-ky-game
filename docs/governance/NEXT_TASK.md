@@ -22,6 +22,88 @@ No task is active. Repository authority is `DISCOVERY`: read/research/compare
 only, repository mutation forbidden by default. See "Current stop condition"
 at the bottom of this file for what this does and does not grant.
 
+## Prior authority — PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001` is closed via
+same-PR terminal closeout — the first real use of
+`docs/governance/TERMINAL_CLOSEOUT_POLICY.md` (adopted via PR #52). Its
+final state:
+
+- PR #53, branch `chore/public-evidence-privacy-cleanup-001`; base
+  `b7e998c793ae8071b72ce5b0c8e36140ad3d23bf` (`main`); activation
+  `bc51d6bf7fab15e988df8f439deafb7374b1ee75`; accepted implementation
+  candidate `167bc1f1691c86ce6b536a6f7804b9e54198fbd2`
+  (`REVIEWED_IMPLEMENTATION_SHA`). This terminal closeout commit is appended
+  directly on top of that exact candidate as the sole next commit on the
+  same branch, and its own resulting SHA is the `FINAL_CLOSEOUT_SHA`
+  recorded on PR #53 by the Human/Game Director at merge time; it touches
+  only this file and does not alter the reviewed implementation payload;
+- current-tree public-evidence data-minimization pass over six historical
+  Product Proof/VFX evidence reports (Slices 003-008), plus a wording fix to
+  the `ttk-android-device-verification` Skill's rule 14 pre-commit checklist
+  so it explicitly enumerates all six prohibited identifier categories
+  instead of a named subset. No Git history rewrite; no gameplay, Assets/,
+  Packages/, ProjectSettings/, Unity, Runtime Observer, WaterZone, B-LITE,
+  networking, or trusted-ref-hardening change;
+- required evidence all `PASS` per
+  `docs/evidence/PUBLIC_EVIDENCE_PRIVACY_CLEANUP_001_REPORT.md`:
+  `governance_hook_tests`, `exact_scope_diff`, `targeted_reports_scanned`,
+  `prohibited_identifiers_redacted`, `historical_evidence_preserved`,
+  `skill_scan_coverage`, `no_runtime_change`, `no_gameplay_change`;
+  governance hook tests 46/46 PASS;
+- all six target reports redacted: 13 repeated hardware-serial `adb`
+  device-selector occurrences and 5 raw device-model occurrences (4 of the
+  6 reports; consolidated into 4 `DEVICE_MODEL_REDACTED` labels) replaced
+  in place with stable `REDACTED` labels; a post-redaction repository-wide
+  search confirmed zero residual occurrences of either literal. No
+  PASS/FAIL/verdict value, conclusion, artifact hash, source commit
+  reference, or screenshot filename/description was altered in any of the
+  six reports — every edit is a literal-value substitution only;
+- three out-of-scope device-model-shaped matches were found and explicitly
+  **not** touched, per the task's own report-only instruction: one inside
+  this file's own historical
+  "Prior authority — DEVICE-VERIFICATION-FOUNDATION-V1-001 closure" prose
+  (writer-locked, not merely out of task scope — requires a control-plane
+  transition, not an implementation-writer edit, to remediate);
+  `docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`; and
+  `docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE.md`.
+  All three remain **deferred non-blocking debt**, unresolved by this
+  closure, each requiring its own separately Human-authorized follow-up;
+- this session performed its own live revalidation directly against GitHub
+  before authoring this terminal commit (not merely relaying the Director's
+  report): live `origin/main` == expected `b7e998c793ae8071b72ce5b0c8e36140ad3d23bf`;
+  PR #53 `state=OPEN`, `draft=true`, `mergedAt=null`,
+  `base=main@b7e998c793ae8071b72ce5b0c8e36140ad3d23bf`,
+  `head=167bc1f1691c86ce6b536a6f7804b9e54198fbd2`; exact single-parent commit
+  chain `b7e998c7…` → `bc51d6bf…` (activation) → `167bc1f1…` (candidate);
+  task-branch protection confirmed `allow_force_pushes=false`,
+  `allow_deletions=false`, `enforce_admins=true`; Repository Gate run
+  `32735424644` (CI run #132) `conclusion=success` on `headSha=167bc1f1…`
+  exactly; the implementation diff (`bc51d6bf…`→`167bc1f1…`) touches only
+  this task's declared `allowed_paths`, with no forbidden-path or
+  control-plane file touched (writer-lock respected);
+- independent fresh review (relayed by the Human/Game Director): verdict
+  `ACCEPT`, P0 none, P1 none,
+  `IMPLEMENTATION_CANDIDATE_ACCEPTABLE_FOR_TERMINAL_CLOSEOUT: YES`,
+  `SAFE_TO_MOVE_TO_HUMAN_ACCEPTANCE_AND_TERMINAL_CLOSEOUT: YES`; one
+  previously flagged `PUBLISHED_BRANCH_PROTECTION_GAP` is
+  `REMEDIATED_NON_BLOCKING`;
+- the Human/Game Director explicitly accepted implementation candidate
+  `167bc1f1691c86ce6b536a6f7804b9e54198fbd2` and authorized this terminal
+  closeout for PR #53. PR #53 remains **open, draft, unmerged** as of this
+  commit — Human/Game Director retains sole merge authority; per
+  `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`, squash merge is the
+  default for the same-PR terminal closeout pattern, contingent on a green
+  `repository-gate` on this exact final PR head and final Human inspection;
+- this closure grants **no** successor implementation authority. The three
+  deferred out-of-scope identifier matches, further privacy/redaction work,
+  Runtime Observer/Unity MCP, WaterZone, B-LITE continuation,
+  gameplay/product continuation, and networking/PvP/co-op/backend/Stage C
+  all remain unauthorized unless separately Human-authorized. The two
+  pre-existing open unclaimed threads (WaterZone depth-occlusion fix;
+  pending genuine B-LITE Human physical gate playtest) are unaffected and
+  remain open.
+
 ## Prior authority — ASSET-INTAKE-FOUNDATION-V1-001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-ASSET-INTAKE-FOUNDATION-V1-001` is closed. Its final

@@ -28,7 +28,7 @@ texture and a new, additive, alpha-blended shader — not a modification of the 
 
 Unity `6000.3.21f1`, worktree `E:\GameDev\ttk-product-proof-rebase`,
 `workspace_policy: ISOLATED_WORKTREE`. Device: physical Android, adb serial
-`RF8X60HNX2Y` (same device as Slices 001-004), model `SM_A155F` (Galaxy A15).
+`DEVICE_SERIAL_REDACTED` (same device as Slices 001-004), model `DEVICE_MODEL_REDACTED`.
 
 ## Implementation
 
@@ -73,7 +73,7 @@ slices; `ProjectSettings/` was never actually mutated.
 ## `device_particle_render_check` — `PASS`, directly observed
 
 APK `TieuTienKy-PPS005VFX-b2e6142.apk` installed (`adb install -r`) and launched on
-`RF8X60HNX2Y`. Basic-attack taps landed on an enemy (`BasicAttack.cs` →
+`DEVICE_SERIAL_REDACTED`. Basic-attack taps landed on an enemy (`BasicAttack.cs` →
 `PrimitiveBurstVFX.SpawnAt` on `landedAnyHit`), captured via `adb shell screenrecord`
 inside a single uninterrupted shell invocation (first attempt lost the moment to
 inter-turn latency — the run had already reached its Victory screen by the time the
@@ -140,7 +140,7 @@ material required disposition.
 
 **Artifact tested:** `Builds/Android/TieuTienKy-PPS005VFX-b2e6142.apk`, built from final
 commit `b2e6142c92895dd96b8ea6ba674ebf9bb2bdabf6`, played on the already-deployed
-physical Android device (`RF8X60HNX2Y`).
+physical Android device (`DEVICE_SERIAL_REDACTED`).
 
 **Human verdict** (verbatim, then disambiguated per this task's own instruction not to
 guess an ambiguous mapping — the same lesson carried from Slice 003):

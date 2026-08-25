@@ -134,7 +134,7 @@ folder and corrects its description in the SLICE-007 report.
 
 ## Device evidence
 
-Device: Galaxy A15, `RF8X60HNX2Y` (same device as every prior slice), connected
+Device: DEVICE_MODEL_REDACTED, `DEVICE_SERIAL_REDACTED` (same device as every prior slice), connected
 this session via wireless `adb` (no USB available). APK
 `TieuTienKy-PPS008Followups-a9833fb.apk`, built from `a9833fb`, installed fresh
 (`adb uninstall` + `adb install -r`) and launched via `am start` against the

@@ -135,7 +135,7 @@ Per this task's own discipline (and every prior slice's), this field is not mark
 `PASS` without a genuine, directly-observed on-device capture of the 5-beat sequence —
 an inference from passing PlayMode tests is explicitly insufficient.
 
-**What is confirmed on the physical device** (`RF8X60HNX2Y`, Galaxy A15, same device as
+**What is confirmed on the physical device** (`DEVICE_SERIAL_REDACTED`, DEVICE_MODEL_REDACTED, same device as
 every prior slice): the APK installs and launches cleanly; the greybox arena, HUD
 (Vietnamese labels), WaterZone (blue), enemies (grey Pursuer, red Lancer), and player
 render with correct colors and no pink/magenta "shader missing" fallback and no solid
@@ -241,7 +241,7 @@ required disposition.
 
 Artifact tested: `Builds/Android/TieuTienKy-PPS006VFX-c5dca16.apk`, built from commit
 `c5dca16` on `feat/product-proof-slice-006-storm-control-hero-vfx-v3`, played on the
-physical device (`RF8X60HNX2Y`).
+physical device (`DEVICE_SERIAL_REDACTED`).
 
 **What actually happened**, verbatim per the conversation: asked to confirm which of
 the 5 exact task-file questions were answered, the Director's response was **not** a

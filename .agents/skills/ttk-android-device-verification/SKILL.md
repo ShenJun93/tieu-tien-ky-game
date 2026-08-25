@@ -104,9 +104,22 @@ task's `required_evidence` declares real-device evidence keys (e.g.
     fact being proved (for example: `DEVICE_ENDPOINT=REDACTED`, platform/API,
     artifact SHA-256, source commit, PASS/FAIL, and failure reason). Device
     model names should be omitted unless the active task explicitly requires
-    model-specific compatibility evidence. Before committing evidence, search
-    the changed evidence/PR text for the actual selected serial/endpoint and
-    hardware serial and fail the closeout if either remains.
+    model-specific compatibility evidence.
+
+    Before committing evidence, explicitly check the changed evidence/PR text
+    against **every** prohibited category below, not only a named subset, and
+    fail the closeout if any remains without an explicit allowed reason
+    recorded in the active task:
+
+    ```text
+    1. device network endpoint (e.g. IP:port)
+    2. ADB/mDNS transport identifier
+    3. hardware serial
+    4. local workstation username / absolute local path
+    5. transient process id
+    6. device-model identifier (default: omit/redact; allowed only when the
+       active task explicitly requires model-specific compatibility evidence)
+    ```
 
 ## Explicitly not this Skill's job
 

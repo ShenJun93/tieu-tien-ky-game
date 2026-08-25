@@ -27,7 +27,7 @@ reach.
 
 Unity `6000.3.21f1` (`E:\Tools\Unity\Hub\Editor\6000.3.21f1\Editor\Unity.exe`), worktree
 `E:\GameDev\ttk-product-proof-rebase`, `workspace_policy: ISOLATED_WORKTREE`. Device:
-physical Android, adb serial `RF8X60HNX2Y` (same device as Slices 001-003).
+physical Android, adb serial `DEVICE_SERIAL_REDACTED` (same device as Slices 001-003).
 
 ## Technique — primary target reached, no repair-budget fallback needed
 
@@ -93,7 +93,7 @@ actually mutated.
 ## `device_particle_render_check` — `PASS`, directly observed
 
 Unlike Slice 003 (`HUMAN_ACCEPTED_RISK`), this task's own on-device observation is a literal
-`PASS`: the APK was installed (`adb install -r`) and launched on `RF8X60HNX2Y`, a run was
+`PASS`: the APK was installed (`adb install -r`) and launched on `DEVICE_SERIAL_REDACTED`, a run was
 played (basic-attack taps landing on enemies — `BasicAttack.cs` calls `PrimitiveBurstVFX.SpawnAt`
 on every `landedAnyHit`, so no specific WaterZone+Lightning combo was required to observe the
 burst), and the session was captured with `adb shell screenrecord`.
@@ -170,7 +170,7 @@ external research material required disposition.
 `2824ceda740cfbe9b03f65cf14e2c5714209d82f` (before the `packages-lock.json` governance fix in
 `5e8a156`, which touched only a Unity-derived cache file with zero effect on compiled code —
 the APK is functionally identical to what `5e8a156` would produce), played on the
-already-deployed physical Android device (`RF8X60HNX2Y`).
+already-deployed physical Android device (`DEVICE_SERIAL_REDACTED`).
 
 **Human verdict.** Learning directly from Slice 003's ambiguous blanket-answer incident, the
 Human was asked two direct, disambiguated questions instead of the five raw acceptance
