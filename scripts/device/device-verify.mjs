@@ -310,6 +310,12 @@ function cmdVerifyConnected(args) {
 // recreated at a different commit fails closed rather than acting as a
 // trust root. This module never fetches/pulls/merges — it only reads
 // already-present local Git state.
+//
+// The APK filename's embedded short SHA is resolved to a full commit object
+// using ONLY object-prefix disambiguation (`git rev-parse --disambiguate`),
+// never ordinary ref resolution — see `disambiguateHexPrefix` below. A
+// branch/tag that happens to share a name with that hex token can never
+// redirect which object is treated as the artifact's source commit.
 // ---------------------------------------------------------------------------
 
 const TRUSTED_MAIN_REF = 'refs/remotes/origin/main';
@@ -423,6 +429,52 @@ export function evaluateArtifactSourceTrust(sourceSha, { cwd = process.cwd(), po
 }
 
 /**
+ * Pure decision: given the raw candidate object ids `git rev-parse
+ * --disambiguate=<hex>` reported for a hex token (ignoring ref names
+ * entirely — disambiguation only ever considers actual object ids in the
+ * object database), decide whether that token uniquely and correctly names
+ * exactly one commit object. `typeOf(id)` returns that object's git type
+ * (`'commit'`, `'blob'`, `'tree'`, `'tag'`) or `null` if it cannot be
+ * determined. Zero matching commits, or more than one, both fail closed —
+ * this function never guesses.
+ */
+export function resolveHexPrefixToCommit(candidateIds, typeOf) {
+  const commitIds = candidateIds.filter((id) => typeOf(id) === 'commit');
+  if (commitIds.length === 0) {
+    return { ok: false, reason: 'APK_SHA_NOT_A_COMMIT' };
+  }
+  if (commitIds.length > 1) {
+    return { ok: false, reason: 'APK_SHA_AMBIGUOUS', candidates: commitIds };
+  }
+  return { ok: true, fullSourceSha: commitIds[0] };
+}
+
+/**
+ * Resolve a hex token to a commit object using ONLY Git's object-prefix
+ * disambiguation (`git rev-parse --disambiguate=<hex>`), never ordinary ref
+ * resolution. This is the security-sensitive fix for a ref-name-collision
+ * finding: `git rev-parse --verify "<hex>^{commit}"` resolves an ambiguous
+ * bare token as a REF NAME (branch/tag/remote-tracking ref) before falling
+ * back to abbreviated-object-name interpretation — so a branch literally
+ * named after a real commit's short hex, pointing at a different commit,
+ * would silently redirect resolution to that branch's tip. `--disambiguate`
+ * lists only object ids whose hash begins with the given hex, never ref
+ * names, and prints nothing (not an error) when there is no match — so
+ * candidates are collected from stdout regardless of exit status.
+ */
+function disambiguateHexPrefix(hexToken, cwd) {
+  const result = runGit(['rev-parse', `--disambiguate=${hexToken}`], cwd);
+  const candidateIds = String(result.stdout || '')
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return resolveHexPrefixToCommit(candidateIds, (id) => {
+    const typeResult = runGit(['cat-file', '-t', id], cwd);
+    return typeResult.status === 0 ? typeResult.stdout.trim() : null;
+  });
+}
+
+/**
  * Shared artifact-identity lookup used by both `verify-artifact` and
  * `clean-install`'s internal preflight — one implementation, no duplicated
  * parsing rules. Performs I/O (fs + git) and returns a structured result;
@@ -442,18 +494,18 @@ export function computeArtifactIdentity(apkPath, { cwd = process.cwd() } = {}) {
   const shortSha = parseApkShortSha(filename);
   if (!shortSha) return { ok: false, reason: 'APK_FILENAME_NO_SHA', apkPath, filename };
 
-  const resolve = runGit(['rev-parse', '--verify', `${shortSha}^{commit}`], cwd);
-  if (resolve.status !== 0) {
+  const resolved = disambiguateHexPrefix(shortSha, cwd);
+  if (!resolved.ok) {
     return {
       ok: false,
-      reason: 'APK_SHA_NOT_A_COMMIT',
+      reason: resolved.reason,
       apkPath,
       filename,
       shortSha,
-      gitStderr: resolve.stderr?.trim(),
+      ...(resolved.candidates ? { candidates: resolved.candidates } : {}),
     };
   }
-  const fullSourceSha = resolve.stdout.trim();
+  const fullSourceSha = resolved.fullSourceSha;
 
   const trust = evaluateArtifactSourceTrust(fullSourceSha, { cwd });
   if (!trust.trusted) {

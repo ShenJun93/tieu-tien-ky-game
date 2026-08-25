@@ -21,9 +21,15 @@
   "historical_branch_only_case_fail_closed": "PASS",
   "no_unity_change": "PASS",
   "no_gameplay_change": "PASS",
+  "ref_name_collision_remediated": "PASS",
   "verdict": "PASS"
 }
 ```
+
+Technical evidence is `PASS`. This does **not** mean the task is ready for
+terminal closeout — see "Independent review" below: a fresh independent
+review of this exact remediated candidate is still required and has not yet
+occurred.
 
 This hardens Android APK artifact provenance so an APK source commit is
 accepted only when it is reachable from an internally trusted repository
@@ -113,18 +119,90 @@ Confirmed via `git merge-base --is-ancestor` and `git tag --contains`
 directly against the live repository before any code was written. This is
 not altered, and the branch is not added to any trust policy by this task.
 
+## Remediation 001 — ref-name-collision fix (independent-review P0 finding)
+
+**Authorization**: Human/Game Director explicitly authorized continuation of
+this same task/branch to remediate one P0 finding only, after a fresh
+independent read-only review of implementation candidate
+`61819c7d5ad76b72401406adb40ddb47c15eaa2c` (2026-08-25). Not successor
+authority; no other task activated.
+
+**Finding**: `computeArtifactIdentity()`'s short-SHA resolution called
+`git rev-parse --verify "<shortSha>^{commit}"`. Git resolves an ambiguous
+bare token as a **ref name** (branch/tag/remote-tracking ref) before falling
+back to abbreviated-object-name interpretation. A branch literally named
+after a commit's short hex — pointing at a *different* commit — would
+silently redirect resolution to that branch's tip instead of the real object
+the hex names. Empirically reproduced against a real temporary repository
+before any fix code was written:
+
+```text
+$ git rev-parse --verify "${TRUSTED_TIP_PREFIX}^{commit}"
+warning: refname '52a32ea7' is ambiguous.
+945d9dad08c6f9e71cec6e1cb7aca60bec26f261   <- resolves to the colliding
+                                               BRANCH's tip (untrusted),
+                                               not the real trusted object
+                                               52a32ea7... that prefix names
+
+$ git rev-parse --disambiguate=52a32ea7
+52a32ea7758df15c37cf77a53e877ab4ec2ebce3   <- correctly resolves to the real
+                                               object, ignoring the branch
+```
+
+This defeated the task's own stated threat model (an attacker with
+branch-push but not merge rights) in both directions: a same-named branch
+could either (a) launder an untrusted APK as "trusted" by pointing the
+colliding branch name at a trusted commit, or (b) shadow a real trusted
+object with an attacker-controlled one.
+
+**RED reproduction (written before the fix, confirmed failing against the
+pre-remediation code)**: two new `device-verify.test.mjs` cases build the
+exact collision in the existing temp-repo fixture — a branch literally named
+`fixture.shaC.slice(0, 8)` (trusted main tip's own short hex) pointing at
+`fixture.shaD` (untrusted, feature-branch-only), and the inverse (branch
+named after the untrusted commit's hex, pointing at the trusted tip). Both
+failed exactly as expected pre-fix: `computeArtifactIdentity` returned the
+colliding branch's tip instead of the real object named by the hex prefix in
+both directions.
+
+**Fix**: added `resolveHexPrefixToCommit(candidateIds, typeOf)` (pure
+decision, unit-tested with fake candidate lists — no real SHA-1 collision
+needed to prove the ambiguous-prefix path) and `disambiguateHexPrefix(hex,
+cwd)`, which resolves a hex token using **only**
+`git rev-parse --disambiguate=<hex>` (object-database lookup, never ref
+resolution), filters candidates to actual commit objects via
+`git cat-file -t`, and fails closed (`APK_SHA_NOT_A_COMMIT`) on zero matches
+or (`APK_SHA_AMBIGUOUS`) on more than one. `computeArtifactIdentity()` now
+calls this instead of `rev-parse --verify`. No change to
+`evaluateTrustedProvenance`, `resolveApprovedTagRoot`,
+`getTrustedProvenancePolicy`, or the trusted-main/approved-tag ancestry
+logic — the reviewer confirmed that logic was already sound; only the
+short-SHA-to-object step was replaced.
+
+**Regression coverage added** (8 new cases, on top of the 57 already
+passing): `resolveHexPrefixToCommit` zero/one/many/mixed-type candidates
+(pure, no git); the two real-fixture ref-collision cases above (both
+directions); a dedicated `evaluateCleanInstallPreflight` case for the new
+`APK_SHA_AMBIGUOUS` reason, proving the destructive preflight still fails
+closed on it via the same shared boundary.
+
+**Exact new implementation candidate SHA**: recorded in the commit that
+carries this evidence update (see PR body / commit history — this file
+cannot self-reference its own future commit hash).
+
 ## Focused verification
 
 ```text
 node --test scripts/device/device-verify.test.mjs
-  57/57 PASS (37 pre-existing + 20 new trusted-ref-hardening cases; all
-  pre-existing cases remain unmodified and passing)
+  65/65 PASS (37 original + 20 trusted-ref-hardening + 8 Remediation 001
+  ref-name-collision cases; every pre-existing case remains unmodified and
+  passing)
 
 node --test scripts/hooks/hooks.test.mjs
   46/46 PASS
 
 node scripts/hooks/pre-finish.mjs
-  PASS (recorded separately below once the implementation commit lands)
+  PASS (run after the remediation commit, against a clean working tree)
 ```
 
 ## Deferred / out of scope (unchanged by this task)
@@ -140,8 +218,15 @@ node scripts/hooks/pre-finish.mjs
 
 ## Independent review
 
-Required before terminal closeout per this task's
-`INDEPENDENT_REVIEW_REQUIRED_BEFORE_TERMINAL_CLOSEOUT` stop condition and
-`docs/governance/TERMINAL_CLOSEOUT_POLICY.md`. Not performed by this writer
-session — the implementation writer must not self-certify this as
-independent review.
+A first independent read-only review of candidate
+`61819c7d5ad76b72401406adb40ddb47c15eaa2c` was performed and returned
+`PASS_WITH_REMEDIATION` with one P0 finding (the ref-name-collision issue
+above) and `SAFE_TO_MOVE_TO_HUMAN_ACCEPTANCE_AND_TERMINAL_CLOSEOUT: NO`. That
+review is now **stale** per `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`
+("If any implementation/task/evidence file changes after independent
+review, the review is stale and must be repeated") — Remediation 001 above
+changed the implementation. A fresh independent read-only review of the new
+exact candidate SHA is required before terminal closeout per this task's
+`INDEPENDENT_REVIEW_REQUIRED_BEFORE_TERMINAL_CLOSEOUT` stop condition. Not
+performed by this writer session — the implementation writer must not
+self-certify this as independent review.

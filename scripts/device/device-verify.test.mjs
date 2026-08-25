@@ -19,6 +19,7 @@ import {
   evaluateTrustedProvenance,
   evaluateArtifactSourceTrust,
   computeArtifactIdentity,
+  resolveHexPrefixToCommit,
 } from './device-verify.mjs';
 
 const VALID_ARTIFACT = {
@@ -602,6 +603,97 @@ test('computeArtifactIdentity: source only on feature branch in a real fixture r
   assert.equal(identity.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
 });
 
+// --- resolveHexPrefixToCommit: pure decision logic for object-prefix
+// disambiguation, unit-tested with fake candidate lists/type lookups so
+// "ambiguous object prefix fails closed" doesn't require engineering a real
+// SHA-1 collision.
+
+test('resolveHexPrefixToCommit: zero candidates -> APK_SHA_NOT_A_COMMIT', () => {
+  const result = resolveHexPrefixToCommit([], () => null);
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'APK_SHA_NOT_A_COMMIT');
+});
+
+test('resolveHexPrefixToCommit: exactly one commit candidate -> ok', () => {
+  const result = resolveHexPrefixToCommit(['abc123'], () => 'commit');
+  assert.equal(result.ok, true);
+  assert.equal(result.fullSourceSha, 'abc123');
+});
+
+test('resolveHexPrefixToCommit: candidate exists but is not a commit (e.g. a blob) -> APK_SHA_NOT_A_COMMIT, never treated as a source commit', () => {
+  const result = resolveHexPrefixToCommit(['blob1'], () => 'blob');
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'APK_SHA_NOT_A_COMMIT');
+});
+
+test('resolveHexPrefixToCommit: two distinct commit candidates for the same prefix -> APK_SHA_AMBIGUOUS, fails closed rather than guessing', () => {
+  const result = resolveHexPrefixToCommit(['commitA', 'commitB'], () => 'commit');
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'APK_SHA_AMBIGUOUS');
+  assert.deepEqual(result.candidates, ['commitA', 'commitB']);
+});
+
+test('resolveHexPrefixToCommit: one commit candidate plus one non-commit candidate for the same prefix -> the non-commit object is filtered out, the single commit still resolves', () => {
+  const typeOf = (id) => (id === 'commitA' ? 'commit' : 'tree');
+  const result = resolveHexPrefixToCommit(['commitA', 'tree1'], typeOf);
+  assert.equal(result.ok, true);
+  assert.equal(result.fullSourceSha, 'commitA');
+});
+
+// --- Ref-name-collision regression (independent-review P0 finding on this
+// task's own candidate): `git rev-parse --verify "<hex>^{commit}"` resolves
+// an ambiguous <hex> token as a REF NAME before falling back to abbreviated-
+// object-name interpretation. A branch literally named after a trusted
+// commit's short hex, pointing at a different (untrusted) commit, must never
+// redirect artifact-identity resolution to that branch's tip.
+
+test('computeArtifactIdentity: a branch literally named after a trusted commit\'s short hex must not redirect resolution to that branch\'s untrusted tip (ref-name collision)', () => {
+  const collidingHex = fixture.shaC.slice(0, 8);
+  git(['branch', collidingHex, fixture.shaD], fixture.dir);
+  try {
+    const filename = `TieuTienKy-collision-${collidingHex}.apk`;
+    const apkPath = path.join(fixture.dir, filename);
+    writeFileSync(apkPath, Buffer.from('not a real apk but non-empty'));
+
+    const identity = computeArtifactIdentity(apkPath, { cwd: fixture.dir });
+
+    // The real object named by this hex prefix is fixture.shaC (the trusted
+    // main tip). A same-named branch pointing at the untrusted fixture.shaD
+    // must never be allowed to redirect resolution to shaD.
+    assert.equal(identity.ok, true);
+    assert.equal(identity.fullSourceSha, fixture.shaC);
+    assert.notEqual(identity.fullSourceSha, fixture.shaD);
+    assert.equal(identity.trustRootType, 'main');
+  } finally {
+    git(['branch', '-D', collidingHex], fixture.dir);
+  }
+});
+
+test('computeArtifactIdentity: a branch literally named after an UNTRUSTED commit\'s short hex must not let that branch\'s trusted tip launder an untrusted artifact', () => {
+  // Inverse direction of the collision: shaD (untrusted, feature-branch-only)
+  // is the real object named by this hex prefix. A branch of the same name
+  // pointing at the trusted main tip (shaC) must not cause the untrusted
+  // object to be reported as trusted.
+  const collidingHex = fixture.shaD.slice(0, 8);
+  git(['branch', collidingHex, fixture.shaC], fixture.dir);
+  try {
+    const filename = `TieuTienKy-collision-${collidingHex}.apk`;
+    const apkPath = path.join(fixture.dir, filename);
+    writeFileSync(apkPath, Buffer.from('not a real apk but non-empty'));
+
+    const identity = computeArtifactIdentity(apkPath, { cwd: fixture.dir });
+
+    // The real object named by this hex prefix is fixture.shaD (untrusted).
+    // A same-named branch pointing at the trusted shaC must not launder it.
+    assert.equal(identity.ok, false);
+    assert.equal(identity.reason, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+    assert.equal(identity.fullSourceSha, fixture.shaD);
+    assert.notEqual(identity.fullSourceSha, fixture.shaC);
+  } finally {
+    git(['branch', '-D', collidingHex], fixture.dir);
+  }
+});
+
 test('evaluateCleanInstallPreflight: fixture-repo untrusted artifact is rejected via the exact shared computeArtifactIdentity result, before any device mutation', () => {
   const filename = `TieuTienKy-fixture-${fixture.shaD}.apk`;
   const apkPath = path.join(fixture.dir, filename);
@@ -615,6 +707,18 @@ test('evaluateCleanInstallPreflight: fixture-repo untrusted artifact is rejected
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'INVALID_ARTIFACT');
   assert.equal(result.detail, 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF');
+});
+
+test('evaluateCleanInstallPreflight: an APK_SHA_AMBIGUOUS artifact identity is rejected before any device mutation, same shared trust boundary as verify-artifact', () => {
+  const result = evaluateCleanInstallPreflight({
+    artifact: { ok: false, reason: 'APK_SHA_AMBIGUOUS', candidates: ['a', 'b'] },
+    authoritativePackageId: 'com.shenjun93.tieutienky.p0a',
+    suppliedPackage: 'com.shenjun93.tieutienky.p0a',
+    projectSettingsOverrideAttempted: false,
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'INVALID_ARTIFACT');
+  assert.equal(result.detail, 'APK_SHA_AMBIGUOUS');
 });
 
 test('cleanup: remove temporary fixture repository', () => {
