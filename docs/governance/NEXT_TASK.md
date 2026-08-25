@@ -4,68 +4,72 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "repository": "https://github.com/ShenJun93/tieu-tien-ky-game",
-  "state": "IMPLEMENT",
-  "task_mode": "BATCH",
-  "task_id": "TASK-TIEU-TIEN-KY-GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001",
-  "branch": "chore/github-actions-checkout-v7-upgrade-001",
-  "baseline_ref": "3213db96e56f48087be60437321ea28ecfb7fa2d",
-  "authority_anchor_ref": "3213db96e56f48087be60437321ea28ecfb7fa2d",
-  "workspace_policy": "REMOTE_GITHUB_BRANCH",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001.md",
-  "evidence_file": "docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md",
-  "allowed_paths": [
-    ".github/workflows/governance-hooks.yml",
-    "docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "docs/governance/NEXT_TASK.md",
-    "docs/tasks/TASK_TIEU_TIEN_KY_GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001.md",
-    "docs/governance/WORKFLOW.md",
-    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
-    "AGENTS.md",
-    "CLAUDE.md",
-    "scripts/",
-    ".github/dependabot.yml",
-    "SECURITY.md",
-    ".claude/",
-    ".agents/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Build/",
-    "Builds/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "checkout_v7_sha_pinned": "PASS",
-    "checkout_v7_provenance_verified": "PASS",
-    "workflow_triggers_unchanged": "PASS",
-    "permissions_unchanged": "PASS",
-    "repository_gate_exact_head": "PASS",
-    "pr56_not_merged_directly": "PASS",
-    "no_unrelated_dependency_change": "PASS",
-    "no_gameplay_change": "PASS"
-  },
-  "stop_condition": "FINAL_FOREMAN_CHECK_AND_REPOSITORY_GATE_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001` is active on
-branch `chore/github-actions-checkout-v7-upgrade-001`, `state: IMPLEMENT`,
-as the Human-authorized governed replacement for stale Dependabot PR #56.
-The bounded payload is exactly the Repository Gate workflow's immutable
-`actions/checkout` SHA/version line plus the task evidence report. The target
-is canonical `actions/checkout@v7.0.1` commit
-`3d3c42e5aac5ba805825da76410c181273ba90b1`, re-derived on top of
-`main@3213db96e56f48087be60437321ea28ecfb7fa2d`. PR #56's source branch is
-not mutated or merged directly. B4, branch deletion, other dependency work,
-security settings, Unity/gameplay/product work, and successor activation are
-explicitly out of scope. `NEXT_TASK.md` and the active task contract are
-writer-locked until terminal closeout.
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. See "Current stop condition"
+at the bottom of this file for what this does and does not grant.
+
+## Prior authority — GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001` is closed via
+same-PR terminal closeout. Its final state:
+
+- PR #59, branch `chore/github-actions-checkout-v7-upgrade-001`; base
+  `3213db96e56f48087be60437321ea28ecfb7fa2d` (`main`); activation
+  `9acf6b65b7152ffbd85542e6e5510d19b0a316e3`; accepted evidence-bound
+  implementation candidate `703fe1a244c129eddb6bd0b95d464a61f772dc93`
+  (`REVIEWED_IMPLEMENTATION_SHA`). This terminal closeout commit is appended
+  directly on top of that exact candidate and touches only this file; its
+  resulting SHA is recorded on PR #59 as `FINAL_CLOSEOUT_SHA`;
+- repository-file payload is exactly the Repository Gate workflow's checkout
+  line plus `docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md`.
+  The checkout step changed from immutable canonical `actions/checkout`
+  v4.4.0 SHA `11d5960a326750d5838078e36cf38b85af677262` to immutable canonical
+  v7.0.1 SHA `3d3c42e5aac5ba805825da76410c181273ba90b1`; workflow triggers,
+  `permissions: contents: read`, runner, timeout, runtime-info step and
+  governance regression command remained unchanged;
+- provenance was independently re-derived before activation: canonical
+  `actions/checkout` tag `refs/tags/v7.0.1` resolves directly to commit
+  `3d3c42e5aac5ba805825da76410c181273ba90b1` (`prep v7.0.1 release (#2531)`),
+  exactly matching Dependabot PR #56's proposal. The repository remains pinned
+  to a full immutable SHA rather than a movable tag;
+- required evidence is all `PASS` per
+  `docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md`:
+  exact scope, SHA pinning, provenance, unchanged triggers/permissions,
+  PR #56 not merged directly, no unrelated dependency change and no gameplay
+  change. Repository Gate run `32868512122` PASS on first governed candidate
+  `8b98de381fe9022be2d6d2e42ab9dc77dced6778`; Repository Gate run
+  `32868691709` PASS on evidence-bound candidate
+  `703fe1a244c129eddb6bd0b95d464a61f772dc93`;
+- live `main` was re-read immediately before closeout and remained exactly
+  `3213db96e56f48087be60437321ea28ecfb7fa2d`; PR #56 remained open,
+  unmerged, and its stale Dependabot source branch was not mutated. Its prior
+  run `32842233178` was supporting discovery evidence only, never substituted
+  for governed exact-head verification;
+- no B4 branch retention/deletion work, no source-branch deletion, no other
+  dependency or `.github/` change, no GitHub security-setting mutation, and no
+  Unity/gameplay/product/networking/backend/Stage C work was performed;
+- the Human/Game Director explicitly authorized this bounded successor with
+  `ok PR56`, including continuous governed execution through squash merge when
+  all exact-head gates are green. This closure grants **no** successor
+  implementation authority; after merge, original PR #56 may be closed only
+  as superseded by PR #59, without merging or deleting its source branch;
+- PR #59 remains open/draft/unmerged as of this closeout commit. A successful
+  Repository Gate on this exact final closeout head is still required before
+  the delegated squash merge.
 
 ## Prior authority — REPOSITORY-TRUTH-HYGIENE-001 closure (superseded)
 
