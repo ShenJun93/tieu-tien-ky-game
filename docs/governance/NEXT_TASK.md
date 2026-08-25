@@ -4,23 +4,64 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "repository": "https://github.com/ShenJun93/tieu-tien-ky-game",
+  "state": "IMPLEMENT",
+  "task_mode": "BATCH",
+  "task_id": "TASK-TIEU-TIEN-KY-REPOSITORY-TRUTH-HYGIENE-001",
+  "branch": "chore/repository-truth-hygiene-001",
+  "baseline_ref": "cbf216413a9420d3f72db9df7e308f94360bf3ae",
+  "authority_anchor_ref": "cbf216413a9420d3f72db9df7e308f94360bf3ae",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_REPOSITORY_TRUTH_HYGIENE_001.md",
+  "evidence_file": "docs/evidence/REPOSITORY_TRUTH_HYGIENE_001_REPORT.md",
+  "allowed_paths": [
+    "docs/governance/CURRENT_STATE.md",
+    "docs/evidence/REPOSITORY_TRUTH_HYGIENE_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/tasks/TASK_TIEU_TIEN_KY_REPOSITORY_TRUTH_HYGIENE_001.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "scripts/",
+    ".github/",
+    ".claude/",
+    ".agents/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "pr13_closed_unmerged_superseded": "PASS",
+    "issue1_closed_not_planned": "PASS",
+    "issue6_closed_not_planned": "PASS",
+    "current_state_reconciled": "PASS",
+    "pr56_untouched": "PASS",
+    "no_branch_deletion": "PASS",
+    "no_gameplay_change": "PASS"
+  },
+  "stop_condition": "FINAL_FOREMAN_CHECK_AND_REPOSITORY_GATE_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-REPOSITORY-TRUTH-HYGIENE-001` is active on branch
+`chore/repository-truth-hygiene-001`, `state: IMPLEMENT`, as the Human-
+authorized Phase B B3 truth/hygiene reconciliation. The bounded payload is:
+close superseded PR #13 without merging it; close stale Issues #1/#6 as
+`not_planned`; minimally reconcile `docs/governance/CURRENT_STATE.md`; and
+write the task evidence report. PR #56, B4 branch hygiene/deletion, dependency
+updates, gameplay/Unity/product changes, and successor activation are all
+explicitly out of scope. This is a `REMOTE_GITHUB_BRANCH` Final-Foreman
+control-plane/hygiene operation; `NEXT_TASK.md` and the task contract remain
+immutable until the terminal closeout.
 
 ## Prior authority — PUBLIC-EVIDENCE-PRIVACY-CLEANUP-002 closure (superseded)
 
@@ -234,7 +275,7 @@ same-PR terminal closeout. Its final state:
 - the Human/Game Director explicitly accepted implementation candidate
   `6bf79b6e4c73ec667a31086d6c25de9f2b13ccac` and authorized this terminal
   closeout for PR #54. PR #54 remains **open, draft, unmerged** as of this
-  commit — Human/Game Director retains sole merge authority; per
+  commit — Human/Game Director retains merge authority; per
   `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`, squash merge is the default
   for the same-PR terminal closeout pattern, contingent on a green
   `repository-gate` on this exact final PR head and final Human inspection;
@@ -360,7 +401,7 @@ state:
      `source_locator`, `source_version_or_ref`, `source_fingerprint`, plus
      rights/license identity — previously only `source_name` was enforced;
   2. `destination_if_adopted` now rejects any literal `..` segment on both
-     `/` and `\` slash styles before later consumption — previously only
+     `/` and `\\` slash styles before later consumption — previously only
      some traversal forms were caught;
 - fresh independent Claude Cloud review of the exact final candidate
   (`d643e764b6108ae0f9be88a9ef1f85868ebfdc10`), performed in a separate
