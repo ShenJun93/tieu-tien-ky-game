@@ -1,7 +1,7 @@
 # CURRENT STATE — TIỂU TIÊN KÝ
 
-Updated: 2026-08-22 (Local-First Workflow Reconciliation 001 — Product Proof
-Slices 006/007/008 closure and Slice 001/PR #13 supersession reconciled)
+Updated: 2026-08-25 (Repository Truth Hygiene 001 — superseded PR #13,
+stale Issues #1/#6, and stale authority wording reconciled)
 
 ## Repository / canonical integration anchors
 
@@ -17,6 +17,8 @@ Slices 006/007/008 closure and Slice 001/PR #13 supersession reconciled)
 - Product Proof Slice 006 (Storm Control hero VFX) — **MERGED / CLOSED**, PR #30 (`5cf00fc30be79d2ff4235dc33ec3b046b52ee652`).
 - Product Proof Slice 007 (actor-presentation chibi sprites) — **MERGED / CLOSED**, PR #33 (`b25ffb0`).
 - Product Proof Slice 008 (Slice-007 follow-up fixes) — **MERGED / CLOSED**, PRs #36/#37 (`e61ec17` / `962a635`).
+- Product Proof Slice 001 PR #13 — **CLOSED / UNMERGED / SUPERSEDED**, historical candidate preserved.
+- P0A-era Issues #1 and #6 — **CLOSED / NOT PLANNED / SUPERSEDED BY LATER ACCEPTED HISTORY**.
 - Accepted AO-Lite v1 design: `docs/superpowers/specs/2026-08-19-ao-lite-v1-design.md`
 - Canonical project risks: `docs/governance/RISK_REGISTER.md`
 - Human/Game Director remains merge authority for future repository PRs.
@@ -37,7 +39,7 @@ POST_MERGE_RISK_RECONCILIATION       = ACCEPTED / INTEGRATED VIA PR #19
 MAIN_BRANCH_PROTECTION               = PASS / repository-gate REQUIRED
 RISK_NETWORK_001                     = OPEN / P2 GOVERNANCE-PRODUCT DEBT
 RISK_IP_001                          = OPEN / P1 BEFORE EXTERNAL COMMERCIAL COMMITMENT
-PRODUCT_PROOF_SLICE_001              = SUPERSEDED / PR #13 REMAINS DRAFT-PAUSED, NOT CURRENT EXECUTION REALITY
+PRODUCT_PROOF_SLICE_001              = SUPERSEDED / PR #13 CLOSED UNMERGED, NOT CURRENT EXECUTION REALITY
 PRODUCT_PROOF_SLICE_006              = CLOSED / INTEGRATED VIA PR #30
 PRODUCT_PROOF_SLICE_007              = CLOSED / INTEGRATED VIA PR #33
 PRODUCT_PROOF_SLICE_008              = CLOSED / INTEGRATED VIA PR #36 + PR #37
@@ -48,7 +50,7 @@ R1 DIRTY SPECIMEN                    = QUARANTINED / DO NOT TOUCH
 STAGE_C                              = NOT AUTHORIZED
 PvP / CO-OP / NETWORK SCALE          = NOT AUTHORIZED
 COMMERCIAL_RIGHTS_REVIEW             = REQUIRED BEFORE EXTERNAL COMMERCIAL COMMITMENT
-SUCCESSOR_IMPLEMENTATION_AUTHORITY   = NONE BEYOND THE ACTIVE RECONCILIATION TASK'S OWN NARROW DOCS SCOPE
+SUCCESSOR_IMPLEMENTATION_AUTHORITY   = NONE
 ```
 
 ## AO-Lite v1 status
@@ -120,13 +122,25 @@ The risk register records debt/gates; it does not itself create Product Proof or
 
 ## Superseded Product Proof candidate — PR #13 (Slice 001)
 
-PR #13 (`feat(product-proof): add bounded solo PvE playstyle proof`) is **superseded as current execution reality** by the accepted Slice 006/007/008 history above. It remains open / draft / paused / unmerged at its recorded historical head:
+PR #13 (`feat(product-proof): add bounded solo PvE playstyle proof`) is **closed, unmerged, and superseded as current execution reality** by the accepted Slice 006/007/008 history above. Its historical head remains:
 
 `925d370fff00391331d9fd94d07aaf001abf430f`
 
-Its original base anchor was `62f20934c6fb01b2fa01d8fee408867b58eeeffb`. It contains a bounded test-first Product Proof candidate, but its recorded Unity-dependent evidence remains blocked/not tested. It is not current mutation authority, is not the current next execution reality, and must not be merged in that state.
+Its original base anchor was `62f20934c6fb01b2fa01d8fee408867b58eeeffb`. It contains a bounded test-first Product Proof candidate, but its recorded Unity-dependent evidence remains blocked/not tested. Closing the stale PR did not merge that code, delete its branch/history, or turn its blocked evidence into a PASS.
 
-Any later continuation requires a fresh explicit Human/Game Director decision plus live main/head/evidence revalidation and a valid rebaseline/synchronization decision before mutation. Existing candidate code does not self-authorize continuation.
+Any later revival requires a fresh explicit Human/Game Director decision plus live main/head/evidence revalidation and a valid rebaseline/synchronization decision before mutation. Existing candidate code does not self-authorize continuation.
+
+## Repository hygiene status
+
+Phase B Repository Truth Hygiene 001 reconciled GitHub metadata with already-established canon:
+
+- PR #13: closed unmerged as superseded; historical candidate retained;
+- Issue #1 (`P0A — Local Micro-Fun Spike`): closed with `state_reason: not_planned` because later accepted program history superseded the old execution framing;
+- Issue #6 (`P0A — Fun-First Rebaseline & Playable Core Loop Authority`): closed with `state_reason: not_planned` because its durable decisions have already been integrated/superseded by later governance and Product Proof history;
+- PR #56 (Dependabot `actions/checkout` major-version update) remains a separate dependency/security decision and was not modified by this reconciliation;
+- no branch was deleted and no B4 branch-retention work was performed.
+
+These metadata closures are historical truth cleanup only. They grant no product, dependency, gameplay, or successor implementation authority.
 
 ## Product Proof Slices 006-008 — accepted history
 
@@ -151,16 +165,16 @@ The local R1 specimen remains quarantined and must not be reset, cleaned, stashe
 
 ## Canonical current authority state
 
-Canonical repository authority is non-mutating `DISCOVERY` once the active `TASK-TIEU-TIEN-KY-LOCAL-FIRST-WORKFLOW-RECONCILIATION-001` reconciliation task (see `docs/governance/NEXT_TASK.md`) closes:
+Canonical repository authority is non-mutating `DISCOVERY`:
 
 - no active product/gameplay task;
 - no active product-mutation branch authority;
-- no baseline/authority anchor beyond this task's own narrow docs/governance scope while it remains active;
-- no writable paths beyond this task's own `allowed_paths` while it remains active;
-- stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY` for any product/gameplay successor.
+- no live mutation baseline/authority anchor while in `DISCOVERY`;
+- no writable paths while in `DISCOVERY`;
+- stop condition `HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY` for any successor.
 
 Current next-action boundary:
 
-**Human/Game Director explicitly chooses the next bounded action** — most likely either the still-pending genuine B-LITE Human physical gate playtest, or a bounded follow-up task for the WaterZone depth-occlusion fix.
+**Human/Game Director explicitly chooses the next bounded action** — product-side, most likely either the still-pending genuine B-LITE Human physical gate playtest or a bounded follow-up task for the WaterZone depth-occlusion fix; repository-engineering items such as PR #56 or B4 likewise require their own separate authority.
 
-Successor implementation authority beyond this reconciliation task's own narrow docs/governance scope remains **NONE**. This task's `IMPLEMENT` state is itself a narrow, self-contained exception scoped to docs/governance reconciliation — it is not, and must not be read as, a reopening of product-mutation authority. No successor implementation authority is inferred by the closure of Slices 006, 007, or 008.
+Successor implementation authority remains **NONE**. Closing stale GitHub surfaces does not infer a new task, reopen Product Proof, or authorize gameplay/networking/PvP/co-op/backend/Stage C/dependency/branch-hygiene work.
