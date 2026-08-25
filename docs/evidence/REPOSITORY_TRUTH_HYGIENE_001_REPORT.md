@@ -6,7 +6,8 @@
   "branch": "chore/repository-truth-hygiene-001",
   "baseline_ref": "cbf216413a9420d3f72db9df7e308f94360bf3ae",
   "activation_sha": "c7c4816d636e6eb5bb7d7601090b0f31d28e3325",
-  "governance_hook_tests": "PENDING_REPOSITORY_GATE",
+  "governance_hook_tests": "PASS",
+  "governance_hook_run_id": "32862858952",
   "exact_scope_diff": "PASS",
   "pr13_closed_unmerged_superseded": "PASS",
   "issue1_closed_not_planned": "PASS",
@@ -15,7 +16,7 @@
   "pr56_untouched": "PASS",
   "no_branch_deletion": "PASS",
   "no_gameplay_change": "PASS",
-  "verdict": "PENDING_REPOSITORY_GATE"
+  "verdict": "PASS"
 }
 ```
 
@@ -98,9 +99,11 @@ Explicitly not performed:
 - no `.github/`, Actions, CodeQL, security-setting, hook, Skill, Unity, gameplay, `Assets/`, `Packages/`, or `ProjectSettings/` mutation;
 - no successor activation.
 
-## Verification plan
+## Verification
 
-The remote GitHub execution surface cannot honestly self-claim a local hook run. The repository's required `Repository Gate` workflow runs `node --test scripts/hooks/hooks.test.mjs`; therefore the first exact-head PR run is used to fill `governance_hook_tests` with a real run id. This report is intentionally `PENDING_REPOSITORY_GATE` until that check succeeds. After updating only this report with the exact successful run, a final Repository Gate must run again on the new exact candidate head before terminal closeout.
+Repository Gate run `32862858952` completed `success` on exact head `ad13c0f48b0441e90212907e313f8441916b9184`, base `main@cbf216413a9420d3f72db9df7e308f94360bf3ae`. The workflow executes `node --test scripts/hooks/hooks.test.mjs`, so `governance_hook_tests = PASS` is backed by real CI rather than inferred locally.
+
+This evidence-only update creates a new exact candidate head. Per the task contract, that head must receive its own green Repository Gate before terminal closeout; the result is checked directly from GitHub Actions rather than recursively changing this report after every gate run.
 
 ## Deferred / separate work
 
