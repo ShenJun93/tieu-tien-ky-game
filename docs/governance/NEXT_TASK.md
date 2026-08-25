@@ -4,23 +4,71 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "repository": "https://github.com/ShenJun93/tieu-tien-ky-game",
+  "state": "IMPLEMENT",
+  "task_mode": "MICRO",
+  "task_id": "TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-002",
+  "branch": "chore/public-evidence-privacy-cleanup-002",
+  "baseline_ref": "be144ddefa4ee8122e2b653161b457660d513c75",
+  "authority_anchor_ref": "be144ddefa4ee8122e2b653161b457660d513c75",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_PUBLIC_EVIDENCE_PRIVACY_CLEANUP_002.md",
+  "evidence_file": "docs/evidence/PUBLIC_EVIDENCE_PRIVACY_CLEANUP_002_REPORT.md",
+  "allowed_paths": [
+    "docs/evidence/P0A_EVIDENCE_REPORT.md",
+    "docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE.md",
+    "docs/evidence/PUBLIC_EVIDENCE_PRIVACY_CLEANUP_002_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "docs/governance/CURRENT_STATE.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "scripts/",
+    ".github/",
+    ".claude/",
+    ".agents/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "residuals_redacted": "PASS",
+    "historical_evidence_preserved": "PASS",
+    "no_history_rewrite": "PASS",
+    "no_runtime_change": "PASS",
+    "no_gameplay_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-002` is active on branch
+`chore/public-evidence-privacy-cleanup-002`, `state: IMPLEMENT`, scoped to
+exactly the four `allowed_paths` above. Purpose: bounded current-tree
+privacy/data-minimization redaction of the residual device-model-shaped
+identifiers found in `docs/evidence/P0A_EVIDENCE_REPORT.md`,
+`docs/evidence/STAGE_AB_PRODUCTION_ALPHA_FINAL_REPORT.md`, and
+`docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-003-VFX-TECHNIQUE.md`. No
+Git history rewrite; no gameplay/Assets/Packages/ProjectSettings/Unity/
+networking/Actions/CodeQL/branch-protection/PR-hygiene/issue-hygiene/branch-
+deletion change. A fourth residual, found inside this file's own SLICE-008
+closure historical prose below, is writer-locked and explicitly out of this
+task's scope — see the task contract's `CONTROL_PLANE_REDACTION_REQUIRED`
+classification. Full contract:
+`docs/tasks/TASK_TIEU_TIEN_KY_PUBLIC_EVIDENCE_PRIVACY_CLEANUP_002.md`.
+Security/privacy governance change — independent review required before
+terminal closeout; the implementation writer must not author that closeout
+commit.
 
 ## Prior authority — GITHUB-NATIVE-SECURITY-BASELINE-001 closure (superseded)
 
