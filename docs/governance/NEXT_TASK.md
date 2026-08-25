@@ -4,23 +4,68 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "repository": "https://github.com/ShenJun93/tieu-tien-ky-game",
+  "state": "IMPLEMENT",
+  "task_mode": "BATCH",
+  "task_id": "TASK-TIEU-TIEN-KY-GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001",
+  "branch": "chore/github-actions-checkout-v7-upgrade-001",
+  "baseline_ref": "3213db96e56f48087be60437321ea28ecfb7fa2d",
+  "authority_anchor_ref": "3213db96e56f48087be60437321ea28ecfb7fa2d",
+  "workspace_policy": "REMOTE_GITHUB_BRANCH",
+  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001.md",
+  "evidence_file": "docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md",
+  "allowed_paths": [
+    ".github/workflows/governance-hooks.yml",
+    "docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/tasks/TASK_TIEU_TIEN_KY_GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001.md",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "scripts/",
+    ".github/dependabot.yml",
+    "SECURITY.md",
+    ".claude/",
+    ".agents/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "checkout_v7_sha_pinned": "PASS",
+    "checkout_v7_provenance_verified": "PASS",
+    "workflow_triggers_unchanged": "PASS",
+    "permissions_unchanged": "PASS",
+    "repository_gate_exact_head": "PASS",
+    "pr56_not_merged_directly": "PASS",
+    "no_unrelated_dependency_change": "PASS",
+    "no_gameplay_change": "PASS"
+  },
+  "stop_condition": "FINAL_FOREMAN_CHECK_AND_REPOSITORY_GATE_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
 }
 ```
 
 ## Current authority
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001` is active on
+branch `chore/github-actions-checkout-v7-upgrade-001`, `state: IMPLEMENT`,
+as the Human-authorized governed replacement for stale Dependabot PR #56.
+The bounded payload is exactly the Repository Gate workflow's immutable
+`actions/checkout` SHA/version line plus the task evidence report. The target
+is canonical `actions/checkout@v7.0.1` commit
+`3d3c42e5aac5ba805825da76410c181273ba90b1`, re-derived on top of
+`main@3213db96e56f48087be60437321ea28ecfb7fa2d`. PR #56's source branch is
+not mutated or merged directly. B4, branch deletion, other dependency work,
+security settings, Unity/gameplay/product work, and successor activation are
+explicitly out of scope. `NEXT_TASK.md` and the active task contract are
+writer-locked until terminal closeout.
 
 ## Prior authority — REPOSITORY-TRUTH-HYGIENE-001 closure (superseded)
 
