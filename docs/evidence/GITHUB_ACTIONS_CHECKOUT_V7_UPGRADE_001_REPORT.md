@@ -6,17 +6,17 @@
   "branch": "chore/github-actions-checkout-v7-upgrade-001",
   "baseline_ref": "3213db96e56f48087be60437321ea28ecfb7fa2d",
   "activation_sha": "9acf6b65b7152ffbd85542e6e5510d19b0a316e3",
-  "governance_hook_tests": "PENDING_REPOSITORY_GATE",
+  "governance_hook_tests": "PASS",
   "exact_scope_diff": "PASS",
   "checkout_v7_sha_pinned": "PASS",
   "checkout_v7_provenance_verified": "PASS",
   "workflow_triggers_unchanged": "PASS",
   "permissions_unchanged": "PASS",
-  "repository_gate_exact_head": "PENDING_REPOSITORY_GATE",
+  "repository_gate_exact_head": "PASS",
   "pr56_not_merged_directly": "PASS",
   "no_unrelated_dependency_change": "PASS",
   "no_gameplay_change": "PASS",
-  "verdict": "PENDING_REPOSITORY_GATE"
+  "verdict": "PASS"
 }
 ```
 
@@ -92,9 +92,22 @@ docs/evidence/GITHUB_ACTIONS_CHECKOUT_V7_UPGRADE_001_REPORT.md
 
 Result: `exact_scope_diff = PASS`, `workflow_triggers_unchanged = PASS`, `permissions_unchanged = PASS`, `pr56_not_merged_directly = PASS`, `no_unrelated_dependency_change = PASS`, `no_gameplay_change = PASS`.
 
-## Repository Gate plan
+## Repository Gate evidence
 
-This report intentionally remains `PENDING_REPOSITORY_GATE` until a real pull-request-triggered Repository Gate succeeds on the governed implementation candidate. After that first exact candidate succeeds, only this evidence report may be updated to bind the successful run. The resulting evidence-bound candidate must receive its own successful Repository Gate before terminal closeout.
+First governed implementation candidate:
+
+```text
+candidate = 8b98de381fe9022be2d6d2e42ab9dc77dced6778
+run       = 32868512122
+workflow  = Repository Gate
+trigger   = pull_request
+head_sha  = 8b98de381fe9022be2d6d2e42ab9dc77dced6778
+conclusion = success
+```
+
+This run executed the Repository Gate using the candidate's pinned `actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1` line and completed successfully. Therefore `governance_hook_tests = PASS` and `repository_gate_exact_head = PASS` for that exact candidate.
+
+This evidence-binding edit changes only this report. Per the task contract, the resulting evidence-bound candidate must independently receive another successful Repository Gate before terminal closeout; the terminal closeout will record that second exact-head run.
 
 ## Out of scope / deferred
 
