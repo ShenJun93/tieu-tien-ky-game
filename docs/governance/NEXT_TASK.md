@@ -4,64 +4,67 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
-  "repository": "https://github.com/ShenJun93/tieu-tien-ky-game",
-  "state": "IMPLEMENT",
-  "task_mode": "BATCH",
-  "task_id": "TASK-TIEU-TIEN-KY-REPOSITORY-TRUTH-HYGIENE-001",
-  "branch": "chore/repository-truth-hygiene-001",
-  "baseline_ref": "cbf216413a9420d3f72db9df7e308f94360bf3ae",
-  "authority_anchor_ref": "cbf216413a9420d3f72db9df7e308f94360bf3ae",
-  "workspace_policy": "REMOTE_GITHUB_BRANCH",
-  "task_file": "docs/tasks/TASK_TIEU_TIEN_KY_REPOSITORY_TRUTH_HYGIENE_001.md",
-  "evidence_file": "docs/evidence/REPOSITORY_TRUTH_HYGIENE_001_REPORT.md",
-  "allowed_paths": [
-    "docs/governance/CURRENT_STATE.md",
-    "docs/evidence/REPOSITORY_TRUTH_HYGIENE_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "docs/governance/NEXT_TASK.md",
-    "docs/tasks/TASK_TIEU_TIEN_KY_REPOSITORY_TRUTH_HYGIENE_001.md",
-    "docs/governance/WORKFLOW.md",
-    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
-    "AGENTS.md",
-    "CLAUDE.md",
-    "scripts/",
-    ".github/",
-    ".claude/",
-    ".agents/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    "Build/",
-    "Builds/"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "pr13_closed_unmerged_superseded": "PASS",
-    "issue1_closed_not_planned": "PASS",
-    "issue6_closed_not_planned": "PASS",
-    "current_state_reconciled": "PASS",
-    "pr56_untouched": "PASS",
-    "no_branch_deletion": "PASS",
-    "no_gameplay_change": "PASS"
-  },
-  "stop_condition": "FINAL_FOREMAN_CHECK_AND_REPOSITORY_GATE_REQUIRED_BEFORE_TERMINAL_CLOSEOUT"
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
 ## Current authority
 
-`TASK-TIEU-TIEN-KY-REPOSITORY-TRUTH-HYGIENE-001` is active on branch
-`chore/repository-truth-hygiene-001`, `state: IMPLEMENT`, as the Human-
-authorized Phase B B3 truth/hygiene reconciliation. The bounded payload is:
-close superseded PR #13 without merging it; close stale Issues #1/#6 as
-`not_planned`; minimally reconcile `docs/governance/CURRENT_STATE.md`; and
-write the task evidence report. PR #56, B4 branch hygiene/deletion, dependency
-updates, gameplay/Unity/product changes, and successor activation are all
-explicitly out of scope. This is a `REMOTE_GITHUB_BRANCH` Final-Foreman
-control-plane/hygiene operation; `NEXT_TASK.md` and the task contract remain
-immutable until the terminal closeout.
+No task is active. Repository authority is `DISCOVERY`: read/research/compare
+only, repository mutation forbidden by default. See "Current stop condition"
+at the bottom of this file for what this does and does not grant.
+
+## Prior authority — REPOSITORY-TRUTH-HYGIENE-001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-REPOSITORY-TRUTH-HYGIENE-001` is closed via same-PR
+terminal closeout. Its final state:
+
+- PR #58, branch `chore/repository-truth-hygiene-001`; base
+  `cbf216413a9420d3f72db9df7e308f94360bf3ae` (`main`); activation
+  `c7c4816d636e6eb5bb7d7601090b0f31d28e3325`; accepted implementation/
+  evidence candidate `381c6236e881b8cd432dbc8b6e5fb7b208647161`
+  (`REVIEWED_IMPLEMENTATION_SHA`). This terminal closeout commit is appended
+  directly on top of that exact candidate and touches only this file; its
+  resulting SHA is recorded on PR #58 as `FINAL_CLOSEOUT_SHA`;
+- repository truth/hygiene payload only: PR #13 was closed **unmerged** as
+  superseded while preserving its historical head/branch; Issues #1 and #6
+  were closed with `state_reason: not_planned` after explanatory comments;
+  `docs/governance/CURRENT_STATE.md` was minimally reconciled so those stale
+  GitHub surfaces and the already-closed Local-First reconciliation no longer
+  read as current execution reality; `docs/evidence/REPOSITORY_TRUTH_HYGIENE_001_REPORT.md`
+  records the bounded evidence;
+- required evidence is all `PASS`: exact payload scope, PR #13 closed
+  unmerged/superseded, Issues #1/#6 closed `not_planned`, `CURRENT_STATE.md`
+  reconciled, PR #56 untouched, no branch deletion, no gameplay change;
+  Repository Gate run `32862858952` PASS on candidate
+  `ad13c0f48b0441e90212907e313f8441916b9184`, and run `32863072964` PASS
+  on the evidence-bound exact candidate
+  `381c6236e881b8cd432dbc8b6e5fb7b208647161`;
+- live `main` was re-read immediately before closeout and remained exactly
+  `cbf216413a9420d3f72db9df7e308f94360bf3ae`; no rebaseline/drift was
+  hidden. PR #56 remained open and untouched;
+- no branch was deleted; no B4 branch-retention work, dependency update,
+  `.github/`/Actions/CodeQL/security-setting change, Unity/gameplay/product
+  mutation, WaterZone fix, B-LITE playtest, or successor activation was
+  performed;
+- the Human/Game Director's live instruction to maximize automation followed
+  by explicit continuation authorized continuous execution of this exact B3
+  design through squash merge, contingent on green exact-head gates. This
+  closeout grants **no** successor implementation authority. PR #56 and B4
+  remain separate future decisions, while WaterZone depth occlusion and the
+  pending genuine B-LITE Human physical gate remain the two open product
+  threads;
+- PR #58 remains open/draft/unmerged as of this closeout commit. A green
+  Repository Gate on this exact final head is still required before the
+  delegated squash merge.
 
 ## Prior authority — PUBLIC-EVIDENCE-PRIVACY-CLEANUP-002 closure (superseded)
 
