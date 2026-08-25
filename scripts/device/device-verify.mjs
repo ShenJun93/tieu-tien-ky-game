@@ -298,13 +298,192 @@ function cmdVerifyConnected(args) {
   ok({ serial: device.serial, state: device.state });
 }
 
+// ---------------------------------------------------------------------------
+// Trusted-ref provenance (Device Artifact Trusted-Ref Hardening 001)
+//
+// An APK source commit is accepted only when it is reachable from an
+// internally trusted repository ref. Trust root selection is a fixed,
+// internal, non-caller-controlled policy — there is no CLI flag, env var, or
+// config path that lets a caller nominate a ref as trusted. The production
+// approved-immutable-tag allowlist below pins BOTH the canonical full ref
+// name and the exact commit it must resolve to; a tag that has moved or been
+// recreated at a different commit fails closed rather than acting as a
+// trust root. This module never fetches/pulls/merges — it only reads
+// already-present local Git state.
+//
+// The APK filename's embedded short SHA is resolved to a full commit object
+// using ONLY object-prefix disambiguation (`git rev-parse --disambiguate`),
+// never ordinary ref resolution — see `disambiguateHexPrefix` below. A
+// branch/tag that happens to share a name with that hex token can never
+// redirect which object is treated as the artifact's source commit.
+// ---------------------------------------------------------------------------
+
+const TRUSTED_MAIN_REF = 'refs/remotes/origin/main';
+
+// Internal, committed, Human-authorized allowlist. Each entry:
+//   { ref: 'refs/tags/<name>', commit: '<full 40-char SHA the tag must resolve/peel to>' }
+// Intentionally empty: this task authorizes the mechanism, not a real tag.
+const APPROVED_IMMUTABLE_TAGS = [];
+
+/**
+ * Internal fixed trust policy. Deliberately takes no arguments — there is no
+ * supported way for a caller (CLI flag, environment variable, or otherwise)
+ * to influence trust-root selection through this function.
+ */
+export function getTrustedProvenancePolicy() {
+  return {
+    trustedMainRef: TRUSTED_MAIN_REF,
+    approvedTags: APPROVED_IMMUTABLE_TAGS.map((tag) => ({ ...tag })),
+  };
+}
+
+/**
+ * Real Git ref-resolution/ancestry operations bound to `cwd`. Isolated from
+ * the pure decision logic below so that logic is unit-testable with fake
+ * `ops`, while this factory is what production code and temp-repo
+ * integration tests use to prove actual `git` ancestry/ref semantics.
+ */
+export function createGitRefOps(cwd) {
+  return {
+    resolveRef(ref) {
+      const result = runGit(['rev-parse', '--verify', `${ref}^{commit}`], cwd);
+      if (result.status !== 0) return null;
+      return result.stdout.trim();
+    },
+    isAncestor(candidateSha, ancestorOfSha) {
+      const result = runGit(['merge-base', '--is-ancestor', candidateSha, ancestorOfSha], cwd);
+      return result.status === 0;
+    },
+  };
+}
+
+/**
+ * Resolve/peel one approved-tag policy entry and require the actual
+ * resolved commit to equal the pinned expected commit before it may act as
+ * a trust root. A moved/recreated tag is rejected here, not silently
+ * accepted.
+ */
+export function resolveApprovedTagRoot(tag, ops) {
+  const resolved = ops.resolveRef(tag.ref);
+  if (!resolved) {
+    return { ok: false, reason: 'APPROVED_TAG_UNRESOLVABLE', ref: tag.ref };
+  }
+  if (resolved !== tag.commit) {
+    return {
+      ok: false,
+      reason: 'APPROVED_TAG_MISMATCH',
+      ref: tag.ref,
+      resolvedCommit: resolved,
+      pinnedCommit: tag.commit,
+    };
+  }
+  return { ok: true, ref: tag.ref, commit: resolved };
+}
+
+/**
+ * Pure trust decision: is `sourceSha` reachable from a trusted root? Uses
+ * real Git ancestry semantics via the injected `ops` (never string/prefix
+ * comparison). Two independent trust roots: trusted `main`, and any
+ * correctly-pinned approved immutable tag. Fails closed whenever neither
+ * root can be established — including when the trusted-main ref itself is
+ * missing/unresolvable, which never falls back to HEAD or any other ref.
+ */
+export function evaluateTrustedProvenance(sourceSha, { ops, trustedMainRef, approvedTags = [] }) {
+  if (!sourceSha) {
+    return { trusted: false, reason: 'MISSING_SOURCE_SHA' };
+  }
+
+  const mainCommit = ops.resolveRef(trustedMainRef);
+  if (mainCommit && (sourceSha === mainCommit || ops.isAncestor(sourceSha, mainCommit))) {
+    return { trusted: true, rootType: 'main', ref: trustedMainRef, rootCommit: mainCommit };
+  }
+
+  for (const tag of approvedTags) {
+    const tagRoot = resolveApprovedTagRoot(tag, ops);
+    if (!tagRoot.ok) continue; // this specific tag cannot act as a root; try the next one
+    if (sourceSha === tagRoot.commit || ops.isAncestor(sourceSha, tagRoot.commit)) {
+      return { trusted: true, rootType: 'approved_tag', ref: tagRoot.ref, rootCommit: tagRoot.commit };
+    }
+  }
+
+  if (!mainCommit) {
+    return { trusted: false, reason: 'TRUSTED_MAIN_REF_UNRESOLVABLE' };
+  }
+  return { trusted: false, reason: 'SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF' };
+}
+
+/**
+ * Integration entry point wiring the pure decision above to real Git state
+ * for one `cwd`. `policy` defaults to the internal fixed policy and exists
+ * only so tests can inject a synthetic fixture policy — production callers
+ * (`computeArtifactIdentity`, and therefore both `verify-artifact` and
+ * `clean-install`) never pass it, and no CLI argument reaches it.
+ */
+export function evaluateArtifactSourceTrust(sourceSha, { cwd = process.cwd(), policy = getTrustedProvenancePolicy() } = {}) {
+  const ops = createGitRefOps(cwd);
+  return evaluateTrustedProvenance(sourceSha, {
+    ops,
+    trustedMainRef: policy.trustedMainRef,
+    approvedTags: policy.approvedTags,
+  });
+}
+
+/**
+ * Pure decision: given the raw candidate object ids `git rev-parse
+ * --disambiguate=<hex>` reported for a hex token (ignoring ref names
+ * entirely — disambiguation only ever considers actual object ids in the
+ * object database), decide whether that token uniquely and correctly names
+ * exactly one commit object. `typeOf(id)` returns that object's git type
+ * (`'commit'`, `'blob'`, `'tree'`, `'tag'`) or `null` if it cannot be
+ * determined. Zero matching commits, or more than one, both fail closed —
+ * this function never guesses.
+ */
+export function resolveHexPrefixToCommit(candidateIds, typeOf) {
+  const commitIds = candidateIds.filter((id) => typeOf(id) === 'commit');
+  if (commitIds.length === 0) {
+    return { ok: false, reason: 'APK_SHA_NOT_A_COMMIT' };
+  }
+  if (commitIds.length > 1) {
+    return { ok: false, reason: 'APK_SHA_AMBIGUOUS', candidates: commitIds };
+  }
+  return { ok: true, fullSourceSha: commitIds[0] };
+}
+
+/**
+ * Resolve a hex token to a commit object using ONLY Git's object-prefix
+ * disambiguation (`git rev-parse --disambiguate=<hex>`), never ordinary ref
+ * resolution. This is the security-sensitive fix for a ref-name-collision
+ * finding: `git rev-parse --verify "<hex>^{commit}"` resolves an ambiguous
+ * bare token as a REF NAME (branch/tag/remote-tracking ref) before falling
+ * back to abbreviated-object-name interpretation — so a branch literally
+ * named after a real commit's short hex, pointing at a different commit,
+ * would silently redirect resolution to that branch's tip. `--disambiguate`
+ * lists only object ids whose hash begins with the given hex, never ref
+ * names, and prints nothing (not an error) when there is no match — so
+ * candidates are collected from stdout regardless of exit status.
+ */
+function disambiguateHexPrefix(hexToken, cwd) {
+  const result = runGit(['rev-parse', `--disambiguate=${hexToken}`], cwd);
+  const candidateIds = String(result.stdout || '')
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return resolveHexPrefixToCommit(candidateIds, (id) => {
+    const typeResult = runGit(['cat-file', '-t', id], cwd);
+    return typeResult.status === 0 ? typeResult.stdout.trim() : null;
+  });
+}
+
 /**
  * Shared artifact-identity lookup used by both `verify-artifact` and
  * `clean-install`'s internal preflight — one implementation, no duplicated
  * parsing rules. Performs I/O (fs + git) and returns a structured result;
  * never calls fail()/ok() itself so callers can enforce their own order.
+ * An artifact whose source commit is not reachable from a trusted ref is
+ * rejected here, before either caller can act on it — this is the shared
+ * trust boundary `clean-install` relies on for its destructive preflight.
  */
-function computeArtifactIdentity(apkPath) {
+export function computeArtifactIdentity(apkPath, { cwd = process.cwd() } = {}) {
   if (!apkPath) return { ok: false, reason: 'MISSING_APK_PATH' };
   if (!existsSync(apkPath)) return { ok: false, reason: 'APK_NOT_FOUND', apkPath };
 
@@ -315,15 +494,28 @@ function computeArtifactIdentity(apkPath) {
   const shortSha = parseApkShortSha(filename);
   if (!shortSha) return { ok: false, reason: 'APK_FILENAME_NO_SHA', apkPath, filename };
 
-  const resolve = runGit(['rev-parse', '--verify', `${shortSha}^{commit}`], process.cwd());
-  if (resolve.status !== 0) {
+  const resolved = disambiguateHexPrefix(shortSha, cwd);
+  if (!resolved.ok) {
     return {
       ok: false,
-      reason: 'APK_SHA_NOT_A_COMMIT',
+      reason: resolved.reason,
       apkPath,
       filename,
       shortSha,
-      gitStderr: resolve.stderr?.trim(),
+      ...(resolved.candidates ? { candidates: resolved.candidates } : {}),
+    };
+  }
+  const fullSourceSha = resolved.fullSourceSha;
+
+  const trust = evaluateArtifactSourceTrust(fullSourceSha, { cwd });
+  if (!trust.trusted) {
+    return {
+      ok: false,
+      reason: trust.reason || 'NO_TRUSTED_ARTIFACT_PROVENANCE',
+      apkPath,
+      filename,
+      shortSha,
+      fullSourceSha,
     };
   }
 
@@ -334,7 +526,9 @@ function computeArtifactIdentity(apkPath) {
     sizeBytes: buffer.length,
     sha256: sha256OfBuffer(buffer),
     shortSha,
-    fullSourceSha: resolve.stdout.trim(),
+    fullSourceSha,
+    trustRootType: trust.rootType,
+    trustRootRef: trust.ref,
   };
 }
 

@@ -22,6 +22,96 @@ No task is active. Repository authority is `DISCOVERY`: read/research/compare
 only, repository mutation forbidden by default. See "Current stop condition"
 at the bottom of this file for what this does and does not grant.
 
+## Prior authority — DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-DEVICE-ARTIFACT-TRUSTED-REF-HARDENING-001` is closed via
+same-PR terminal closeout. Its final state:
+
+- PR #54, branch `chore/device-artifact-trusted-ref-hardening-001`; base
+  `5f1264d7879c0cba3780ef5441a75ff222cf28e7` (`main`); activation
+  `45eaa4b6927d46466b5e9d7baedb64a62952fbc0`; accepted implementation
+  candidate `6bf79b6e4c73ec667a31086d6c25de9f2b13ccac`
+  (`REVIEWED_IMPLEMENTATION_SHA`). This terminal closeout commit is appended
+  directly on top of that exact candidate as the sole next commit on the
+  same branch, and its own resulting SHA is the `FINAL_CLOSEOUT_SHA`
+  recorded on PR #54; it touches only this file and does not alter the
+  reviewed implementation payload;
+- hardened Android APK artifact provenance so an APK source commit is
+  accepted only when reachable from an internally trusted repository ref
+  (`refs/remotes/origin/main`, or an explicitly approved immutable
+  release/tag pinned by internal, non-caller-controlled policy — the
+  production allowlist remains intentionally empty), applied to both
+  `verify-artifact` and `clean-install`'s internal destructive preflight via
+  one shared `computeArtifactIdentity` implementation. No
+  `--trusted-ref`/`--allow-ref`/`--source-ref`/environment-variable
+  mechanism exists anywhere in `device-verify.mjs`. No Unity, gameplay,
+  Assets/, Packages/, ProjectSettings/, or networking change;
+- the historical Runtime Verify artifact source commit
+  `9dadab46ced2a2f7f5a77a734b87569b1da7fca2`, previously recorded as
+  branch-only provenance, now fails closed
+  (`SOURCE_NOT_REACHABLE_FROM_TRUSTED_REF`) under the new rule — its branch
+  was not blessed, no history was rewritten, no tag was invented;
+- **Remediation 001**: a first independent read-only review of the original
+  implementation candidate `61819c7d5ad76b72401406adb40ddb47c15eaa2c` found
+  one P0: `computeArtifactIdentity()`'s short-SHA resolution used
+  `git rev-parse --verify "<shortSha>^{commit}"`, which resolves an ambiguous
+  hex token as a ref name (branch/tag) before falling back to abbreviated
+  object-name interpretation — a branch literally named after a commit's
+  short hex, pointing at a different commit, could redirect resolution to
+  that branch's tip in either direction (laundering an untrusted artifact as
+  trusted, or shadowing a trusted object with an untrusted one). Human/Game
+  Director explicitly authorized a bounded remediation of this one finding
+  on the same task/branch. Fix: short-SHA resolution now goes through
+  `disambiguateHexPrefix()`/`resolveHexPrefixToCommit()`, using only
+  `git rev-parse --disambiguate=<hex>` (object-database lookup, never ref
+  resolution) filtered to commit objects, failing closed on zero
+  (`APK_SHA_NOT_A_COMMIT`) or multiple (`APK_SHA_AMBIGUOUS`) matches. TDD:
+  RED reproduction written first (two real-fixture ref-collision cases, both
+  directions), confirmed failing against `61819c7d`, then fixed;
+- required evidence all `PASS` per
+  `docs/evidence/DEVICE_ARTIFACT_TRUSTED_REF_HARDENING_001_REPORT.md`:
+  `device_verify_tests`, `governance_hook_tests`, `exact_scope_diff`,
+  `trusted_main_tip`, `trusted_main_ancestor`, `feature_branch_only_rejected`,
+  `untrusted_commit_object_rejected`, `approved_immutable_tag_supported`,
+  `moved_approved_tag_rejected`, `caller_ref_cannot_expand_trust`,
+  `clean_install_uses_same_trust_boundary`,
+  `historical_branch_only_case_fail_closed`, `no_unity_change`,
+  `no_gameplay_change`; `device-verify.test.mjs` 65/65 PASS (37 original + 20
+  trusted-ref-hardening + 8 Remediation 001); governance hook tests 46/46
+  PASS; `pre-finish` PASS; exact-head `repository-gate` PASS on both
+  `61819c7d5ad76b72401406adb40ddb47c15eaa2c` and the accepted remediated
+  candidate `6bf79b6e4c73ec667a31086d6c25de9f2b13ccac`;
+- a fresh independent read-only review of the remediated candidate
+  `6bf79b6e4c73ec667a31086d6c25de9f2b13ccac` (the first review of
+  `61819c7d5ad76b72401406adb40ddb47c15eaa2c` being explicitly superseded/
+  stale per `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`) independently
+  re-derived and reproduced the original ref-name-collision exploit against
+  the old code in both directions, confirmed neither reproduces against the
+  new candidate, ran all three verification commands itself in an isolated
+  worktree, confirmed scope, and searched for additional bypasses: verdict
+  `PASS`, P0 none, P1 none,
+  `SAFE_TO_MOVE_TO_HUMAN_ACCEPTANCE_AND_TERMINAL_CLOSEOUT: YES`;
+- the Human/Game Director explicitly accepted implementation candidate
+  `6bf79b6e4c73ec667a31086d6c25de9f2b13ccac` and authorized this terminal
+  closeout for PR #54. PR #54 remains **open, draft, unmerged** as of this
+  commit — Human/Game Director retains sole merge authority; per
+  `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`, squash merge is the default
+  for the same-PR terminal closeout pattern, contingent on a green
+  `repository-gate` on this exact final PR head and final Human inspection;
+- this closure grants **no** successor implementation authority. GitHub
+  Actions supply-chain hardening (SHA-pinning `actions/checkout`), Dependabot
+  for GitHub Actions, CodeQL Default Setup, secret scanning/push protection,
+  `SECURITY.md`/private vulnerability reporting, `PUBLIC_EVIDENCE_PRIVACY_
+  CLEANUP_002` (one new residual device-model identifier found in
+  `docs/evidence/P0A_EVIDENCE_REPORT.md`, plus the three previously
+  disclosed deferred items), closing superseded PR #13, reconciling stale
+  Issues #1/#6, reconciling `CURRENT_STATE.md` staleness, and branch-
+  retention cleanup were all surveyed in a prior read-only GitHub-hardening
+  audit this same day but remain **unauthorized** pending a separate
+  explicit Human/Game Director go-ahead for that Phase B work. WaterZone
+  depth-occlusion fix and the pending genuine B-LITE Human physical gate
+  playtest are unaffected and remain the other two open unclaimed threads.
+
 ## Prior authority — PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-PUBLIC-EVIDENCE-PRIVACY-CLEANUP-001` is closed via
