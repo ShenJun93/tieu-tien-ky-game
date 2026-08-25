@@ -4,6 +4,20 @@ Task: `TASK-TIEU-TIEN-KY-GITHUB-NATIVE-SECURITY-BASELINE-001`
 Branch: `chore/github-native-security-baseline-001`
 Baseline: `0452bd94f9edbe7a8dc02a212591d4c81a95123c` (`main`)
 
+```json
+{
+  "verdict": "PASS",
+  "governance_hook_tests": "PASS",
+  "exact_scope_diff": "PASS",
+  "checkout_sha_pinned": "PASS",
+  "checkout_provenance_verified": "PASS",
+  "dependabot_github_actions_only": "PASS",
+  "security_md_no_invented_promises": "PASS",
+  "permissions_unchanged": "PASS",
+  "no_unity_or_gameplay_change": "PASS"
+}
+```
+
 ## Scope diff
 
 Exactly three files touched, all inside `allowed_paths`:
