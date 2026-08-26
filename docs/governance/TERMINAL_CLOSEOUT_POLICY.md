@@ -90,18 +90,56 @@ A terminal closeout may use a stricter non-mutating state only when the task con
 
 ## Exact-candidate review binding
 
-When independent review is required, the reviewer records the exact **implementation candidate SHA** reviewed before terminal closeout.
+Every post-A2 mutating task explicitly declares
+`independent_review_required`. Risk policy remains unchanged: low-risk tasks
+may set it to `false`; governance/harness/canon and other high-risk tasks set
+it to `true`.
 
-The terminal closeout commit changes only live authority metadata; it does not alter the reviewed implementation payload. The PR must clearly record:
+When review is required, the reviewer returns a version-1 canonical JSON
+receipt for the exact implementation candidate. The deterministic path is
+recorded in task metadata and must equal
+`docs/reviews/<task_id>.review.json`; Candidate Gate never discovers a receipt
+by scanning. The receipt is distinct from the implementation evidence file.
+It records task, baseline, exact reviewed candidate, verdict, blocking
+findings/count, informational reviewer identifier, completion time, and the
+`INDEPENDENT_READ_ONLY` completion mode.
+
+The reviewer remains read-only. Human/Game Director or an explicitly
+delegated Final-Foreman/control-plane context persists the receipt in one
+single-parent direct-child commit that changes exactly the receipt artifact.
+That commit grants no authority and makes no implementation, task, evidence,
+or authority change. The terminal closeout is then its direct child and still
+changes only `docs/governance/NEXT_TASK.md`.
+
+The final `DISCOVERY` JSON clears every live task/scope field and may retain a
+non-authorizing `last_terminal_closeout` binding containing schema version,
+task/task-file, baseline, authority anchor, activation, risk-based review
+policy, receipt path, and reviewed candidate. Candidate Gate treats final
+`HEAD` as `FINAL_CLOSEOUT_SHA` and mechanically proves:
 
 ```text
 REVIEWED_IMPLEMENTATION_SHA = <exact SHA>
+REVIEW_RECEIPT              = <receipt-only direct child for that SHA>
 FINAL_CLOSEOUT_SHA          = <exact SHA>
 ```
 
-If any implementation/task/evidence file changes after independent review, the review is stale and must be repeated as required by the task's risk policy.
+It rejects a missing/malformed receipt, task/baseline/candidate mismatch,
+unacceptable verdict, blocking findings, unauthorized lineage, stale reuse,
+any post-review implementation/task/evidence or other unauthorized path, and
+a terminal claim that differs from the receipt.
+
+If any implementation/task/evidence file changes after independent review,
+the review is stale and must be repeated. The stale receipt cannot be moved
+forward: the receipt-only commit must be the direct child of the newly reviewed
+candidate. A change limited to the receipt-only control-plane step is not an
+evidence mutation.
 
 A change limited to the deterministic terminal `NEXT_TASK.md` closeout does not silently upgrade or replace the recorded implementation review; Human merge authority still inspects the final PR head and repository-gate result.
+
+For a task declaring `independent_review_required: false`, no receipt is
+required. Terminal metadata records null receipt/reviewed-candidate fields,
+and the `NEXT_TASK.md`-only closeout is the implementation candidate's direct
+child. This preserves risk-based review rather than universalizing it.
 
 ## Merge method
 

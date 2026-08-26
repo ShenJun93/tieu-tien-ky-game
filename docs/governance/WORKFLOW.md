@@ -96,6 +96,21 @@ required_evidence
 stop_condition
 ```
 
+Post-A2 task contracts also declare the risk-based review binding policy:
+
+```text
+independent_review_required  explicit boolean; never grants write authority
+review_receipt_file          docs/reviews/<task_id>.review.json, or null
+acceptable_review_verdicts   non-empty accepted enum when review is required,
+                             otherwise []
+```
+
+`state` remains the sole authority field. A missing/non-boolean review policy
+fails Candidate Gate closed; `false` preserves the low-risk flow without a
+receipt. A review-required receipt path is deterministically derived from the
+literal task ID and must match the recorded metadata exactly. Candidate Gate
+never searches or guesses for a receipt.
+
 The worker/model is deliberately **not** part of durable authority. Claude, Codex or another compatible agent may execute the same contract.
 
 Recommended `workspace_policy` values:
@@ -162,6 +177,32 @@ main = DISCOVERY
 A second post-merge closeout PR is no longer routine. Legacy post-merge closeout remains allowed only when a task has already merged without a terminal closeout, or an explicit exceptional reason exists.
 
 This default changes nothing about writer lock: the implementation writer still cannot edit `docs/governance/NEXT_TASK.md` or the active task contract after activation. Any implementation, evidence, or active-task-contract mutation after independent review stales that review. The terminal `NEXT_TASK.md`-only commit does not itself modify the reviewed implementation payload, but Human must inspect the final closeout diff and the exact-head Repository Gate before merge. No terminal closeout may activate a successor task.
+
+When independent review is required, the post-candidate topology is exact:
+
+```text
+implementation candidate
+→ Human/Final-Foreman receipt-only direct child
+→ Human/Final-Foreman NEXT_TASK-only terminal closeout direct child
+```
+
+The receipt is a distinct JSON artifact, not the task evidence file. Its
+version-1 fields are `schema_version`, `task_id`, `baseline_sha`,
+`reviewed_candidate_sha`, `verdict`, `blocking_findings`,
+`blocking_finding_count`, `reviewer_identifier`, `review_completed_at`, and
+`review_completion_mode`. The receipt commit changes exactly that file and
+records its parent as the reviewed candidate. The reviewer returns the payload
+read-only; a Human/Game Director or explicitly delegated Final Foreman persists
+it. The informational reviewer identifier provides no authentication,
+cryptographic identity, trusted attestation, or security boundary.
+
+At final `DISCOVERY`, all live authority fields remain cleared. A
+non-authorizing `last_terminal_closeout` record retains task/baseline/anchor/
+activation/review-policy/receipt/candidate binding. Candidate Gate derives
+`FINAL_CLOSEOUT_SHA` from final `HEAD`, validates the closeout-only diff, then
+walks its direct parents through the receipt to the reviewed candidate. For a
+low-risk task, there is no receipt and closeout is the candidate's direct
+child. This metadata cannot grant mutation because only `state` can do so.
 
 Full mechanics, review-binding record format, and merge-method detail: `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`.
 
