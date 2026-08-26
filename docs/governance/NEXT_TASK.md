@@ -5,17 +5,70 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 ```json
 {
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-EXACT-REVIEW-BINDING-A2-001",
+  "branch": "chore/ttk-exact-review-binding-a2-001",
+  "baseline_ref": "4ec87b265b345dd97fd536e982b9227e0074eafe",
+  "authority_anchor_ref": "4ec87b265b345dd97fd536e982b9227e0074eafe",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-EXACT-REVIEW-BINDING-A2-001.md",
+  "evidence_file": "docs/evidence/EXACT_REVIEW_BINDING_A2_001_REPORT.md",
+  "allowed_paths": [
+    "AGENTS.md",
+    ".agents/skills/review-task/SKILL.md",
+    ".github/workflows/governance-hooks.yml",
+    "docs/governance/WORKFLOW.md",
+    "docs/governance/TERMINAL_CLOSEOUT_POLICY.md",
+    "scripts/hooks/candidate-gate.mjs",
+    "scripts/hooks/hooks.test.mjs",
+    "docs/evidence/EXACT_REVIEW_BINDING_A2_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "docs/governance/NEXT_TASK.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-EXACT-REVIEW-BINDING-A2-001.md",
+    ".claude/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    "Build/",
+    "Builds/"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "candidate_gate_tests": "PASS",
+    "valid_exact_review_binding": "PASS",
+    "missing_receipt_rejected": "PASS",
+    "mismatched_review_sha_rejected": "PASS",
+    "stale_review_rejected": "PASS",
+    "post_review_implementation_mutation_rejected": "PASS",
+    "post_review_evidence_mutation_rejected": "PASS",
+    "unauthorized_post_review_path_rejected": "PASS",
+    "terminal_closeout_binding": "PASS",
+    "final_head_discovery_binding": "PASS",
+    "low_risk_review_policy_preserved": "PASS",
+    "review_receipt_schema": "PASS",
+    "review_task_receipt_contract": "PASS",
+    "repository_gate_integration": "PASS",
+    "a2_bootstrap_mode": "CURRENT_CANON_INDEPENDENT_REVIEW",
+    "no_game_or_unity_change": "PASS"
+  },
+  "stop_condition": "INDEPENDENT_REVIEW_OF_EXACT_A2_CANDIDATE"
 }
 ```
+
+## Active authority — EXACT REVIEW BINDING A2 001
+
+The Human/Game Director authorized this bounded governance/harness SPEC at
+baseline `4ec87b265b345dd97fd536e982b9227e0074eafe`. Writer authority is limited
+to the exact `allowed_paths` above. This A2 candidate is a bootstrap change:
+its own lifecycle remains governed by the pre-A2 canon and must stop at the
+exact implementation candidate for conventional independent review.
+
+After this activation commit, the implementation writer must not edit this
+file or the active task contract. No terminal closeout, merge, A3, gameplay,
+Unity, external identity system, or successor activation is authorized.
 
 ## Prior authority — READONLY-REVIEWER-PILOT-002 closure (superseded)
 
