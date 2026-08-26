@@ -4,6 +4,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 
 ```json
 {
+  "repository": "ShenJun93/tieu-tien-ky-game",
   "state": "DISCOVERY",
   "task_id": null,
   "branch": null,
@@ -16,11 +17,60 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 }
 ```
 
-## Current authority
+## Prior authority — READONLY-REVIEWER-PILOT-002 closure (superseded)
 
-No task is active. Repository authority is `DISCOVERY`: read/research/compare
-only, repository mutation forbidden by default. See "Current stop condition"
-at the bottom of this file for what this does and does not grant.
+`TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002` is closed via local terminal
+closeout on branch `chore/ttk-readonly-reviewer-pilot-002` (local-only; not
+yet pushed to `origin` as of this closeout commit). Its final state:
+
+- isolated worktree at baseline `cc345bb1929af57f9a731756e30b70af59221b29`
+  (`main`, confirmed identical to live `origin/main` both at activation and
+  again immediately before this closeout); accepted implementation candidate
+  `80345d797548d3ca4341f7a08f82752633793443` (`REVIEWED_IMPLEMENTATION_SHA`).
+  This terminal closeout commit is appended directly on top of that exact
+  candidate as the sole next commit on the same branch and touches only this
+  file; it does not alter the reviewed implementation payload;
+- delivered exactly one project-level Claude Code subagent
+  (`.claude/agents/ttk-readonly-reviewer.md`) performing independent
+  read-only governance review, plus its evidence report
+  (`docs/evidence/TTK_READONLY_REVIEWER_PILOT_002_REPORT.md`). The historical
+  local recovery candidate `0eb72ac5f6003c7f6cd3f45ab4695e282a91ce49` was
+  explicitly not reused — this was a fresh recreation against then-current
+  live `main`;
+- required evidence per the task contract: `governance_hook_tests` PASS
+  (46/46), `exact_scope_diff` PASS, `claude_project_agent_discovery` PASS,
+  `reviewer_tool_surface` PASS, `reviewer_plan_mode_dogfood` RECORDED,
+  `review_policy_dogfood` RECORDED, `tracked_mutation_after_review` NONE,
+  `review_task_skill_unchanged` PASS, `no_game_or_unity_change` PASS;
+  `a2_review_binding` recorded `NOT_IMPLEMENTED` — A2 (reviewed-SHA
+  enforcement, review receipts, CandidateGate binding, terminal
+  review-token binding, automatic exact-review enforcement) was explicitly
+  out of scope and was never implemented;
+- independent read-only review of the exact candidate
+  `80345d797548d3ca4341f7a08f82752633793443`: verdict `PASS_WITH_REMEDIATION`,
+  blocking findings none;
+- **pre-finish mismatch, explicit Human/Final-Foreman control-plane
+  disposition**: the task contract's declared `review_policy_verdict`
+  expectation was literal `PASS`; the truthful independent-review outcome was
+  `PASS_WITH_REMEDIATION`, so `pre-finish` blocked on that literal mismatch.
+  The Human/Game Director reviewed this and disposed it as
+  `CONTROL_PLANE_RECONCILIATION_ACCEPTABLE`: the over-constrained literal
+  expectation, not the substance of the review, was the defect. This is a
+  narrow exception for this one mismatch only — it does not waive writer
+  lock, scope, independent review, Repository Gate, Human merge authority, or
+  successor authorization, and this closeout does not edit the task contract
+  or the evidence report to make the prior `pre-finish` run appear green;
+  `review_policy_verdict = PASS_WITH_REMEDIATION` stands as recorded, not
+  overwritten;
+- this closure grants **no** successor implementation authority. A2
+  (reviewed-SHA/CandidateGate/review-receipt enforcement), further reviewer
+  hardening, gameplay/product/Unity continuation, and any other successor
+  implementation task all remain unauthorized unless separately
+  Human-authorized. The two pre-existing open unclaimed threads (WaterZone
+  depth-occlusion fix; pending genuine B-LITE Human physical gate playtest)
+  are unaffected and remain open. Publication of this branch to `origin` and
+  PR creation are separate control-plane steps that follow this local
+  closeout, not implementation-writer work.
 
 ## Prior authority — GITHUB-ACTIONS-CHECKOUT-V7-UPGRADE-001 closure (superseded)
 
@@ -869,7 +919,7 @@ also now closed — see "Prior authority — SLICE-007 closure" above. SLICE-008
 closed one of its two disclosed follow-ups (the early-Defeat investigation) and
 corrected its evidence screenshot; the WaterZone depth-occlusion fix and the
 Director's still-pending genuine Human Gate playtest are the current unresolved
-threads — see "Current authority" at the top of this file.
+threads — see "Current stop condition" below.
 
 ## Current stop condition
 
