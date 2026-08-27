@@ -13,10 +13,34 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "evidence_file": null,
   "allowed_paths": [],
   "forbidden_paths": [],
+  "last_terminal_closeout": {
+    "schema_version": 1,
+    "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001",
+    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.md",
+    "baseline_sha": "2e597ddb29136276fcfa9aaf76c273ece0df70e6",
+    "authority_anchor_sha": "2e597ddb29136276fcfa9aaf76c273ece0df70e6",
+    "activation_sha": "1a40fe52c466f47b3efed883da19e1d0c14a3a14",
+    "independent_review_required": true,
+    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.review.json",
+    "reviewed_candidate_sha": "e950480cec29bb1bf4398d10ab9ba451268a83c8"
+  },
   "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
 
+## Prior authority - CLAUDE NATIVE SKILLS BRIDGE A3 001 closure
+
+`TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001` is terminal-closed on branch
+`chore/ttk-claude-native-skills-bridge-a3-001`. Its final state:
+
+- baseline `2e597ddb29136276fcfa9aaf76c273ece0df70e6`; activation
+  `1a40fe52c466f47b3efed883da19e1d0c14a3a14`; reviewed implementation
+  candidate `e950480cec29bb1bf4398d10ab9ba451268a83c8`;
+- review receipt commit `9205a9f8d60ce17e5ddee187b156e497c0ab314f`; independent
+  review `PASS`; blocking findings `NONE`; receipt
+  `docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.review.json`;
+- successor authority `NONE`; player-visible delta `NONE`; Unity execution
+  `NOT_REQUIRED`.
 ## Prior authority — EXACT REVIEW BINDING A2 001 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-EXACT-REVIEW-BINDING-A2-001` is terminal-closed on branch
