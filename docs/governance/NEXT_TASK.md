@@ -5,15 +5,55 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 ```json
 {
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001",
+  "branch": "chore/ttk-claude-native-skills-bridge-a3-001",
+  "baseline_ref": "2e597ddb29136276fcfa9aaf76c273ece0df70e6",
+  "authority_anchor_ref": "2e597ddb29136276fcfa9aaf76c273ece0df70e6",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.md",
+  "evidence_file": "docs/evidence/CLAUDE_NATIVE_SKILLS_BRIDGE_A3_001_REPORT.md",
+  "allowed_paths": [
+    ".claude/skills/ttk-execute/SKILL.md",
+    "docs/evidence/CLAUDE_NATIVE_SKILLS_BRIDGE_A3_001_REPORT.md"
+  ],
+  "forbidden_paths": [
+    "CLAUDE.md",
+    "AGENTS.md",
+    ".agents/skills/",
+    ".claude/agents/",
+    "scripts/hooks/",
+    ".github/workflows/",
+    "docs/governance/",
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/"
+  ],
+  "independent_review_required": true,
+  "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.review.json",
+  "acceptable_review_verdicts": [
+    "PASS",
+    "PASS_WITH_REMEDIATION"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "claude_skill_structure": "PASS",
+    "canonical_adapter_boundary": "PASS",
+    "no_canon_duplication": "PASS",
+    "existing_reviewer_boundary_preserved": "PASS",
+    "a2_exact_review_lifecycle_declared": "PASS",
+    "no_game_or_unity_change": "PASS",
+    "claude_skill_discovery": "PASS",
+    "manual_invocation_behavior": "PASS",
+    "model_invocation_policy": "PASS",
+    "shared_skill_live_load": "PASS",
+    "tracked_mutation_after_dogfood": "NONE",
+    "canonical_skill_path_and_frontmatter": "RECORDED",
+    "legacy_command_disposition": "RECORDED"
+  },
+  "stop_condition": "IMPLEMENTATION_CANDIDATE_COMMITTED_THEN_INDEPENDENT_REVIEW_REQUIRED"
 }
 ```
 
