@@ -17,6 +17,23 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 }
 ```
 
+## Prior authority — EXACT REVIEW BINDING A2 001 closure (superseded)
+
+`TASK-TIEU-TIEN-KY-EXACT-REVIEW-BINDING-A2-001` is terminal-closed on branch
+`chore/ttk-exact-review-binding-a2-001`. Its final state:
+
+- baseline `4ec87b265b345dd97fd536e982b9227e0074eafe`; reviewed implementation
+  candidate `b704da836ce9b82ad4dd3b0f7987a9d4697bad00`;
+- independent review `PASS`; blocking findings `NONE`;
+- bootstrap mode `CURRENT_CANON_INDEPENDENT_REVIEW`: A2 was reviewed and
+  terminal-closed under the pre-A2 baseline canon;
+- `A2_LIVE_REVIEW_RECEIPT = NOT_CREATED`; no receipt-only commit was created
+  and A2's new Candidate Gate receipt lifecycle is not claimed to govern A2
+  itself;
+- successor authority `NONE`. A3 is not activated. The two pre-existing open
+  unclaimed threads (WaterZone depth-occlusion fix; pending genuine B-LITE
+  Human physical gate playtest) are unaffected and remain open.
+
 ## Prior authority — READONLY-REVIEWER-PILOT-002 closure (superseded)
 
 `TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002` is closed via local terminal

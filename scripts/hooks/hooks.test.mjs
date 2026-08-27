@@ -11,13 +11,21 @@ const sourceRoot = path.resolve(here, '../..');
 const hookNames = ['pre-task.mjs', 'scope-gate.mjs', 'pre-finish.mjs'];
 
 function git(root, args, options = {}) {
-  return execFileSync('git', args, { cwd: root, encoding: 'utf8', ...options }).trim();
+  const nullGitConfig = process.platform === 'win32' ? 'NUL' : '/dev/null';
+  return execFileSync('git', ['-c', 'core.autocrlf=false', ...args], {
+    cwd: root,
+    encoding: 'utf8',
+    ...options,
+    env: { ...process.env, GIT_CONFIG_GLOBAL: nullGitConfig, ...(options.env ?? {}) }
+  }).trim();
 }
 
-function invoke(root, script, args = []) {
+function invoke(root, script, args = [], options = {}) {
+  const nullGitConfig = process.platform === 'win32' ? 'NUL' : '/dev/null';
   return spawnSync(process.execPath, [`scripts/hooks/${script}`, ...args], {
     cwd: root,
-    encoding: 'utf8'
+    encoding: 'utf8',
+    env: { ...process.env, GIT_CONFIG_GLOBAL: nullGitConfig, ...(options.env ?? {}) }
   });
 }
 
@@ -68,6 +76,10 @@ function makeFixture(overrides = {}, fixtureOptions = {}) {
   git(root, ['init', '-q']);
   git(root, ['config', 'user.email', 'hooks@test.local']);
   git(root, ['config', 'user.name', 'Hook Test']);
+  const fixtureExcludes = path.join(root, '.git', 'empty-excludes');
+  fs.writeFileSync(fixtureExcludes, '');
+  git(root, ['config', 'core.excludesfile', fixtureExcludes]);
+  git(root, ['config', 'core.autocrlf', 'false']);
 
   for (const name of hookNames) {
     write(root, `scripts/hooks/${name}`, fs.readFileSync(path.join(sourceRoot, 'scripts/hooks', name), 'utf8'));
@@ -427,6 +439,10 @@ function makeMultiParentActivationFixture(overrides = {}) {
   git(root, ['init', '-q']);
   git(root, ['config', 'user.email', 'hooks@test.local']);
   git(root, ['config', 'user.name', 'Hook Test']);
+  const fixtureExcludes = path.join(root, '.git', 'empty-excludes');
+  fs.writeFileSync(fixtureExcludes, '');
+  git(root, ['config', 'core.excludesfile', fixtureExcludes]);
+  git(root, ['config', 'core.autocrlf', 'false']);
 
   for (const name of hookNames) {
     write(root, `scripts/hooks/${name}`, fs.readFileSync(path.join(sourceRoot, 'scripts/hooks', name), 'utf8'));
@@ -479,4 +495,368 @@ test('pre-finish blocks multi-parent activation whose first parent is the author
   const result = invoke(fixture.root, 'pre-finish.mjs');
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
   assert.match(result.stderr, /single-parent direct child/);
+});
+
+const candidateGateSource = path.join(sourceRoot, 'scripts/hooks/candidate-gate.mjs');
+
+function candidateAuthority(baseline, anchor, overrides = {}) {
+  const reviewRequired = overrides.independent_review_required ?? true;
+  return {
+    repository: 'ShenJun93/tieu-tien-ky-game',
+    state: 'IMPLEMENT',
+    task_mode: 'SPEC',
+    task_id: 'T1',
+    branch: 'feat/candidate-gate-test',
+    baseline_ref: baseline,
+    authority_anchor_ref: anchor,
+    workspace_policy: 'EXISTING_AUTHORIZED_WORKTREE',
+    task_file: 'docs/tasks/T1.md',
+    evidence_file: 'docs/evidence/T1_REPORT.md',
+    allowed_paths: ['src/', 'docs/evidence/T1_REPORT.md'],
+    forbidden_paths: ['docs/governance/NEXT_TASK.md', 'docs/tasks/T1.md'],
+    required_evidence: { automated_tests: 'PASS' },
+    independent_review_required: reviewRequired,
+    review_receipt_file: reviewRequired ? 'docs/reviews/T1.review.json' : null,
+    acceptable_review_verdicts: reviewRequired ? ['PASS', 'PASS_WITH_REMEDIATION'] : [],
+    stop_condition: 'READY_FOR_REVIEW',
+    ...overrides
+  };
+}
+
+function writeCandidateAuthority(root, authority) {
+  write(root, 'docs/governance/NEXT_TASK.md', `# NEXT TASK\n\n\`\`\`json\n${JSON.stringify(authority, null, 2)}\n\`\`\`\n`);
+}
+
+function receiptPayload(fixture, overrides = {}) {
+  return {
+    schema_version: 1,
+    task_id: 'T1',
+    baseline_sha: fixture.baseline,
+    reviewed_candidate_sha: fixture.candidate,
+    verdict: 'PASS',
+    blocking_findings: [],
+    blocking_finding_count: 0,
+    reviewer_identifier: 'fixture-independent-reviewer',
+    review_completed_at: '2026-08-27T00:00:00Z',
+    review_completion_mode: 'INDEPENDENT_READ_ONLY',
+    ...overrides
+  };
+}
+
+function makeCandidateGateFixture(options = {}) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-candidate-gate-'));
+  git(root, ['init', '-q']);
+  git(root, ['config', 'user.email', 'candidate-gate@test.local']);
+  git(root, ['config', 'user.name', 'Candidate Gate Test']);
+  const fixtureExcludes = path.join(root, '.git', 'empty-excludes');
+  fs.writeFileSync(fixtureExcludes, '');
+  git(root, ['config', 'core.excludesfile', fixtureExcludes]);
+  git(root, ['config', 'core.autocrlf', 'false']);
+
+  if (options.gateInBaseline !== false && fs.existsSync(candidateGateSource)) {
+    write(root, 'scripts/hooks/candidate-gate.mjs', fs.readFileSync(candidateGateSource, 'utf8'));
+  }
+
+  write(root, 'docs/governance/NEXT_TASK.md', '# inactive baseline\n');
+  commitAll(root, 'baseline');
+  const baseline = git(root, ['rev-parse', 'HEAD']);
+  const anchor = baseline;
+  git(root, ['branch', '-M', 'feat/candidate-gate-test']);
+
+  const authority = candidateAuthority(baseline, anchor, {
+    independent_review_required: options.reviewRequired ?? true,
+    ...(options.authorityOverrides ?? {})
+  });
+  write(root, 'docs/tasks/T1.md', '# TASK T1\n');
+  writeCandidateAuthority(root, authority);
+  commitAll(root, 'activate task');
+  const activation = git(root, ['rev-parse', 'HEAD']);
+
+  write(root, 'src/implementation.txt', 'candidate implementation\n');
+  write(root, 'docs/evidence/T1_REPORT.md', '# evidence\n\n```json\n{"verdict":"PASS","automated_tests":"PASS"}\n```\n');
+  for (const [relative, content] of Object.entries(options.candidateExtras ?? {})) write(root, relative, content);
+  if (options.gateInBaseline === false && fs.existsSync(candidateGateSource)) {
+    write(root, 'scripts/hooks/candidate-gate.mjs', fs.readFileSync(candidateGateSource, 'utf8'));
+  }
+  commitAll(root, 'implementation candidate');
+  const candidate = git(root, ['rev-parse', 'HEAD']);
+  const fixture = { root, baseline, anchor, activation, candidate, authority };
+
+  if ((options.reviewRequired ?? true) && options.withReceipt !== false) {
+    write(root, authority.review_receipt_file, `${JSON.stringify(receiptPayload(fixture, options.receiptOverrides), null, 2)}\n`);
+    for (const [relative, content] of Object.entries(options.receiptCommitExtras ?? {})) write(root, relative, content);
+    commitAll(root, 'persist independent review receipt');
+    fixture.receiptCommit = git(root, ['rev-parse', 'HEAD']);
+  }
+
+  return fixture;
+}
+
+function terminalAuthority(fixture, overrides = {}) {
+  const reviewRequired = fixture.authority.independent_review_required;
+  return {
+    repository: 'ShenJun93/tieu-tien-ky-game',
+    state: 'DISCOVERY',
+    task_id: null,
+    branch: null,
+    baseline_ref: null,
+    task_file: null,
+    evidence_file: null,
+    allowed_paths: [],
+    forbidden_paths: [],
+    last_terminal_closeout: {
+      schema_version: 1,
+      task_id: 'T1',
+      task_file: 'docs/tasks/T1.md',
+      baseline_sha: fixture.baseline,
+      authority_anchor_sha: fixture.anchor,
+      activation_sha: fixture.activation,
+      independent_review_required: reviewRequired,
+      review_receipt_file: reviewRequired ? 'docs/reviews/T1.review.json' : null,
+      reviewed_candidate_sha: reviewRequired ? fixture.candidate : null,
+      ...overrides
+    },
+    stop_condition: 'HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY'
+  };
+}
+
+function closeCandidateGateFixture(fixture, overrides = {}) {
+  writeCandidateAuthority(fixture.root, terminalAuthority(fixture, overrides));
+  commitAll(fixture.root, 'terminal closeout');
+  fixture.closeout = git(fixture.root, ['rev-parse', 'HEAD']);
+  return fixture;
+}
+
+function assertCandidateGateBlocked(fixture, pattern) {
+  const result = invoke(fixture.root, 'candidate-gate.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, pattern);
+}
+
+test('candidate gate passes a valid exact review receipt at the receipt head', () => {
+  const fixture = makeCandidateGateFixture();
+  const result = invoke(fixture.root, 'candidate-gate.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /CANDIDATE GATE PASS/);
+});
+
+test('candidate gate passes deterministic NEXT_TASK-only terminal closeout at final DISCOVERY head', () => {
+  const fixture = closeCandidateGateFixture(makeCandidateGateFixture());
+  const result = invoke(fixture.root, 'candidate-gate.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /final DISCOVERY/);
+});
+
+test('candidate gate preserves active low-risk flow without demanding a receipt', () => {
+  const fixture = makeCandidateGateFixture({ reviewRequired: false, withReceipt: false });
+  const result = invoke(fixture.root, 'candidate-gate.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /review not required/);
+});
+
+test('candidate gate passes final low-risk closeout without a receipt', () => {
+  const fixture = closeCandidateGateFixture(
+    makeCandidateGateFixture({ reviewRequired: false, withReceipt: false })
+  );
+  const result = invoke(fixture.root, 'candidate-gate.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /final DISCOVERY low-risk closeout/);
+});
+
+test('candidate gate blocks a missing receipt when independent review is required', () => {
+  const fixture = makeCandidateGateFixture({ withReceipt: false });
+  assertCandidateGateBlocked(fixture, /required review receipt is missing/i);
+});
+
+test('candidate gate blocks malformed receipt JSON', () => {
+  const fixture = makeCandidateGateFixture();
+  write(fixture.root, fixture.authority.review_receipt_file, '{not-json\n');
+  git(fixture.root, ['add', fixture.authority.review_receipt_file]);
+  git(fixture.root, ['commit', '--amend', '--no-edit']);
+  assertCandidateGateBlocked(fixture, /review receipt JSON is invalid/i);
+});
+
+test('candidate gate blocks malformed reviewed candidate SHA', () => {
+  const fixture = makeCandidateGateFixture({ receiptOverrides: { reviewed_candidate_sha: 'abc123' } });
+  assertCandidateGateBlocked(fixture, /reviewed_candidate_sha must be an exact 40-character commit SHA/i);
+});
+
+test('candidate gate blocks receipt candidate SHA that differs from the receipt commit parent', () => {
+  const fixture = makeCandidateGateFixture({ receiptOverrides: { reviewed_candidate_sha: '0000000000000000000000000000000000000000' } });
+  assertCandidateGateBlocked(fixture, /reviewed_candidate_sha does not equal the receipt commit parent/i);
+});
+
+test('candidate gate blocks receipt baseline mismatch', () => {
+  const fixture = makeCandidateGateFixture({ receiptOverrides: { baseline_sha: '0000000000000000000000000000000000000000' } });
+  assertCandidateGateBlocked(fixture, /receipt baseline_sha does not match authorized baseline/i);
+});
+
+test('candidate gate blocks receipt task mismatch', () => {
+  const fixture = makeCandidateGateFixture({ receiptOverrides: { task_id: 'OTHER_TASK' } });
+  assertCandidateGateBlocked(fixture, /receipt task_id does not match authorized task/i);
+});
+
+test('candidate gate blocks an unacceptable FAIL verdict', () => {
+  const fixture = makeCandidateGateFixture({ receiptOverrides: { verdict: 'FAIL' } });
+  assertCandidateGateBlocked(fixture, /receipt verdict is not acceptable/i);
+});
+
+test('candidate gate blocks remaining blocking findings', () => {
+  const fixture = makeCandidateGateFixture({
+    receiptOverrides: { blocking_findings: ['P1 unresolved'], blocking_finding_count: 1 }
+  });
+  assertCandidateGateBlocked(fixture, /blocking findings remain/i);
+});
+
+for (const [label, relative] of [
+  ['implementation', 'src/post-review.txt'],
+  ['evidence', 'docs/evidence/T1_REPORT.md'],
+  ['active task contract', 'docs/tasks/T1.md'],
+  ['unauthorized path', 'UNAUTHORIZED.md']
+]) {
+  test(`candidate gate blocks post-review ${label} mutation`, () => {
+    const fixture = makeCandidateGateFixture();
+    write(fixture.root, relative, `post-review ${label}\n`);
+    commitAll(fixture.root, `post-review ${label}`);
+    assertCandidateGateBlocked(fixture, /post-review commit sequence is unauthorized/i);
+  });
+}
+
+test('candidate gate blocks a stale receipt reused after a later implementation commit', () => {
+  const fixture = makeCandidateGateFixture();
+  write(fixture.root, 'src/implementation.txt', 'new implementation candidate after receipt\n');
+  commitAll(fixture.root, 'later implementation candidate');
+  assertCandidateGateBlocked(fixture, /post-review commit sequence is unauthorized/i);
+});
+
+test('candidate gate blocks a receipt commit that also mutates evidence', () => {
+  const fixture = makeCandidateGateFixture({
+    receiptCommitExtras: { 'docs/evidence/T1_REPORT.md': '# evidence changed during receipt persistence\n' }
+  });
+  assertCandidateGateBlocked(fixture, /receipt-only commit must change exactly/i);
+});
+
+test('candidate gate blocks non-canonical receipt path metadata instead of discovering a receipt', () => {
+  const fixture = makeCandidateGateFixture({
+    authorityOverrides: { review_receipt_file: 'docs/reviews/something-else.json' }
+  });
+  assertCandidateGateBlocked(fixture, /review_receipt_file must equal canonical path/i);
+});
+
+test('candidate gate blocks a reviewed candidate outside the activated writer scope', () => {
+  const fixture = makeCandidateGateFixture({
+    candidateExtras: { 'UNAUTHORIZED-CANDIDATE.md': 'outside writer scope\n' }
+  });
+  assertCandidateGateBlocked(fixture, /reviewed candidate violates authorized writer scope/i);
+});
+
+test('candidate gate blocks terminal closeout claim that differs from the receipt', () => {
+  const fixture = closeCandidateGateFixture(
+    makeCandidateGateFixture(),
+    { reviewed_candidate_sha: '0000000000000000000000000000000000000000' }
+  );
+  assertCandidateGateBlocked(fixture, /terminal reviewed_candidate_sha does not match receipt/i);
+});
+
+test('candidate gate blocks terminal closeout commit containing an unauthorized path', () => {
+  const fixture = closeCandidateGateFixture(makeCandidateGateFixture());
+  write(fixture.root, 'UNAUTHORIZED.md', 'folded into closeout\n');
+  git(fixture.root, ['add', '.']);
+  git(fixture.root, ['commit', '--amend', '--no-edit']);
+  assertCandidateGateBlocked(fixture, /terminal closeout must change exactly/i);
+});
+
+test('candidate gate blocks final DISCOVERY metadata that fails to clear live authority fields', () => {
+  const fixture = makeCandidateGateFixture();
+  const invalid = terminalAuthority(fixture);
+  invalid.branch = 'feat/still-authorized';
+  writeCandidateAuthority(fixture.root, invalid);
+  commitAll(fixture.root, 'invalid terminal closeout');
+  assertCandidateGateBlocked(fixture, /terminal DISCOVERY metadata must clear branch/i);
+});
+
+test('candidate gate blocks final DISCOVERY without binding metadata once Candidate Gate exists in baseline', () => {
+  const fixture = makeCandidateGateFixture({ reviewRequired: false, withReceipt: false });
+  writeCandidateAuthority(fixture.root, {
+    repository: 'ShenJun93/tieu-tien-ky-game',
+    state: 'DISCOVERY',
+    task_id: null,
+    branch: null,
+    baseline_ref: null,
+    task_file: null,
+    evidence_file: null,
+    allowed_paths: [],
+    forbidden_paths: [],
+    stop_condition: 'HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY'
+  });
+  commitAll(fixture.root, 'terminal closeout missing binding');
+  assertCandidateGateBlocked(fixture, /missing last_terminal_closeout review binding metadata/i);
+});
+
+test('candidate gate blocks low-risk metadata that names a review receipt', () => {
+  const fixture = makeCandidateGateFixture({
+    reviewRequired: false,
+    withReceipt: false,
+    authorityOverrides: {
+      review_receipt_file: 'docs/reviews/T1.review.json',
+      acceptable_review_verdicts: ['PASS']
+    }
+  });
+  assertCandidateGateBlocked(fixture, /low-risk task must set review_receipt_file to null/i);
+});
+
+test('candidate gate blocks missing explicit independent review policy', () => {
+  const fixture = makeCandidateGateFixture({ reviewRequired: false, withReceipt: false });
+  const invalid = { ...fixture.authority };
+  delete invalid.independent_review_required;
+  writeCandidateAuthority(fixture.root, invalid);
+  git(fixture.root, ['add', 'docs/governance/NEXT_TASK.md']);
+  git(fixture.root, ['commit', '--amend', '--no-edit']);
+  assertCandidateGateBlocked(fixture, /independent_review_required must be an explicit boolean/i);
+});
+
+test('candidate gate permits A2 bootstrap closeout only when the gate was absent from the PR baseline', () => {
+  const fixture = makeCandidateGateFixture({ gateInBaseline: false, withReceipt: false });
+  writeCandidateAuthority(fixture.root, {
+    repository: 'ShenJun93/tieu-tien-ky-game',
+    state: 'DISCOVERY',
+    task_id: null,
+    branch: null,
+    baseline_ref: null,
+    task_file: null,
+    evidence_file: null,
+    allowed_paths: [],
+    forbidden_paths: [],
+    stop_condition: 'HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY'
+  });
+  commitAll(fixture.root, 'current-canon A2 bootstrap closeout');
+  const result = invoke(fixture.root, 'candidate-gate.mjs', [], {
+    env: { CANDIDATE_GATE_BASE_SHA: fixture.baseline }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /A2 bootstrap/i);
+});
+
+test('candidate gate permits the active A2 candidate under pre-A2 canon only when absent from the PR baseline', () => {
+  const fixture = makeCandidateGateFixture({
+    gateInBaseline: false,
+    reviewRequired: false,
+    withReceipt: false,
+    authorityOverrides: {
+      task_id: 'TASK-TIEU-TIEN-KY-EXACT-REVIEW-BINDING-A2-001',
+      task_file: 'docs/tasks/T1.md'
+    }
+  });
+  const bootstrapAuthority = { ...fixture.authority };
+  delete bootstrapAuthority.independent_review_required;
+  delete bootstrapAuthority.review_receipt_file;
+  delete bootstrapAuthority.acceptable_review_verdicts;
+  writeCandidateAuthority(fixture.root, bootstrapAuthority);
+  git(fixture.root, ['add', 'docs/governance/NEXT_TASK.md']);
+  git(fixture.root, ['commit', '--amend', '--no-edit']);
+  const result = invoke(fixture.root, 'candidate-gate.mjs', [], {
+    env: { CANDIDATE_GATE_BASE_SHA: fixture.baseline }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /A2 bootstrap/i);
 });

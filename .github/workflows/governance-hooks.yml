@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Runtime info
         run: |
@@ -26,3 +29,9 @@ jobs:
 
       - name: Governance regression suite
         run: node --test scripts/hooks/hooks.test.mjs
+
+      - name: Candidate review binding
+        if: github.event_name == 'pull_request'
+        env:
+          CANDIDATE_GATE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node scripts/hooks/candidate-gate.mjs

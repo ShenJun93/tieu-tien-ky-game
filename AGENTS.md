@@ -47,6 +47,18 @@ After that transition, the implementation writer must not modify either control-
 
 Once implementation verification and any required independent review / Human Gate have accepted an exact implementation candidate, Human/Game Director or Final Foreman acting as control-plane authority may append one terminal closeout commit to the **same task branch**, touching `docs/governance/NEXT_TASK.md` only. The implementation writer/session must never author that commit. It transitions authority to `DISCOVERY` or another explicitly allowed non-mutating terminal state and must never activate a successor task. The final PR head still requires Repository Gate, and Human/Game Director remains merge authority. Full mechanics: `docs/governance/TERMINAL_CLOSEOUT_POLICY.md`.
 
+When a task declares `independent_review_required: true`, Candidate Gate binds
+the independent review receipt to the exact implementation candidate. The
+receipt is a distinct canonical JSON artifact at
+`docs/reviews/<task_id>.review.json`, persisted only by Human/Game Director or
+an explicitly delegated Final-Foreman/control-plane context in one receipt-only
+commit. It is never implementation evidence and never grants mutation
+authority. The following terminal closeout must be its direct child. Tasks
+declaring `independent_review_required: false` retain the risk-based low-risk
+flow without a receipt. Full format and topology:
+`docs/governance/WORKFLOW.md` and
+`docs/governance/TERMINAL_CLOSEOUT_POLICY.md`.
+
 ## Live operator precedence
 
 ```text
@@ -131,6 +143,19 @@ node scripts/hooks/pre-finish.mjs
 ```
 
 `pre-finish` revalidates the authority lock, live main, writer-only committed scope, and the active task's declared `required_evidence`. It must not assume every task requires Android/Human evidence. Player-facing tasks should declare those fields explicitly. If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
+
+Candidate Gate is a final-PR-head control-plane guard, not a writer completion
+guard:
+
+```bash
+node scripts/hooks/candidate-gate.mjs
+```
+
+For review-required tasks it fails closed unless the exact sequence is
+implementation candidate → receipt-only commit → `NEXT_TASK.md`-only terminal
+closeout. Repository Gate runs it on the exact pull-request head with full Git
+history. A writer must not create the receipt or terminal closeout merely to
+make this guard pass.
 
 For `REMOTE_GITHUB_BRANCH`, the Final Foreman performs equivalent live repository/base/head checks around bounded GitHub mutations because local writer hooks intentionally reject that workspace policy.
 
