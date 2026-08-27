@@ -5,91 +5,38 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 ```json
 {
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001",
-  "branch": "chore/ttk-claude-native-permission-boundary-a5-001",
-  "baseline_ref": "8bf0b228c7df15936411f168324842d121a1a9a2",
-  "authority_anchor_ref": "8bf0b228c7df15936411f168324842d121a1a9a2",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.md",
-  "evidence_file": "docs/evidence/CLAUDE_NATIVE_PERMISSION_BOUNDARY_A5_001_REPORT.md",
-  "allowed_paths": [
-    ".claude/settings.json",
-    "docs/evidence/CLAUDE_NATIVE_PERMISSION_BOUNDARY_A5_001_REPORT.md"
-  ],
-  "forbidden_paths": [
-    "CLAUDE.md",
-    "AGENTS.md",
-    ".agents/skills/",
-    ".claude/agents/",
-    ".claude/skills/",
-    "scripts/hooks/",
-    ".github/workflows/",
-    "docs/governance/",
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/"
-  ],
-  "independent_review_required": true,
-  "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.review.json",
-  "acceptable_review_verdicts": [
-    "PASS",
-    "PASS_WITH_REMEDIATION"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "settings_json_structure": "PASS",
-    "project_settings_discovery": "PASS",
-    "disable_bypass_permissions_policy": "PASS",
-    "disable_auto_mode_policy": "PASS",
-    "static_permission_boundary": "PASS",
-    "control_plane_compatibility": "PASS",
-    "no_dynamic_authority_duplication": "PASS",
-    "no_bash_permission_denylist": "PASS",
-    "existing_reviewer_boundary_preserved": "PASS",
-    "a3_execution_skill_boundary_preserved": "PASS",
-    "a4_do_not_implement_disposition_preserved": "PASS",
-    "no_game_or_unity_change": "PASS",
-    "tracked_mutation_after_dogfood": "NONE",
-    "hard_policy_limit": "RECORDED",
-    "builtin_tool_boundary_limit": "RECORDED",
-    "official_permission_semantics": "RECORDED"
-  },
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
   "last_terminal_closeout": {
     "schema_version": 1,
-    "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001",
-    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.md",
-    "baseline_sha": "2e597ddb29136276fcfa9aaf76c273ece0df70e6",
-    "authority_anchor_sha": "2e597ddb29136276fcfa9aaf76c273ece0df70e6",
-    "activation_sha": "1a40fe52c466f47b3efed883da19e1d0c14a3a14",
+    "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001",
+    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.md",
+    "baseline_sha": "8bf0b228c7df15936411f168324842d121a1a9a2",
+    "authority_anchor_sha": "8bf0b228c7df15936411f168324842d121a1a9a2",
+    "activation_sha": "3a1869409d5b550cd8e18f3d1fbfb34a375f46bf",
     "independent_review_required": true,
-    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001.review.json",
-    "reviewed_candidate_sha": "e950480cec29bb1bf4398d10ab9ba451268a83c8"
+    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.review.json",
+    "reviewed_candidate_sha": "f5d00df73ca5ff96db3f10a8b51fc309f9039e01"
   },
-  "stop_condition": "IMPLEMENTATION_CANDIDATE_COMMITTED_THEN_INDEPENDENT_REVIEW_REQUIRED"
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
+## Prior authority — CLAUDE NATIVE PERMISSION BOUNDARY A5 001 closure
 
-## Current authority — CLAUDE NATIVE PERMISSION BOUNDARY A5 001 (active)
+`TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001` is terminal-closed on branch
+`chore/ttk-claude-native-permission-boundary-a5-001`. Its final state:
 
-`TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001` is activated as a
-control-plane-only activation. Full contract:
-`docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.md`.
-
-This is control-plane activation only. The implementation writer's exact
-scope is `.claude/settings.json` (one checked-in project settings file
-statically disabling `bypassPermissions` and `auto` native execution modes)
-plus its own evidence report. It grants no other repository authority. A4
-(native `PreToolUse` hook adapter infrastructure) remains `DO_NOT_IMPLEMENT`
-per its prior observed fail-open behavior and is not reopened or resurrected
-by this activation. Independent review is required before terminal closeout,
-following the same post-A2 exact-candidate lifecycle: activation →
-implementation candidate → independent review → canonical receipt →
-receipt-only commit → `NEXT_TASK.md`-only terminal closeout → Candidate Gate
-→ Repository Gate → Human squash merge.
-
+- A5 static permission boundary delivered; reviewed candidate
+  `f5d00df73ca5ff96db3f10a8b51fc309f9039e01`; review verdict `PASS`; blocking findings
+  `NONE`; receipt commit `7d4ff78c80d55b8be8f64278f3d8e5c6aaba207e`;
+- player-visible delta `NONE`; Unity execution `NOT_REQUIRED`;
+- successor authority `NONE`.
 ## Prior authority - CLAUDE NATIVE SKILLS BRIDGE A3 001 closure
 
 `TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-SKILLS-BRIDGE-A3-001` is terminal-closed on branch
