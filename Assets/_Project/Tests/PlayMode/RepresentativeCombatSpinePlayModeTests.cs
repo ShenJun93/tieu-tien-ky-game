@@ -3,6 +3,7 @@ using System.Reflection;
 using NUnit.Framework;
 using TieuTienKy.Input;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace TieuTienKy.Gameplay.Tests
@@ -86,6 +87,27 @@ namespace TieuTienKy.Gameplay.Tests
 
             Assert.IsTrue(basicAttack.TryActivate(Time.time));
             Assert.AreEqual(1, startedCount, "Direct TryActivate() must still work with local world tap disabled - the shared gateway/network path is never gated by this switch.");
+        }
+
+        [UnityTest]
+        public IEnumerator ArenaScene_WaterZoneMaterial_IsTranslucentAndDoesNotHardOcclude()
+        {
+            // Slice 009 Task 4 regression: the authored WaterZone rendered as
+            // an opaque raised blue cuboid, hard-occluding any actor
+            // overlapping it (REPRODUCED / CONFOUNDING against the
+            // representative Human Product Gate artifact). Water must use a
+            // dedicated Water-only transparent shader with a real alpha hole,
+            // never the shared opaque P0A_Unlit/Standard material.
+            yield return SceneManager.LoadSceneAsync("Arena_VerticalSlice_01");
+            yield return null;
+            yield return null;
+
+            var water = GameObject.Find("WaterZone").GetComponent<MeshRenderer>().sharedMaterial;
+
+            Assert.AreEqual("TieuTienKy/P0A_WaterUnlitTransparent", water.shader.name, "WaterZone must use the dedicated Water-only transparent shader, not the shared opaque shader.");
+            Assert.GreaterOrEqual(water.renderQueue, 3000, "WaterZone must render in the Transparent queue (>= 3000), not the Opaque queue.");
+            Assert.Greater(water.color.a, 0f, "WaterZone alpha must be greater than 0 (not fully invisible).");
+            Assert.Less(water.color.a, 1f, "WaterZone alpha must be less than 1 (translucent, not opaque/hard-occluding).");
         }
     }
 }
