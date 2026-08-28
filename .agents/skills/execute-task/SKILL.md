@@ -20,7 +20,7 @@ Do not invoke implementation steps when `state` is `DISCOVERY`, `REVIEW`, `HUMAN
 7. Before mutation batches, run `scope-gate.mjs` for intended paths when applicable.
 8. Implement the whole bounded task/slice; do not open side quests for safe non-blocking debt.
 9. Verify exactly the task's declared `required_evidence`; broaden only when risk/evidence justifies it.
-10. For player-facing Unity work, include the required engine/runtime/device layers. Before physical Human handoff, satisfy the Product Process v2 representativeness evidence and run `node scripts/hooks/human-gate-preflight.mjs`; a preflight failure blocks install/launch/handoff rather than consuming Human test time.
+10. For player-facing Unity work, include the required engine/runtime/device layers. Before physical Human handoff, populate the structured `product_gate_evidence` record (producer-linked artifact/build log, per-dimension proof, placeholder audit, physical-device measurements, Human-question basis) and run `node scripts/hooks/human-gate-preflight.mjs`; scalar PASS labels alone are insufficient and any preflight failure blocks install/launch/handoff rather than consuming Human test time.
 11. Commit intentionally on the authorized task branch so evidence can bind to an exact HEAD.
 12. If research occurs, persist material dispositions (`INTEGRATED`, `PARTIALLY_INTEGRATED`, `TO_INTEGRATE`, `DEFERRED`, `REJECTED`, `SUPERSEDED`) before claiming the research is closed.
 13. At a Human Gate, report and HARD STOP. Never poll or auto-resume.

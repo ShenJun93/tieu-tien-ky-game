@@ -263,48 +263,123 @@ test('pre-task accepts a complete product_gate contract with mandatory preflight
   assert.equal(result.status, 0, result.stderr);
 });
 
+function writeSuccessfulBuildLog(root, artifactPath, sourceSha, buildLogPath = 'Builds/Android/human-gate-build.log') {
+  const absoluteArtifact = path.resolve(root, artifactPath).replaceAll('\\', '/');
+  write(root, buildLogPath,
+    `[TTK_ANDROID_BUILD] result=Succeeded totalErrors=0 totalWarnings=0 outputPath=${absoluteArtifact} sourceSha=${sourceSha.slice(0, 7)}\n`);
+  return buildLogPath;
+}
+
+function structuredProductGateEvidence(root, artifactPath, sourceSha, buildLogPath, gate = PRODUCT_GATE) {
+  const dimensions = Object.fromEntries(gate.representative_dimensions.map((dimension) => [dimension, {
+    status: 'PASS',
+    evidence: [`verified:${dimension}`]
+  }]));
+  return {
+    schema_version: 1,
+    artifact: {
+      path: artifactPath,
+      sha256: sha256File(root, artifactPath),
+      source_sha: sourceSha,
+      build_log_path: buildLogPath,
+      build_log_sha256: sha256File(root, buildLogPath)
+    },
+    representative_dimensions: dimensions,
+    placeholders: {
+      status: 'RECORDED',
+      inspected_dimensions: [...gate.representative_dimensions],
+      entries: [],
+      undeclared_count: 0,
+      evidence: ['placeholder-audit']
+    },
+    target_device: {
+      status: 'PASS',
+      physical: true,
+      session_seconds: 60,
+      measurements: [{ metric: 'frame_time_p95', value: 16.6, unit: 'ms' }],
+      evidence: ['target-device-session']
+    },
+    human_question: {
+      status: 'PASS',
+      covered_dimensions: [...gate.representative_dimensions],
+      blockers: [],
+      evidence: ['question-readiness-review']
+    }
+  };
+}
+
+test('pre-task blocks omitted product_gate when authority explicitly requires physical Human product playtest', () => {
+  const { root } = makeFixture({
+    stop_condition: 'PHYSICAL_HUMAN_PRODUCT_GATE_REQUIRED',
+    required_evidence: { automated_tests: 'PASS', human_playtest: 'RECORDED' }
+  });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /product_gate|Human product gate/i);
+});
+
+test('pre-task does not infer product_gate from generic Human successor decision', () => {
+  const { root } = makeFixture({
+    stop_condition: 'HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY',
+    required_evidence: { automated_tests: 'PASS' }
+  });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.equal(result.status, 0, result.stderr);
+});
+
 test('human-gate-preflight fails closed when representative evidence is not PASS', () => {
   const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
-  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
   writeEvidence(fixture.root, {
-    verdict: 'PASS',
-    ...PRODUCT_GATE_EVIDENCE,
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
     acceptance_artifact_representative: 'FAIL',
-    acceptance_artifact_path: 'Builds/Test-future.apk',
-    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
-    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha,
+    product_gate_evidence: structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath)
   });
   const result = invoke(fixture.root, 'human-gate-preflight.mjs');
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
   assert.match(result.stderr, /acceptance_artifact_representative/);
 });
 
-test('human-gate-preflight blocks an artifact made before later player-runtime mutation', () => {
+test('human-gate-preflight blocks laundering an old artifact by declaring a later runtime commit as its source', () => {
   const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
-  write(fixture.root, 'Assets/GameplayChangedAfterArtifact.cs', 'runtime mutation\\n');
-  commitAll(fixture.root, 'runtime changed after artifact source');
-  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  const trueSource = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${trueSource.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact-before-runtime-change');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, trueSource);
+  write(fixture.root, 'Assets/LaterRuntimeMutation.cs', 'later runtime mutation\n');
+  git(fixture.root, ['add', 'Assets/LaterRuntimeMutation.cs']);
+  git(fixture.root, ['commit', '-m', 'runtime mutation after artifact build']);
+  const falselyDeclaredSource = git(fixture.root, ['rev-parse', 'HEAD']);
   writeEvidence(fixture.root, {
-    verdict: 'PASS',
-    ...PRODUCT_GATE_EVIDENCE,
-    acceptance_artifact_path: 'Builds/Test-future.apk',
-    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
-    acceptance_artifact_source_sha: fixture.activation
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: falselyDeclaredSource,
+    product_gate_evidence: structuredProductGateEvidence(fixture.root, artifactPath, falselyDeclaredSource, buildLogPath)
   });
   const result = invoke(fixture.root, 'human-gate-preflight.mjs');
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
-  assert.match(result.stderr, /player-runtime mutation|stale artifact/);
+  assert.match(result.stderr, /source|build log|artifact identity|binding/i);
 });
 
 test('human-gate-preflight blocks dirty player-runtime mutation after artifact source', () => {
   const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
-  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
   writeEvidence(fixture.root, {
-    verdict: 'PASS',
-    ...PRODUCT_GATE_EVIDENCE,
-    acceptance_artifact_path: 'Builds/Test-future.apk',
-    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
-    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha,
+    product_gate_evidence: structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath)
   });
   write(fixture.root, 'Assets/DirtyAfterArtifact.cs', 'dirty runtime mutation\n');
   const result = invoke(fixture.root, 'human-gate-preflight.mjs');
@@ -314,29 +389,121 @@ test('human-gate-preflight blocks dirty player-runtime mutation after artifact s
 
 test('human-gate-preflight blocks artifact hash mismatch', () => {
   const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
-  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  const structured = structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath);
+  structured.artifact.sha256 = '0000000000000000000000000000000000000000000000000000000000000000';
   writeEvidence(fixture.root, {
-    verdict: 'PASS',
-    ...PRODUCT_GATE_EVIDENCE,
-    acceptance_artifact_path: 'Builds/Test-future.apk',
-    acceptance_artifact_sha256: '0000000000000000000000000000000000000000000000000000000000000000',
-    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: structured.artifact.sha256,
+    acceptance_artifact_source_sha: sourceSha,
+    product_gate_evidence: structured
   });
   const result = invoke(fixture.root, 'human-gate-preflight.mjs');
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
   assert.match(result.stderr, /SHA-256|hash/);
 });
 
-
-test('human-gate-preflight passes only when contract, evidence and exact artifact binding are ready', () => {
+test('human-gate-preflight blocks an artifact whose true source predates committed player-runtime mutation', () => {
   const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
-  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  write(fixture.root, 'Assets/GameplayChangedAfterArtifact.cs', 'runtime mutation\n');
+  git(fixture.root, ['add', 'Assets/GameplayChangedAfterArtifact.cs']);
+  git(fixture.root, ['commit', '-m', 'runtime changed after artifact source']);
   writeEvidence(fixture.root, {
-    verdict: 'PASS',
-    ...PRODUCT_GATE_EVIDENCE,
-    acceptance_artifact_path: 'Builds/Test-future.apk',
-    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
-    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha,
+    product_gate_evidence: structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath)
+  });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /player-runtime mutation|stale artifact/);
+});
+
+test('human-gate-preflight blocks unsupported scalar readiness without structured product-gate evidence', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  writeEvidence(fixture.root, {
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha
+  });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /structured|product_gate_evidence|representative_dimensions|placeholder|target device/i);
+});
+
+test('human-gate-preflight blocks structured evidence missing a representative dimension', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  const structured = structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath);
+  delete structured.representative_dimensions.presentation;
+  writeEvidence(fixture.root, { verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath, acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha, product_gate_evidence: structured });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /representative dimension presentation/i);
+});
+
+test('human-gate-preflight blocks placeholder audit without inspection evidence', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  const structured = structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath);
+  structured.placeholders.evidence = [];
+  writeEvidence(fixture.root, { verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath, acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha, product_gate_evidence: structured });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /placeholders\.evidence/i);
+});
+
+test('human-gate-preflight blocks target-device readiness without measurements', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  const structured = structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath);
+  structured.target_device.measurements = [];
+  writeEvidence(fixture.root, { verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath, acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha, product_gate_evidence: structured });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /target-device evidence requires one or more measurements/i);
+});
+
+test('human-gate-preflight passes only with structured evidence and producer-linked artifact provenance', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  writeEvidence(fixture.root, {
+    verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath,
+    acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha,
+    product_gate_evidence: structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath)
   });
   const result = invoke(fixture.root, 'human-gate-preflight.mjs');
   assert.equal(result.status, 0, result.stderr);

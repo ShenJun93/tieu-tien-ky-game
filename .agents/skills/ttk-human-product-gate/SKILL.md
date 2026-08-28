@@ -16,9 +16,9 @@ Has a real Human, on a real representative device, judged the exact player-facin
 ## MUST — PREFLIGHT BEFORE HUMAN TIME
 
 - Read live `NEXT_TASK.product_gate` when `product_gate.required=true`; use its exact `player_promise`, `human_question`, `representative_dimensions`, placeholder policy and target-device requirement.
-- Require truthful evidence for `acceptance_artifact_representative=PASS`, `placeholder_inventory=RECORDED`, `cross_discipline_coverage=PASS`, `target_device_readiness=PASS`, and `human_gate_question_answerable=PASS`.
+- Require truthful scalar evidence for `acceptance_artifact_representative=PASS`, `placeholder_inventory=RECORDED`, `cross_discipline_coverage=PASS`, `target_device_readiness=PASS`, and `human_gate_question_answerable=PASS`, **plus** the structured `product_gate_evidence` object from `WORKFLOW.md`; scalar labels alone are insufficient.
 - Run `node scripts/hooks/human-gate-preflight.mjs` **before** any Human-facing install/launch/handoff. If it fails, report the blocker and do not consume the Human gate.
-- Hand off exactly one source-SHA-bound artifact. No player-runtime mutation may occur after its source SHA without rebuilding/superseding the artifact.
+- Hand off exactly one producer-linked source-SHA artifact: artifact hash/path/source must match structured evidence, filename/build-log source identity must agree, and the build-log hash must match. No player-runtime mutation may occur after its source SHA without rebuilding/superseding the artifact.
 - Derive any follow-up probes from the active Human question and `ttk-playtest-user-research`; observe first, then ask neutral questions.
 - Print `BLOCKED_ON_HUMAN_GATE` / `WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE` and hard-stop after a valid handoff: no ADB polling, scheduled retry, device monitoring, auto-install/launch or USB-triggered resume.
 - Record the Human's verdict verbatim, including `NO`, `YES_WITH_GAP`, `NOT_TESTED`, confusion or equivalent task-defined values.

@@ -118,6 +118,8 @@ Nine Product Process v2 skills complete the coverage:
 
 Existing combat, controls, UI, animation, audio/haptic, build-identity, level, Human-gate and lore skills remain valid and are loaded only when the active dimensions require them.
 
+Product Gate evidence has two layers: locked scalar expectations in `required_evidence`, plus a structured schema-v1 `product_gate_evidence` record at handoff time. The latter binds every representative dimension to evidence, records placeholder inspection and physical-device measurements, and links the artifact SHA/path/source to the existing `[TTK_ANDROID_BUILD]` producer log. This closes evidence laundering without pretending local evidence is cryptographic remote-build attestation.
+
 Repository-local skills used by Production Process v2 must also be natively discoverable across Agent Skills-compatible runtimes: each carries minimal YAML frontmatter (`name` + trigger-only `description`). Native discovery is not a correctness dependency; when discovery is unavailable or fails, `AGENTS.md` requires direct reading of the canonical `.agents/skills/<skill-name>/SKILL.md` before acting. Legacy skill files outside this task scope remain a separate compatibility debt rather than silently widening this task.
 
 ## 7. Authored-content correction
@@ -162,8 +164,8 @@ Those future skill domains remain deferred until concrete triggers exist.
 Verification combines:
 
 - TDD regression tests for Product Gate contract validation;
-- fail-closed preflight tests for representative evidence, source staleness, dirty runtime state and artifact hash mismatch;
-- deterministic skill-pressure content tests covering the nine skill failure modes plus execution/review wiring;
+- fail-closed preflight tests for missing Product Gate declarations, representative evidence, producer/source laundering, committed/dirty runtime staleness, artifact/build-log hash mismatch, per-dimension coverage, placeholder audit and physical-device measurement requirements;
+- deterministic skill-pressure content tests covering the nine skill failure modes plus execution/review wiring; scalar PASS/RECORDED labels never substitute for the structured `product_gate_evidence` record;
 - full governance hook regression;
 - exact writer-scope diff;
 - fresh independent read-only review because this changes future execution semantics.

@@ -131,3 +131,13 @@
 - [ ] **Step 5: Commit the exact implementation candidate** on `chore/ttk-production-process-v2-001` without pushing.
 - [ ] **Step 6: Run** `node scripts/hooks/pre-finish.mjs` on the committed candidate; require PASS and recheck live `origin/main` still equals baseline.
 - [ ] **Step 7: Stop for fresh independent read-only review.** Do not persist the receipt, terminal-close, push, merge or activate TTK Recode R1.
+
+### Review remediation: exact candidate `247c6374141875debf10e9c459a9d26e639cd084`
+
+Fresh independent review returned `FAIL` with three blocking findings: omitted Product Gate could bypass validation; source SHA could be laundered because artifact provenance was only asserted; and scalar readiness values lacked structured support. Remediation stays inside the active writer scope and does not touch gameplay/Unity runtime.
+
+- [ ] Add RED regression reproductions for B1/B2/B3 before guard changes.
+- [ ] Make `pre-task` infer required Product Gate only from explicit machine physical-Human-product signals; generic Human successor/merge decisions remain unaffected.
+- [ ] Require schema-v1 `product_gate_evidence` at handoff: producer-linked artifact/build-log provenance, per-dimension PASS+evidence, placeholder audit, physical-device measurement records, and answerability basis.
+- [ ] Require APK filename/source prefix + hashed build log containing exactly one matching successful `[TTK_ANDROID_BUILD]` marker; retain committed/dirty runtime staleness checks.
+- [ ] Re-run focused bypass tests, full governance regression, exact scope diff and `pre-finish`; create a superseding candidate and send it to a fresh independent reviewer.

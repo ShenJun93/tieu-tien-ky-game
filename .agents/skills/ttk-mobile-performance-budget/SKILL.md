@@ -32,7 +32,7 @@ Can the representative experience sustain its intended responsiveness on the tar
 
 ## EXIT CONDITION
 
-`target_device_readiness=PASS` means the task's declared budget was actually measured on representative hardware and no known performance/thermal/input issue invalidates the Human product question. It is readiness evidence, not FEELS/BELONGS acceptance.
+`target_device_readiness=PASS` means the task's declared budget was actually measured on representative hardware and no known performance/thermal/input issue invalidates the Human product question. For a required Product Gate, record a positive physical-device session window plus one or more numeric measurements in `product_gate_evidence.target_device`; the scalar PASS alone is insufficient. It is readiness evidence, not FEELS/BELONGS acceptance.
 
 ## External basis
 

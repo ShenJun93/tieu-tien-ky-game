@@ -306,11 +306,51 @@ For such a task, `required_evidence` must include these expectations:
 }
 ```
 
-`pre-task.mjs` fails closed when a required product-gate contract or those expectations are incomplete. Non-player-facing tasks and tasks without physical Human product acceptance do not invent this metadata.
+`pre-task.mjs` fails closed when a required product-gate contract or those expectations are incomplete. It also treats explicit machine signals of a physical Human product gate — such as a Human-product/physical-playtest stop condition, Human playtest evidence, or Product Gate preflight evidence keys — as requiring `product_gate`; omitting or disabling the object cannot bypass the gate. A generic Human decision/merge/successor stop does not by itself create Product Gate scope. Non-player-facing tasks and tasks without physical Human product acceptance do not invent this metadata.
 
-The evidence file additionally records the acceptance artifact path, exact SHA-256, and exact 40-character source SHA. Before handoff, `human-gate-preflight.mjs` verifies the artifact exists and matches the recorded hash, its source SHA is in current history, no committed player-runtime mutation occurred after that source SHA, and no staged/unstaged/untracked `Assets/`, `Packages/`, or `ProjectSettings/` mutation currently makes the artifact stale.
+The scalar states above are machine expectations only. They are **not sufficient evidence by themselves**. Before a physical Human handoff, the evidence file must also contain a structured `product_gate_evidence` object (schema version 1):
 
-The representativeness decision is a bounded production judgment informed by the task, placeholder inventory and relevant craft skills. The hook guarantees contract/evidence/artifact consistency; it does not pretend to algorithmically certify art quality or fun. Preflight PASS means **worth testing**, not Human acceptance.
+```json
+{
+  "product_gate_evidence": {
+    "schema_version": 1,
+    "artifact": {
+      "path": "Builds/Android/TieuTienKy-<label>-<shortSha>.apk",
+      "sha256": "<64-hex>",
+      "source_sha": "<exact 40-character SHA>",
+      "build_log_path": "<repo-relative build log>",
+      "build_log_sha256": "<64-hex>"
+    },
+    "representative_dimensions": {
+      "<dimension>": { "status": "PASS", "evidence": ["<non-empty proof locator/summary>"] }
+    },
+    "placeholders": {
+      "status": "RECORDED",
+      "inspected_dimensions": ["<every representative dimension>"],
+      "entries": [],
+      "undeclared_count": 0,
+      "evidence": ["<placeholder audit evidence>"]
+    },
+    "target_device": {
+      "status": "PASS", "physical": true, "session_seconds": 60,
+      "measurements": [{ "metric": "<measured metric>", "value": 0, "unit": "<unit>" }],
+      "evidence": ["<target-device session evidence>"]
+    },
+    "human_question": {
+      "status": "PASS",
+      "covered_dimensions": ["<every representative dimension>"],
+      "blockers": [],
+      "evidence": ["<why the declared question is now answerable>"]
+    }
+  }
+}
+```
+
+An empty placeholder `entries` array is valid only when the declared dimensions were actually inspected, `undeclared_count` is zero, and the audit has non-empty evidence. `target_device_readiness=PASS` requires a real physical-device session window plus at least one numeric measurement; `cross_discipline_coverage=PASS` requires a PASS+evidence record for every declared representative dimension.
+
+Artifact provenance is producer-linked, not a free scalar assertion: the structured artifact fields must match the scalar path/hash/source fields; the APK filename must carry the source short SHA; the referenced build log must match its recorded SHA-256 and contain exactly one matching successful `[TTK_ANDROID_BUILD]` producer marker for that artifact filename and source SHA prefix. The source commit must resolve in current history, no committed player-runtime mutation may occur after it, and no staged/unstaged/untracked `Assets/`, `Packages/`, or `ProjectSettings/` mutation may currently stale the artifact. This is deterministic provenance under the repository trust model; it does not claim cryptographic remote-build attestation against deliberate fabrication of all local evidence.
+
+The representativeness decision remains a bounded production judgment informed by the task, structured evidence and relevant craft skills. The hook guarantees contract/evidence/provenance consistency; it does not pretend to algorithmically certify art quality or fun. Preflight PASS means **worth testing**, not Human acceptance.
 
 ## Repair budget
 

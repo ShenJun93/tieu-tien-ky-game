@@ -96,6 +96,8 @@ If a live Human instruction contradicts persisted `NEXT_TASK.md`: the live instr
 
 For a physical player-facing Human Product/Fun Gate with `product_gate.required=true`, first run `node scripts/hooks/human-gate-preflight.mjs`. A failure is a **preflight blocker**: do not install, launch or hand off the artifact merely because technical checks are green. Preflight PASS proves readiness to ask the declared Human question; it does not prove FEELS/BELONGS/REWARDS.
 
+Scalar `PASS`/`RECORDED` labels are expectations, not sufficient Product Gate proof. The evidence file must also carry the structured `product_gate_evidence` object defined in `WORKFLOW.md`, including producer-linked artifact/build-log provenance, per-representative-dimension evidence, placeholder inspection, physical-device measurements, and Human-question answerability basis.
+
 When the next required action belongs to the Human/Game Director:
 
 - STOP all commands.
@@ -131,7 +133,7 @@ Before edits when the active task uses local execution:
 node scripts/hooks/pre-task.mjs
 ```
 
-`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted. When a required `product_gate` is declared, it also fails closed on an incomplete player promise/Human question/representative-dimensions contract or omitted mandatory preflight evidence expectations.
+`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted. It also fails closed when machine authority explicitly signals a physical Human product gate (for example through the stop condition or Human-playtest/preflight evidence) but `product_gate` is omitted/disabled, and when a required gate has an incomplete player promise/Human question/representative-dimensions contract or omitted mandatory preflight evidence expectations. Generic Human successor/merge decisions alone do not imply a Product Gate.
 
 Before writing/moving/deleting files:
 
@@ -153,7 +155,7 @@ Before a player-facing physical Human handoff when `product_gate.required=true`:
 node scripts/hooks/human-gate-preflight.mjs
 ```
 
-The preflight validates the active product-gate contract, representative evidence, exact artifact source binding, artifact existence, and absence of later `Assets/` / `Packages/` / `ProjectSettings/` mutation that would stale the artifact.
+The preflight validates the active product-gate contract, structured evidence, artifact SHA-256, producer build-log/source identity, and absence of later committed or dirty `Assets/` / `Packages/` / `ProjectSettings/` mutation that would stale the artifact. A declared source SHA without matching producer provenance is not sufficient.
 
 Candidate Gate is a final-PR-head control-plane guard, not a writer completion
 guard:

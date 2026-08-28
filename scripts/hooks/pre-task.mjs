@@ -49,11 +49,28 @@ function validateRequiredEvidence(authority) {
   }
 }
 
+function authoritySignalsPhysicalHumanProductGate(authority) {
+  const stop = String(authority.stop_condition ?? '');
+  const explicitStopSignal = /(HUMAN.*PRODUCT.*GATE|PHYSICAL.*HUMAN.*(GATE|PLAYTEST)|HUMAN.*PHYSICAL.*(GATE|PLAYTEST))/i.test(stop);
+  const evidenceKeys = Object.keys(authority.required_evidence ?? {});
+  const explicitEvidenceSignal = evidenceKeys.some((key) =>
+    Object.hasOwn(PRODUCT_GATE_REQUIRED_EVIDENCE, key) ||
+    /(human.*(playtest|product.*gate|physical)|physical.*human)/i.test(key));
+  return explicitStopSignal || explicitEvidenceSignal;
+}
+
 function validateProductGate(authority) {
   const gate = authority.product_gate;
-  if (gate == null) return;
+  const requiredBySignals = authoritySignalsPhysicalHumanProductGate(authority);
+  if (gate == null) {
+    if (requiredBySignals) fail('machine authority signals a physical Human product gate but product_gate is missing');
+    return;
+  }
   if (!gate || typeof gate !== 'object' || Array.isArray(gate)) fail('product_gate must be an object');
-  if (gate.required === false) return;
+  if (gate.required === false) {
+    if (requiredBySignals) fail('machine authority signals a physical Human product gate but product_gate.required=false');
+    return;
+  }
   if (gate.required !== true) fail('product_gate.required must be explicit boolean true or false');
 
   const nonEmpty = (value) => typeof value === 'string' && value.trim().length > 0;
@@ -171,15 +188,15 @@ process.chdir(root);
 
 const authority = readAuthority(root);
 const state = authority.state;
-if (!KNOWN_STATES.has(state)) fail(`unknown authority state ${state ?? '(unset)'} â€” failing closed`);
+if (!KNOWN_STATES.has(state)) fail(`unknown authority state ${state ?? '(unset)'} — failing closed`);
 
 if (!MUTATING_STATES.has(state)) {
   switch (state) {
-    case 'PAUSED': fail('state is PAUSED â€” no mutation authority; recovery/read-only work only'); break;
-    case 'DISCOVERY': fail('state is DISCOVERY â€” repository mutation is forbidden by default'); break;
-    case 'REVIEW': fail('state is REVIEW â€” independent/read-only review; writer execution blocked'); break;
-    case 'HUMAN_GATE': fail('state is HUMAN_GATE â€” absolute command stop until explicit Human continuation'); break;
-    case 'CLOSED': fail('state is CLOSED â€” authority terminated'); break;
+    case 'PAUSED': fail('state is PAUSED — no mutation authority; recovery/read-only work only'); break;
+    case 'DISCOVERY': fail('state is DISCOVERY — repository mutation is forbidden by default'); break;
+    case 'REVIEW': fail('state is REVIEW — independent/read-only review; writer execution blocked'); break;
+    case 'HUMAN_GATE': fail('state is HUMAN_GATE — absolute command stop until explicit Human continuation'); break;
+    case 'CLOSED': fail('state is CLOSED — authority terminated'); break;
     default: fail(`state ${state} is not mutating`);
   }
 }
@@ -192,7 +209,7 @@ if (state === 'IMPLEMENT' && taskMode === 'SPIKE') fail('task_mode SPIKE require
 const workspacePolicy = authority.workspace_policy;
 if (!WORKSPACE_POLICIES.has(workspacePolicy)) fail(`unknown/missing workspace_policy ${workspacePolicy ?? '(unset)'}`);
 if (workspacePolicy === 'REMOTE_GITHUB_BRANCH') {
-  fail('workspace_policy is REMOTE_GITHUB_BRANCH â€” local writer execution is not authorized');
+  fail('workspace_policy is REMOTE_GITHUB_BRANCH — local writer execution is not authorized');
 }
 
 validateRequiredEvidence(authority);

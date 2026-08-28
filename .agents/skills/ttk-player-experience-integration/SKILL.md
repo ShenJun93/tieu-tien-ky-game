@@ -35,7 +35,7 @@ Only dimensions material to the active slice are required, but omitted dimension
 - Keep gameplay authority in gameplay rules; presentation reflects outcomes and never invents damage/state truth.
 - Tune timing across disciplines together. A late sound, early VFX impact or mismatched hit reaction is an integration defect even if each component works alone.
 - Review the integrated sequence in a running representative build, not only isolated previews/tests.
-- Record `cross_discipline_coverage=PASS` only when every declared representative dimension has an implemented and verified role.
+- Record `cross_discipline_coverage=PASS` only when every declared representative dimension has an implemented and verified role, and mirror that proof in `product_gate_evidence.representative_dimensions[dimension]` with non-empty evidence.
 
 ## MUST NOT
 

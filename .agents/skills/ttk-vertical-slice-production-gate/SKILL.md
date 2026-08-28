@@ -32,7 +32,7 @@ Can the exact artifact answer the Human product question fairly, or are missing/
 
 ## EVIDENCE / EXIT CONDITION
 
-Before handoff, the active task must truthfully satisfy the mandatory Product Process v2 evidence keys: `acceptance_artifact_representative`, `placeholder_inventory`, `cross_discipline_coverage`, `target_device_readiness`, `human_gate_question_answerable`, and `human_gate_preflight`. FEELS/BELONGS/REWARDS remain Human judgments after preflight; preflight PASS is readiness, not acceptance.
+Before handoff, the active task must truthfully satisfy the mandatory Product Process v2 evidence keys **and** `product_gate_evidence`: every declared representative dimension has PASS+evidence, placeholder inspection covers those dimensions with zero undeclared placeholders, physical-device readiness has actual measurements, and the Human question has no unresolved blockers. FEELS/BELONGS/REWARDS remain Human judgments after preflight; preflight PASS is readiness, not acceptance.
 
 ## References
 

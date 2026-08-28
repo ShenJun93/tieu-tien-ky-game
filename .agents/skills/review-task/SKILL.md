@@ -16,7 +16,7 @@ Default mode is read-only.
 3. Compare implementation branch to the authorized immutable baseline.
 4. Verify changed files are in scope and forbidden paths are untouched.
 5. Check the task's declared `required_evidence`; do not substitute test counts for the actual claims.
-6. When `product_gate.required=true`, review the player promise, Human question, representative dimensions, placeholder inventory, cross-discipline coverage, target-device readiness, exact artifact binding and `human-gate-preflight` result. A technically green but structurally non-representative artifact is a blocking product-gate finding, not a non-blocking polish note.
+6. When `product_gate.required=true`, review the player promise, Human question, representative dimensions, placeholder inventory, cross-discipline coverage, target-device readiness, producer-linked artifact/build-log provenance and `human-gate-preflight` result. Inspect the structured `product_gate_evidence`; scalar PASS/RECORDED labels are not proof. A technically green but structurally non-representative artifact is a blocking product-gate finding, not a non-blocking polish note.
 7. Check research disposition coverage when research informed the task.
 8. Check for current-canon vs historical-document drift.
 9. Separate blockers from safe deferred debt and from optional reviewer preferences.
