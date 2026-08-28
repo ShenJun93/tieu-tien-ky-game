@@ -1,3 +1,8 @@
+---
+name: ttk-playtest-user-research
+description: Use when designing, conducting, or interpreting playtests whose next decision depends on player observation.
+---
+
 # ttk-playtest-user-research
 
 ## WHEN TO USE

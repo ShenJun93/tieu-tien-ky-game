@@ -1,3 +1,8 @@
+---
+name: ttk-vfx-readability-hierarchy
+description: Use when creating or tuning combat VFX, telegraphs, environmental effects, impacts, spectacle, or screen-space effect density.
+---
+
 # ttk-vfx-readability-hierarchy
 
 ## WHEN TO USE

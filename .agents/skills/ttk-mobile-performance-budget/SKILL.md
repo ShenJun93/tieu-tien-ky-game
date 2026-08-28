@@ -1,3 +1,8 @@
+---
+name: ttk-mobile-performance-budget
+description: Use when a player-facing mobile slice changes runtime load or claims target-device readiness.
+---
+
 # ttk-mobile-performance-budget
 
 ## WHEN TO USE

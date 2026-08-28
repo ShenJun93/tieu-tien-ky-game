@@ -1,3 +1,8 @@
+---
+name: review-task
+description: Use when performing an independent read-only review of a governed TTK candidate.
+---
+
 # review-task
 
 Use this skill for an **independent read-only review** when risk warrants it, including `state: REVIEW` governance/decision candidates and accepted-significance changes.

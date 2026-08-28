@@ -1,3 +1,8 @@
+---
+name: ttk-art-target-reference-benchmarking
+description: Use when a TTK visual target is subjective or undefined for player-facing art or presentation.
+---
+
 # ttk-art-target-reference-benchmarking
 
 ## WHEN TO USE

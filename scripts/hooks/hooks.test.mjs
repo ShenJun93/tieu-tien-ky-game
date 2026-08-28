@@ -1086,3 +1086,35 @@ test('skill-pressure: reviewer treats non-representative green artifact as block
   assert.match(text, /REPRESENTATIVE PREFLIGHT/);
   assert.match(text, /HUMAN PRODUCT GATE/);
 });
+
+test('production-process skills are natively discoverable with trigger-only YAML frontmatter', () => {
+  const expected = new Map([
+    ['execute-task', 'execute-task'], ['review-task', 'review-task'],
+    ['ttk-human-product-gate', 'ttk-human-product-gate'],
+    ['ttk-vertical-slice-production-gate', 'ttk-vertical-slice-production-gate'],
+    ['ttk-player-experience-integration', 'ttk-player-experience-integration'],
+    ['ttk-unity-authored-content-pipeline', 'ttk-unity-authored-content-pipeline'],
+    ['ttk-art-target-reference-benchmarking', 'ttk-art-target-reference-benchmarking'],
+    ['ttk-enemy-ai-encounter-direction', 'ttk-enemy-ai-encounter-direction'],
+    ['ttk-vfx-readability-hierarchy', 'ttk-vfx-readability-hierarchy'],
+    ['ttk-mobile-performance-budget', 'ttk-mobile-performance-budget'],
+    ['ttk-playtest-user-research', 'ttk-playtest-user-research'],
+    ['ttk-onboarding-accessibility', 'ttk-onboarding-accessibility']
+  ]);
+  for (const [dir, expectedName] of expected) {
+    const text = fs.readFileSync(path.join(sourceRoot, '.agents/skills', dir, 'SKILL.md'), 'utf8');
+    const match = text.match(/^---\r?\nname:\s*([^\r\n]+)\r?\ndescription:\s*([^\r\n]+)\r?\n---\r?\n/);
+    assert.ok(match, `${dir} missing minimal YAML frontmatter`);
+    assert.equal(match[1].trim(), expectedName);
+    assert.match(match[2].trim(), /^Use when\b/i, `${dir} description must be trigger-only`);
+  }
+});
+
+
+test('AGENTS requires direct-read fallback when native skill discovery is unavailable', () => {
+  const agents = fs.readFileSync(path.join(sourceRoot, 'AGENTS.md'), 'utf8');
+  assert.match(
+    agents,
+    /If native skill discovery is unavailable or fails[^\n]*read the canonical `\.agents\/skills\/<skill-name>\/SKILL\.md` directly before acting/i
+  );
+});

@@ -86,10 +86,12 @@
 - `execute-task` loads vertical-slice + integration skills for required product gates.
 - `ttk-human-product-gate` invokes deterministic preflight before Human-facing device handoff.
 - `review-task` treats a technically green but structurally non-representative required artifact as blocking.
+- Production Process v2 skill files carry Agent Skills YAML frontmatter; `AGENTS.md` defines direct-read fallback when native discovery is unavailable.
 
 - [ ] **Step 1: Encode each skill around one product question and explicit MUST/MUST NOT/exit conditions**, avoiding speculative frameworks.
 - [ ] **Step 2: Add deterministic skill-pressure tests** for the known failure modes: prototype constructors, siloed polish, stats-only enemies, VFX clutter, missing target-device evidence, vague playtest questions and operator-familiarity onboarding.
 - [ ] **Step 3: Run** `node --test --test-name-pattern='skill-pressure' scripts/hooks/hooks.test.mjs` and require all scenarios PASS.
+- [ ] **Step 4: Verify native skill discoverability + direct-read fallback** with deterministic regression before candidate finalization.
 
 ### Task 4: Canon and research integration
 
@@ -106,7 +108,7 @@
 - Canon defines three layers: technical gate → representative preflight → Human product gate.
 - R-017 records external research disposition and explicitly grants no gameplay authority.
 
-- [ ] **Step 1: Update `AGENTS.md`** with Product Gate/preflight lifecycle and skill discovery.
+- [ ] **Step 1: Update `AGENTS.md`** with Product Gate/preflight lifecycle, native skill discovery, and direct-read fallback.
 - [ ] **Step 2: Update `WORKFLOW.md`** with exact machine contract, artifact hash/source binding and dirty/committed runtime staleness rule.
 - [ ] **Step 3: Update doctrine/foundation** with `GREEN BUILD != REPRESENTATIVE SLICE`, `POLISHED SUBSYSTEM != INTEGRATED EXPERIENCE`, and learning-build vs acceptance-artifact semantics.
 - [ ] **Step 4: Record R-017 and Decision 002** including alternatives, consequences, assumptions and reopen triggers.

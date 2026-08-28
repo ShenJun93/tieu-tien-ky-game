@@ -1,3 +1,8 @@
+---
+name: ttk-enemy-ai-encounter-direction
+description: Use when designing or changing enemy behavior, archetypes, telegraphs, group pressure, spawning, elites, bosses, or encounter logic.
+---
+
 # ttk-enemy-ai-encounter-direction
 
 ## WHEN TO USE

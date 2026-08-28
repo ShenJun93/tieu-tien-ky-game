@@ -1,3 +1,8 @@
+---
+name: ttk-unity-authored-content-pipeline
+description: Use when creating or replacing player-facing Unity content or choosing authored versus runtime-generated presentation.
+---
+
 # ttk-unity-authored-content-pipeline
 
 ## WHEN TO USE

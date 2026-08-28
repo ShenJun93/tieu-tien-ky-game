@@ -1,3 +1,8 @@
+---
+name: ttk-vertical-slice-production-gate
+description: Use when a player-facing TTK slice or artifact claims production-representative progress or is being prepared for Human acceptance.
+---
+
 # ttk-vertical-slice-production-gate
 
 ## WHEN TO USE

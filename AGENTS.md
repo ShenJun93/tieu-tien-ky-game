@@ -184,6 +184,8 @@ Do not claim a governance hook repair passes without a fresh successful run.
 
 Use the smallest matching process skill:
 
+If native skill discovery is unavailable or fails, read the canonical `.agents/skills/<skill-name>/SKILL.md` directly before acting; discovery is a convenience, not an authority or correctness prerequisite.
+
 - `.agents/skills/execute-task/SKILL.md` — authorized `IMPLEMENT`; bounded `SPIKE` may reuse its mechanics without claiming production completion.
 - `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it.
 - `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority; default same-symptom repair budget is two rounds before re-plan/escalation.

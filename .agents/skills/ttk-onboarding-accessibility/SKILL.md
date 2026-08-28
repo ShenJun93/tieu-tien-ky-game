@@ -1,3 +1,8 @@
+---
+name: ttk-onboarding-accessibility
+description: Use when changing first-session onboarding, readability, control discoverability, sensory intensity, input alternatives, or accessibility-sensitive interaction.
+---
+
 # ttk-onboarding-accessibility
 
 ## WHEN TO USE

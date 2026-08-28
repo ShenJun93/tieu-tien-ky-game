@@ -17,8 +17,11 @@ This task changes governance/process/craft guidance only. It does not modify `As
 - `node scripts/hooks/pre-task.mjs` — PASS before implementation; live `origin/main` matched the immutable baseline.
 - `node scripts/hooks/scope-gate.mjs <intended writer paths>` — PASS.
 - Product-gate / preflight / skill-pressure focused regression — PASS `19/19`.
-- Final full governance regression `node --test scripts/hooks/hooks.test.mjs` — PASS `93/93`, `0` failures, exit `0`.
+- Skill discoverability/direct-read fallback focused regression — PASS `2/2`.
+- Final full governance regression `node --test scripts/hooks/hooks.test.mjs` — PASS `95/95`, `0` failures, exit `0`.
 - Existing review-receipt / Candidate Gate / writer-lock / activation topology regression coverage remained green in the full suite.
+- Agent Skills compatibility remediation — 12/12 Production Process v2/process-gate skills in task scope have valid minimal YAML frontmatter with trigger-only descriptions; Codex loader smoke reported `0` scoped missing-frontmatter errors. Direct-read fallback is canonical in `AGENTS.md`.
+- Legacy compatibility debt — 12 pre-existing skill files outside this task scope still lack Agent Skills YAML frontmatter. They remain directly readable via canonical paths and are not silently mutated by this task; native-discovery migration requires separate authority.
 - `git diff --check` — PASS before evidence finalization; final diff is rechecked before candidate commit.
 
 ## Deterministic failure coverage

@@ -118,6 +118,8 @@ Nine Product Process v2 skills complete the coverage:
 
 Existing combat, controls, UI, animation, audio/haptic, build-identity, level, Human-gate and lore skills remain valid and are loaded only when the active dimensions require them.
 
+Repository-local skills used by Production Process v2 must also be natively discoverable across Agent Skills-compatible runtimes: each carries minimal YAML frontmatter (`name` + trigger-only `description`). Native discovery is not a correctness dependency; when discovery is unavailable or fails, `AGENTS.md` requires direct reading of the canonical `.agents/skills/<skill-name>/SKILL.md` before acting. Legacy skill files outside this task scope remain a separate compatibility debt rather than silently widening this task.
+
 ## 7. Authored-content correction
 
 Stable player-facing composition should normally be inspectable/tunable as Unity-authored Scene/Prefab/Animator/Material/UI content. Runtime construction remains valid for genuinely dynamic/ephemeral content, but prototype-era `GameObject.CreatePrimitive`, large bootstrap constructors or fully procedural HUD construction cannot remain the default production presentation strategy merely because they were fast during prototyping.

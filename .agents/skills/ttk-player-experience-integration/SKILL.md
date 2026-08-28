@@ -1,3 +1,8 @@
+---
+name: ttk-player-experience-integration
+description: Use when a player-facing action, encounter, feature, or slice spans multiple feedback and presentation layers.
+---
+
 # ttk-player-experience-integration
 
 ## WHEN TO USE

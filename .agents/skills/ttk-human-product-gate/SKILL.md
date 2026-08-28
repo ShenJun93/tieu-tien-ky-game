@@ -1,3 +1,8 @@
+---
+name: ttk-human-product-gate
+description: Use when preparing, requesting, or recording a physical Human Product or Fun Gate.
+---
+
 # ttk-human-product-gate
 
 ## WHEN TO USE

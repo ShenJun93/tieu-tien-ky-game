@@ -1,3 +1,8 @@
+---
+name: execute-task
+description: Use when executing an authorized TTK IMPLEMENT task or bounded SPIKE mutation.
+---
+
 # execute-task
 
 Use this skill for an authorized mutation task when `docs/governance/NEXT_TASK.md` is `state: IMPLEMENT`, or for a bounded disposable `state: SPIKE` where the task explicitly allows the same execution mechanics without production-completion claims.
