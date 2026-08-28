@@ -93,6 +93,7 @@ workspace_policy
 allowed_paths
 forbidden_paths
 required_evidence
+product_gate          # optional; required structured object for physical Human product acceptance
 stop_condition
 ```
 
@@ -274,6 +275,43 @@ Examples:
 
 Evidence values use explicit states such as `PASS`, `FAIL`, `NOT_TESTED`, `BLOCKED`, or a task-defined exact value such as `RECORDED`. Never substitute “should work”.
 
+## Product Gate contract — protect Human test time
+
+A player-facing task that requires physical Human product acceptance must declare a machine-readable `product_gate` in live `NEXT_TASK.md`. The contract answers one question before the Human is asked to play: **is this exact artifact representative enough to answer the declared product question?**
+
+```json
+{
+  "product_gate": {
+    "required": true,
+    "player_promise": "<non-empty player-facing promise>",
+    "human_question": "<one answerable product question>",
+    "artifact_required": true,
+    "representative_dimensions": ["<explicit dimensions material to the question>"],
+    "placeholder_policy": "NO_UNDECLARED_PLACEHOLDERS",
+    "target_device_required": true
+  }
+}
+```
+
+For such a task, `required_evidence` must include these expectations:
+
+```json
+{
+  "acceptance_artifact_representative": "PASS",
+  "placeholder_inventory": "RECORDED",
+  "cross_discipline_coverage": "PASS",
+  "target_device_readiness": "PASS",
+  "human_gate_question_answerable": "PASS",
+  "human_gate_preflight": "PASS"
+}
+```
+
+`pre-task.mjs` fails closed when a required product-gate contract or those expectations are incomplete. Non-player-facing tasks and tasks without physical Human product acceptance do not invent this metadata.
+
+The evidence file additionally records the acceptance artifact path, exact SHA-256, and exact 40-character source SHA. Before handoff, `human-gate-preflight.mjs` verifies the artifact exists and matches the recorded hash, its source SHA is in current history, no committed player-runtime mutation occurred after that source SHA, and no staged/unstaged/untracked `Assets/`, `Packages/`, or `ProjectSettings/` mutation currently makes the artifact stale.
+
+The representativeness decision is a bounded production judgment informed by the task, placeholder inventory and relevant craft skills. The hook guarantees contract/evidence/artifact consistency; it does not pretend to algorithmically certify art quality or fun. Preflight PASS means **worth testing**, not Human acceptance.
+
 ## Repair budget
 
 For the same blocking symptom inside an authorized task:
@@ -290,6 +328,8 @@ Repeated failures across tasks should trigger a harness/test/tool improvement wh
 
 ## Human Gate — hard stop
 
+For a physical player-facing gate with `product_gate.required=true`, run `node scripts/hooks/human-gate-preflight.mjs` before install/launch/handoff. If it fails, stop at preflight and fix/re-scope under current authority; do not spend Human test time on a known-confounded artifact.
+
 When Human action is required:
 
 ```text
@@ -305,10 +345,10 @@ For physical mobile gates:
 
 ```text
 Agent:
-code → focused verification → exact SHA-bound artifact → report → HARD STOP
+player promise + representative dimensions → code/content → focused verification → placeholder inventory → exact SHA-bound artifact → target-device readiness → Human-Gate preflight → report → HARD STOP
 
 Human:
-install/test exact artifact → report evidence
+install/test the preflight-approved exact artifact → report the declared product evidence
 ```
 
 Do not silently rebuild an artifact after handoff. If code changes, identify the superseding artifact explicitly.

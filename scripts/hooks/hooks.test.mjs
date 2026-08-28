@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -9,6 +10,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(here, '../..');
 const hookNames = ['pre-task.mjs', 'scope-gate.mjs', 'pre-finish.mjs'];
+const optionalHookNames = ['human-gate-preflight.mjs'];
 
 function git(root, args, options = {}) {
   const nullGitConfig = process.platform === 'win32' ? 'NUL' : '/dev/null';
@@ -68,6 +70,10 @@ function writeEvidence(root, value) {
   write(root, 'docs/evidence/TASK_REPORT.md', `# evidence\n\n\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\`\n`);
 }
 
+function sha256File(root, relative) {
+  return crypto.createHash('sha256').update(fs.readFileSync(path.join(root, relative))).digest('hex');
+}
+
 function makeFixture(overrides = {}, fixtureOptions = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-work-'));
   const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'ttk-hooks-remote-'));
@@ -83,6 +89,10 @@ function makeFixture(overrides = {}, fixtureOptions = {}) {
 
   for (const name of hookNames) {
     write(root, `scripts/hooks/${name}`, fs.readFileSync(path.join(sourceRoot, 'scripts/hooks', name), 'utf8'));
+  }
+  for (const name of optionalHookNames) {
+    const source = path.join(sourceRoot, 'scripts/hooks', name);
+    if (fs.existsSync(source)) write(root, `scripts/hooks/${name}`, fs.readFileSync(source, 'utf8'));
   }
 
   writeEvidence(root, { verdict: 'PASS', automated_tests: 'UNSET' });
@@ -209,6 +219,128 @@ test('pre-task requires non-empty required_evidence', () => {
   const result = invoke(root, 'pre-task.mjs');
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /required_evidence/);
+});
+const PRODUCT_GATE = {
+  required: true,
+  player_promise: 'First 30 seconds feel like authored TTK combat',
+  human_question: 'Does this feel materially different from the prototype?',
+  artifact_required: true,
+  representative_dimensions: ['combat', 'presentation', 'mobile_controls'],
+  placeholder_policy: 'NO_UNDECLARED_PLACEHOLDERS',
+  target_device_required: true
+};
+
+const PRODUCT_GATE_EVIDENCE = {
+  automated_tests: 'PASS',
+  acceptance_artifact_representative: 'PASS',
+  placeholder_inventory: 'RECORDED',
+  cross_discipline_coverage: 'PASS',
+  target_device_readiness: 'PASS',
+  human_gate_question_answerable: 'PASS',
+  human_gate_preflight: 'PASS'
+};
+
+test('pre-task blocks incomplete required product_gate contract', () => {
+  const { root } = makeFixture({
+    product_gate: { required: true, human_question: 'Is it fun?' },
+    required_evidence: PRODUCT_GATE_EVIDENCE
+  });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /product_gate/);
+});
+
+test('pre-task blocks product_gate when mandatory preflight evidence expectations are omitted', () => {
+  const { root } = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: { automated_tests: 'PASS' } });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /acceptance_artifact_representative|product_gate/);
+});
+
+test('pre-task accepts a complete product_gate contract with mandatory preflight expectations', () => {
+  const { root } = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('human-gate-preflight fails closed when representative evidence is not PASS', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  writeEvidence(fixture.root, {
+    verdict: 'PASS',
+    ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_representative: 'FAIL',
+    acceptance_artifact_path: 'Builds/Test-future.apk',
+    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
+    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+  });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /acceptance_artifact_representative/);
+});
+
+test('human-gate-preflight blocks an artifact made before later player-runtime mutation', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  write(fixture.root, 'Assets/GameplayChangedAfterArtifact.cs', 'runtime mutation\\n');
+  commitAll(fixture.root, 'runtime changed after artifact source');
+  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  writeEvidence(fixture.root, {
+    verdict: 'PASS',
+    ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: 'Builds/Test-future.apk',
+    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
+    acceptance_artifact_source_sha: fixture.activation
+  });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /player-runtime mutation|stale artifact/);
+});
+
+test('human-gate-preflight blocks dirty player-runtime mutation after artifact source', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  writeEvidence(fixture.root, {
+    verdict: 'PASS',
+    ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: 'Builds/Test-future.apk',
+    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
+    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+  });
+  write(fixture.root, 'Assets/DirtyAfterArtifact.cs', 'dirty runtime mutation\n');
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /dirty player-runtime mutation|stale artifact/);
+});
+
+test('human-gate-preflight blocks artifact hash mismatch', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  writeEvidence(fixture.root, {
+    verdict: 'PASS',
+    ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: 'Builds/Test-future.apk',
+    acceptance_artifact_sha256: '0000000000000000000000000000000000000000000000000000000000000000',
+    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+  });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /SHA-256|hash/);
+});
+
+
+test('human-gate-preflight passes only when contract, evidence and exact artifact binding are ready', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  write(fixture.root, 'Builds/Test-future.apk', 'artifact');
+  writeEvidence(fixture.root, {
+    verdict: 'PASS',
+    ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: 'Builds/Test-future.apk',
+    acceptance_artifact_sha256: sha256File(fixture.root, 'Builds/Test-future.apk'),
+    acceptance_artifact_source_sha: git(fixture.root, ['rev-parse', 'HEAD'])
+  });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /HUMAN-GATE PREFLIGHT PASS/);
 });
 
 test('pre-task passes a bounded SPIKE with task_mode SPIKE', () => {
@@ -859,4 +991,98 @@ test('candidate gate permits the active A2 candidate under pre-A2 canon only whe
   });
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /A2 bootstrap/i);
+});
+
+function readSource(relative) {
+  return fs.readFileSync(path.join(sourceRoot, relative), 'utf8');
+}
+
+test('skill-pressure: vertical slice gate blocks known-confounded Human handoff', () => {
+  const text = readSource('.agents/skills/ttk-vertical-slice-production-gate/SKILL.md');
+  assert.match(text, /NO_UNDECLARED_PLACEHOLDERS/);
+  assert.match(text, /learning build/i);
+  assert.match(text, /acceptance artifact/i);
+  assert.match(text, /human-gate-preflight\.mjs/);
+  assert.match(text, /technical|compile|tests/i);
+});
+
+test('skill-pressure: player experience integration requires cross-discipline outcome chain', () => {
+  const text = readSource('.agents/skills/ttk-player-experience-integration/SKILL.md');
+  for (const term of ['GAMEPLAY', 'ANIMATION', 'REACTION', 'CAMERA', 'VFX', 'AUDIO', 'HAPTIC', 'UI', 'WORLD']) {
+    assert.match(text, new RegExp(term, 'i'));
+  }
+  assert.match(text, /component exists/i);
+});
+
+test('skill-pressure: authored content skill rejects prototype constructors as production default', () => {
+  const text = readSource('.agents/skills/ttk-unity-authored-content-pipeline/SKILL.md');
+  assert.match(text, /Scenes\/Prefabs\/Animator\/Materials\/UI/i);
+  assert.match(text, /GameObject\.CreatePrimitive/);
+  assert.match(text, /procedural HUD/i);
+  assert.match(text, /default production presentation strategy/i);
+});
+
+test('skill-pressure: art benchmarking extracts principles without copying IP expression', () => {
+  const text = readSource('.agents/skills/ttk-art-target-reference-benchmarking/SKILL.md');
+  assert.match(text, /quality bar/i);
+  assert.match(text, /Extract principles, not assets/i);
+  assert.match(text, /protected expression/i);
+  assert.match(text, /reference similarity.*never the acceptance metric/is);
+});
+
+test('skill-pressure: enemy direction requires role telegraph counterplay and group pressure', () => {
+  const text = readSource('.agents/skills/ttk-enemy-ai-encounter-direction/SKILL.md');
+  for (const term of ['pressure role', 'telegraph', 'counterplay', 'group composition']) assert.match(text, new RegExp(term, 'i'));
+  assert.match(text, /HP\/damage\/speed\/color/i);
+});
+
+test('skill-pressure: VFX direction protects attention hierarchy at representative density', () => {
+  const text = readSource('.agents/skills/ttk-vfx-readability-hierarchy/SKILL.md');
+  assert.match(text, /visual priority|attention budget/i);
+  assert.match(text, /representative encounter|combat density/i);
+  assert.match(text, /target mobile device/i);
+  assert.match(text, /more particles/i);
+});
+
+test('skill-pressure: mobile performance requires physical target-device frame and thermal evidence', () => {
+  const text = readSource('.agents/skills/ttk-mobile-performance-budget/SKILL.md');
+  assert.match(text, /frame-time|frame pacing/i);
+  assert.match(text, /thermal/i);
+  assert.match(text, /physical target devices/i);
+  assert.match(text, /android_build=PASS.*performance PASS/i);
+});
+
+test('skill-pressure: playtest research rejects vague liking question as sole evidence', () => {
+  const text = readSource('.agents/skills/ttk-playtest-user-research/SKILL.md');
+  assert.match(text, /task-based observation/i);
+  assert.match(text, /neutral follow-ups/i);
+  assert.match(text, /Do you like it\?/i);
+  assert.match(text, /unanswered playtest is not a PASS/i);
+});
+
+test('skill-pressure: onboarding accessibility covers new-player touch and sensory readability', () => {
+  const text = readSource('.agents/skills/ttk-onboarding-accessibility/SKILL.md');
+  assert.match(text, /first 30–60 seconds|first-session/i);
+  assert.match(text, /safe areas/i);
+  assert.match(text, /contrast/i);
+  assert.match(text, /motion\/flash/i);
+  assert.match(text, /operator.*already know/is);
+});
+
+test('skill-pressure: execution and Human gate cannot bypass representativeness preflight', () => {
+  const execute = readSource('.agents/skills/execute-task/SKILL.md');
+  const human = readSource('.agents/skills/ttk-human-product-gate/SKILL.md');
+  assert.match(execute, /ttk-vertical-slice-production-gate/);
+  assert.match(execute, /ttk-player-experience-integration/);
+  assert.match(execute, /human-gate-preflight\.mjs/);
+  assert.match(human, /before.*install\/launch\/handoff/is);
+  assert.match(human, /known to be structurally confounded/i);
+});
+
+test('skill-pressure: reviewer treats non-representative green artifact as blocking', () => {
+  const text = readSource('.agents/skills/review-task/SKILL.md');
+  assert.match(text, /technically green.*structurally non-representative artifact.*blocking/is);
+  assert.match(text, /TECHNICAL GATE/);
+  assert.match(text, /REPRESENTATIVE PREFLIGHT/);
+  assert.match(text, /HUMAN PRODUCT GATE/);
 });

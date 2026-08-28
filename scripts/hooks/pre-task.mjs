@@ -12,6 +12,14 @@ const KNOWN_STATES = new Set(['PAUSED', 'DISCOVERY', 'SPIKE', 'IMPLEMENT', 'REVI
 const MUTATING_STATES = new Set(['SPIKE', 'IMPLEMENT']);
 const TASK_MODES = new Set(['MICRO', 'SLICE', 'SPEC', 'BATCH', 'SPIKE', 'PARALLEL']);
 const WORKSPACE_POLICIES = new Set(['ISOLATED_WORKTREE', 'EXISTING_AUTHORIZED_WORKTREE', 'REMOTE_GITHUB_BRANCH']);
+const PRODUCT_GATE_REQUIRED_EVIDENCE = Object.freeze({
+  acceptance_artifact_representative: 'PASS',
+  placeholder_inventory: 'RECORDED',
+  cross_discipline_coverage: 'PASS',
+  target_device_readiness: 'PASS',
+  human_gate_question_answerable: 'PASS',
+  human_gate_preflight: 'PASS'
+});
 
 function readAuthority(root) {
   const file = path.join(root, AUTHORITY_PATH);
@@ -38,6 +46,33 @@ function validateRequiredEvidence(authority) {
   const required = authority.required_evidence;
   if (!required || typeof required !== 'object' || Array.isArray(required) || Object.keys(required).length === 0) {
     fail('mutating authority requires a non-empty required_evidence object');
+  }
+}
+
+function validateProductGate(authority) {
+  const gate = authority.product_gate;
+  if (gate == null) return;
+  if (!gate || typeof gate !== 'object' || Array.isArray(gate)) fail('product_gate must be an object');
+  if (gate.required === false) return;
+  if (gate.required !== true) fail('product_gate.required must be explicit boolean true or false');
+
+  const nonEmpty = (value) => typeof value === 'string' && value.trim().length > 0;
+  if (!nonEmpty(gate.player_promise)) fail('product_gate.player_promise must be non-empty');
+  if (!nonEmpty(gate.human_question)) fail('product_gate.human_question must be non-empty');
+  if (gate.artifact_required !== true) fail('required product_gate requires artifact_required=true');
+  if (!Array.isArray(gate.representative_dimensions) || gate.representative_dimensions.length === 0 ||
+      gate.representative_dimensions.some((value) => !nonEmpty(value))) {
+    fail('product_gate.representative_dimensions must contain one or more non-empty dimensions');
+  }
+  if (gate.placeholder_policy !== 'NO_UNDECLARED_PLACEHOLDERS') {
+    fail('product_gate.placeholder_policy must be NO_UNDECLARED_PLACEHOLDERS');
+  }
+  if (gate.target_device_required !== true) fail('required product_gate requires target_device_required=true');
+
+  for (const [key, expected] of Object.entries(PRODUCT_GATE_REQUIRED_EVIDENCE)) {
+    if (authority.required_evidence?.[key] !== expected) {
+      fail(`product_gate requires required_evidence.${key}=${expected}`);
+    }
   }
 }
 
@@ -136,15 +171,15 @@ process.chdir(root);
 
 const authority = readAuthority(root);
 const state = authority.state;
-if (!KNOWN_STATES.has(state)) fail(`unknown authority state ${state ?? '(unset)'} — failing closed`);
+if (!KNOWN_STATES.has(state)) fail(`unknown authority state ${state ?? '(unset)'} â€” failing closed`);
 
 if (!MUTATING_STATES.has(state)) {
   switch (state) {
-    case 'PAUSED': fail('state is PAUSED — no mutation authority; recovery/read-only work only'); break;
-    case 'DISCOVERY': fail('state is DISCOVERY — repository mutation is forbidden by default'); break;
-    case 'REVIEW': fail('state is REVIEW — independent/read-only review; writer execution blocked'); break;
-    case 'HUMAN_GATE': fail('state is HUMAN_GATE — absolute command stop until explicit Human continuation'); break;
-    case 'CLOSED': fail('state is CLOSED — authority terminated'); break;
+    case 'PAUSED': fail('state is PAUSED â€” no mutation authority; recovery/read-only work only'); break;
+    case 'DISCOVERY': fail('state is DISCOVERY â€” repository mutation is forbidden by default'); break;
+    case 'REVIEW': fail('state is REVIEW â€” independent/read-only review; writer execution blocked'); break;
+    case 'HUMAN_GATE': fail('state is HUMAN_GATE â€” absolute command stop until explicit Human continuation'); break;
+    case 'CLOSED': fail('state is CLOSED â€” authority terminated'); break;
     default: fail(`state ${state} is not mutating`);
   }
 }
@@ -157,10 +192,11 @@ if (state === 'IMPLEMENT' && taskMode === 'SPIKE') fail('task_mode SPIKE require
 const workspacePolicy = authority.workspace_policy;
 if (!WORKSPACE_POLICIES.has(workspacePolicy)) fail(`unknown/missing workspace_policy ${workspacePolicy ?? '(unset)'}`);
 if (workspacePolicy === 'REMOTE_GITHUB_BRANCH') {
-  fail('workspace_policy is REMOTE_GITHUB_BRANCH — local writer execution is not authorized');
+  fail('workspace_policy is REMOTE_GITHUB_BRANCH â€” local writer execution is not authorized');
 }
 
 validateRequiredEvidence(authority);
+validateProductGate(authority);
 
 if (state === 'SPIKE') {
   if (authority.spike_bounded !== true) fail('SPIKE requires "spike_bounded": true');
