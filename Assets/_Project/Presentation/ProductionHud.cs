@@ -28,6 +28,7 @@ namespace TieuTienKy.Gameplay
 
         float bossArrivalCueTimer;
         bool paused;
+        bool initialized;
 
         Text hpText;
         Text stageText;
@@ -60,6 +61,13 @@ namespace TieuTienKy.Gameplay
             {
                 throw new InvalidOperationException("ProductionHud.Initialize requires a fully wired ProductionCombatHudView.");
             }
+
+            if (initialized)
+            {
+                throw new InvalidOperationException("ProductionHud.Initialize must not be called more than once.");
+            }
+
+            initialized = true;
 
             director = runDirector;
             playerCombatant = player;

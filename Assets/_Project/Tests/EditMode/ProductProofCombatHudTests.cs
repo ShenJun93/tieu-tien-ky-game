@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace TieuTienKy.Gameplay.Tests
             {
                 if (go != null)
                 {
-                    Object.DestroyImmediate(go);
+                    UnityEngine.Object.DestroyImmediate(go);
                 }
             }
             spawned.Clear();
@@ -41,6 +42,78 @@ namespace TieuTienKy.Gameplay.Tests
             ProductionCombatHudView view = BuildFullyWiredView();
 
             Assert.IsTrue(view.IsComplete);
+        }
+
+        [Test]
+        public void ProductionHud_Initialize_CalledTwice_Throws()
+        {
+            ProductionCombatHudView view = BuildFullyWiredView();
+            var hudGo = new GameObject("ProductionHud");
+            spawned.Add(hudGo);
+            ProductionHud hud = hudGo.AddComponent<ProductionHud>();
+
+            hud.Initialize(null, null, null, null, view);
+
+            Assert.Throws<InvalidOperationException>(() => hud.Initialize(null, null, null, null, view));
+        }
+
+        [Test]
+        public void ProductionHud_Initialize_CalledTwice_DoesNotDuplicateBasicButtonListener()
+        {
+            ProductionCombatHudView view = BuildFullyWiredView();
+            var hudGo = new GameObject("ProductionHud");
+            spawned.Add(hudGo);
+            ProductionHud hud = hudGo.AddComponent<ProductionHud>();
+
+            hud.Initialize(null, null, null, null, view);
+            try
+            {
+                hud.Initialize(null, null, null, null, view);
+            }
+            catch (InvalidOperationException)
+            {
+                // Expected: reinitialization must fail fast rather than
+                // silently accumulate a duplicate listener.
+            }
+
+            int invocations = 0;
+            hud.SetActionGateway(new RecordingActionGateway(() => invocations++));
+            view.BasicButton.onClick.Invoke();
+
+            Assert.AreEqual(1, invocations);
+        }
+
+        [Test]
+        public void BlessingChoiceHud_Initialize_CalledTwice_Throws()
+        {
+            ProductionCombatHudView view = BuildFullyWiredView();
+            var hudGo = new GameObject("BlessingChoiceHud");
+            spawned.Add(hudGo);
+            BlessingChoiceHud hud = hudGo.AddComponent<BlessingChoiceHud>();
+
+            hud.Initialize(view);
+
+            Assert.Throws<InvalidOperationException>(() => hud.Initialize(view));
+        }
+
+        sealed class RecordingActionGateway : IPlayerActionGateway
+        {
+            readonly System.Action onBasicAttack;
+
+            public RecordingActionGateway(System.Action onBasicAttack)
+            {
+                this.onBasicAttack = onBasicAttack;
+            }
+
+            public bool RequestBasicAttack()
+            {
+                onBasicAttack?.Invoke();
+                return true;
+            }
+
+            public bool RequestLoiTram() => true;
+            public bool RequestPhongBo() => true;
+            public bool RequestHoThe() => true;
         }
 
         [Test]

@@ -32,6 +32,7 @@ namespace TieuTienKy.Gameplay
         GameObject confirmPanel;
         Text confirmTitleText;
         Text confirmFlavorText;
+        bool initialized;
 
         public bool IsVisible { get; private set; }
 
@@ -41,6 +42,13 @@ namespace TieuTienKy.Gameplay
             {
                 throw new InvalidOperationException("BlessingChoiceHud.Initialize requires a fully wired ProductionCombatHudView.");
             }
+
+            if (initialized)
+            {
+                throw new InvalidOperationException("BlessingChoiceHud.Initialize must not be called more than once.");
+            }
+
+            initialized = true;
 
             canvasRoot = view.BlessingRoot;
             choicePanel = view.BlessingChoicePanel;
