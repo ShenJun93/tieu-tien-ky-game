@@ -138,6 +138,6 @@ Fresh independent review returned `FAIL` with three blocking findings: omitted P
 
 - [ ] Add RED regression reproductions for B1/B2/B3 before guard changes.
 - [ ] Make `pre-task` infer required Product Gate only from explicit machine physical-Human-product signals; generic Human successor/merge decisions remain unaffected.
-- [ ] Require schema-v1 `product_gate_evidence` at handoff: producer-linked artifact/build-log provenance, per-dimension PASS+evidence, placeholder audit, physical-device measurement records, and answerability basis.
+- [ ] Require schema-v1 `product_gate_evidence` at handoff: producer-linked artifact/build-log provenance, exact-set per-dimension PASS+evidence, placeholder audit with only `REPLACED`/`ACCEPTED_NON_CONFOUNDING` dispositions, physical-device measurement records, and answerability basis.
 - [ ] Require APK filename/source prefix + hashed build log containing exactly one matching successful `[TTK_ANDROID_BUILD]` marker; retain committed/dirty runtime staleness checks.
 - [ ] Re-run focused bypass tests, full governance regression, exact scope diff and `pre-finish`; create a superseding candidate and send it to a fresh independent reviewer.

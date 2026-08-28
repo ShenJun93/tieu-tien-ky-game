@@ -16,7 +16,7 @@ Has a real Human, on a real representative device, judged the exact player-facin
 ## MUST — PREFLIGHT BEFORE HUMAN TIME
 
 - Read live `NEXT_TASK.product_gate` when `product_gate.required=true`; use its exact `player_promise`, `human_question`, `representative_dimensions`, placeholder policy and target-device requirement.
-- Require truthful scalar evidence for `acceptance_artifact_representative=PASS`, `placeholder_inventory=RECORDED`, `cross_discipline_coverage=PASS`, `target_device_readiness=PASS`, and `human_gate_question_answerable=PASS`, **plus** the structured `product_gate_evidence` object from `WORKFLOW.md`; scalar labels alone are insufficient.
+- Require truthful scalar evidence for `acceptance_artifact_representative=PASS`, `placeholder_inventory=RECORDED`, `cross_discipline_coverage=PASS`, `target_device_readiness=PASS`, and `human_gate_question_answerable=PASS`, **plus** the structured `product_gate_evidence` object from `WORKFLOW.md`; scalar labels alone are insufficient. Structured dimension sets must exactly match the active gate, and any placeholder entry not `REPLACED` or explicitly `ACCEPTED_NON_CONFOUNDING` blocks handoff.
 - Run `node scripts/hooks/human-gate-preflight.mjs` **before** any Human-facing install/launch/handoff. If it fails, report the blocker and do not consume the Human gate.
 - Hand off exactly one producer-linked source-SHA artifact: artifact hash/path/source must match structured evidence, filename/build-log source identity must agree, and the build-log hash must match. No player-runtime mutation may occur after its source SHA without rebuilding/superseding the artifact.
 - Derive any follow-up probes from the active Human question and `ttk-playtest-user-research`; observe first, then ask neutral questions.

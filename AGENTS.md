@@ -96,7 +96,7 @@ If a live Human instruction contradicts persisted `NEXT_TASK.md`: the live instr
 
 For a physical player-facing Human Product/Fun Gate with `product_gate.required=true`, first run `node scripts/hooks/human-gate-preflight.mjs`. A failure is a **preflight blocker**: do not install, launch or hand off the artifact merely because technical checks are green. Preflight PASS proves readiness to ask the declared Human question; it does not prove FEELS/BELONGS/REWARDS.
 
-Scalar `PASS`/`RECORDED` labels are expectations, not sufficient Product Gate proof. The evidence file must also carry the structured `product_gate_evidence` object defined in `WORKFLOW.md`, including producer-linked artifact/build-log provenance, per-representative-dimension evidence, placeholder inspection, physical-device measurements, and Human-question answerability basis.
+Scalar `PASS`/`RECORDED` labels are expectations, not sufficient Product Gate proof. The evidence file must also carry the structured `product_gate_evidence` object defined in `WORKFLOW.md`, including producer-linked artifact/build-log provenance, **exact-set** per-representative-dimension evidence, placeholder inspection whose entries are only `REPLACED` or explicitly `ACCEPTED_NON_CONFOUNDING`, physical-device measurements, and Human-question answerability basis.
 
 When the next required action belongs to the Human/Game Director:
 

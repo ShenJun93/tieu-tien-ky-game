@@ -457,7 +457,7 @@ test('human-gate-preflight blocks structured evidence missing a representative d
     acceptance_artifact_source_sha: sourceSha, product_gate_evidence: structured });
   const result = invoke(fixture.root, 'human-gate-preflight.mjs');
   assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
-  assert.match(result.stderr, /representative dimension presentation/i);
+  assert.match(result.stderr, /representative_dimensions|representative dimension|exactly match/i);
 });
 
 test('human-gate-preflight blocks placeholder audit without inspection evidence', () => {
@@ -492,6 +492,39 @@ test('human-gate-preflight blocks target-device readiness without measurements',
   assert.match(result.stderr, /target-device evidence requires one or more measurements/i);
 });
 
+test('human-gate-preflight blocks declared confounding placeholders even when scalar readiness is PASS', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  const structured = structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath);
+  structured.placeholders.entries.push({ id: 'prototype-avatar', dimension: 'presentation', disposition: 'CONFOUNDING_ACTIVE_QUESTION', evidence: ['screenshot:prototype-avatar'] });
+  writeEvidence(fixture.root, { verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath, acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha, product_gate_evidence: structured });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /confounding|placeholder|disposition/i);
+});
+
+test('human-gate-preflight blocks extra undeclared dimensions in structured evidence', () => {
+  const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);
+  const artifactPath = `Builds/TieuTienKy-Test-${sourceSha.slice(0, 7)}.apk`;
+  write(fixture.root, artifactPath, 'artifact');
+  const buildLogPath = writeSuccessfulBuildLog(fixture.root, artifactPath, sourceSha);
+  const structured = structuredProductGateEvidence(fixture.root, artifactPath, sourceSha, buildLogPath);
+  structured.representative_dimensions.extra_dimension = { status: 'PASS', evidence: ['extra'] };
+  structured.placeholders.inspected_dimensions.push('extra_dimension');
+  structured.human_question.covered_dimensions.push('extra_dimension');
+  writeEvidence(fixture.root, { verdict: 'PASS', ...PRODUCT_GATE_EVIDENCE,
+    acceptance_artifact_path: artifactPath, acceptance_artifact_sha256: sha256File(fixture.root, artifactPath),
+    acceptance_artifact_source_sha: sourceSha, product_gate_evidence: structured });
+  const result = invoke(fixture.root, 'human-gate-preflight.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /dimension|exact|unexpected|undeclared/i);
+});
 test('human-gate-preflight passes only with structured evidence and producer-linked artifact provenance', () => {
   const fixture = makeFixture({ product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
   const sourceSha = git(fixture.root, ['rev-parse', 'HEAD']);

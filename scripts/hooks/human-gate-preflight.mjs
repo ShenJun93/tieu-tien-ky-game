@@ -57,7 +57,9 @@ function requireEvidenceList(value, label) {
 function requireDimensionList(value, label, expected) {
   if (!Array.isArray(value) || value.some((entry) => !nonEmpty(entry))) fail(`${label} must be an array of non-empty dimensions`);
   const actual = new Set(value);
-  for (const dimension of expected) if (!actual.has(dimension)) fail(`${label} does not cover representative dimension ${dimension}`);
+  const required = new Set(expected);
+  const exact = value.length === actual.size && actual.size === required.size && [...required].every((dimension) => actual.has(dimension));
+  if (!exact) fail(`${label} must exactly match product_gate.representative_dimensions`);
 }
 function validateStructuredGateEvidence(root, gate, evidence, artifactPath, artifactSha256, sourceSha) {
   const structured = requireObject(evidence.product_gate_evidence, 'product_gate_evidence');
@@ -93,6 +95,7 @@ function validateStructuredGateEvidence(root, gate, evidence, artifactPath, arti
 
   const expectedDimensions = gate.representative_dimensions;
   const coverage = requireObject(structured.representative_dimensions, 'product_gate_evidence.representative_dimensions');
+  requireDimensionList(Object.keys(coverage), 'product_gate_evidence.representative_dimensions keys', expectedDimensions);
   for (const dimension of expectedDimensions) {
     const record = requireObject(coverage[dimension], `representative dimension ${dimension}`);
     if (record.status !== 'PASS') fail(`representative dimension ${dimension} must be PASS`);
@@ -108,6 +111,9 @@ function validateStructuredGateEvidence(root, gate, evidence, artifactPath, arti
     const record = requireObject(entry, 'product_gate_evidence.placeholders entry');
     if (!nonEmpty(record.id) || !nonEmpty(record.dimension) || !expectedDimensions.includes(record.dimension) || !nonEmpty(record.disposition)) {
       fail('each placeholder entry requires id, representative dimension, and disposition');
+    }
+    if (!['REPLACED', 'ACCEPTED_NON_CONFOUNDING'].includes(record.disposition)) {
+      fail(`placeholder ${record.id} has confounding or unsupported disposition ${record.disposition}`);
     }
     requireEvidenceList(record.evidence, `placeholder ${record.id}.evidence`);
   }
