@@ -63,23 +63,49 @@ namespace TieuTienKy.Gameplay.Tests
             Assert.IsNotNull(pursuerPresentation, "Pursuer must carry an animated CharacterPresentation (Task A3), not the primitive placeholder view.");
             Assert.IsTrue(pursuerPresentation.IsConfigured);
 
-            Assert.IsNotNull(Object.FindFirstObjectByType<ProductionHud>());
-            Assert.IsNotNull(Object.FindFirstObjectByType<BlessingChoiceHud>());
-            Assert.IsNotNull(Object.FindFirstObjectByType<OnboardingHud>());
             Assert.IsNotNull(Object.FindFirstObjectByType<ArenaEventDirector>());
             Assert.IsNotNull(GameObject.Find("Boundaries"));
             Assert.IsNotNull(GameObject.Find("GameplaySurface"));
 
-            // Task A5 regression: production HUD must be a real Canvas/uGUI
-            // hierarchy, not the old OnGUI draw calls, and must carry at
-            // least one interactable skill button wired to real gameplay.
-            GameObject hudCanvas = GameObject.Find("ProductionHudCanvas");
-            Assert.IsNotNull(hudCanvas, "ProductionHud must build a real Canvas, not rely on OnGUI.");
-            Assert.IsNotNull(hudCanvas.GetComponent<Canvas>());
-            Transform skillButton = hudCanvas.transform.Find("SkillButton_0");
-            Assert.IsNotNull(skillButton, "Skill buttons must exist as real Canvas UI elements.");
-            Assert.IsNotNull(skillButton.GetComponent<UnityEngine.UI.Button>());
+            // Slice 009 Task 3: the production arena must instantiate the
+            // authored ProductProofCombatHud prefab and bind both presenters
+            // to that single authored view, instead of building Canvas/uGUI
+            // hierarchies at runtime on empty GameObjects.
+            var hudView = Object.FindFirstObjectByType<ProductionCombatHudView>();
+            Assert.IsNotNull(hudView, "The arena must instantiate the authored ProductProofCombatHud prefab.");
+            Assert.IsTrue(hudView.IsComplete, "Every serialized reference on the authored ProductionCombatHudView must be assigned.");
+
+            var hud = Object.FindFirstObjectByType<ProductionHud>();
+            var blessingHud = Object.FindFirstObjectByType<BlessingChoiceHud>();
+            Assert.IsNotNull(hud);
+            Assert.IsNotNull(blessingHud);
+            Assert.AreSame(hudView.gameObject, hud.gameObject, "ProductionHud must live on the authored HUD prefab root, not a runtime-built empty GameObject.");
+            Assert.AreSame(hudView.gameObject, blessingHud.gameObject, "BlessingChoiceHud must live on the same authored HUD prefab root.");
+            Assert.IsTrue(IsPresenterInitialized(hud), "ProductionHud must be initialized from the authored view.");
+            Assert.IsTrue(IsPresenterInitialized(blessingHud), "BlessingChoiceHud must be initialized from the same authored view.");
+
+            Assert.IsNull(Object.FindFirstObjectByType<OnboardingHud>(), "The prototype-era OnboardingHud surface must be absent from the production arena path.");
+
+            Assert.IsNotNull(GameObject.Find("BasicButton"), "The authored HUD must expose a visible, always-reachable Basic attack button.");
+            Assert.IsNotNull(GameObject.Find("BlessingChoicePanel"), "The authored HUD must carry the Cơ Duyên choice surface.");
+
+            Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            Assert.AreEqual(1, canvases.Length, "Exactly one production Canvas must exist - combat HUD and Cơ Duyên share the one authored HUD Canvas.");
+            Assert.AreSame(hudView.RootCanvas, canvases[0], "That single Canvas must be the authored view's own root Canvas.");
+
+            Assert.IsFalse(player.GetComponent<BasicAttack>().LocalWorldTapEnabled, "Production composition must route Basic through the HUD button, never through a raw world tap.");
+
+            Assert.IsNotNull(hudView.SkillButtons[0], "Skill buttons must exist as real authored Canvas UI elements.");
             Assert.IsNotNull(Object.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>(), "A Canvas UI needs a live EventSystem to receive touch/click input.");
+        }
+
+        /// <summary>Reads the presenter's private one-shot initialization guard, so "the bootstrapper actually bound this presenter to the authored view" is proven rather than assumed from mere presence.</summary>
+        static bool IsPresenterInitialized(MonoBehaviour presenter)
+        {
+            System.Reflection.FieldInfo field = presenter.GetType().GetField(
+                "initialized", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(field, $"Expected private field 'initialized' on {presenter.GetType().Name}.");
+            return (bool)field.GetValue(presenter);
         }
 
         [UnityTest]
