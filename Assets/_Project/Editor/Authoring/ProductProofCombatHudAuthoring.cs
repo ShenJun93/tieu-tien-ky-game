@@ -61,8 +61,41 @@ namespace TieuTienKy.EditorTools.Authoring
             WireArenaScene(prefab);
 
             AssetDatabase.SaveAssets();
+            StripTrailingWhitespace(PrefabPath);
+            StripTrailingWhitespace(PrefabPath + ".meta");
             AssetDatabase.Refresh();
             Debug.Log($"[ProductProofCombatHudAuthoring] Authored {PrefabPath} and wired {ScenePath}.");
+        }
+
+        /// <summary>
+        /// Unity's YAML writer trails a space after several empty scalar
+        /// fields (m_Name:, m_Text:, userData:, assetBundleName: ...), which
+        /// fails `git diff --check`. Rewriting the saved text in place keeps
+        /// a rerun from reintroducing it without hand-editing generated YAML.
+        /// </summary>
+        static void StripTrailingWhitespace(string assetPath)
+        {
+            string fullPath = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(Application.dataPath), assetPath);
+            if (!System.IO.File.Exists(fullPath))
+            {
+                return;
+            }
+
+            string original = System.IO.File.ReadAllText(fullPath);
+            string[] lines = original.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                bool hadCarriageReturn = lines[i].EndsWith("\r");
+                string trimmed = lines[i].TrimEnd(' ', '\t', '\r');
+                lines[i] = hadCarriageReturn ? trimmed + "\r" : trimmed;
+            }
+
+            string cleaned = string.Join("\n", lines);
+            if (cleaned != original)
+            {
+                System.IO.File.WriteAllText(fullPath, cleaned);
+            }
         }
 
         static GameObject BuildHudPrefab()

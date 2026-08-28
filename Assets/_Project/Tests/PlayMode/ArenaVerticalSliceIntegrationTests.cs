@@ -1,4 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using TieuTienKy.Input;
 using UnityEngine;
@@ -18,6 +21,45 @@ namespace TieuTienKy.Gameplay.Tests
     /// </summary>
     public class ArenaVerticalSliceIntegrationTests
     {
+        /// <summary>
+        /// Regression for Slice 009 Task 3 hygiene: the authoring tool must
+        /// emit clean generated text (no trailing whitespace on any line),
+        /// since committed Unity YAML with trailing spaces fails
+        /// `git diff --check` and contradicts the Task 3 "clean" report.
+        /// </summary>
+        [Test]
+        public void Task3GeneratedArtifacts_HaveNoTrailingWhitespace()
+        {
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string[] relativePaths =
+            {
+                "Assets/_Project/Editor/Authoring.meta",
+                "Assets/_Project/Editor/Authoring/TieuTienKy.Editor.Authoring.asmdef.meta",
+                "Assets/_Project/Prefabs/UI.meta",
+                "Assets/_Project/Prefabs/UI/ProductProofCombatHud.prefab",
+                "Assets/_Project/Prefabs/UI/ProductProofCombatHud.prefab.meta",
+            };
+
+            var violations = new List<string>();
+            foreach (string relativePath in relativePaths)
+            {
+                string fullPath = Path.Combine(projectRoot, relativePath);
+                Assert.IsTrue(File.Exists(fullPath), $"Expected generated artifact at {relativePath}.");
+
+                string[] lines = File.ReadAllLines(fullPath);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    if (line.Length > 0 && (line[line.Length - 1] == ' ' || line[line.Length - 1] == '\t'))
+                    {
+                        violations.Add($"{relativePath}:{i + 1}");
+                    }
+                }
+            }
+
+            Assert.IsEmpty(violations, "Trailing whitespace found in generated Task 3 artifacts: " + string.Join(", ", violations));
+        }
+
         [UnityTest]
         public IEnumerator Boot_LoadsMainMenu()
         {
