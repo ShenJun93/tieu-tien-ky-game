@@ -164,6 +164,25 @@ story moment, or social payoff as appropriate.
 A feature reported as "done" without stating which DoD level was reached is
 an incomplete report.
 
+### Representativeness is a precondition for a physical Human product verdict
+
+For a player-facing task that requires a physical Human Product/Fun Gate, the exact artifact must first pass the Product Process v2 representativeness preflight. This protects the distinction between **technical correctness**, **test readiness**, and **product acceptance**:
+
+```text
+TECHNICAL PASS
+  proves implementation/build/runtime claims
+
+REPRESENTATIVE PREFLIGHT PASS
+  proves the exact artifact is fit to ask the declared Human question
+
+HUMAN PRODUCT PASS / NO / YES_WITH_GAP
+  records actual READS / FEELS / BELONGS / REWARDS judgment
+```
+
+A preflight-ready artifact has: an explicit player promise/Human question, declared representative dimensions, recorded placeholder inventory, cross-discipline coverage, target-device readiness, and exact artifact SHA-256/source-SHA binding with no later committed or dirty player-runtime mutation. These are readiness conditions, not proof that the Human will like the game.
+
+If known placeholder/prototype surfaces materially confound the question, the slice remains a learning build and must not consume the acceptance gate. This strengthens the existing **LEARNING BUILD != ACCEPTANCE ARTIFACT** rule without requiring final-shipping polish in every experimental domain.
+
 ## 3. Approved Production Kit v1 — specification only
 
 This section defines the **contract and approval process** for the

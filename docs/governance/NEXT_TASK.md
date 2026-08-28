@@ -15,14 +15,14 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "forbidden_paths": [],
   "last_terminal_closeout": {
     "schema_version": 1,
-    "task_id": "TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001",
-    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.md",
-    "baseline_sha": "8bf0b228c7df15936411f168324842d121a1a9a2",
-    "authority_anchor_sha": "8bf0b228c7df15936411f168324842d121a1a9a2",
-    "activation_sha": "3a1869409d5b550cd8e18f3d1fbfb34a375f46bf",
+    "task_id": "TASK-TIEU-TIEN-KY-PRODUCTION-PROCESS-V2-001",
+    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-PROCESS-V2-001.md",
+    "baseline_sha": "f2bc68c8bbea7ba1a8c865ee9ac40144e485a620",
+    "authority_anchor_sha": "f2bc68c8bbea7ba1a8c865ee9ac40144e485a620",
+    "activation_sha": "b4ca0e6ed8c75faf4b504318112a0ff0cb36d4dd",
     "independent_review_required": true,
-    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001.review.json",
-    "reviewed_candidate_sha": "f5d00df73ca5ff96db3f10a8b51fc309f9039e01"
+    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCTION-PROCESS-V2-001.review.json",
+    "reviewed_candidate_sha": "000fb9858e122ce05b31cd3487854ff7e1cc6ff4"
   },
   "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }

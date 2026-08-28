@@ -12,6 +12,14 @@ const KNOWN_STATES = new Set(['PAUSED', 'DISCOVERY', 'SPIKE', 'IMPLEMENT', 'REVI
 const MUTATING_STATES = new Set(['SPIKE', 'IMPLEMENT']);
 const TASK_MODES = new Set(['MICRO', 'SLICE', 'SPEC', 'BATCH', 'SPIKE', 'PARALLEL']);
 const WORKSPACE_POLICIES = new Set(['ISOLATED_WORKTREE', 'EXISTING_AUTHORIZED_WORKTREE', 'REMOTE_GITHUB_BRANCH']);
+const PRODUCT_GATE_REQUIRED_EVIDENCE = Object.freeze({
+  acceptance_artifact_representative: 'PASS',
+  placeholder_inventory: 'RECORDED',
+  cross_discipline_coverage: 'PASS',
+  target_device_readiness: 'PASS',
+  human_gate_question_answerable: 'PASS',
+  human_gate_preflight: 'PASS'
+});
 
 function readAuthority(root) {
   const file = path.join(root, AUTHORITY_PATH);
@@ -38,6 +46,71 @@ function validateRequiredEvidence(authority) {
   const required = authority.required_evidence;
   if (!required || typeof required !== 'object' || Array.isArray(required) || Object.keys(required).length === 0) {
     fail('mutating authority requires a non-empty required_evidence object');
+  }
+}
+
+const HUMAN_GATE_MODES = new Set(['NONE', 'PHYSICAL_PRODUCT_ACCEPTANCE']);
+const LEGACY_PHYSICAL_HUMAN_STOP_CONDITIONS = new Set([
+  'PHYSICAL_HUMAN_PRODUCT_GATE_REQUIRED',
+  'PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED',
+  'HUMAN_PLAYTEST_REQUIRED',
+  'PHYSICAL_HUMAN_PLAYTEST_REQUIRED',
+  'HUMAN_PHYSICAL_PLAYTEST_REQUIRED',
+  'HUMAN_PRODUCT_GATE_REQUIRED'
+]);
+const LEGACY_PHYSICAL_HUMAN_EVIDENCE_KEYS = new Set([
+  'human_playtest',
+  'human_product_acceptance',
+  'human_product_gate',
+  'physical_human_playtest',
+  'human_physical_playtest'
+]);
+
+function authoritySignalsPhysicalHumanProductGate(authority) {
+  const mode = authority.human_gate_mode;
+  if (mode != null && !HUMAN_GATE_MODES.has(mode)) {
+    fail(`human_gate_mode must be NONE or PHYSICAL_PRODUCT_ACCEPTANCE; got ${mode}`);
+  }
+  const canonicalSignal = mode === 'PHYSICAL_PRODUCT_ACCEPTANCE';
+  const compatibilityStopSignal = LEGACY_PHYSICAL_HUMAN_STOP_CONDITIONS.has(String(authority.stop_condition ?? ''));
+  const evidenceKeys = Object.keys(authority.required_evidence ?? {});
+  const compatibilityEvidenceSignal = evidenceKeys.some((key) =>
+    Object.hasOwn(PRODUCT_GATE_REQUIRED_EVIDENCE, key) || LEGACY_PHYSICAL_HUMAN_EVIDENCE_KEYS.has(key));
+  return canonicalSignal || compatibilityStopSignal || compatibilityEvidenceSignal;
+}
+
+function validateProductGate(authority) {
+  const gate = authority.product_gate;
+  const requiredBySignals = authoritySignalsPhysicalHumanProductGate(authority);
+  if (gate == null) {
+    if (requiredBySignals) fail('machine authority signals a physical Human product gate but product_gate is missing');
+    return;
+  }
+  if (!gate || typeof gate !== 'object' || Array.isArray(gate)) fail('product_gate must be an object');
+  if (gate.required === false) {
+    if (requiredBySignals) fail('machine authority signals a physical Human product gate but product_gate.required=false');
+    return;
+  }
+  if (gate.required !== true) fail('product_gate.required must be explicit boolean true or false');
+  if (authority.human_gate_mode === 'NONE') fail('human_gate_mode=NONE conflicts with product_gate.required=true');
+
+  const nonEmpty = (value) => typeof value === 'string' && value.trim().length > 0;
+  if (!nonEmpty(gate.player_promise)) fail('product_gate.player_promise must be non-empty');
+  if (!nonEmpty(gate.human_question)) fail('product_gate.human_question must be non-empty');
+  if (gate.artifact_required !== true) fail('required product_gate requires artifact_required=true');
+  if (!Array.isArray(gate.representative_dimensions) || gate.representative_dimensions.length === 0 ||
+      gate.representative_dimensions.some((value) => !nonEmpty(value))) {
+    fail('product_gate.representative_dimensions must contain one or more non-empty dimensions');
+  }
+  if (gate.placeholder_policy !== 'NO_UNDECLARED_PLACEHOLDERS') {
+    fail('product_gate.placeholder_policy must be NO_UNDECLARED_PLACEHOLDERS');
+  }
+  if (gate.target_device_required !== true) fail('required product_gate requires target_device_required=true');
+
+  for (const [key, expected] of Object.entries(PRODUCT_GATE_REQUIRED_EVIDENCE)) {
+    if (authority.required_evidence?.[key] !== expected) {
+      fail(`product_gate requires required_evidence.${key}=${expected}`);
+    }
   }
 }
 
@@ -161,6 +234,7 @@ if (workspacePolicy === 'REMOTE_GITHUB_BRANCH') {
 }
 
 validateRequiredEvidence(authority);
+validateProductGate(authority);
 
 if (state === 'SPIKE') {
   if (authority.spike_bounded !== true) fail('SPIKE requires "spike_bounded": true');

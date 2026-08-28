@@ -93,6 +93,8 @@ workspace_policy
 allowed_paths
 forbidden_paths
 required_evidence
+human_gate_mode       # optional for legacy/non-Human tasks; canonical enum NONE | PHYSICAL_PRODUCT_ACCEPTANCE
+product_gate          # required structured object when human_gate_mode=PHYSICAL_PRODUCT_ACCEPTANCE
 stop_condition
 ```
 
@@ -274,6 +276,84 @@ Examples:
 
 Evidence values use explicit states such as `PASS`, `FAIL`, `NOT_TESTED`, `BLOCKED`, or a task-defined exact value such as `RECORDED`. Never substitute “should work”.
 
+## Product Gate contract — protect Human test time
+
+A player-facing task that requires physical Human product acceptance must declare a machine-readable `product_gate` in live `NEXT_TASK.md`. The contract answers one question before the Human is asked to play: **is this exact artifact representative enough to answer the declared product question?**
+
+```json
+{
+  "human_gate_mode": "PHYSICAL_PRODUCT_ACCEPTANCE",
+  "product_gate": {
+    "required": true,
+    "player_promise": "<non-empty player-facing promise>",
+    "human_question": "<one answerable product question>",
+    "artifact_required": true,
+    "representative_dimensions": ["<explicit dimensions material to the question>"],
+    "placeholder_policy": "NO_UNDECLARED_PLACEHOLDERS",
+    "target_device_required": true
+  }
+}
+```
+
+For such a task, `required_evidence` must include these expectations:
+
+```json
+{
+  "acceptance_artifact_representative": "PASS",
+  "placeholder_inventory": "RECORDED",
+  "cross_discipline_coverage": "PASS",
+  "target_device_readiness": "PASS",
+  "human_gate_question_answerable": "PASS",
+  "human_gate_preflight": "PASS"
+}
+```
+
+`human_gate_mode` is the closed canonical machine signal for new/updated task authority: `NONE` or `PHYSICAL_PRODUCT_ACCEPTANCE`. A physical player-facing Human Product/Fun Gate must use exactly `PHYSICAL_PRODUCT_ACCEPTANCE`; free-form stop-condition wording is not the contract. `pre-task.mjs` rejects unknown modes, rejects `NONE` combined with `product_gate.required=true`, and requires a complete Product Gate whenever the canonical mode is physical. For fail-closed compatibility with already-used authority vocabulary, a bounded exact registry of historical physical-Human stop conditions/evidence keys also triggers the gate; this is an explicit alias set, not regex inference. The known aliases include `PHYSICAL_HUMAN_PRODUCT_GATE_REQUIRED`, `PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED`, `HUMAN_PLAYTEST_REQUIRED`, and evidence such as `human_playtest` / `human_product_acceptance`. A generic Human decision/merge/successor stop does not create Product Gate scope. Non-player-facing tasks and tasks without physical Human product acceptance do not invent Product Gate metadata.
+
+The scalar states above are machine expectations only. They are **not sufficient evidence by themselves**. Before a physical Human handoff, the evidence file must also contain a structured `product_gate_evidence` object (schema version 1):
+
+```json
+{
+  "product_gate_evidence": {
+    "schema_version": 1,
+    "artifact": {
+      "path": "Builds/Android/TieuTienKy-<label>-<shortSha>.apk",
+      "sha256": "<64-hex>",
+      "source_sha": "<exact 40-character SHA>",
+      "build_log_path": "<repo-relative build log>",
+      "build_log_sha256": "<64-hex>"
+    },
+    "representative_dimensions": {
+      "<dimension>": { "status": "PASS", "evidence": ["<non-empty proof locator/summary>"] }
+    },
+    "placeholders": {
+      "status": "RECORDED",
+      "inspected_dimensions": ["<every representative dimension>"],
+      "entries": [],
+      "undeclared_count": 0,
+      "evidence": ["<placeholder audit evidence>"]
+    },
+    "target_device": {
+      "status": "PASS", "physical": true, "session_seconds": 60,
+      "measurements": [{ "metric": "<measured metric>", "value": 0, "unit": "<unit>" }],
+      "evidence": ["<target-device session evidence>"]
+    },
+    "human_question": {
+      "status": "PASS",
+      "covered_dimensions": ["<every representative dimension>"],
+      "blockers": [],
+      "evidence": ["<why the declared question is now answerable>"]
+    }
+  }
+}
+```
+
+Structured dimension coverage is an **exact-set contract**: `representative_dimensions` keys, placeholder `inspected_dimensions`, and Human-question `covered_dimensions` must match `product_gate.representative_dimensions` exactly—no missing, duplicate, or extra dimensions. An empty placeholder `entries` array is valid only when those exact dimensions were actually inspected, `undeclared_count` is zero, and the audit has non-empty evidence. A placeholder entry may pass only with `disposition: REPLACED` or `disposition: ACCEPTED_NON_CONFOUNDING`; a confounding/unknown/unsupported disposition blocks handoff. `target_device_readiness=PASS` requires a real physical-device session window plus at least one numeric measurement; `cross_discipline_coverage=PASS` requires a PASS+evidence record for every declared representative dimension.
+
+Artifact provenance is producer-linked, not a free scalar assertion: the structured artifact fields must match the scalar path/hash/source fields; the APK filename must carry the source short SHA; the referenced build log must match its recorded SHA-256 and contain exactly one matching successful `[TTK_ANDROID_BUILD]` producer marker for that artifact filename and source SHA prefix. The source commit must resolve in current history, no committed player-runtime mutation may occur after it, and no staged/unstaged/untracked `Assets/`, `Packages/`, or `ProjectSettings/` mutation may currently stale the artifact. This is deterministic provenance under the repository trust model; it does not claim cryptographic remote-build attestation against deliberate fabrication of all local evidence.
+
+The representativeness decision remains a bounded production judgment informed by the task, structured evidence and relevant craft skills. The hook guarantees contract/evidence/provenance consistency; it does not pretend to algorithmically certify art quality or fun. Preflight PASS means **worth testing**, not Human acceptance.
+
 ## Repair budget
 
 For the same blocking symptom inside an authorized task:
@@ -290,6 +370,8 @@ Repeated failures across tasks should trigger a harness/test/tool improvement wh
 
 ## Human Gate — hard stop
 
+For a physical player-facing gate with `product_gate.required=true`, run `node scripts/hooks/human-gate-preflight.mjs` before install/launch/handoff. If it fails, stop at preflight and fix/re-scope under current authority; do not spend Human test time on a known-confounded artifact.
+
 When Human action is required:
 
 ```text
@@ -305,10 +387,10 @@ For physical mobile gates:
 
 ```text
 Agent:
-code → focused verification → exact SHA-bound artifact → report → HARD STOP
+player promise + representative dimensions → code/content → focused verification → placeholder inventory → exact SHA-bound artifact → target-device readiness → Human-Gate preflight → report → HARD STOP
 
 Human:
-install/test exact artifact → report evidence
+install/test the preflight-approved exact artifact → report the declared product evidence
 ```
 
 Do not silently rebuild an artifact after handoff. If code changes, identify the superseding artifact explicitly.

@@ -90,8 +90,13 @@ If a live Human instruction contradicts persisted `NEXT_TASK.md`: the live instr
 15. One mutable Unity worktree has one writer. Parallel writers require explicit independent scope and isolation.
 16. An implementation writer never edits its active `NEXT_TASK.md` or active task contract after authority activation.
 17. Local task start/completion must verify live `origin/main` still equals the authorized immutable `baseline_ref`; drift requires explicit rebaseline, never silent continuation.
+18. A player-facing task that requires physical Human product acceptance must declare the closed canonical `human_gate_mode: PHYSICAL_PRODUCT_ACCEPTANCE`, a complete machine-readable `product_gate`, and mandatory representativeness/preflight evidence. `human_gate_mode` is not free-form: only `NONE` or `PHYSICAL_PRODUCT_ACCEPTANCE` are valid. Do not spend Human test time on a known-confounded artifact.
 
 ## Human Gate — hard stop
+
+For a physical player-facing Human Product/Fun Gate with `product_gate.required=true`, first run `node scripts/hooks/human-gate-preflight.mjs`. A failure is a **preflight blocker**: do not install, launch or hand off the artifact merely because technical checks are green. Preflight PASS proves readiness to ask the declared Human question; it does not prove FEELS/BELONGS/REWARDS.
+
+Scalar `PASS`/`RECORDED` labels are expectations, not sufficient Product Gate proof. The evidence file must also carry the structured `product_gate_evidence` object defined in `WORKFLOW.md`, including producer-linked artifact/build-log provenance, **exact-set** per-representative-dimension evidence, placeholder inspection whose entries are only `REPLACED` or explicitly `ACCEPTED_NON_CONFOUNDING`, physical-device measurements, and Human-question answerability basis.
 
 When the next required action belongs to the Human/Game Director:
 
@@ -128,7 +133,7 @@ Before edits when the active task uses local execution:
 node scripts/hooks/pre-task.mjs
 ```
 
-`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted.
+`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted. For new/updated physical Human product authority, `human_gate_mode: PHYSICAL_PRODUCT_ACCEPTANCE` is the canonical trigger. The guard rejects unknown modes and `NONE`/required-gate contradictions, and retains only a bounded exact compatibility registry for historical physical-Human stop/evidence names; it does not infer authority from free-form regex wording. The canonical or compatibility signal blocks omitted/disabled `product_gate`, while generic Human successor/merge decisions alone do not imply a Product Gate.
 
 Before writing/moving/deleting files:
 
@@ -143,6 +148,14 @@ node scripts/hooks/pre-finish.mjs
 ```
 
 `pre-finish` revalidates the authority lock, live main, writer-only committed scope, and the active task's declared `required_evidence`. It must not assume every task requires Android/Human evidence. Player-facing tasks should declare those fields explicitly. If a guard blocks, do not bypass it unless the operator explicitly authorizes the exception.
+
+Before a player-facing physical Human handoff when `product_gate.required=true`:
+
+```bash
+node scripts/hooks/human-gate-preflight.mjs
+```
+
+The preflight validates the active product-gate contract, structured evidence, artifact SHA-256, producer build-log/source identity, and absence of later committed or dirty `Assets/` / `Packages/` / `ProjectSettings/` mutation that would stale the artifact. A declared source SHA without matching producer provenance is not sufficient.
 
 Candidate Gate is a final-PR-head control-plane guard, not a writer completion
 guard:
@@ -173,6 +186,8 @@ Do not claim a governance hook repair passes without a fresh successful run.
 
 Use the smallest matching process skill:
 
+If native skill discovery is unavailable or fails, read the canonical `.agents/skills/<skill-name>/SKILL.md` directly before acting; discovery is a convenience, not an authority or correctness prerequisite.
+
 - `.agents/skills/execute-task/SKILL.md` — authorized `IMPLEMENT`; bounded `SPIKE` may reuse its mechanics without claiming production completion.
 - `.agents/skills/review-task/SKILL.md` — independent read-only review when risk warrants it.
 - `.agents/skills/test-and-repair/SKILL.md` — reproduce and repair a blocking/reproducible defect inside current authority; default same-symptom repair budget is two rounds before re-plan/escalation.
@@ -193,6 +208,15 @@ Load only the smallest relevant craft skill(s); they do not replace process skil
 - `.agents/skills/ttk-level-encounter-presentation/SKILL.md`
 - `.agents/skills/ttk-human-product-gate/SKILL.md`
 - `.agents/skills/ttk-narrative-lore-consistency/SKILL.md`
+- `.agents/skills/ttk-vertical-slice-production-gate/SKILL.md` — required integration gate for player-facing acceptance slices; separates learning builds from representative Human-facing artifacts.
+- `.agents/skills/ttk-player-experience-integration/SKILL.md` — coordinates gameplay → motion/reaction → camera/VFX/audio/haptic/UI/world response so individually-working layers do not masquerade as an integrated experience.
+- `.agents/skills/ttk-unity-authored-content-pipeline/SKILL.md` — authored Scene/Prefab/Animator/Material/UI composition versus justified runtime generation.
+- `.agents/skills/ttk-art-target-reference-benchmarking/SKILL.md` — observable visual-quality targets/reference principles without copying protected expression.
+- `.agents/skills/ttk-enemy-ai-encounter-direction/SKILL.md` — pressure roles, intent, telegraph, counterplay and group-composition readability.
+- `.agents/skills/ttk-vfx-readability-hierarchy/SKILL.md` — attention budget/screen hierarchy under real combat density.
+- `.agents/skills/ttk-mobile-performance-budget/SKILL.md` — target-device frame-time/frame-pacing/memory/loading/thermal/input-readiness evidence.
+- `.agents/skills/ttk-playtest-user-research/SKILL.md` — task-based observation and neutral questions tied to a concrete product decision.
+- `.agents/skills/ttk-onboarding-accessibility/SKILL.md` — first-session learnability, touch/readability/accessibility guardrails.
 
 Governing product/craft sources: `docs/master/PRODUCT_FOUNDATION.md`, `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
 

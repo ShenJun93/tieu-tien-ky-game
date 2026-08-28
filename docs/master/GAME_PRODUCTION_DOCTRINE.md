@@ -64,7 +64,8 @@ and proven only by physical Human play.
     perception/fun.** Neither substitutes for the other.
 14. **Every domain progresses independently through EXPERIMENT → PROVEN →
     PRODUCTION_KEPT → SCALE_READY.** See `PRODUCTION_FOUNDATION.md`.
-15. **Scale only accepted production foundations.** Do not extend a domain
+15. **Human test time is a production resource.** A physical Product/Fun Gate receives one representative acceptance artifact whose declared dimensions can actually answer the product question. A known-confounded learning build must be fixed/re-scoped before handoff, not handed to the Human to rediscover known prototype limits.
+16. **Scale only accepted production foundations.** Do not extend a domain
     still at EXPERIMENT or PROVEN into broader scope. Broad scaling —
     additional player counts, new environments/systems, or Stage C
     Internet/service work — is forbidden before an accepted foundation.
@@ -95,6 +96,9 @@ ANIMATION CLIPS        != COMBAT RHYTHM
 NETWORK SMOKE          != HUMAN PVP FUN
 CONTENT VOLUME         != REPLAYABILITY
 MORE VFX               != BETTER READABILITY
+GREEN BUILD             != REPRESENTATIVE SLICE
+POLISHED SUBSYSTEM      != INTEGRATED EXPERIENCE
+PREFLIGHT PASS          != HUMAN ACCEPTANCE
 ```
 
 Do not reinterpret a Human `NO` or `YES_WITH_GAP` verdict as a technical pass
@@ -103,6 +107,27 @@ merely because the underlying component exists and functions. See
 (2026-08-18), for the concrete instance that motivated this rule: every
 required component existed and functioned, and the product gate was still
 `RED`.
+
+### Representative acceptance artifact rule
+
+A **learning build** can answer a narrow implementation question while remaining visibly provisional. A **Human acceptance artifact** has a higher requirement: every dimension material to the declared Human question must be representative enough that missing/placeholder work does not dominate the judgment.
+
+Before a physical Human Product/Fun Gate:
+
+```text
+PLAYER PROMISE
+→ HUMAN QUESTION
+→ REPRESENTATIVE DIMENSIONS
+→ PLACEHOLDER INVENTORY / DISPOSITION
+→ CROSS-DISCIPLINE INTEGRATION
+→ TARGET-DEVICE READINESS
+→ EXACT ARTIFACT PREFLIGHT
+→ HUMAN JUDGMENT
+```
+
+If the artifact cannot answer the question, the correct result is **BLOCK BEFORE HUMAN GATE**, not a technically-green handoff followed by a predictable “still feels like the prototype” result. An isolated hero VFX, UI, animation or art improvement may be valid local progress while still being insufficient whole-slice evidence.
+
+This rule does not demand final shipping polish during product proof. It demands representativeness for the specific claim being tested, and makes placeholders explicit rather than invisible assumptions.
 
 ## 4. Certainty × Reuse decision model
 

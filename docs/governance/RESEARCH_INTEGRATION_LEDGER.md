@@ -1,6 +1,6 @@
 # RESEARCH INTEGRATION LEDGER — TIỂU TIÊN KÝ
 
-Updated: 2026-08-22 (R-009 extended with local-first/cloud-reviewer routing disposition)
+Updated: 2026-08-28 (R-017 global production-process / representative Human-gate research integrated)
 
 ## Purpose
 
@@ -391,3 +391,43 @@ Repeated research without repository disposition creates context debt and forces
 **Rule**
 
 Every future material research task must either update this ledger (or a successor canonical ledger) or explicitly show where its findings were integrated/rejected/deferred. A research report without disposition coverage is incomplete.
+
+
+---
+
+## R-017 — Global game-production / representative acceptance research
+
+**Finding**
+
+Across current studio, engine and platform guidance, several practices converge: prototype existence must not be mistaken for production-representative quality; playtesting should happen early enough to find confusion/fun while change is still cheap; mobile quality requires target-device frame-time/thermal/input evidence rather than build success alone; touch controls/readability/accessibility are design constraints; and cross-discipline integration is necessary for an action/scene to feel authored rather than like individually-working components.
+
+The 2026-08-28 TTK physical B-LITE result (Human: materially “still the same”) is direct project evidence that the previous process could hand off a technically valid artifact whose surrounding prototype-era presentation made the intended product question low-value.
+
+**Disposition:** `INTEGRATED`
+
+**Integrated by Production Process v2**
+
+- mandatory `product_gate` contract for future physical player-facing acceptance tasks;
+- deterministic `pre-task` validation of the gate contract/evidence expectations;
+- deterministic `human-gate-preflight.mjs` artifact/evidence/staleness guard;
+- representative vertical-slice and cross-discipline integration skills;
+- authored Unity content, art target/reference, enemy/encounter, VFX hierarchy, mobile-performance, playtest-research and onboarding/accessibility skills;
+- doctrine/foundation rule that Human test time is spent only on an artifact fit to answer the declared question.
+
+**Material external sources checked 2026-08-28**
+
+- Riot Games, Playtest With Us: https://www.riotgames.com/en/playtest
+- Supercell, 10 Learnings from 10 Years: https://supercell.com/en/news/10-learnings-10-years/7436/
+- Unity Learn, Create your production plan: https://learn.unity.com/tutorial/create-your-production-plan?version=2022.3
+- Unity mobile performance guidance: https://unity.com/blog/games/optimize-your-mobile-game-performance-tips-on-profiling-memory-and-code-architecture-from
+- Android game performance guidance: https://developer.android.com/games/optimize/gameperformance
+- Android frame pacing / slow sessions: https://developer.android.com/games/sdk/frame-pacing and https://developer.android.com/games/optimize/vitals/slow-session
+- Apple HIG game controls / designing for games: https://developer.apple.com/design/human-interface-guidelines/game-controls and https://developer.apple.com/design/human-interface-guidelines/designing-for-games/
+- Microsoft Xbox Accessibility Guidelines: https://learn.microsoft.com/en-us/xbox/accessibility/guidelines
+
+**Not inferred / deferred**
+
+- no claim that one external studio process should be copied wholesale;
+- no final universal FPS/device target — each player-facing task declares its justified budget;
+- no automatic content, networking, live-ops, backend or recode authority;
+- future save/progression, telemetry, localization, economy/meta, networking/backend and live-ops skills remain deferred until concrete triggers exist.
