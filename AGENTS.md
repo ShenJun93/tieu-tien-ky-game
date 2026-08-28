@@ -90,7 +90,7 @@ If a live Human instruction contradicts persisted `NEXT_TASK.md`: the live instr
 15. One mutable Unity worktree has one writer. Parallel writers require explicit independent scope and isolation.
 16. An implementation writer never edits its active `NEXT_TASK.md` or active task contract after authority activation.
 17. Local task start/completion must verify live `origin/main` still equals the authorized immutable `baseline_ref`; drift requires explicit rebaseline, never silent continuation.
-18. A player-facing task that requires physical Human product acceptance must declare a complete machine-readable `product_gate` and mandatory representativeness/preflight evidence. Do not spend Human test time on a known-confounded artifact.
+18. A player-facing task that requires physical Human product acceptance must declare the closed canonical `human_gate_mode: PHYSICAL_PRODUCT_ACCEPTANCE`, a complete machine-readable `product_gate`, and mandatory representativeness/preflight evidence. `human_gate_mode` is not free-form: only `NONE` or `PHYSICAL_PRODUCT_ACCEPTANCE` are valid. Do not spend Human test time on a known-confounded artifact.
 
 ## Human Gate — hard stop
 
@@ -133,7 +133,7 @@ Before edits when the active task uses local execution:
 node scripts/hooks/pre-task.mjs
 ```
 
-`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted. It also fails closed when machine authority explicitly signals a physical Human product gate (for example through the stop condition or Human-playtest/preflight evidence) but `product_gate` is omitted/disabled, and when a required gate has an incomplete player promise/Human question/representative-dimensions contract or omitted mandatory preflight evidence expectations. Generic Human successor/merge decisions alone do not imply a Product Gate.
+`pre-task` validates identity/authority and performs a non-mutating live-main check with `git ls-remote`; a stale task baseline blocks instead of being silently accepted. For new/updated physical Human product authority, `human_gate_mode: PHYSICAL_PRODUCT_ACCEPTANCE` is the canonical trigger. The guard rejects unknown modes and `NONE`/required-gate contradictions, and retains only a bounded exact compatibility registry for historical physical-Human stop/evidence names; it does not infer authority from free-form regex wording. The canonical or compatibility signal blocks omitted/disabled `product_gate`, while generic Human successor/merge decisions alone do not imply a Product Gate.
 
 Before writing/moving/deleting files:
 

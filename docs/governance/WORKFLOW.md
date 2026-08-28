@@ -93,7 +93,8 @@ workspace_policy
 allowed_paths
 forbidden_paths
 required_evidence
-product_gate          # optional; required structured object for physical Human product acceptance
+human_gate_mode       # optional for legacy/non-Human tasks; canonical enum NONE | PHYSICAL_PRODUCT_ACCEPTANCE
+product_gate          # required structured object when human_gate_mode=PHYSICAL_PRODUCT_ACCEPTANCE
 stop_condition
 ```
 
@@ -281,6 +282,7 @@ A player-facing task that requires physical Human product acceptance must declar
 
 ```json
 {
+  "human_gate_mode": "PHYSICAL_PRODUCT_ACCEPTANCE",
   "product_gate": {
     "required": true,
     "player_promise": "<non-empty player-facing promise>",
@@ -306,7 +308,7 @@ For such a task, `required_evidence` must include these expectations:
 }
 ```
 
-`pre-task.mjs` fails closed when a required product-gate contract or those expectations are incomplete. It also treats explicit machine signals of a physical Human product gate — such as a Human-product/physical-playtest stop condition, Human playtest evidence, or Product Gate preflight evidence keys — as requiring `product_gate`; omitting or disabling the object cannot bypass the gate. A generic Human decision/merge/successor stop does not by itself create Product Gate scope. Non-player-facing tasks and tasks without physical Human product acceptance do not invent this metadata.
+`human_gate_mode` is the closed canonical machine signal for new/updated task authority: `NONE` or `PHYSICAL_PRODUCT_ACCEPTANCE`. A physical player-facing Human Product/Fun Gate must use exactly `PHYSICAL_PRODUCT_ACCEPTANCE`; free-form stop-condition wording is not the contract. `pre-task.mjs` rejects unknown modes, rejects `NONE` combined with `product_gate.required=true`, and requires a complete Product Gate whenever the canonical mode is physical. For fail-closed compatibility with already-used authority vocabulary, a bounded exact registry of historical physical-Human stop conditions/evidence keys also triggers the gate; this is an explicit alias set, not regex inference. The known aliases include `PHYSICAL_HUMAN_PRODUCT_GATE_REQUIRED`, `PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED`, `HUMAN_PLAYTEST_REQUIRED`, and evidence such as `human_playtest` / `human_product_acceptance`. A generic Human decision/merge/successor stop does not create Product Gate scope. Non-player-facing tasks and tasks without physical Human product acceptance do not invent Product Gate metadata.
 
 The scalar states above are machine expectations only. They are **not sufficient evidence by themselves**. Before a physical Human handoff, the evidence file must also contain a structured `product_gate_evidence` object (schema version 1):
 

@@ -49,14 +49,34 @@ function validateRequiredEvidence(authority) {
   }
 }
 
+const HUMAN_GATE_MODES = new Set(['NONE', 'PHYSICAL_PRODUCT_ACCEPTANCE']);
+const LEGACY_PHYSICAL_HUMAN_STOP_CONDITIONS = new Set([
+  'PHYSICAL_HUMAN_PRODUCT_GATE_REQUIRED',
+  'PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED',
+  'HUMAN_PLAYTEST_REQUIRED',
+  'PHYSICAL_HUMAN_PLAYTEST_REQUIRED',
+  'HUMAN_PHYSICAL_PLAYTEST_REQUIRED',
+  'HUMAN_PRODUCT_GATE_REQUIRED'
+]);
+const LEGACY_PHYSICAL_HUMAN_EVIDENCE_KEYS = new Set([
+  'human_playtest',
+  'human_product_acceptance',
+  'human_product_gate',
+  'physical_human_playtest',
+  'human_physical_playtest'
+]);
+
 function authoritySignalsPhysicalHumanProductGate(authority) {
-  const stop = String(authority.stop_condition ?? '');
-  const explicitStopSignal = /(HUMAN.*PRODUCT.*GATE|PHYSICAL.*HUMAN.*(GATE|PLAYTEST)|HUMAN.*PHYSICAL.*(GATE|PLAYTEST))/i.test(stop);
+  const mode = authority.human_gate_mode;
+  if (mode != null && !HUMAN_GATE_MODES.has(mode)) {
+    fail(`human_gate_mode must be NONE or PHYSICAL_PRODUCT_ACCEPTANCE; got ${mode}`);
+  }
+  const canonicalSignal = mode === 'PHYSICAL_PRODUCT_ACCEPTANCE';
+  const compatibilityStopSignal = LEGACY_PHYSICAL_HUMAN_STOP_CONDITIONS.has(String(authority.stop_condition ?? ''));
   const evidenceKeys = Object.keys(authority.required_evidence ?? {});
-  const explicitEvidenceSignal = evidenceKeys.some((key) =>
-    Object.hasOwn(PRODUCT_GATE_REQUIRED_EVIDENCE, key) ||
-    /(human.*(playtest|product.*gate|physical)|physical.*human)/i.test(key));
-  return explicitStopSignal || explicitEvidenceSignal;
+  const compatibilityEvidenceSignal = evidenceKeys.some((key) =>
+    Object.hasOwn(PRODUCT_GATE_REQUIRED_EVIDENCE, key) || LEGACY_PHYSICAL_HUMAN_EVIDENCE_KEYS.has(key));
+  return canonicalSignal || compatibilityStopSignal || compatibilityEvidenceSignal;
 }
 
 function validateProductGate(authority) {
@@ -72,6 +92,7 @@ function validateProductGate(authority) {
     return;
   }
   if (gate.required !== true) fail('product_gate.required must be explicit boolean true or false');
+  if (authority.human_gate_mode === 'NONE') fail('human_gate_mode=NONE conflicts with product_gate.required=true');
 
   const nonEmpty = (value) => typeof value === 'string' && value.trim().length > 0;
   if (!nonEmpty(gate.player_promise)) fail('product_gate.player_promise must be non-empty');

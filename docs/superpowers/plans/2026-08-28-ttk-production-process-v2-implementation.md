@@ -141,3 +141,12 @@ Fresh independent review returned `FAIL` with three blocking findings: omitted P
 - [ ] Require schema-v1 `product_gate_evidence` at handoff: producer-linked artifact/build-log provenance, exact-set per-dimension PASS+evidence, placeholder audit with only `REPLACED`/`ACCEPTED_NON_CONFOUNDING` dispositions, physical-device measurement records, and answerability basis.
 - [ ] Require APK filename/source prefix + hashed build log containing exactly one matching successful `[TTK_ANDROID_BUILD]` marker; retain committed/dirty runtime staleness checks.
 - [ ] Re-run focused bypass tests, full governance regression, exact scope diff and `pre-finish`; create a superseding candidate and send it to a fresh independent reviewer.
+
+### Review remediation: exact candidate `0ee0c1e3d943c49b419f1fb69c4e6d9be794cad3`
+
+A third fresh independent review returned `FAIL` with one remaining B1 blocker: regex inference missed `PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED`, `HUMAN_PLAYTEST_REQUIRED`, and `required_evidence.human_product_acceptance`. B2 and the B3 matrix retested PASS. No receipt or closeout is authorized for the failed candidate.
+
+- [ ] Reproduce the three B1 aliases plus a canonical-mode omission case as RED.
+- [ ] Replace regex inference with closed `human_gate_mode: NONE | PHYSICAL_PRODUCT_ACCEPTANCE` semantics and a bounded exact legacy-alias registry.
+- [ ] Reject unknown `human_gate_mode`, reject `NONE` with `product_gate.required=true`, and keep generic Human merge/successor decisions non-product.
+- [ ] Run focused B1 tests, full governance regression, exact scope/evidence checks and exact-candidate `pre-finish`; create a superseding candidate for fresh independent review.

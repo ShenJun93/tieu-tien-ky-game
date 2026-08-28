@@ -318,6 +318,52 @@ test('pre-task blocks omitted product_gate when authority explicitly requires ph
   assert.match(result.stderr, /product_gate|Human product gate/i);
 });
 
+test('pre-task blocks omitted product_gate for PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED', () => {
+  const { root } = makeFixture({ stop_condition: 'PHYSICAL_HUMAN_PRODUCT_ACCEPTANCE_REQUIRED', required_evidence: { automated_tests: 'PASS' } });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /product_gate|Human product/i);
+});
+
+test('pre-task blocks omitted product_gate for HUMAN_PLAYTEST_REQUIRED', () => {
+  const { root } = makeFixture({ stop_condition: 'HUMAN_PLAYTEST_REQUIRED', required_evidence: { automated_tests: 'PASS' } });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /product_gate|Human product/i);
+});
+
+test('pre-task blocks omitted product_gate for human_product_acceptance evidence', () => {
+  const { root } = makeFixture({ required_evidence: { automated_tests: 'PASS', human_product_acceptance: 'RECORDED' } });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /product_gate|Human product/i);
+});
+
+test('pre-task treats human_gate_mode PHYSICAL_PRODUCT_ACCEPTANCE as canonical Product Gate signal', () => {
+  const { root } = makeFixture({ human_gate_mode: 'PHYSICAL_PRODUCT_ACCEPTANCE', required_evidence: { automated_tests: 'PASS' } });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /product_gate|Human product/i);
+});
+test('pre-task blocks unknown human_gate_mode', () => {
+  const { root } = makeFixture({ human_gate_mode: 'MAYBE_HUMAN', required_evidence: { automated_tests: 'PASS' } });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /human_gate_mode/);
+});
+
+test('pre-task blocks human_gate_mode NONE with required product_gate', () => {
+  const { root } = makeFixture({ human_gate_mode: 'NONE', product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.notEqual(result.status, 0, `unexpected pass: ${result.stdout}`);
+  assert.match(result.stderr, /NONE.*product_gate|required.*NONE/i);
+});
+
+test('pre-task accepts canonical PHYSICAL_PRODUCT_ACCEPTANCE with complete product_gate', () => {
+  const { root } = makeFixture({ human_gate_mode: 'PHYSICAL_PRODUCT_ACCEPTANCE', product_gate: PRODUCT_GATE, required_evidence: PRODUCT_GATE_EVIDENCE });
+  const result = invoke(root, 'pre-task.mjs');
+  assert.equal(result.status, 0, result.stderr);
+});
 test('pre-task does not infer product_gate from generic Human successor decision', () => {
   const { root } = makeFixture({
     stop_condition: 'HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY',

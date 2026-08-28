@@ -46,6 +46,7 @@ A physical player-facing acceptance task declares:
 
 ```json
 {
+  "human_gate_mode": "PHYSICAL_PRODUCT_ACCEPTANCE",
   "product_gate": {
     "required": true,
     "player_promise": "<non-empty player-facing promise>",
@@ -71,7 +72,7 @@ A physical player-facing acceptance task declares:
 }
 ```
 
-Tasks without a physical Human product gate remain backward-compatible and do not invent this contract.
+`human_gate_mode` is the closed canonical trigger for newly authored/updated authority: only `NONE` and `PHYSICAL_PRODUCT_ACCEPTANCE` are valid, and the physical mode requires the complete Product Gate. `pre-task` also keeps a bounded exact compatibility registry for historical physical-Human stop/evidence names so known legacy vocabulary cannot bypass the gate; generic Human merge/successor decisions remain non-product signals. Tasks without a physical Human product gate remain backward-compatible and do not invent Product Gate metadata.
 
 ## 5. Human-Gate preflight
 
