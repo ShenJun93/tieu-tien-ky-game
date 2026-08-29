@@ -35,6 +35,8 @@ namespace TieuTienKy.Gameplay
         int thunderStacks;
         bool networkDriven;
 
+        [SerializeField] bool localWorldTapEnabled = true;
+
         public event System.Action AttackStarted;
         public event System.Action AttackImpacted;
         public event System.Action AttackRecovered;
@@ -59,9 +61,14 @@ namespace TieuTienKy.Gameplay
         /// </summary>
         public void SetNetworkDriven(bool value) => networkDriven = value;
 
+        /// <summary>Whether Update()'s direct local-input branch is allowed to trigger an attack. Defaults to true for greybox/backward compatibility; production composition can disable it once the shared PlayerActionGateway path is wired, without affecting TryActivate or network semantics.</summary>
+        public bool LocalWorldTapEnabled => localWorldTapEnabled;
+
+        public void SetLocalWorldTapEnabled(bool enabled) => localWorldTapEnabled = enabled;
+
         void Update()
         {
-            if (!networkDriven && inputReader.AttackTriggeredThisFrame)
+            if (!networkDriven && localWorldTapEnabled && inputReader.AttackTriggeredThisFrame)
             {
                 TryActivate(Time.time);
             }

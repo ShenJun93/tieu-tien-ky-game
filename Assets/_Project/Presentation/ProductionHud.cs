@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,10 +17,8 @@ namespace TieuTienKy.Gameplay
             ArenaRunStage.Wave1, ArenaRunStage.Wave2, ArenaRunStage.EliteWave
         };
 
-        static readonly Color PanelColor = new Color(0.05f, 0.05f, 0.07f, 0.85f);
         static readonly Color ButtonColor = new Color(0.9f, 0.9f, 0.92f, 1f);
         static readonly Color ButtonDisabledColor = new Color(0.4f, 0.4f, 0.42f, 0.8f);
-        static readonly Color CooldownOverlayColor = new Color(0f, 0f, 0f, 0.55f);
 
         ArenaRunDirector director;
         Combatant playerCombatant;
@@ -29,6 +28,7 @@ namespace TieuTienKy.Gameplay
 
         float bossArrivalCueTimer;
         bool paused;
+        bool initialized;
 
         Text hpText;
         Text stageText;
@@ -55,22 +55,84 @@ namespace TieuTienKy.Gameplay
         Text resultTitleText;
         Text resultSummaryText;
 
-        public void Initialize(ArenaRunDirector runDirector, Combatant player, PlayerSkillController skills, TieuTienKy.Input.TouchInputReader touchReader)
+        public void Initialize(ArenaRunDirector runDirector, Combatant player, PlayerSkillController skills, TieuTienKy.Input.TouchInputReader touchReader, ProductionCombatHudView view = null)
         {
+            if (view == null || !view.IsComplete)
+            {
+                throw new InvalidOperationException("ProductionHud.Initialize requires a fully wired ProductionCombatHudView.");
+            }
+
+            if (initialized)
+            {
+                throw new InvalidOperationException("ProductionHud.Initialize must not be called more than once.");
+            }
+
+            initialized = true;
+
             director = runDirector;
             playerCombatant = player;
             skillController = skills;
             inputReader = touchReader;
+
+            BindView(view);
+        }
+
+        void BindView(ProductionCombatHudView view)
+        {
+            hpText = view.HpText;
+            stageText = view.StageText;
+            blessingText = view.BlessingText;
+            killsText = view.KillsText;
+            timeText = view.TimeText;
+            moveBase = view.MoveBase;
+            moveKnob = view.MoveKnob;
+            pauseButton = view.PauseButton;
+            pausePanel = view.PausePanel;
+            bossPanel = view.BossPanel;
+            bossHpFill = view.BossHpFill;
+            bossHpText = view.BossHpText;
+            bossArrivalText = view.BossArrivalText;
+            resultPanel = view.ResultPanel;
+            resultTitleText = view.ResultTitleText;
+            resultSummaryText = view.ResultSummaryText;
+
+            for (int i = 0; i < skillButtons.Length; i++)
+            {
+                skillButtons[i] = view.SkillButtons[i];
+                skillLabels[i] = view.SkillLabels[i];
+                skillCooldownOverlays[i] = view.SkillCooldownOverlays[i];
+            }
+
+            view.BasicButton.onClick.AddListener(() => actionGateway?.RequestBasicAttack());
+            view.SkillButtons[0].onClick.AddListener(() => actionGateway?.RequestLoiTram());
+            view.SkillButtons[1].onClick.AddListener(() => actionGateway?.RequestPhongBo());
+            view.SkillButtons[2].onClick.AddListener(() => actionGateway?.RequestHoThe());
+
+            view.PauseButton.onClick.AddListener(() => SetPaused(true));
+            view.ResumeButton.onClick.AddListener(() => SetPaused(false));
+            view.RestartButton.onClick.AddListener(() =>
+            {
+                SetPaused(false);
+                director.RestartRun();
+            });
+            view.ExitButton.onClick.AddListener(() =>
+            {
+                SetPaused(false);
+                LoadMainMenu();
+            });
+
+            view.RetryButton.onClick.AddListener(() => director.RestartRun());
+            view.MenuButton.onClick.AddListener(LoadMainMenu);
+
+            bossArrivalText.gameObject.SetActive(false);
+            bossPanel.SetActive(false);
+            pausePanel.SetActive(false);
+            resultPanel.SetActive(false);
         }
 
         public void ShowBossArrivalCue() => bossArrivalCueTimer = BossArrivalCueSeconds;
 
         public void SetActionGateway(IPlayerActionGateway gateway) => actionGateway = gateway;
-
-        void Awake()
-        {
-            Build();
-        }
 
         void Update()
         {
@@ -277,187 +339,5 @@ namespace TieuTienKy.Gameplay
             return $"{minutes:00}:{secs:00}";
         }
 
-        void Build()
-        {
-            Canvas canvas = UiBuilder.CreateCanvas("ProductionHudCanvas", sortOrder: 5);
-            Transform root = canvas.transform;
-
-            BuildTopReadout(root);
-            BuildMovementAffordance(root);
-            BuildBasicAttackHint(root);
-            BuildSkillButtons(root);
-            BuildPause(root);
-            BuildBoss(root);
-            BuildResult(root);
-        }
-
-        void BuildTopReadout(Transform root)
-        {
-            hpText = UiBuilder.CreateText(root, "HpText", string.Empty, 34, TextAnchor.UpperLeft, Color.white,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -30f), new Vector2(500f, 46f));
-            stageText = UiBuilder.CreateText(root, "StageText", string.Empty, 34, TextAnchor.UpperLeft, Color.white,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -80f), new Vector2(600f, 46f));
-            blessingText = UiBuilder.CreateText(root, "BlessingText", string.Empty, 26, TextAnchor.UpperLeft, new Color(0.85f, 0.85f, 0.9f),
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(30f, -130f), new Vector2(1050f, 40f));
-            killsText = UiBuilder.CreateText(root, "KillsText", string.Empty, 34, TextAnchor.UpperRight, Color.white,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(400f, 46f));
-            timeText = UiBuilder.CreateText(root, "TimeText", string.Empty, 34, TextAnchor.UpperRight, Color.white,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -80f), new Vector2(400f, 46f));
-        }
-
-        void BuildMovementAffordance(Transform root)
-        {
-            moveBase = UiBuilder.CreatePanel(root, "MoveBase", new Color(1f, 1f, 1f, 0.25f),
-                new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(220f, 220f), new Vector2(220f, 220f)).rectTransform;
-            moveKnob = UiBuilder.CreatePanel(moveBase, "MoveKnob", new Color(1f, 1f, 1f, 0.55f),
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(80f, 80f)).rectTransform;
-        }
-
-        void BuildBasicAttackHint(Transform root)
-        {
-            UiBuilder.CreateText(root, "BasicHint", "BASIC: TAP TO ATTACK", 22, TextAnchor.LowerRight, new Color(1f, 1f, 1f, 0.6f),
-                new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 30f), new Vector2(420f, 34f));
-        }
-
-        void BuildSkillButtons(Transform root)
-        {
-            string[] labels = { "LÔI\nTRẢM", "PHONG\nBỘ", "HỘ\nTHỂ" };
-            ProductProofHudButtonSpec[] specs =
-            {
-                ProductProofHudLayout.LoiTram,
-                ProductProofHudLayout.PhongBo,
-                ProductProofHudLayout.HoThe
-            };
-
-            for (int i = 0; i < 3; i++)
-            {
-                ProductProofHudButtonSpec spec = specs[i];
-                Button button = UiBuilder.CreateButton(root, $"SkillButton_{i}", labels[i], spec.FontSize, ButtonColor,
-                    new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(spec.X, spec.Y), new Vector2(spec.Size, spec.Size), out Text label);
-
-                int capturedIndex = i;
-                button.onClick.AddListener(() => ActivateSkill(capturedIndex));
-                skillButtons[i] = button;
-                skillLabels[i] = label;
-
-                GameObject overlay = UiBuilder.CreatePanel(button.transform, "CooldownOverlay", CooldownOverlayColor,
-                    Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero).gameObject;
-                ((RectTransform)overlay.transform).offsetMin = Vector2.zero;
-                ((RectTransform)overlay.transform).offsetMax = Vector2.zero;
-                overlay.SetActive(false);
-                skillCooldownOverlays[i] = overlay;
-            }
-        }
-
-        void ActivateSkill(int index)
-        {
-            if (actionGateway == null)
-            {
-                return;
-            }
-
-            switch (index)
-            {
-                case 0: actionGateway.RequestLoiTram(); break;
-                case 1: actionGateway.RequestPhongBo(); break;
-                case 2: actionGateway.RequestHoThe(); break;
-            }
-        }
-
-        void BuildPause(Transform root)
-        {
-            pauseButton = UiBuilder.CreateButton(root, "PauseButton", "II", 32, ButtonColor,
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-100f, -30f), new Vector2(90f, 90f), out _);
-            pauseButton.onClick.AddListener(() => SetPaused(true));
-
-            pausePanel = new GameObject("PausePanel", typeof(RectTransform));
-            RectTransform panelRect = (RectTransform)pausePanel.transform;
-            panelRect.SetParent(root, false);
-            panelRect.anchorMin = new Vector2(0.5f, 0.5f);
-            panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-            panelRect.anchoredPosition = Vector2.zero;
-            panelRect.sizeDelta = new Vector2(700f, 600f);
-
-            UiBuilder.CreatePanel(pausePanel.transform, "Background", PanelColor, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-            UiBuilder.CreateText(pausePanel.transform, "Title", "PAUSED", 48, TextAnchor.MiddleCenter, Color.white,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -70f), new Vector2(0f, 80f));
-
-            Button resume = UiBuilder.CreateButton(pausePanel.transform, "ResumeButton", "RESUME", 32, ButtonColor,
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -230f), new Vector2(460f, 100f), out _);
-            resume.onClick.AddListener(() => SetPaused(false));
-
-            Button restart = UiBuilder.CreateButton(pausePanel.transform, "RestartButton", "RESTART", 32, ButtonColor,
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -350f), new Vector2(460f, 100f), out _);
-            restart.onClick.AddListener(() =>
-            {
-                SetPaused(false);
-                director.RestartRun();
-            });
-
-            Button exit = UiBuilder.CreateButton(pausePanel.transform, "ExitButton", "EXIT TO MENU", 32, ButtonColor,
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -470f), new Vector2(460f, 100f), out _);
-            exit.onClick.AddListener(() =>
-            {
-                SetPaused(false);
-                LoadMainMenu();
-            });
-
-            pausePanel.SetActive(false);
-        }
-
-        void BuildBoss(Transform root)
-        {
-            bossPanel = new GameObject("BossPanel", typeof(RectTransform));
-            RectTransform bossRect = (RectTransform)bossPanel.transform;
-            bossRect.SetParent(root, false);
-            bossRect.anchorMin = new Vector2(0.5f, 1f);
-            bossRect.anchorMax = new Vector2(0.5f, 1f);
-            bossRect.anchoredPosition = new Vector2(0f, -60f);
-            bossRect.sizeDelta = new Vector2(900f, 100f);
-
-            UiBuilder.CreateText(bossPanel.transform, "Label", "MINI BOSS", 30, TextAnchor.LowerCenter, Color.white,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 30f), new Vector2(0f, 40f));
-
-            UiBuilder.CreateFillBar(bossPanel.transform, "HpBar", new Color(0.15f, 0.15f, 0.15f, 0.9f), new Color(0.9f, 0.75f, 0.15f),
-                new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, out bossHpFill);
-
-            bossHpText = UiBuilder.CreateText(bossPanel.transform, "HpText", string.Empty, 26, TextAnchor.MiddleCenter, Color.white,
-                Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-
-            bossArrivalText = UiBuilder.CreateText(root, "BossArrivalText", "MINI BOSS", 90, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.2f),
-                new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, 100f), new Vector2(0f, 140f));
-
-            bossPanel.SetActive(false);
-            bossArrivalText.gameObject.SetActive(false);
-        }
-
-        void BuildResult(Transform root)
-        {
-            resultPanel = new GameObject("ResultPanel", typeof(RectTransform));
-            RectTransform panelRect = (RectTransform)resultPanel.transform;
-            panelRect.SetParent(root, false);
-            panelRect.anchorMin = new Vector2(0.5f, 0.5f);
-            panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-            panelRect.anchoredPosition = Vector2.zero;
-            panelRect.sizeDelta = new Vector2(1000f, 650f);
-
-            UiBuilder.CreatePanel(resultPanel.transform, "Background", PanelColor, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-
-            resultTitleText = UiBuilder.CreateText(resultPanel.transform, "Title", string.Empty, 72, TextAnchor.MiddleCenter, Color.yellow,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -110f), new Vector2(0f, 110f));
-
-            resultSummaryText = UiBuilder.CreateText(resultPanel.transform, "Summary", string.Empty, 32, TextAnchor.MiddleCenter, Color.white,
-                new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, 40f), new Vector2(0f, 140f));
-
-            Button retry = UiBuilder.CreateButton(resultPanel.transform, "RetryButton", "RETRY", 34, ButtonColor,
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-220f, 110f), new Vector2(380f, 110f), out _);
-            retry.onClick.AddListener(() => director.RestartRun());
-
-            Button menu = UiBuilder.CreateButton(resultPanel.transform, "MenuButton", "MENU", 34, ButtonColor,
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(220f, 110f), new Vector2(380f, 110f), out _);
-            menu.onClick.AddListener(LoadMainMenu);
-
-            resultPanel.SetActive(false);
-        }
     }
 }

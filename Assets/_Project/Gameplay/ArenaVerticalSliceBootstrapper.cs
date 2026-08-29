@@ -26,6 +26,7 @@ namespace TieuTienKy.Gameplay
         [SerializeField] GameObject pursuerPrefab;
         [SerializeField] GameObject lancerPrefab;
         [SerializeField] GameObject bossPrefab;
+        [SerializeField] GameObject combatHudPrefab;
 
         /// <summary>Editor-time wiring of authored scene content and prefab references. Called once by the scene-authoring tool that builds Arena_VerticalSlice_01.unity, never at runtime.</summary>
         public void ConfigureAuthoring(
@@ -36,7 +37,12 @@ namespace TieuTienKy.Gameplay
             GameObject cultivatorProxy,
             GameObject pursuer,
             GameObject lancer,
-            GameObject boss)
+            GameObject boss,
+            // Optional so the older whole-scene builder (Assets/Editor/
+            // VerticalSliceContentBuilder.cs, outside this task's scope)
+            // still compiles; ProductProofCombatHudAuthoring.BuildAndWire is
+            // what assigns the authored HUD prefab the runtime requires.
+            GameObject combatHud = null)
         {
             groundTransform = ground;
             playerSpawn = spawn;
@@ -46,6 +52,7 @@ namespace TieuTienKy.Gameplay
             pursuerPrefab = pursuer;
             lancerPrefab = lancer;
             bossPrefab = boss;
+            combatHudPrefab = combatHud;
         }
 
         void Awake()
@@ -140,9 +147,25 @@ namespace TieuTienKy.Gameplay
 
         void AttachRunDirector(GameObject player, ArenaBounds arenaBounds)
         {
-            var hud = new GameObject("ProductionHud").AddComponent<ProductionHud>();
-            var blessingHud = new GameObject("BlessingChoiceHud").AddComponent<BlessingChoiceHud>();
-            var onboardingHud = new GameObject("OnboardingHud").AddComponent<OnboardingHud>();
+            if (combatHudPrefab == null)
+            {
+                throw new System.InvalidOperationException(
+                    "ArenaVerticalSliceBootstrapper requires the authored ProductProofCombatHud prefab. Run ProductProofCombatHudAuthoring.BuildAndWire to author and assign it.");
+            }
+
+            // The whole player-facing HUD - combat readout, controls and the
+            // Cơ Duyên surface - is one authored prefab with one Canvas. The
+            // presenters bind to its serialized references; nothing here
+            // builds UI at runtime, and the prototype-era OnboardingHud
+            // overlay is no longer part of the production arena.
+            GameObject hudRoot = Instantiate(combatHudPrefab);
+            var view = hudRoot.GetComponent<ProductionCombatHudView>();
+            var hud = hudRoot.GetComponent<ProductionHud>();
+            var blessingHud = hudRoot.GetComponent<BlessingChoiceHud>();
+
+            // Basic is a dedicated on-screen button in this composition, so
+            // the greybox world-tap trigger must not also fire underneath it.
+            player.GetComponent<BasicAttack>().SetLocalWorldTapEnabled(false);
 
             var arenaEvents = new GameObject("ArenaEventDirector").AddComponent<ArenaEventDirector>();
             Vector3[] waterPositions = BuildWaterPositions();
@@ -157,6 +180,13 @@ namespace TieuTienKy.Gameplay
             var presentation = player.GetComponentInChildren<CharacterPresentation>();
             var skillController = player.GetComponent<PlayerSkillController>();
 
+            // Both presenters are bound to the same authored view before the
+            // director starts the run, because ArenaRunDirector.Initialize
+            // immediately calls StartRun(), which hides the Cơ Duyên surface.
+            blessingHud.Initialize(view);
+            hud.Initialize(director, player.GetComponent<Combatant>(), skillController, player.GetComponent<TouchInputReader>(), view);
+            hud.SetActionGateway(player.GetComponent<LocalPlayerActionGateway>());
+
             director.Initialize(
                 player.transform,
                 player.GetComponent<Combatant>(),
@@ -168,12 +198,9 @@ namespace TieuTienKy.Gameplay
                 hud,
                 arenaEvents,
                 arenaBounds,
-                onboardingHud,
+                onboardingHudRef: null,
                 skillController,
                 presentation);
-
-            hud.Initialize(director, player.GetComponent<Combatant>(), skillController, player.GetComponent<TouchInputReader>());
-            hud.SetActionGateway(player.GetComponent<LocalPlayerActionGateway>());
         }
 
         Vector3[] BuildWaterPositions()

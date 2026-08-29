@@ -994,6 +994,7 @@ MonoBehaviour:
   pursuerPrefab: {fileID: 2032731180603092570, guid: e1d9de765168d4243a20d67337b4ef1c, type: 3}
   lancerPrefab: {fileID: 4635385857599871630, guid: 483d22e0131d84c4ca42774a60cb238b, type: 3}
   bossPrefab: {fileID: 5431564821043834933, guid: c98d6adf80102e64aaf0995791986092, type: 3}
+  combatHudPrefab: {fileID: 6608786058786120302, guid: b634f5011c929fa4fa042a22c82e048b, type: 3}
 --- !u!4 &1049861051
 Transform:
   m_ObjectHideFlags: 0

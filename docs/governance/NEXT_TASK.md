@@ -15,18 +15,151 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
   "forbidden_paths": [],
   "last_terminal_closeout": {
     "schema_version": 1,
-    "task_id": "TASK-TIEU-TIEN-KY-PRODUCTION-PROCESS-V2-001",
-    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-PROCESS-V2-001.md",
-    "baseline_sha": "f2bc68c8bbea7ba1a8c865ee9ac40144e485a620",
-    "authority_anchor_sha": "f2bc68c8bbea7ba1a8c865ee9ac40144e485a620",
-    "activation_sha": "b4ca0e6ed8c75faf4b504318112a0ff0cb36d4dd",
+    "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001",
+    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001.md",
+    "baseline_sha": "d53bb3ced7a696a9fbdcb54398c143bd255c6a3e",
+    "authority_anchor_sha": "4ab1b9847df25c58c48c2f57db5aca12f60ccd75",
+    "activation_sha": "d656258937f9cacd9a66771d90a7ca08b656b18d",
     "independent_review_required": true,
-    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCTION-PROCESS-V2-001.review.json",
-    "reviewed_candidate_sha": "000fb9858e122ce05b31cd3487854ff7e1cc6ff4"
+    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001.review.json",
+    "reviewed_candidate_sha": "0c0630eefda8c985217e16bd8436f6effcb00885"
   },
   "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
+
+## Prior authority — PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001 closure
+
+`TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001` is
+closed via same-branch terminal closeout. Its final state:
+
+- branch `feat/product-proof-slice-009-representative-combat-spine-v3`;
+  canonical baseline `d53bb3ced7a696a9fbdcb54398c143bd255c6a3e` (`main`,
+  confirmed identical to live `origin/main` at this closeout); same-task
+  reactivation anchor `4ab1b9847df25c58c48c2f57db5aca12f60ccd75`; reactivation/
+  authority-transition commit `d656258937f9cacd9a66771d90a7ca08b656b18d`;
+  accepted implementation candidate `0c0630eefda8c985217e16bd8436f6effcb00885`
+  (`REVIEWED_IMPLEMENTATION_SHA`); independent-review receipt commit
+  `8edfe83` persisted as the candidate's direct child. This terminal closeout
+  commit is the receipt's direct child, touches only this file, and does not
+  alter the reviewed implementation payload;
+- delivered the approved Slice 009 design: an authored production combat
+  HUD (`ProductionCombatHudView` prefab/authoring path) replacing
+  `ProductionHud`'s/`BlessingChoiceHud`'s runtime `Build()`-constructed UI and
+  removing `OnboardingHud` from the production arena entirely; Production
+  Basic attack routed as a visible authored HUD action through
+  `IPlayerActionGateway` with the invisible right-half world tap disabled in
+  production (`BasicAttack.SetLocalWorldTapEnabled(false)`) while remaining
+  available for greybox compatibility; a real WaterZone depth-occlusion fix
+  (`P0A_WaterUnlitTransparent.shader`, `Blend SrcAlpha OneMinusSrcAlpha` +
+  `ZWrite Off`, applied to `Arena_Water.mat`) replacing the prior fully-opaque
+  `Standard`-shader material that SLICE-008 had left unresolved; and a
+  test-only correction to the historical AFK pincer-timing regression
+  assertion (widened tolerance to account for enemy-knockback movement of a
+  zero-input player, no gameplay/runtime tuning);
+- required evidence: `governance_hook_tests` PASS (111/111, independently
+  reproduced by the reviewer), `slice_009_design` PASS, `implementation_plan`
+  PASS, `editmode_tests` PASS (179/179 claimed), `playmode_tests` PASS (34/0,
+  2 pre-existing skips claimed), `android_build` PASS (SHA-bound APK claimed),
+  `authored_combat_hud`/`authored_blessing_hud`/
+  `onboarding_prototype_surface_removed`/`basic_button_intent_routing` PASS
+  (all four independently verified by the reviewer directly against the
+  diff), `quarantined_r1_untouched` PASS, `no_network_or_stage_c_scope` PASS,
+  `human_product_verdict` recorded exactly as `NO`;
+- **honest Human Product Gate outcome: `NO`, not a technical failure.** The
+  task's own contract anticipated `YES` / `YES_WITH_GAP` / `NO` as valid
+  physical-gate outcomes and required recording the verdict "without
+  reinterpreting it as a technical result." Physical on-device sessions
+  (Human/Game Director actually playing, reaching `Kills: 8` / `Victory`)
+  produced real evidence for 4 of 7 representative dimensions
+  (`mobile_controls`, `combat_response`, `combat_hud`,
+  `target_device_performance` — all `PASS`) but not the remaining 3
+  (`player_presentation`, `audio_readability`, `arena_readability` — no
+  clean mid-combat frame was captured, no audio-capture tooling exists in
+  scope, and the WaterZone fix itself was not visible in the one captured
+  frame). The Human/Game Director's direct verbatim assessment: technical
+  combat/controls/HUD function correctly, but `player_presentation` and
+  `arena_readability` "read as a demo rather than a market-facing game," and
+  `audio_readability` is a plain `NO`. Overall Human Product Gate = `NO`;
+- **`pre-finish.mjs` mechanically blocks on this exact candidate and is
+  expected to** — its fixed evidence-verdict enum
+  (`PASS`/`PASS_WITH_REMEDIATION`/`FAIL`) has no slot for a legitimate
+  Product-Gate-`NO` terminal outcome, and several `required_evidence` keys
+  literally require `PASS` where the honest recorded value is
+  `PARTIAL_4_OF_7_DIMENSIONS` or similarly qualified. This is the same class
+  of over-constrained literal-match gap disposed at
+  `TASK-TIEU-TIEN-KY-READONLY-REVIEWER-PILOT-002` as
+  `CONTROL_PLANE_RECONCILIATION_ACCEPTABLE`. The Human/Game Director's live
+  instruction — stop spending further work/quota chasing additional
+  screenshots, evidence polishing, or preflight retries to force this exact
+  slice through the gate, and record the verdict truthfully as `NO` — is the
+  explicit disposition for this instance. `pre-finish`'s literal evidence
+  contract is not amended by this closure; hardening it to recognize a
+  legitimate Product-Gate-`NO` terminal state remains separate, unauthorized
+  future governance debt;
+- **independent review: `PASS_WITH_REMEDIATION`, blocking findings 0**
+  (`docs/reviews/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001.review.json`).
+  The reviewer independently verified the four authored-HUD/routing/removal
+  claims and the WaterZone fix directly against the `baseline_ref..candidate`
+  diff (not the evidence report's prose), confirmed 111/111 governance-hook
+  tests, and confirmed no forbidden-path or R1/network scope violation across
+  the full diff. Two P1 findings are disclosed here in full rather than
+  folded into the pre-briefed verdict-enum gap above: (1) a same-task
+  "reactivation" mechanism used mid-task to correct the AFK regression test
+  moved `authority_anchor_ref` forward to a mid-implementation commit; this
+  mechanism has no defined basis in `docs/governance/WORKFLOW.md`, and its
+  practical effect is that `pre-finish`'s automated `exact_scope_diff` check
+  only re-verifies the diff from the reactivation point forward (two files),
+  not the full `baseline_ref..candidate` diff — the reviewer closed this gap
+  manually for this closure by checking the full diff directly, but the
+  automated hook coverage gap itself remains unremediated and should be
+  hardened (e.g. `exact_scope_diff` should always be computed from
+  `baseline_ref`, not a moveable anchor) before any future task reuses a
+  same-task-reactivation pattern; (2) `placeholder_inventory` is genuinely
+  `PENDING` (only 4 of 7 representative dimensions were ever
+  placeholder-inspected), a real content gap distinct from the pre-briefed
+  verdict-label mismatch, disclosed honestly in the evidence report but not
+  completed. A third, non-blocking process note: physical Human sessions and
+  the final verdict occurred before `human_gate_preflight` was run, a
+  sequencing deviation from the task's own written stop condition, mitigated
+  because it was the Human/Game Director's own live decision to render
+  judgment from direct observation and the outcome was the conservative `NO`
+  rather than a false accept;
+- the Human/Game Director's live direction following this Product Gate `NO`:
+  treat Slice 009 as having successfully exposed the real product gap —
+  technical combat functionality exists, representative commercial
+  presentation does not — and do not spend further work trying to force this
+  exact slice's evidence to a clean pass. The next authorized direction is a
+  bounded **productization** task (coherent art direction for
+  player/enemies/arena/materials/lighting/water; production-quality combat
+  animation and hit reaction; readable VFX/impact presentation; real combat
+  audio and mix; commercial-quality HUD/UI presentation; environment
+  dressing/composition; target-device performance preservation), explicitly
+  not networking/PvP/co-op/backend/large progression/meta or content-volume
+  scaling. That successor task's contract, activation, and baseline are a
+  separate Human/Game-Director or Final-Foreman control-plane action against
+  the `main` state this closeout leaves behind — none is activated by this
+  closeout;
+- this closure **resolves** the previously open `WATERZONE_DEPTH_OCCLUSION`
+  thread (`docs/governance/CURRENT_STATE.md`): the fully-opaque-material root
+  cause SLICE-008 diagnosed but could not fully fix is now corrected by the
+  dedicated unlit-transparent shader described above, independently
+  confirmed against the diff. This closure also substantively answers the
+  long-pending "genuine B-LITE Human physical gate playtest" thread deferred
+  from Slice 007 — a real physical Human Product Gate was conducted on the
+  representative combat spine and returned `NO` — which is precisely why
+  further actor-art-only iteration is not the next direction and a
+  cross-discipline productization task is;
+- this closure grants **no** successor implementation authority. The
+  productization direction named above is a next-direction pointer, not an
+  activated task; `docs/governance/RISK_REGISTER.md`'s two open risks
+  (`RISK-NETWORK-001`, `RISK-IP-001`), PvP/co-op/network scale, Stage C, and
+  any other successor implementation task all remain unauthorized unless
+  separately Human-authorized;
+- this branch remains **unpushed/unmerged** as of this closeout commit.
+  Publication to `origin`, PR creation, `repository-gate`, and the Human
+  merge decision are separate control-plane steps that follow this local
+  closeout, not implementation-writer work.
 ## Prior authority — CLAUDE NATIVE PERMISSION BOUNDARY A5 001 closure
 
 `TASK-TIEU-TIEN-KY-CLAUDE-NATIVE-PERMISSION-BOUNDARY-A5-001` is terminal-closed on branch
