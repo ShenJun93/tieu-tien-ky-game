@@ -5,14 +5,59 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 ```json
 {
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "state": "DISCOVERY",
-  "task_id": null,
-  "branch": null,
-  "baseline_ref": null,
-  "task_file": null,
-  "evidence_file": null,
-  "allowed_paths": [],
-  "forbidden_paths": [],
+  "state": "IMPLEMENT",
+  "task_mode": "SPEC",
+  "task_id": "TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001",
+  "branch": "chore/ttk-production-craft-system-v1-001",
+  "baseline_ref": "4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269",
+  "authority_anchor_ref": "4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269",
+  "workspace_policy": "ISOLATED_WORKTREE",
+  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.md",
+  "evidence_file": "docs/evidence/TTK_PRODUCTION_CRAFT_SYSTEM_V1_001_REPORT.md",
+  "allowed_paths": [
+    "docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md",
+    "docs/master/PRODUCT_FOUNDATION.md",
+    "docs/brand/TIEU_TIEN_KY_BRAND_ART_DIRECTION_v0.1.md",
+    "docs/decisions/003-art-identity-reconciliation.md",
+    "docs/production-craft/",
+    "docs/superpowers/specs/2026-08-30-ttk-production-craft-system-v1-design.md",
+    "docs/superpowers/plans/2026-08-30-ttk-production-craft-system-v1-implementation.md",
+    "docs/evidence/TTK_PRODUCTION_CRAFT_SYSTEM_V1_001_REPORT.md",
+    ".agents/skills/ttk-production-craft-router/",
+    ".agents/skills/ttk-art-target-reference-benchmarking/SKILL.md",
+    ".agents/skills/ttk-combat-animation-rhythm/SKILL.md",
+    ".agents/skills/ttk-vfx-readability-hierarchy/SKILL.md",
+    ".agents/skills/ttk-audio-haptic-direction/SKILL.md",
+    ".agents/skills/ttk-game-ui-art-direction/SKILL.md",
+    ".agents/skills/ttk-level-encounter-presentation/SKILL.md",
+    ".agents/skills/ttk-player-experience-integration/SKILL.md",
+    ".agents/skills/ttk-mobile-performance-budget/SKILL.md",
+    ".agents/skills/ttk-unity-authored-content-pipeline/SKILL.md",
+    ".agents/skills/ttk-asset-intake/SKILL.md",
+    "scripts/hooks/hooks.test.mjs",
+    "AGENTS.md"
+  ],
+  "forbidden_paths": [
+    "Assets/",
+    "Packages/",
+    "ProjectSettings/",
+    ".github/",
+    "docs/governance/NEXT_TASK.md",
+    "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.md"
+  ],
+  "independent_review_required": true,
+  "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.review.json",
+  "acceptable_review_verdicts": [
+    "PASS",
+    "PASS_WITH_REMEDIATION"
+  ],
+  "required_evidence": {
+    "governance_hook_tests": "PASS",
+    "exact_scope_diff": "PASS",
+    "canon_reconciliation_recorded": "PASS",
+    "skill_pressure_tests": "PASS",
+    "no_gameplay_or_unity_change": "PASS"
+  },
   "last_terminal_closeout": {
     "schema_version": 1,
     "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001",
@@ -24,7 +69,7 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
     "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001.review.json",
     "reviewed_candidate_sha": "0c0630eefda8c985217e16bd8436f6effcb00885"
   },
-  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
+  "stop_condition": "TERMINAL_CLOSEOUT_TO_DISCOVERY_AFTER_REVIEW_NO_SUCCESSOR"
 }
 ```
 
