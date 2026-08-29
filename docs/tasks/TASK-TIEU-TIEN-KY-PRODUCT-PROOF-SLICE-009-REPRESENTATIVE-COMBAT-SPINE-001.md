@@ -7,9 +7,9 @@ repository           = ShenJun93/tieu-tien-ky-game
 state                = IMPLEMENT
 task_mode            = SLICE
 task_id              = TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001
-branch               = feat/product-proof-slice-009-representative-combat-spine-v2
+branch               = feat/product-proof-slice-009-representative-combat-spine-v3
 baseline_ref         = d53bb3ced7a696a9fbdcb54398c143bd255c6a3e
-authority_anchor_ref = d53bb3ced7a696a9fbdcb54398c143bd255c6a3e
+authority_anchor_ref = 4ab1b9847df25c58c48c2f57db5aca12f60ccd75
 workspace_policy     = ISOLATED_WORKTREE
 player_visible_delta = REQUIRED
 unity_execution      = REQUIRED
@@ -18,6 +18,7 @@ unity_execution      = REQUIRED
 ## Human decision
 
 Human/Game Director selected option A, approved the in-chat Slice 009 design, and approved the authored-Blessing-HUD scope delta on 2026-08-29.
+On 2026-08-29 the Human/Game Director also explicitly approved a same-task reactivation from restart-safe checkpoint `4ab1b9847df25c58c48c2f57db5aca12f60ccd75`, widening writer scope by exactly `Assets/_Project/Tests/PlayMode/ArenaAfkDefeatInvestigationTests.cs` so the sole historical AFK pincer timing assertion can be corrected without changing gameplay/runtime behavior.
 The successor is a fresh bounded solo-PvE representative Product Proof slice under Production Process v2.
 It does not resume the historical R1-R6 program and does not authorize mutation of the quarantined R1 specimen.
 
@@ -98,7 +99,8 @@ Allowed paths are declared in `docs/governance/NEXT_TASK.md` and are intentional
 - production-arena composition and its authored combat-HUD prefab/editor authoring path;
 - `TouchInputReader`, `ProductionHud`, `BlessingChoiceHud`, narrow presentation/combat seams already named by the design;
 - the WaterZone material/shader only if verified as a representative confounder;
-- focused EditMode/PlayMode tests for those exact seams.
+- focused EditMode/PlayMode tests for those exact seams;
+- the reactivated historical AFK timing regression test, `Assets/_Project/Tests/PlayMode/ArenaAfkDefeatInvestigationTests.cs`, test-only and with no gameplay/runtime tuning authority.
 
 Activation changes only `docs/governance/NEXT_TASK.md` and this task contract. Both become writer-locked immediately after activation.
 
