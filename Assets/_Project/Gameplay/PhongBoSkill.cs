@@ -18,6 +18,9 @@ namespace TieuTienKy.Gameplay
         [SerializeField] float galeCounterHitStopTimeScale = 0.04f;
         [SerializeField] float galeCounterBurstLifetimeSeconds = 0.4f;
         [SerializeField] float galeCounterCameraImpulse = 0.26f;
+        [SerializeField] float galeCounterBuildDashDistanceMultiplier = 1f;
+        [SerializeField] float galeCounterBuildPushRadius = 2f;
+        [SerializeField] float galeCounterBuildPushImpulse = 6f;
 
         CharacterController controller;
         Combatant selfCombatant;
@@ -27,6 +30,7 @@ namespace TieuTienKy.Gameplay
         float baseCooldownSeconds;
         bool galeCounterPrimed;
         GaleCounterSpec galeCounterSpec;
+        bool galeCounterBuildMutationActive;
 
         public event System.Action Activated;
         public event System.Action RunTuningChanged;
@@ -44,6 +48,16 @@ namespace TieuTienKy.Gameplay
         public float BaseCooldownSeconds => baseCooldownSeconds;
         public bool IsReady(float currentTime) => cooldown != null && cooldown.IsReady(currentTime);
         public bool WindInvestmentActive => cooldownSeconds < baseCooldownSeconds - 0.001f;
+        public bool GaleCounterBuildMutationActive => galeCounterBuildMutationActive;
+
+        public void SetGaleCounterBuildMutationActive(bool active)
+        {
+            galeCounterBuildMutationActive = active;
+            if (!active)
+            {
+                galeCounterPrimed = false;
+            }
+        }
 
         public void SetArenaBounds(ArenaBounds arenaBounds)
         {
@@ -81,8 +95,11 @@ namespace TieuTienKy.Gameplay
                 return false;
             }
 
-            bool useGaleCounter = galeCounterPrimed;
-            GaleCounterSpec counter = galeCounterSpec;
+            bool usePersistentGaleCounter = galeCounterBuildMutationActive;
+            bool useGaleCounter = usePersistentGaleCounter || galeCounterPrimed;
+            GaleCounterSpec counter = usePersistentGaleCounter
+                ? new GaleCounterSpec(galeCounterBuildDashDistanceMultiplier, galeCounterBuildPushRadius, galeCounterBuildPushImpulse)
+                : galeCounterSpec;
             galeCounterPrimed = false;
 
             float distance = dashDistanceMeters * (useGaleCounter ? counter.DashDistanceMultiplier : 1f);

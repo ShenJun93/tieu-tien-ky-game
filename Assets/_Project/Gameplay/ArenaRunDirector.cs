@@ -159,6 +159,7 @@ namespace TieuTienKy.Gameplay
             {
                 playerSkillController.LoiTram.SetConductiveMultiplier(RunBlessingState.BaseConductiveMultiplier);
                 playerSkillController.PhongBo.SetCooldownDuration(playerSkillController.PhongBo.BaseCooldownSeconds, Time.time);
+                playerSkillController.PhongBo.SetGaleCounterBuildMutationActive(false);
                 playerSkillController.HoThe.SetWindowDuration(playerSkillController.HoThe.BaseWindowDurationSeconds);
             }
             playerPresentation?.SetBlessingVisual(Color.white, 0f);
@@ -339,6 +340,8 @@ namespace TieuTienKy.Gameplay
                 playerSkillController.PhongBo.SetCooldownDuration(
                     playerSkillController.PhongBo.BaseCooldownSeconds * modifiers.PhongBoCooldownMultiplier,
                     Time.time);
+                playerSkillController.PhongBo.SetGaleCounterBuildMutationActive(
+                    blessings.StackCount(BlessingId.WindStride) > 0);
                 playerSkillController.HoThe.SetWindowDuration(
                     playerSkillController.HoThe.BaseWindowDurationSeconds + modifiers.HoTheWindowBonusSeconds);
             }
