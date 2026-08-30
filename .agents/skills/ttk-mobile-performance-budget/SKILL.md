@@ -37,3 +37,7 @@ Can the representative experience sustain its intended responsiveness on the tar
 ## External basis
 
 Current Android game guidance emphasizes measuring FPS/frame times, CPU/GPU bottlenecks, thermal behavior, frame pacing and target-device variation; Unity mobile guidance likewise recommends explicit per-frame budgets and physical-device profiling.
+
+## Related capability reference
+
+Check `docs/production-craft/AI_PRODUCTION_CAPABILITY_REGISTRY.md` for what local profiling/automation tooling (Unity Profiler, Profile Analyzer, platform capture tools) is actually available in the current session before assuming a measurement gap.

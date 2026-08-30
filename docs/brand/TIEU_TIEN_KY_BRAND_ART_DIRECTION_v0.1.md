@@ -3,13 +3,19 @@
 ## Working title
 **TIỂU TIÊN KÝ**
 
-Status: Working title. Not trademark-cleared.
+Status: Working title. Not trademark-cleared. Character-proportion identity
+reconciled per `docs/decisions/003-art-identity-reconciliation.md`
+(semi-proportional/stylized anime, not chibi) — see the updated "Core
+visual thesis" and "Character baseline" below. Every other section (map
+baseline, tone, anti-copy, tagline) is unchanged and still canonical; the
+full reconciled visual target lives in
+`docs/production-craft/visual/TTK_VISUAL_BIBLE.md`.
 
 ## Core visual thesis
-**Chibi Cultivation Adventure — Cute Eastern Fantasy**
+**Semi-Proportional Cultivation Action — Striking Eastern Fantasy**
 
 ## Emotional ingredients
-- whimsical chibi adventure;
+- striking cultivation-action adventure;
 - tu tiên từ phàm nhân → đại năng;
 - cơ duyên / pháp bảo / linh thú;
 - playful system-driven chaos;
@@ -17,12 +23,14 @@ Status: Working title. Not trademark-cleared.
 - expressive characters.
 
 ## Signature contrast
-**Cute character + spectacular cultivation power.**
+**Striking character + spectacular cultivation power.**
 
 ## Character baseline
-- 2.5–3 heads tall;
+- semi-proportional / stylized anime proportions (not chibi — see
+  `docs/decisions/003-art-identity-reconciliation.md` and
+  `docs/production-craft/visual/TTK_VISUAL_BIBLE.md` for the exact target);
 - expressive face;
-- simplified costume;
+- simplified-but-detailed costume;
 - oversized readable weapon/prop;
 - transformation grows around the body through aura, floating swords, spell circles, spirits and elemental effects.
 

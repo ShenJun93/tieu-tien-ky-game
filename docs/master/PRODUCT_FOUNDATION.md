@@ -71,9 +71,11 @@ experimentation, repeatable runs, and fantasy progression.
 want cultivation fantasy expressed through active play rather than
 passive stat accumulation.
 
-**BREAKOUT (hypothesis):** accessible cute/chibi mobile-action players
-attracted by readability and the contrast of a cute body carrying
-spectacular cultivation power.
+**BREAKOUT (hypothesis):** accessible semi-proportional/stylized-anime
+mobile-action players attracted by readability and the contrast of a
+striking character carrying spectacular cultivation power (identity
+reconciled from the original cute/chibi framing per
+`docs/decisions/003-art-identity-reconciliation.md`).
 
 Vietnam/SEA may remain a useful learning/playtest context. **Launch-market
 selection is DEFERRED** — do not canonicalize a specific launch region or
@@ -145,7 +147,17 @@ as one.
 
 ## 7. Identity pillar — ACCEPTED DIRECTION
 
-**Cute/chibi × spectacular cultivation power.**
+**Semi-proportional / stylized anime × spectacular cultivation power.**
+
+Reconciled from the original "cute/chibi × spectacular cultivation power"
+framing per `docs/decisions/003-art-identity-reconciliation.md`, following
+Product Proof Slice 009's Human Product Gate `NO`
+(`docs/evidence/PRODUCT_PROOF_SLICE_009_REPRESENTATIVE_COMBAT_SPINE_REPORT.md`).
+The signature contrast — a striking character design set against
+spectacular cultivation power — is preserved; only the character-
+proportion/rendering axis changed. See
+`docs/production-craft/visual/TTK_VISUAL_BIBLE.md` for the full visual
+target this pillar now points to.
 
 This is an **identity/acquisition/readability pillar** — it supports
 Product Bet #1's readability requirement and the BREAKOUT audience

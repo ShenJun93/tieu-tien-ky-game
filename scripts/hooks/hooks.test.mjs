@@ -1333,6 +1333,101 @@ test('skill-pressure: reviewer treats non-representative green artifact as block
   assert.match(text, /HUMAN PRODUCT GATE/);
 });
 
+test('skill-pressure: art benchmarking references reconciled semi-proportional identity, not chibi', () => {
+  const text = readSource('.agents/skills/ttk-art-target-reference-benchmarking/SKILL.md');
+  assert.match(text, /semi-proportional|stylized anime/i);
+  assert.match(text, /003-art-identity-reconciliation/i);
+  assert.match(text, /Readable Chaos/);
+  assert.match(text, /Keep semi-proportional.*as TTK identity constraints/is);
+  assert.match(text, /superseded the prior cute\/chibi identity framing/i);
+});
+
+test('skill-pressure: combat animation rhythm rejects clip playback as timing evidence', () => {
+  const text = readSource('.agents/skills/ttk-combat-animation-rhythm/SKILL.md');
+  assert.match(text, /ANIMATION CLIPS != COMBAT RHYTHM/);
+  assert.match(text, /TTK_ANIMATION_BIBLE\.md/);
+});
+
+test('skill-pressure: VFX readability points to the VFX Bible/pipeline contract and states the more-particles guardrail explicitly', () => {
+  const text = readSource('.agents/skills/ttk-vfx-readability-hierarchy/SKILL.md');
+  assert.match(text, /TTK_VFX_BIBLE\.md/);
+  assert.match(text, /CHATGPT_WEB_VISUAL_PIPELINE_CONTRACT\.md/);
+  assert.match(text, /MORE PARTICLES\s*(!=|≠)\s*BETTER FEEDBACK/i);
+});
+
+test('skill-pressure: audio direction forbids middleware shortcuts and treats synthesis as unproven until heard', () => {
+  const text = readSource('.agents/skills/ttk-audio-haptic-direction/SKILL.md');
+  assert.match(text, /FMOD/);
+  assert.match(text, /Wwise/);
+  assert.match(text, /not itself evidence of quality/i);
+  assert.match(text, /audio_readability.*NO/is);
+  assert.match(text, /Human listening.*final authority/is);
+});
+
+test('skill-pressure: UI art direction warns against generic MMO gold-frame default and points to UI Bible', () => {
+  const text = readSource('.agents/skills/ttk-game-ui-art-direction/SKILL.md');
+  assert.match(text, /MMO gold-frame/i);
+  assert.match(text, /docs\/production-craft\/ui\/TTK_UI_BIBLE\.md/);
+  assert.match(text, /combat_hud = PASS/);
+});
+
+test('skill-pressure: level/encounter presentation puts combat readability before screenshot beauty', () => {
+  const text = readSource('.agents/skills/ttk-level-encounter-presentation/SKILL.md');
+  assert.match(text, /combat readability first, screenshot beauty\s+second/i);
+  assert.match(text, /never the reverse/i);
+  assert.match(text, /TTK_ENVIRONMENT_BIBLE\.md/);
+});
+
+test('skill-pressure: player experience integration anchors presentation to gameplay truth', () => {
+  const text = readSource('.agents/skills/ttk-player-experience-integration/SKILL.md');
+  assert.match(text, /gameplay truth/i);
+  assert.match(text, /anchor/i);
+  assert.match(text, /must never (visually|claim)[\s\S]{0,120}before gameplay/i);
+});
+
+test('skill-pressure: mobile performance budget points to the AI production capability registry for local tooling', () => {
+  const text = readSource('.agents/skills/ttk-mobile-performance-budget/SKILL.md');
+  assert.match(text, /AI_PRODUCTION_CAPABILITY_REGISTRY\.md/);
+});
+
+test('skill-pressure: authored content pipeline points to the Production Craft Constitution escalation ladder', () => {
+  const text = readSource('.agents/skills/ttk-unity-authored-content-pipeline/SKILL.md');
+  assert.match(text, /TTK_PRODUCTION_CRAFT_CONSTITUTION\.md/);
+});
+
+test('skill-pressure: asset intake points to the upstream capability and free-source registries without weakening its own gate', () => {
+  const text = readSource('.agents/skills/ttk-asset-intake/SKILL.md');
+  assert.match(text, /AI_PRODUCTION_CAPABILITY_REGISTRY\.md/);
+  assert.match(text, /TTK_FREE_SOURCE_REGISTRY\.md/);
+  assert.match(text, /sole gate/i);
+});
+
+test('skill-pressure: production craft router enforces sourcing ladder and research-state discipline before broad research', () => {
+  const text = readSource('.agents/skills/ttk-production-craft-router/SKILL.md');
+  assert.match(text, /TTK_PRODUCTION_CRAFT_CONSTITUTION\.md/);
+  assert.match(text, /RESOLVED/);
+  assert.match(text, /capability\s+check/i);
+  assert.match(text, /ttk-player-experience-integration/);
+});
+
+test('skill-pressure: Production Craft Constitution states the AI-native zero-incremental-purchase principle and paid-sourcing gate', () => {
+  const text = readSource('docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md');
+  assert.match(text, /AI-NATIVE FIRST/);
+  assert.match(text, /ZERO-INCREMENTAL-PURCHASE FIRST/);
+  assert.match(text, /HUMAN JUDGMENT LAST/);
+  assert.match(text, /DEMONSTRATED_QUALITY_BLOCKER/);
+  assert.match(text, /HUMAN_FINANCIAL_APPROVAL/);
+  assert.match(text, /ttk-asset-intake/);
+});
+
+test('skill-pressure: art-identity reconciliation record narrowly reopens 001 without discarding the PvE-first bet', () => {
+  const text = readSource('docs/decisions/003-art-identity-reconciliation.md');
+  assert.match(text, /ACCEPTED/);
+  assert.match(text, /semi-proportional/i);
+  assert.match(text, /partially supersedes/i);
+  assert.match(text, /PvE-first.*unchanged|unchanged.*PvE-first/is);
+});
+
 test('production-process skills are natively discoverable with trigger-only YAML frontmatter', () => {
   const expected = new Map([
     ['execute-task', 'execute-task'], ['review-task', 'review-task'],
@@ -1345,7 +1440,8 @@ test('production-process skills are natively discoverable with trigger-only YAML
     ['ttk-vfx-readability-hierarchy', 'ttk-vfx-readability-hierarchy'],
     ['ttk-mobile-performance-budget', 'ttk-mobile-performance-budget'],
     ['ttk-playtest-user-research', 'ttk-playtest-user-research'],
-    ['ttk-onboarding-accessibility', 'ttk-onboarding-accessibility']
+    ['ttk-onboarding-accessibility', 'ttk-onboarding-accessibility'],
+    ['ttk-production-craft-router', 'ttk-production-craft-router']
   ]);
   for (const [dir, expectedName] of expected) {
     const text = fs.readFileSync(path.join(sourceRoot, '.agents/skills', dir, 'SKILL.md'), 'utf8');

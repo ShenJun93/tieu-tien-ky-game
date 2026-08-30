@@ -15,6 +15,7 @@ Is this content structured so designers/agents can see, tune, review and preserv
 
 ## MUST
 
+- Follow the Production Craft Constitution's AI-native / in-house-first escalation ladder (`docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md` §2-§3) before assuming authored content requires new external sourcing.
 - Prefer authored Scenes/Prefabs/Animator/Materials/UI hierarchies for stable player-facing composition whose layout, look, references or tuning need visual review.
 - Keep runtime generation for genuinely dynamic/ephemeral content or cases where data-driven construction is the product requirement.
 - Make ownership explicit: serialized authoring owns composition; runtime systems own dynamic state/behavior.
