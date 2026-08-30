@@ -1,6 +1,6 @@
 ---
 name: ttk-production-craft-router
-description: Use before any TTK production-craft question (art, character, animation, VFX, audio, haptics, HUD/UI, environment, materials, lighting, camera feedback, cross-discipline timing, mobile performance, asset sourcing). Routes to the smallest correct set of craft skills and Bibles instead of broad research.
+description: Use when any TTK production-craft question arises (art, character, animation, VFX, audio, haptics, HUD/UI, environment, materials, lighting, camera feedback, cross-discipline timing, mobile performance, asset sourcing) — routes to the smallest correct set of craft skills and Bibles instead of broad research.
 ---
 
 # ttk-production-craft-router

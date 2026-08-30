@@ -18,8 +18,9 @@ What observable quality bar should this slice reach, and can the team explain th
 - Establish a small reference set before expensive implementation: internal targets plus external references chosen for specific qualities such as silhouette clarity, material hierarchy, value grouping, UI density, impact readability or mobile legibility.
 - Extract principles, not assets: record **why** a reference works and translate that into TTK-specific criteria.
 - Define a target and a rejection bar. “Better than current” is insufficient when current is known prototype quality.
-- Keep cute/chibi × spectacular cultivation power and Readable Chaos as TTK identity constraints unless canon is explicitly reopened.
+- Keep semi-proportional / stylized anime × spectacular cultivation action and Readable Chaos as TTK identity constraints unless canon is explicitly reopened (`docs/decisions/003-art-identity-reconciliation.md` — this reconciled and superseded the prior cute/chibi identity framing; do not treat old chibi reference material as a default).
 - Apply asset provenance/intake rules to any external material entering the repository.
+- For reference-taxonomy categories, TAKE/DON'T TAKE annotation, scoring, image-generation prompt recipes, and Asset-Store coherence checklists, use `docs/production-craft/visual/TTK_VISUAL_BIBLE.md` — do not re-derive that depth here.
 
 ## MUST NOT
 

@@ -19,13 +19,28 @@ as an engine debug overlay placed on top of a game?
   truth, never owns combat/cooldown/blessing state.
 - Keep HP, objective, cooldowns, build state, and boss state readable at a
   glance during actual play, not only in a static mockup.
+- Read `docs/production-craft/ui/TTK_UI_BIBLE.md` for HUD-hierarchy,
+  typography/Vietnamese-diacritic, icon-language, nine-slice, and
+  source-art-to-authored-Unity-UI depth; this skill states the gate, the
+  Bible teaches the craft.
 
 ## MUST NOT
 
 - Treat "migrated to Canvas/uGUI" as equivalent to "looks like game UI."
-  `CANVAS != GOOD UI` (see anti-demo rules).
+  `CANVAS != GOOD UI` (see anti-demo rules) — a fully wired Canvas
+  hierarchy with `PASS` device evidence is still not proof of good UI;
+  Slice 009's authored `combat_hud = PASS` next to a Human "reads as a
+  demo" verdict is this project's own concrete instance
+  (`docs/evidence/PRODUCT_PROOF_SLICE_009_REPRESENTATIVE_COMBAT_SPINE_REPORT.md`).
 - Introduce a generic theming/style-system framework before more than one
   screen has proven the visual language works.
+- Default to a generic "MMO gold-frame fantasy" UI skin (ornate gold
+  filigree, gem-inset corners, gacha chrome) merely because it is a common
+  cultivation/wuxia mobile register; TTK's accepted identity is
+  semi-proportional/stylized anime action
+  (`docs/decisions/003-art-identity-reconciliation.md`) — that gold-frame
+  register is only ever an explicit Human/Game Director choice, never a
+  silent default.
 - Change gameplay-truth ownership while doing a visual pass.
 
 ## EVIDENCE / EXIT CONDITION
@@ -39,6 +54,8 @@ phèn") for the concrete failure this skill exists to prevent recurring.
 
 ## References
 
+`docs/production-craft/ui/TTK_UI_BIBLE.md` (full craft depth);
 `docs/master/GAME_PRODUCTION_DOCTRINE.md` §3 (`CANVAS != GOOD UI`);
 `docs/master/PRODUCTION_FOUNDATION.md` §3 (UI visual language / icon
-language / typography kit categories).
+language / typography kit categories);
+`docs/decisions/003-art-identity-reconciliation.md` (visual identity).

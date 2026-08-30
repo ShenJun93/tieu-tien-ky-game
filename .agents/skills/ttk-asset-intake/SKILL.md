@@ -74,6 +74,15 @@ AI-generated output, commissioned work, or any other outside source) is
 discussed for future adoption into TTK. Also use when reviewing an existing
 intake record for completeness before a Human disposition decision.
 
+## Upstream sourcing references
+
+`docs/production-craft/AI_PRODUCTION_CAPABILITY_REGISTRY.md` and
+`docs/production-craft/TTK_FREE_SOURCE_REGISTRY.md` describe *where* a
+candidate asset or capability might come from. They grant no adoption
+authority and do not replace this Skill's intake/provenance/technical-
+screening process as the sole gate for anything actually entering the
+repository, regardless of source.
+
 ## Procedure
 
 1. Read live authority first — `docs/governance/CURRENT_STATE.md`,

@@ -20,6 +20,8 @@ rather than padded?
   visually.
 - Pace escalation (waves → Cơ Duyên → elite → boss → result) toward a real
   climax, not toward hitting a target duration.
+- Environment decisions serve combat readability first, screenshot beauty
+  second — never the reverse.
 
 ## MUST NOT
 
@@ -36,4 +38,7 @@ plus the existing automated arena-integrity regression staying green.
 
 `docs/master/GAME_PRODUCTION_DOCTRINE.md` §3;
 `docs/tasks/TASK-TIEU-TIEN-KY-STAGE-AB-PRODUCTION-ALPHA-001.md` A1/A2 (arena
-integrity precedent).
+integrity precedent);
+`docs/production-craft/environment/TTK_ENVIRONMENT_BIBLE.md` (materials,
+lighting hierarchy, water technique, mist/fog, prop density, mobile
+simplification order).

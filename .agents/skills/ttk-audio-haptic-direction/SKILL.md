@@ -30,6 +30,22 @@ during real play, at real mobile volume/speaker constraints — not just
   `AUDIO CLIPS != SOUND DESIGN`.
 - Build a generic audio-event-bus/manager framework.
 - Add haptics dense enough to become annoying rather than informative.
+- Introduce FMOD, Wwise, or another major audio middleware merely because
+  professional games commonly use one — Unity's built-in
+  `AudioSource`/`AudioMixer` is sufficient by default; escalate only after
+  a demonstrated capability blocker Unity's own audio stack cannot solve,
+  per `TTK_PRODUCTION_CRAFT_CONSTITUTION.md`'s zero-incremental-purchase-
+  first rule, and only with explicit Human/Game Director approval.
+
+## Synthesis is permitted, not automatically sufficient
+
+Procedural synthesis (oscillators, filtered noise, pitch envelopes — see
+the Bible below) is the correct AI-native/in-house-authored default. It is
+not itself evidence of quality: Slice 009's own 14 procedurally-synthesized
+clips were correctly wired to gameplay events and still failed the Human's
+direct `audio_readability` question (`NO`). Human listening on the physical
+target device remains the final authority — "we can generate it" answers a
+capability question, not the product-quality one.
 
 ## EVIDENCE / EXIT CONDITION
 
@@ -44,4 +60,7 @@ action.
 
 `docs/master/GAME_PRODUCTION_DOCTRINE.md` §3 (`AUDIO CLIPS != SOUND
 DESIGN`); `docs/master/PRODUCTION_FOUNDATION.md` §3 (combat/UI SFX
-language, mixer hierarchy, haptic hierarchy).
+language, mixer hierarchy, haptic hierarchy);
+`docs/production-craft/audio/TTK_AUDIO_BIBLE.md` for full sound-signature
+list, AudioMixer bus/ducking architecture, variation/layering guidance, and
+concrete procedural-synthesis recipes.

@@ -197,8 +197,9 @@ If native skill discovery is unavailable or fails, read the canonical `.agents/s
 
 ## Craft skills
 
-Load only the smallest relevant craft skill(s); they do not replace process skills, Unity documentation or generic software-engineering rules.
+Read `docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md` and load `.agents/skills/ttk-production-craft-router/SKILL.md` first for any player-facing art/character/animation/VFX/audio/haptics/HUD/environment/materials/lighting/camera-feedback/cross-discipline-timing/mobile-performance/asset-sourcing question — it routes to the smallest correct craft skill(s)/Bible(s) and enforces the AI-native/zero-incremental-purchase sourcing ladder instead of defaulting to broad web/Asset-Store research. Otherwise, load only the smallest relevant craft skill(s) below; they do not replace process skills, Unity documentation or generic software-engineering rules.
 
+- `.agents/skills/ttk-production-craft-router/SKILL.md` — entry-point router for any craft question; see above.
 - `.agents/skills/ttk-eastern-combat-direction/SKILL.md`
 - `.agents/skills/ttk-mobile-action-controls/SKILL.md`
 - `.agents/skills/ttk-game-ui-art-direction/SKILL.md`
@@ -218,7 +219,7 @@ Load only the smallest relevant craft skill(s); they do not replace process skil
 - `.agents/skills/ttk-playtest-user-research/SKILL.md` — task-based observation and neutral questions tied to a concrete product decision.
 - `.agents/skills/ttk-onboarding-accessibility/SKILL.md` — first-session learnability, touch/readability/accessibility guardrails.
 
-Governing product/craft sources: `docs/master/PRODUCT_FOUNDATION.md`, `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`.
+Governing product/craft sources: `docs/master/PRODUCT_FOUNDATION.md`, `docs/master/GAME_PRODUCTION_DOCTRINE.md`, `docs/master/PRODUCTION_FOUNDATION.md`, `docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md` (production-craft sourcing policy).
 
 ## Required final report
 

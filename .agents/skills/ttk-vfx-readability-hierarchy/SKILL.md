@@ -9,9 +9,25 @@ description: Use when creating or tuning combat VFX, telegraphs, environmental e
 
 Creating or tuning combat VFX, telegraphs, environmental effects, impact effects, boss spectacle, or screen-space effect density in active combat.
 
+## FULL DEPTH
+
+`docs/production-craft/vfx/TTK_VFX_BIBLE.md` — LÔI/PHONG/HỘ THỂ effect
+language, duration/coverage/additive budgets, Particle System and
+Built-in-RP shader recipes, texture/mask/flipbook generation guidance, and
+mobile-specific VFX constraints. `docs/tasks/
+CHATGPT_WEB_VISUAL_PIPELINE_CONTRACT.md` — the proven authoring pipeline
+(source-asset contract, blend-mode-per-layer, temporal storyboard,
+sync-the-peak, evidence discipline). This skill stays a short pressure
+checklist; read those for depth before authoring or reviewing VFX.
+
 ## PRODUCT QUESTION
 
 Does spectacle strengthen the player's understanding of threat, action and payoff, or does it consume the screen's attention budget and make Readable Chaos worse?
+
+## CORE RULE
+
+**MORE PARTICLES ≠ BETTER FEEDBACK.** An effect that isn't reading needs a
+shape/timing/value/scale fix, not more of itself. See the Bible §0.
 
 ## MUST
 

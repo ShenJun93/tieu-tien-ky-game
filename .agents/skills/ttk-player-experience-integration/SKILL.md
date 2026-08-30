@@ -29,10 +29,16 @@ INPUT/INTENT
 
 Only dimensions material to the active slice are required, but omitted dimensions must be deliberate rather than accidental.
 
+For the full reusable per-action timing-contract format and the shared
+animation/camera/VFX/audio impact-weight hierarchy, see
+`docs/production-craft/integration/TTK_COMBAT_FEEDBACK_MATRIX.md` — that
+document holds the depth; this skill stays short.
+
 ## MUST
 
 - Identify the chain elements that carry the slice's player promise before implementation.
 - Keep gameplay authority in gameplay rules; presentation reflects outcomes and never invents damage/state truth.
+- Treat gameplay truth — the actual code moment damage/state changes — as the anchor for every other stage. Presentation may add anticipation before it and follow-through after it, but must never visually or aurally claim an outcome landed before gameplay state confirms it.
 - Tune timing across disciplines together. A late sound, early VFX impact or mismatched hit reaction is an integration defect even if each component works alone.
 - Review the integrated sequence in a running representative build, not only isolated previews/tests.
 - Record `cross_discipline_coverage=PASS` only when every declared representative dimension has an implemented and verified role, and mirror that proof in `product_gate_evidence.representative_dimensions[dimension]` with non-empty evidence.
