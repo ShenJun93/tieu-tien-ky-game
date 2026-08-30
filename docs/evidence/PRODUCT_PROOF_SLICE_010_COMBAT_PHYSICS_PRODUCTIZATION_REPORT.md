@@ -80,3 +80,16 @@ Still Human-owned before broader Slice 010 productization:
 
 Until that approval is recorded, enemy/arena/full-audio/HUD productization and
 final encounter assembly remain blocked by the task contract.
+## Internal Human Gate decision — 2026-08-30
+
+Human/Game Director replied `tt` (tiếp tục) immediately after the Gate-0
+handoff and explicit statement that broader Slice 010 work was blocked on the
+internal Human Gate. This is recorded as **APPROVE / CONTINUE** for the
+internal pre-production gate.
+
+The approval covers the already-approved semi-proportional/stylized-anime
+North-Star direction and the verified Basic-attack rhythm/feedback probe. It
+does **not** waive the final physical Product Gate, does not approve paid
+sourcing, and does not expand scope beyond the active Slice 010 contract.
+
+`internal_pre_production_gate_approval = RECORDED`
