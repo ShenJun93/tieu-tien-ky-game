@@ -5,73 +5,107 @@ Humans may read the summary below. Hooks read the JSON block. Full state semanti
 ```json
 {
   "repository": "ShenJun93/tieu-tien-ky-game",
-  "state": "IMPLEMENT",
-  "task_mode": "SPEC",
-  "task_id": "TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001",
-  "branch": "chore/ttk-production-craft-system-v1-001",
-  "baseline_ref": "4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269",
-  "authority_anchor_ref": "4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269",
-  "workspace_policy": "ISOLATED_WORKTREE",
-  "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.md",
-  "evidence_file": "docs/evidence/TTK_PRODUCTION_CRAFT_SYSTEM_V1_001_REPORT.md",
-  "allowed_paths": [
-    "docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md",
-    "docs/master/PRODUCT_FOUNDATION.md",
-    "docs/brand/TIEU_TIEN_KY_BRAND_ART_DIRECTION_v0.1.md",
-    "docs/decisions/003-art-identity-reconciliation.md",
-    "docs/production-craft/",
-    "docs/superpowers/specs/2026-08-30-ttk-production-craft-system-v1-design.md",
-    "docs/superpowers/plans/2026-08-30-ttk-production-craft-system-v1-implementation.md",
-    "docs/evidence/TTK_PRODUCTION_CRAFT_SYSTEM_V1_001_REPORT.md",
-    ".agents/skills/ttk-production-craft-router/",
-    ".agents/skills/ttk-art-target-reference-benchmarking/SKILL.md",
-    ".agents/skills/ttk-combat-animation-rhythm/SKILL.md",
-    ".agents/skills/ttk-vfx-readability-hierarchy/SKILL.md",
-    ".agents/skills/ttk-audio-haptic-direction/SKILL.md",
-    ".agents/skills/ttk-game-ui-art-direction/SKILL.md",
-    ".agents/skills/ttk-level-encounter-presentation/SKILL.md",
-    ".agents/skills/ttk-player-experience-integration/SKILL.md",
-    ".agents/skills/ttk-mobile-performance-budget/SKILL.md",
-    ".agents/skills/ttk-unity-authored-content-pipeline/SKILL.md",
-    ".agents/skills/ttk-asset-intake/SKILL.md",
-    "scripts/hooks/hooks.test.mjs",
-    "AGENTS.md"
-  ],
-  "forbidden_paths": [
-    "Assets/",
-    "Packages/",
-    "ProjectSettings/",
-    ".github/",
-    "docs/governance/NEXT_TASK.md",
-    "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.md"
-  ],
-  "independent_review_required": true,
-  "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.review.json",
-  "acceptable_review_verdicts": [
-    "PASS",
-    "PASS_WITH_REMEDIATION"
-  ],
-  "required_evidence": {
-    "governance_hook_tests": "PASS",
-    "exact_scope_diff": "PASS",
-    "canon_reconciliation_recorded": "PASS",
-    "skill_pressure_tests": "PASS",
-    "no_gameplay_or_unity_change": "PASS"
-  },
+  "state": "DISCOVERY",
+  "task_id": null,
+  "branch": null,
+  "baseline_ref": null,
+  "task_file": null,
+  "evidence_file": null,
+  "allowed_paths": [],
+  "forbidden_paths": [],
   "last_terminal_closeout": {
     "schema_version": 1,
-    "task_id": "TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001",
-    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001.md",
-    "baseline_sha": "d53bb3ced7a696a9fbdcb54398c143bd255c6a3e",
-    "authority_anchor_sha": "4ab1b9847df25c58c48c2f57db5aca12f60ccd75",
-    "activation_sha": "d656258937f9cacd9a66771d90a7ca08b656b18d",
+    "task_id": "TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001",
+    "task_file": "docs/tasks/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.md",
+    "baseline_sha": "4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269",
+    "authority_anchor_sha": "4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269",
+    "activation_sha": "cdcafda20a41b7426f9cfeeef7b14228ffe22062",
     "independent_review_required": true,
-    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001.review.json",
-    "reviewed_candidate_sha": "0c0630eefda8c985217e16bd8436f6effcb00885"
+    "review_receipt_file": "docs/reviews/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.review.json",
+    "reviewed_candidate_sha": "93fd834cd9a8bb631b729fc8389f4d00b22edfa5"
   },
-  "stop_condition": "TERMINAL_CLOSEOUT_TO_DISCOVERY_AFTER_REVIEW_NO_SUCCESSOR"
+  "stop_condition": "HUMAN_DECISION_REQUIRED_BEFORE_SUCCESSOR_AUTHORITY"
 }
 ```
+
+## Prior authority — PRODUCTION-CRAFT-SYSTEM-V1-001 closure
+
+`TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001` is closed via
+same-branch terminal closeout. Its final state:
+
+- branch `chore/ttk-production-craft-system-v1-001`; canonical baseline
+  `4e3cde1f163c1f67ef2dbe78ce5ae27ce1139269` (`main`, confirmed identical
+  to live `origin/main` at activation and re-verified unchanged at
+  closeout); single activation commit `cdcafda20a41b7426f9cfeeef7b14228ffe22062`;
+  accepted implementation candidate `93fd834cd9a8bb631b729fc8389f4d00b22edfa5`
+  (`REVIEWED_IMPLEMENTATION_SHA`); independent-review receipt commit
+  `9e6c1e1` persisted as the candidate's direct child. This terminal
+  closeout commit is the receipt's direct child, touches only this file,
+  and does not alter the reviewed implementation payload;
+- delivered Production Craft System V1 per two Human/Game Director
+  directives (the original ChatGPT-first/zero-purchase-first craft-system
+  request, and its AI-native/zero-incremental-purchase-first amendment):
+  the canonical `docs/master/TTK_PRODUCTION_CRAFT_CONSTITUTION.md`
+  (sourcing ladder, capability-check-before-paid gate, research-state
+  machine, toolchain-composition and tool-selection-contract guidance);
+  seven discipline Bibles and two capability/free-source registries under
+  `docs/production-craft/`; a new thin `ttk-production-craft-router` entry
+  skill; concise upgrades to all 10 named existing craft skills (each
+  pointing into its Bible rather than duplicating depth); and the narrow
+  `docs/decisions/003-art-identity-reconciliation.md` canon record, which
+  reopens and updates **only** `001-product-foundation`'s visual-identity
+  assumption/review-trigger (both explicitly pre-named in `001` itself),
+  leaving `001`'s PvE-first mechanical bet and every other part of `001`
+  unchanged. `docs/master/PRODUCT_FOUNDATION.md` and
+  `docs/brand/TIEU_TIEN_KY_BRAND_ART_DIRECTION_v0.1.md` were synced to the
+  reconciled semi-proportional/stylized-anime identity; historical Slice
+  006-009 evidence prose was not rewritten;
+- required evidence all `PASS` per
+  `docs/evidence/TTK_PRODUCTION_CRAFT_SYSTEM_V1_001_REPORT.md`:
+  `governance_hook_tests` (124/124, 111 pre-existing + 13 new
+  `skill-pressure` tests, each independently reproduced by the reviewer
+  with genuine RED-before-GREEN evidence at baseline), `exact_scope_diff`
+  (26-file diff matches declared `allowed_paths` exactly; independently
+  re-verified by the reviewer), `canon_reconciliation_recorded`,
+  `no_gameplay_or_unity_change` (no `Assets/`/`Packages/`/`ProjectSettings/`
+  path in the diff);
+- **independent review: `PASS_WITH_REMEDIATION`, blocking findings 0**
+  (`docs/reviews/TASK-TIEU-TIEN-KY-PRODUCTION-CRAFT-SYSTEM-V1-001.review.json`).
+  The reviewer independently re-ran the full governance-hook suite
+  (124/124), independently re-verified scope conformance and canon
+  consistency against the actual diff (not the evidence report's prose),
+  spot-checked 4 of the 10 upgraded skills and 2 of the 7 Bibles in full,
+  and spot-checked 4 of the 13 new tests against their pre-upgrade
+  baseline content to confirm genuine RED evidence. Two non-blocking
+  findings are disclosed here in full: (1) `docs/master/MASTER_PLAN.md` §1
+  and §5 still assert the superseded "chibi"/"2.5-3 heads tall" identity
+  language; this file was outside this task's `allowed_paths` and its own
+  preamble already self-discloses that `docs/master/PRODUCT_FOUNDATION.md`
+  is authoritative where the two conflict, so this is pre-existing,
+  self-hedged staleness rather than a contradiction this task introduced —
+  a future task should still reconcile it; (2) `docs/decisions/003-art-
+  identity-reconciliation.md`'s own `STATUS: ACCEPTED` header carries no
+  inline caveat noting that this session defaulted `ACCEPTED` rather than
+  `PROPOSED` and flagged that choice for Human/Game Director confirmation
+  only in the evidence report, not inside the decision record itself — a
+  reader of `003` alone would miss that the status is pending confirmation;
+- **the `ACCEPTED` vs `PROPOSED` status of `docs/decisions/003-art-
+  identity-reconciliation.md` remains an open question for the Human/Game
+  Director**, explicitly disclosed by the implementation writer and
+  reiterated by the independent reviewer, not silently resolved by this
+  closeout. If the intended answer was `PROPOSED`, correcting the header
+  (and adding the inline caveat the reviewer's finding (2) recommends) is
+  a small follow-up edit, not a reason to reopen this task's substance;
+- this closure grants **no** successor implementation authority. Slice 010
+  productization implementation, asset purchase, any Unity/Assets/
+  Packages/ProjectSettings mutation, and the `MASTER_PLAN.md` stale-identity
+  reconciliation named above all remain unauthorized unless separately
+  Human-authorized. Slice 010 should consume this merged Production Craft
+  System rather than repeating the research it replaces;
+- this branch remains **unpushed/unmerged** as of this closeout commit.
+  Publication to `origin`, PR creation, `repository-gate`, and the Human
+  merge decision are separate control-plane steps that follow this local
+  closeout, not implementation-writer work.
 
 ## Prior authority — PRODUCT-PROOF-SLICE-009-REPRESENTATIVE-COMBAT-SPINE-001 closure
 
