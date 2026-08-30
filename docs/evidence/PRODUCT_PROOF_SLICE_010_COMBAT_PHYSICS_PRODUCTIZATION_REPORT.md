@@ -93,3 +93,19 @@ does **not** waive the final physical Product Gate, does not approve paid
 sourcing, and does not expand scope beyond the active Slice 010 contract.
 
 `internal_pre_production_gate_approval = RECORDED`
+
+## Design / implementation-plan binding — 2026-08-30
+
+The committed Slice-010 task contract was prepared from the Human/Game
+Director's prior `AGREE_WITH_CHANGES` design verdict. The design spec now
+transcribes that already-approved direction without broadening it, and the
+subsequent `tt` / continue instruction approved progression beyond Gate-0.
+
+- `design_spec_human_approval = RECORDED`
+- `implementation_plan = PASS`
+- Design: `docs/superpowers/specs/2026-08-30-ttk-product-proof-slice-010-combat-physics-productization-design.md`
+- Plan: `docs/superpowers/plans/2026-08-30-ttk-product-proof-slice-010-combat-physics-productization-implementation.md`
+
+The plan preserves one behavior-changing build mutation (Gale Counter), keeps
+Storm Control dormant, and preserves the final physical Android Human Product
+Gate and independent-review stop.
