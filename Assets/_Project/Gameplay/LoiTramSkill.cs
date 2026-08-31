@@ -27,6 +27,7 @@ namespace TieuTienKy.Gameplay
         Combatant selfCombatant;
         Cooldown cooldown;
         ProductProofRunStyle runStyle;
+        bool stormControlRuntimeEnabled = true;
 
         public event System.Action Activated;
         public event System.Action HitLanded;
@@ -48,6 +49,10 @@ namespace TieuTienKy.Gameplay
             conductiveKnockbackMultiplier = multiplier;
             RunTuningChanged?.Invoke();
         }
+
+        public bool StormControlRuntimeEnabled => stormControlRuntimeEnabled;
+
+        public void SetStormControlRuntimeEnabled(bool enabled) => stormControlRuntimeEnabled = enabled;
 
         public void SetStormControl(ProductProofRunStyle style) => runStyle = style;
 
@@ -82,7 +87,7 @@ namespace TieuTienKy.Gameplay
                 target.TakeHit(new HitInfo(damage, DamageElement.Lightning, knockDirection * knockbackImpulseMagnitude, conductiveKnockbackMultiplier));
                 landedAnyHit = true;
 
-                if (!stormTriggered && runStyle.StormControlActive && target.LastReactionTriggered)
+                if (!stormTriggered && stormControlRuntimeEnabled && runStyle.StormControlActive && target.LastReactionTriggered)
                 {
                     stormTriggered = true;
                     stormOrigin = target.transform.position;

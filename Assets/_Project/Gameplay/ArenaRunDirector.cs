@@ -157,6 +157,7 @@ namespace TieuTienKy.Gameplay
             playerBlessingPresentation?.ApplyStacks(0, 0, 0);
             if (playerSkillController != null)
             {
+                playerSkillController.LoiTram.SetStormControlRuntimeEnabled(false);
                 playerSkillController.LoiTram.SetConductiveMultiplier(RunBlessingState.BaseConductiveMultiplier);
                 playerSkillController.PhongBo.SetCooldownDuration(playerSkillController.PhongBo.BaseCooldownSeconds, Time.time);
                 playerSkillController.PhongBo.SetGaleCounterBuildMutationActive(false);
