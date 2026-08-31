@@ -94,11 +94,14 @@ namespace TieuTienKy.Gameplay
             }
         }
 
-        /// <summary>Pure boundary check for Phan Chan's perfect-timing sub-window: the first `perfectWindowSeconds` of the active Ho The block window. Same inclusive-start/exclusive-end style as HoTheWindow.IsActive.</summary>
+        const float PerfectTimingBoundaryEpsilonSeconds = 0.0001f;
+
+        /// <summary>Pure boundary check for Phan Chan's perfect-timing sub-window: the first `perfectWindowSeconds` of the active Ho The block window. Same inclusive-start/exclusive-end style as HoTheWindow.IsActive. The elapsed-time epsilon guards the exclusive edge against float rounding noise (e.g. extended-precision intermediates) that can otherwise make a hit landing exactly at the boundary compare as still inside the window.</summary>
         public static bool IsPerfectTiming(float windowActivatedAtTime, float perfectWindowSeconds, float hitTime)
         {
             float clampedPerfectWindow = Mathf.Max(0f, perfectWindowSeconds);
-            return hitTime >= windowActivatedAtTime && hitTime < windowActivatedAtTime + clampedPerfectWindow;
+            float elapsed = hitTime - windowActivatedAtTime;
+            return elapsed >= 0f && elapsed < clampedPerfectWindow - PerfectTimingBoundaryEpsilonSeconds;
         }
 
         /// <summary>Perfect-timed block reflects a radial stagger around the player, reusing the exact OverlapSphere + zero-damage-knockback pattern already proven by Loi Tram's Storm Control pulse. Reuses the existing knockback pipeline only - EnemyCombatController already pauses its attack cycle while knocked back, so this interrupts a locked telegraph without touching any enemy AI file.</summary>
