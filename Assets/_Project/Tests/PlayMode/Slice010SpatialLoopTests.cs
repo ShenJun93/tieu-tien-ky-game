@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -122,6 +123,75 @@ namespace TieuTienKy.Gameplay.Tests
             yield return null;
             Assert.IsTrue(target.LastReactionTriggered,
                 "After the spatial setup, LÃƒÂ´i must convert Water positioning into the conductive payoff.");
+        }
+
+
+        [UnityTest]
+        public IEnumerator BossClimax_ReusesWaterShiftArenaGrammar()
+        {
+            Vector3 testOrigin = new Vector3(200f, 0f, 200f);
+            Vector3 waterStart = testOrigin + Vector3.left * 3f;
+            Vector3 waterDestination = testOrigin + Vector3.right * 3f;
+
+            GameObject player = CreatePlayer("BossGrammarPlayer", testOrigin);
+            Combatant playerCombatant = player.GetComponent<Combatant>();
+            playerCombatant.SetDamageMitigation(0f);
+
+            GameObject water = CreateWaterZone(waterStart, new Vector3(4f, 2f, 2f));
+            var eventRoot = new GameObject("Slice010_ArenaEvents");
+            spawned.Add(eventRoot);
+            ArenaEventDirector arenaEvents = eventRoot.AddComponent<ArenaEventDirector>();
+            arenaEvents.Initialize(
+                water.GetComponent<WaterZone>(),
+                water.transform,
+                new[] { waterStart, waterDestination });
+
+            var directorRoot = new GameObject("Slice010_RunDirector");
+            spawned.Add(directorRoot);
+            ArenaRunDirector director = directorRoot.AddComponent<ArenaRunDirector>();
+            SetPrivateField(director, "playerRoot", player.transform);
+            SetPrivateField(director, "playerCombatant", playerCombatant);
+            SetPrivateField(director, "playerSpawnPosition", testOrigin);
+            SetPrivateField(director, "arenaBounds", new ArenaBounds(180f, 220f, 180f, 220f));
+            SetPrivateField(director, "runHud", (IBossArrivalCueDisplay)new BossCueStub());
+            SetPrivateField(director, "arenaEvents", arenaEvents);
+
+            MethodInfo runBossStage = typeof(ArenaRunDirector).GetMethod(
+                "RunBossStage",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(runBossStage);
+
+            Time.timeScale = 10f;
+            director.StartCoroutine((IEnumerator)runBossStage.Invoke(director, null));
+            yield return null;
+
+            GameObject bossObject = GameObject.Find("MiniBoss");
+            Assert.IsNotNull(bossObject, "The climax probe must start the existing MiniBoss stage.");
+            spawned.Add(bossObject);
+
+            float deadline = Time.realtimeSinceStartup + 0.75f;
+            while (Vector3.Distance(water.transform.position, waterDestination) > 0.01f &&
+                   Time.realtimeSinceStartup < deadline)
+            {
+                yield return null;
+            }
+
+            Assert.Less(Vector3.Distance(water.transform.position, waterDestination), 0.01f,
+                "Slice 010 climax must reuse the existing telegraphed Water Shift grammar instead of becoming a disconnected boss-only mechanic.");
+        }
+
+        static void SetPrivateField<T>(ArenaRunDirector director, string fieldName, T value)
+        {
+            FieldInfo field = typeof(ArenaRunDirector).GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(field, $"Expected ArenaRunDirector field '{fieldName}'.");
+            field.SetValue(director, value);
+        }
+
+        sealed class BossCueStub : IBossArrivalCueDisplay
+        {
+            public void ShowBossArrivalCue() { }
         }
 
         GameObject CreatePlayer(string name, Vector3 position)

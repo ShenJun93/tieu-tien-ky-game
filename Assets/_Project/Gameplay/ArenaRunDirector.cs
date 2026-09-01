@@ -287,6 +287,8 @@ namespace TieuTienKy.Gameplay
             CombatAudio.Play("BossArrival", playerRoot.position);
             Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(0.3f);
 
+            StartCoroutine(DelayedWaterShiftIfWaveStillActive(2.5f));
+
             yield return WaitForEnemiesCleared();
             if (defeated)
             {
