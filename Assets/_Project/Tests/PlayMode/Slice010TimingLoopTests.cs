@@ -108,7 +108,10 @@ namespace TieuTienKy.Gameplay.Tests
 
             ArenaRunStage lastStage = director.Stage;
 
-            const float TestTimeScale = 10f;
+            // Keep the accelerated proxy below the frame-quantization threshold of the authored
+            // Slice 010 presentation. At 10x, heavier render/animation work can make CharacterController
+            // pursuit overshoot and deadlock even though 1x gameplay fields are unchanged.
+            const float TestTimeScale = 5f;
             System.Reflection.FieldInfo settleField = typeof(ArenaRunDirector).GetField(
                 "postCombatSettleSeconds",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

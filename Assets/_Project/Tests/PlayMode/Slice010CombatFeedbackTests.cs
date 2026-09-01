@@ -5,6 +5,7 @@ using NUnit.Framework;
 using TieuTienKy.Input;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.SceneManagement;
 
 namespace TieuTienKy.Gameplay.Tests
 {
@@ -78,6 +79,17 @@ namespace TieuTienKy.Gameplay.Tests
             // HitStop mutates global Time.timeScale; a test that fails
             // mid-freeze must never leak that into the next test.
             Time.timeScale = 1f;
+        }
+
+        [UnityTearDown]
+        public IEnumerator CleanupRepresentativeArenaScene()
+        {
+            Time.timeScale = 1f;
+            if (SceneManager.GetActiveScene().name == "Arena_VerticalSlice_01")
+            {
+                yield return SceneManager.LoadSceneAsync("Boot");
+                yield return null;
+            }
         }
 
         // ---------- construction helpers ----------
@@ -489,7 +501,31 @@ namespace TieuTienKy.Gameplay.Tests
             handler.DynamicInvoke(args);
         }
 
-        // ---------- 7. whiff negative behaviour ----------
+        // ---------- 7. representative authored character composition ----------
+
+        [UnityTest]
+        public IEnumerator RepresentativeArena_UsesSlice010AuthoredCharacterPrefabs()
+        {
+            SceneManager.LoadScene("Arena_VerticalSlice_01");
+            yield return null;
+            yield return null;
+
+            CharacterPresentation[] presentations = Object.FindObjectsByType<CharacterPresentation>(
+                FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            Assert.GreaterOrEqual(presentations.Length, 2,
+                "Representative arena must expose the player plus at least one active enemy presentation.");
+
+            foreach (CharacterPresentation presentation in presentations)
+            {
+                StringAssert.StartsWith("Slice010_", presentation.gameObject.name,
+                    "Slice 010 arena must use its authored productization prefabs rather than legacy prototype/chibi presentation assets.");
+                Assert.AreEqual(0, presentation.GetComponentsInChildren<SpriteRenderer>(true).Length,
+                    "Slice 010 authored character prefabs must not silently fall back to the superseded chibi sprite identity.");
+            }
+        }
+
+        // ---------- 8. whiff negative behaviour ----------
 
         [UnityTest]
         public IEnumerator Whiff_ResolvesTheSwing_ButProducesNoImpactFeedbackOfAnyDiscipline()
