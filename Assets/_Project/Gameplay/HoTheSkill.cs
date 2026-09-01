@@ -71,7 +71,7 @@ namespace TieuTienKy.Gameplay
             activeWindow = new HoTheWindow(currentTime, windowDurationSeconds);
             windowOpen = true;
             selfCombatant.SetDamageMitigation(0f);
-            PrimitiveBurstVFX.SpawnAt(transform.position, wardPeakRadius, windowDurationSeconds, wardColor);
+            PrimitiveBurstVFX.SpawnAt(transform.position, wardPeakRadius, windowDurationSeconds, wardColor, PrimitiveBurstVFX.BurstStyle.Ward, transform.forward);
             CombatAudio.Play("HoTheActivate", transform.position);
 
             Activated?.Invoke();
@@ -125,7 +125,7 @@ namespace TieuTienKy.Gameplay
             }
 
             StartCoroutine(HitStop.Routine(phanChanHitStopSeconds, phanChanHitStopTimeScale));
-            PrimitiveBurstVFX.SpawnAt(transform.position, reflectStaggerRadius, phanChanBurstLifetimeSeconds, phanChanBurstColor);
+            PrimitiveBurstVFX.SpawnAt(transform.position, reflectStaggerRadius, phanChanBurstLifetimeSeconds, phanChanBurstColor, PrimitiveBurstVFX.BurstStyle.Ward, transform.forward);
             CombatAudio.Play("HoTheActivate", transform.position, volume: 1.1f, pitch: 0.8f);
             Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(phanChanCameraImpulse);
 

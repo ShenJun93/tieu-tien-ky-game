@@ -184,7 +184,7 @@ namespace TieuTienKy.Gameplay
         {
             hpText.text = $"HP {playerCombatant.CurrentHealth}/{playerCombatant.MaxHealth}";
             stageText.text = ObjectiveLine();
-            killsText.text = $"Kills: {director.KillCount}";
+            killsText.text = $"Hạ: {director.KillCount}";
             timeText.text = FormatElapsed(director.ElapsedSeconds);
 
             string blessingLine = BuildBlessingLine();
@@ -242,9 +242,9 @@ namespace TieuTienKy.Gameplay
 
         void RefreshResultPanel(bool victory)
         {
-            resultTitleText.text = victory ? "VICTORY" : "DEFEAT";
+            resultTitleText.text = victory ? "THẮNG" : "THẤT BẠI";
             resultTitleText.color = victory ? Color.yellow : Color.red;
-            resultSummaryText.text = $"Time {FormatElapsed(director.ElapsedSeconds)}   Kills {director.KillCount}\n{BuildSummaryLine()}";
+            resultSummaryText.text = $"Thời gian {FormatElapsed(director.ElapsedSeconds)}   Hạ {director.KillCount}\n{BuildSummaryLine()}";
         }
 
         void SetPaused(bool value)
@@ -266,7 +266,7 @@ namespace TieuTienKy.Gameplay
             {
                 if (director.Stage == combatStage)
                 {
-                    return $"{label}   Enemies: {director.ActiveEnemyCount}";
+                    return $"{label}   Địch: {director.ActiveEnemyCount}";
                 }
             }
 
@@ -281,11 +281,11 @@ namespace TieuTienKy.Gameplay
                 ProductProofRunStyle style = skillController.CurrentRunStyle;
                 if (style.StormControlActive)
                 {
-                    parts.Add("STORM CONTROL");
+                    parts.Add("LÔI VỰC");
                 }
                 if (style.WindWardActive)
                 {
-                    parts.Add(skillController.GaleCounterPrimed ? "WIND WARD: COUNTER READY" : "WIND WARD");
+                    parts.Add(skillController.GaleCounterPrimed ? "PHONG HỘ: PHẢN KÍCH SẴN SÀNG" : "PHONG HỘ");
                 }
             }
 
@@ -314,20 +314,20 @@ namespace TieuTienKy.Gameplay
         string BuildSummaryLine()
         {
             string line = BuildBlessingLine();
-            return string.IsNullOrEmpty(line) ? "No Cơ Duyên acquired" : line;
+            return string.IsNullOrEmpty(line) ? "Chưa nhận Cơ Duyên" : line;
         }
 
         static string StageLabel(ArenaRunStage stage) => stage switch
         {
-            ArenaRunStage.Wave1 => "Wave 1",
+            ArenaRunStage.Wave1 => "ĐỢT 1",
             ArenaRunStage.Blessing1 => "Cơ Duyên",
-            ArenaRunStage.Wave2 => "Wave 2",
+            ArenaRunStage.Wave2 => "ĐỢT 2",
             ArenaRunStage.Blessing2 => "Cơ Duyên",
-            ArenaRunStage.EliteWave => "ELITE",
+            ArenaRunStage.EliteWave => "TINH ANH",
             ArenaRunStage.Blessing3 => "Cơ Duyên",
-            ArenaRunStage.Boss => "MINI BOSS",
-            ArenaRunStage.Victory => "Victory",
-            ArenaRunStage.Defeat => "Defeat",
+            ArenaRunStage.Boss => "THỦ LĨNH",
+            ArenaRunStage.Victory => "THẮNG",
+            ArenaRunStage.Defeat => "THẤT BẠI",
             _ => stage.ToString()
         };
 

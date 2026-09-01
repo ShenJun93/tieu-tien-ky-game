@@ -315,7 +315,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0110\xC1NH\nBASIC"
+  m_Text: "\u0110\xC1NH\nTH\u01AF\u1EDCNG"
 --- !u!1 &776848863730898824
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,7 +595,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "DI CHUY\u1EC2N  /  MOVE"
+  m_Text: "DI CHUY\u1EC2N"
 --- !u!1 &1035494924888030514
 GameObject:
   m_ObjectHideFlags: 0
@@ -1904,7 +1904,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "L\xD4I KI\u1EBEM\n\nKi\u1EBFm l\xF4i m\u1EA1nh h\u01A1n\nStronger lightning"
+  m_Text: "L\xD4I KI\u1EBEM\n\nKi\u1EBFm l\xF4i m\u1EA1nh h\u01A1n"
 --- !u!1 &3549638526020651842
 GameObject:
   m_ObjectHideFlags: 0
@@ -1983,7 +1983,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: MINI BOSS
+  m_Text: "TH\u1EE6 L\u0128NH"
 --- !u!1 &3646116230526966754
 GameObject:
   m_ObjectHideFlags: 0
@@ -2568,7 +2568,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: MINI BOSS
+  m_Text: "TH\u1EE6 L\u0128NH"
 --- !u!1 &4677936905657739425
 GameObject:
   m_ObjectHideFlags: 0
@@ -2890,7 +2890,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Wave 1
+  m_Text: "\u0110\u1EE2T 1"
 --- !u!1 &5086197801957029503
 GameObject:
   m_ObjectHideFlags: 0
@@ -3515,7 +3515,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "PHONG H\xC0NH\n\nDi chuy\u1EC3n nhanh h\u01A1n\nFaster movement"
+  m_Text: "PHONG H\xC0NH\n\nDi chuy\u1EC3n nhanh h\u01A1n"
 --- !u!1 &6053122500282067918
 GameObject:
   m_ObjectHideFlags: 0
@@ -3945,7 +3945,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: VICTORY
+  m_Text: "TH\u1EAENG"
 --- !u!1 &6608786058786120302
 GameObject:
   m_ObjectHideFlags: 0
@@ -4762,7 +4762,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "H\u1ED8 TH\u1EC2\n\nH\u1ED9 th\u1EC3 v\u1EEFng h\u01A1n\nMore max health"
+  m_Text: "H\u1ED8 TH\u1EC2\n\nH\u1ED9 th\u1EC3 v\u1EEFng h\u01A1n"
 --- !u!1 &7064597345066535399
 GameObject:
   m_ObjectHideFlags: 0
@@ -5867,7 +5867,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Kills: 0'
+  m_Text: "H\u1EA1: 0"
 --- !u!1 &9172552370315533765
 GameObject:
   m_ObjectHideFlags: 0

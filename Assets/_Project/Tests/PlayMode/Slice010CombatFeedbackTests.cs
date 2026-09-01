@@ -6,6 +6,7 @@ using TieuTienKy.Input;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace TieuTienKy.Gameplay.Tests
 {
@@ -525,7 +526,84 @@ namespace TieuTienKy.Gameplay.Tests
             }
         }
 
-        // ---------- 8. whiff negative behaviour ----------
+        // ---------- 8. representative HUD language ----------
+
+        [UnityTest]
+        public IEnumerator RepresentativeHud_UsesConsistentVietnameseCombatCopy()
+        {
+            SceneManager.LoadScene("Arena_VerticalSlice_01");
+            yield return null;
+            yield return null;
+
+            ProductionCombatHudView view = Object.FindFirstObjectByType<ProductionCombatHudView>();
+            Assert.IsNotNull(view);
+            StringAssert.StartsWith("ĐỢT 1", view.StageText.text);
+            Assert.AreEqual("Hạ: 0", view.KillsText.text);
+
+            string[] forbiddenEnglish =
+            {
+                "BASIC", "MOVE", "Wave ", "Kills:", "VICTORY", "DEFEAT", "MINI BOSS",
+                "Stronger lightning", "Faster movement", "More max health"
+            };
+
+            foreach (Text label in view.GetComponentsInChildren<Text>(true))
+            {
+                foreach (string forbidden in forbiddenEnglish)
+                {
+                    StringAssert.DoesNotContain(forbidden, label.text,
+                        $"Representative HUD must not mix prototype English copy into the Vietnamese combat surface: {label.gameObject.name}");
+                }
+            }
+        }
+
+        // ---------- 9. elemental VFX grammar ----------
+
+        [UnityTest]
+        public IEnumerator ElementalSkills_EmitDistinctLightningWindWardGrammar()
+        {
+            var phongActor = Track(new GameObject("Slice010_VfxPhong"));
+            phongActor.transform.position = new Vector3(-10f, 0f, 0f);
+            phongActor.AddComponent<CharacterController>();
+            phongActor.AddComponent<Combatant>();
+            var phong = phongActor.AddComponent<PhongBoSkill>();
+
+            var hoActor = Track(new GameObject("Slice010_VfxHo"));
+            hoActor.transform.position = new Vector3(10f, 0f, 0f);
+            hoActor.AddComponent<Combatant>();
+            var ho = hoActor.AddComponent<HoTheSkill>();
+
+            var loiActor = Track(new GameObject("Slice010_VfxLoi"));
+            loiActor.transform.position = Vector3.zero;
+            loiActor.transform.rotation = Quaternion.identity;
+            loiActor.AddComponent<Combatant>();
+            var loi = loiActor.AddComponent<LoiTramSkill>();
+            BuildTarget(new Vector3(0f, 0f, 1.3f));
+
+            yield return SettlePhysics();
+
+            Assert.IsTrue(phong.TryActivate(Time.time));
+            yield return null;
+            ParticleSystem wind = GameObject.Find(BurstName + "_Wind")?.GetComponent<ParticleSystem>();
+            Assert.IsNotNull(wind, "Phong must emit its own directional Wind grammar instead of the generic radial impact burst.");
+            Assert.AreEqual(ParticleSystemShapeType.Cone, wind.shape.shapeType);
+            Assert.Greater(wind.shape.angle, 15f, "Wind should read broad/flowing rather than needle-sharp.");
+
+            Assert.IsTrue(ho.TryActivate(Time.time));
+            yield return null;
+            ParticleSystem ward = GameObject.Find(BurstName + "_Ward")?.GetComponent<ParticleSystem>();
+            Assert.IsNotNull(ward, "Hộ must emit a stable geometric Ward grammar instead of the generic radial impact burst.");
+            Assert.AreEqual(ParticleSystemShapeType.Circle, ward.shape.shapeType);
+            Assert.LessOrEqual(ward.main.startSpeed.constant, 0.2f, "Ward particles should hold a stable ring rather than explode outward.");
+
+            Assert.IsTrue(loi.TryActivate(Time.time));
+            yield return null;
+            ParticleSystem lightning = GameObject.Find(BurstName + "_Lightning")?.GetComponent<ParticleSystem>();
+            Assert.IsNotNull(lightning, "Lôi must emit a sharp Lightning grammar instead of the generic radial impact burst.");
+            Assert.AreEqual(ParticleSystemShapeType.Cone, lightning.shape.shapeType);
+            Assert.Less(lightning.shape.angle, wind.shape.angle,
+                "Lightning must read sharper/narrower than the flowing Wind cone.");
+        }
+        // ---------- 10. whiff negative behaviour ----------
 
         [UnityTest]
         public IEnumerator Whiff_ResolvesTheSwing_ButProducesNoImpactFeedbackOfAnyDiscipline()

@@ -110,7 +110,7 @@ namespace TieuTienKy.Gameplay
                     StartCoroutine(HitStop.Routine(hitStopSeconds, hitStopTimeScale));
                 }
 
-                PrimitiveBurstVFX.SpawnAt(origin, radiusMeters, 0.3f, ImpactFlashColor);
+                PrimitiveBurstVFX.SpawnAt(origin, radiusMeters, 0.3f, ImpactFlashColor, PrimitiveBurstVFX.BurstStyle.Lightning, transform.forward);
                 CombatAudio.Play("LoiTramImpact", origin);
                 HitLanded?.Invoke();
             }

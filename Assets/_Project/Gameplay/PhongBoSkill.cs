@@ -107,7 +107,7 @@ namespace TieuTienKy.Gameplay
                 ? PhongBoMotion.ComputeDestination(transform.position, transform.forward, distance, bounds)
                 : transform.position + transform.forward * distance;
 
-            PrimitiveBurstVFX.SpawnAt(transform.position, 0.7f, 0.25f, windTrailColor);
+            PrimitiveBurstVFX.SpawnAt(transform.position, 0.7f, 0.25f, windTrailColor, PrimitiveBurstVFX.BurstStyle.Wind, transform.forward);
             CombatAudio.Play("PhongBoMove", transform.position);
 
             StartCoroutine(DashRoutine(destination, useGaleCounter, counter));
@@ -155,7 +155,7 @@ namespace TieuTienKy.Gameplay
             }
 
             StartCoroutine(HitStop.Routine(galeCounterHitStopSeconds, galeCounterHitStopTimeScale));
-            PrimitiveBurstVFX.SpawnAt(transform.position, counter.PushRadius, galeCounterBurstLifetimeSeconds, galeCounterBurstColor);
+            PrimitiveBurstVFX.SpawnAt(transform.position, counter.PushRadius, galeCounterBurstLifetimeSeconds, galeCounterBurstColor, PrimitiveBurstVFX.BurstStyle.Wind, transform.forward);
             CombatAudio.Play("PhongBoMove", transform.position, volume: 1.1f, pitch: 1.25f);
             Camera.main?.GetComponent<PlayerFollowCamera>()?.ApplyImpulse(galeCounterCameraImpulse);
 

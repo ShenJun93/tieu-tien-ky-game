@@ -40,6 +40,7 @@ namespace TieuTienKy.Gameplay
     /// </summary>
     public static class PrimitiveBurstVFX
     {
+        public enum BurstStyle { Radial, Lightning, Wind, Ward }
         const string PrimitiveMaterialResourcePath = "Materials/P0A_ParticleGlow";
         const int ParticleCount = 20;
         const float ParticleSize = 0.35f;
@@ -50,8 +51,12 @@ namespace TieuTienKy.Gameplay
         static Material s_PrimitiveMaterial;
 
         public static void SpawnAt(Vector3 position, float peakRadius, float lifetimeSeconds, Color color)
+            => SpawnAt(position, peakRadius, lifetimeSeconds, color, BurstStyle.Radial, Vector3.forward);
+
+        public static void SpawnAt(Vector3 position, float peakRadius, float lifetimeSeconds, Color color, BurstStyle style, Vector3 direction)
         {
-            var burst = new GameObject("ConductiveBurstVFX_Primitive");
+            string suffix = style == BurstStyle.Radial ? string.Empty : "_" + style;
+            var burst = new GameObject("ConductiveBurstVFX_Primitive" + suffix);
             burst.transform.position = position;
 
             var system = burst.AddComponent<ParticleSystem>();
@@ -108,6 +113,7 @@ namespace TieuTienKy.Gameplay
             rotationOverLifetime.enabled = true;
             rotationOverLifetime.z = new ParticleSystem.MinMaxCurve(-SpinDegreesPerSecond, SpinDegreesPerSecond);
 
+            ApplyStyle(system, burst.transform, style, peakRadius, lifetimeSeconds, direction);
             system.Play();
 
             // Object.Destroy(obj, delay) unconditionally errors outside Play
@@ -127,6 +133,62 @@ namespace TieuTienKy.Gameplay
             }
         }
 
+        static void ApplyStyle(ParticleSystem system, Transform root, BurstStyle style, float peakRadius, float lifetimeSeconds, Vector3 direction)
+        {
+            if (style == BurstStyle.Radial)
+            {
+                return;
+            }
+
+            ParticleSystem.MainModule main = system.main;
+            ParticleSystem.EmissionModule emission = system.emission;
+            ParticleSystem.ShapeModule shape = system.shape;
+            ParticleSystem.RotationOverLifetimeModule rotation = system.rotationOverLifetime;
+
+            Vector3 planar = new Vector3(direction.x, 0f, direction.z);
+            if (planar.sqrMagnitude < 0.0001f) planar = Vector3.forward;
+
+            switch (style)
+            {
+                case BurstStyle.Lightning:
+                    main.maxParticles = 12;
+                    main.startSpeed = (peakRadius / Mathf.Max(0.05f, lifetimeSeconds)) * 1.45f;
+                    main.startSize = 0.22f;
+                    main.gravityModifier = 0.05f;
+                    emission.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)12) });
+                    shape.shapeType = ParticleSystemShapeType.Cone;
+                    shape.angle = 8f;
+                    shape.radius = 0.03f;
+                    root.rotation = Quaternion.LookRotation(planar.normalized, Vector3.up);
+                    rotation.z = new ParticleSystem.MinMaxCurve(-180f, 180f);
+                    break;
+
+                case BurstStyle.Wind:
+                    main.maxParticles = 16;
+                    main.startSpeed = (peakRadius / Mathf.Max(0.05f, lifetimeSeconds)) * 0.72f;
+                    main.startSize = 0.28f;
+                    main.gravityModifier = 0.05f;
+                    emission.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)16) });
+                    shape.shapeType = ParticleSystemShapeType.Cone;
+                    shape.angle = 32f;
+                    shape.radius = 0.12f;
+                    root.rotation = Quaternion.LookRotation(planar.normalized, Vector3.up);
+                    rotation.z = new ParticleSystem.MinMaxCurve(-360f, 360f);
+                    break;
+
+                case BurstStyle.Ward:
+                    main.maxParticles = 12;
+                    main.startSpeed = 0.08f;
+                    main.startSize = 0.22f;
+                    main.gravityModifier = 0f;
+                    emission.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)12) });
+                    shape.shapeType = ParticleSystemShapeType.Circle;
+                    shape.radius = Mathf.Max(0.05f, peakRadius * 0.62f);
+                    root.rotation = Quaternion.Euler(90f, 0f, 0f);
+                    rotation.z = new ParticleSystem.MinMaxCurve(-120f, 120f);
+                    break;
+            }
+        }
         static Material PrimitiveMaterial()
         {
             if (s_PrimitiveMaterial == null)
