@@ -1,5 +1,8 @@
 name: Repository Gate
 
+# The job id and name stay `repository-gate`: branch protection on main
+# requires a check with exactly that name (ADR 004).
+
 on:
   pull_request:
   push:
@@ -27,11 +30,8 @@ jobs:
           node --version
           git --version
 
-      - name: Governance regression suite
-        run: node --test scripts/hooks/hooks.test.mjs
+      - name: Unity .meta integrity
+        run: node tools/ci/check-meta.mjs
 
-      - name: Candidate review binding
-        if: github.event_name == 'pull_request'
-        env:
-          CANDIDATE_GATE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: node scripts/hooks/candidate-gate.mjs
+      - name: Repository tool tests
+        run: node --test tools/ci/check-meta.test.mjs scripts/device/device-verify.test.mjs scripts/assets/asset-intake.test.mjs

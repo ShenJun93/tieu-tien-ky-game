@@ -9,7 +9,7 @@ reconciled per `docs/decisions/003-art-identity-reconciliation.md`
 visual thesis" and "Character baseline" below. Every other section (map
 baseline, tone, anti-copy, tagline) is unchanged and still canonical; the
 full reconciled visual target lives in
-`docs/production-craft/visual/TTK_VISUAL_BIBLE.md`.
+`docs/archive/governance-v2/production-craft/visual/TTK_VISUAL_BIBLE.md`.
 
 ## Core visual thesis
 **Semi-Proportional Cultivation Action — Striking Eastern Fantasy**
@@ -28,7 +28,7 @@ full reconciled visual target lives in
 ## Character baseline
 - semi-proportional / stylized anime proportions (not chibi — see
   `docs/decisions/003-art-identity-reconciliation.md` and
-  `docs/production-craft/visual/TTK_VISUAL_BIBLE.md` for the exact target);
+  `docs/archive/governance-v2/production-craft/visual/TTK_VISUAL_BIBLE.md` for the exact target);
 - expressive face;
 - simplified-but-detailed costume;
 - oversized readable weapon/prop;

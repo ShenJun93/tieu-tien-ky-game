@@ -1,50 +1,14 @@
-# Decision records — TIỂU TIÊN KÝ
+# Decision records
 
-This folder holds lightweight records of **significant** decisions only —
-canon changes, reopened `PRODUCTION_KEPT` domains
-(`docs/master/PRODUCTION_FOUNDATION.md`), and choices with material
-uncertainty, irreversibility, downstream cost, or product impact
-(`docs/governance/WORKFLOW.md`). Trivial, local, reversible decisions do not
-need a record here.
+One page per significant, hard-to-reverse or cross-cutting decision.
+Fields: STATUS (PROPOSED / ACCEPTED / SUPERSEDED), SUPERSEDES, Question, Context, Alternatives, Decision, Consequences, Assumptions, Review triggers.
 
-This is a lightweight seam, not a mandate to retroactively document every
-past decision or every audit technology candidate. Add a record only when a
-new significant decision is made or an existing accepted decision is
-reopened.
+| ID | Title | Status |
+|---|---|---|
+| 001 | Product foundation | Partly superseded by 005. The identity is kept; `docs/GAME.md` is now the current one-pager |
+| 002 | Production process v2 | SUPERSEDED by 004 |
+| 003 | Art identity reconciliation (semi-proportional anime) | ACCEPTED |
+| 004 | Lean AI-native operating model | ACCEPTED |
+| 005 | Product positioning (Option A) and zero-spend art sourcing | ACCEPTED |
 
-## Schema
-
-Each decision is one file, `NNN-short-slug.md`, with these fields:
-
-```text
-ID                — NNN-short-slug, matching the filename.
-STATUS            — PROPOSED | ACCEPTED | SUPERSEDED.
-QUESTION          — the decision this record answers, as a question.
-CONTEXT           — the situation that made this decision necessary.
-ALTERNATIVES      — options considered, briefly, with why each was not chosen.
-DECISION          — the decision, stated plainly.
-WHY               — the reasoning/evidence behind it.
-CONSEQUENCES      — what this decision commits to or forecloses.
-ASSUMPTIONS       — what must remain true for this decision to still hold.
-REVIEW_TRIGGERS   — evidence-backed conditions that would reopen this
-                     decision (see docs/master/PRODUCTION_FOUNDATION.md,
-                     "Reopen a PRODUCTION_KEPT decision" for examples).
-SUPERSEDES        — ID of a prior decision this replaces, if any.
-EVIDENCE          — links to the task/evidence files that support it.
-```
-
-## Status meaning
-
-- `PROPOSED` — recorded, not yet accepted as canon.
-- `ACCEPTED` — current canon; stands until an evidence-backed
-  `REVIEW_TRIGGERS` condition reopens it.
-- `SUPERSEDED` — replaced by a later decision; kept for history, not
-  current authority (`SUPERSEDES` on the newer record points back to it).
-
-## What this folder is not
-
-- Not a retroactive ADR catalogue for every past choice.
-- Not a place to canonize every audit/technology candidate ahead of
-  evidence.
-- Not a substitute for `docs/governance/CURRENT_STATE.md` (current truth)
-  or `docs/governance/NEXT_TASK.md` (machine-readable authority).
+Records 001–003 are kept unedited as history. Some of the paths they reference now live under `docs/archive/governance-v2/`.
