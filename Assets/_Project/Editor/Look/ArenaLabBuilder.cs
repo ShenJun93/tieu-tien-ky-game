@@ -53,7 +53,9 @@ namespace TieuTienKy.EditorTools.Look
             BuildPropClusters(root);
             var hero = BuildCast();
             BuildFeedbackMoment();
-            hud = (GameObject)PrefabUtility.InstantiatePrefab(BrawlHudBuilder.Prefab);
+            var hudPrefab = BrawlHudBuilder.Prefab;
+            HudFontPass.Apply();
+            hud = (GameObject)PrefabUtility.InstantiatePrefab(hudPrefab);
             BuildLighting();
             BuildPostProcessing();
 
@@ -432,6 +434,7 @@ namespace TieuTienKy.EditorTools.Look
             rt.anchorMin = rt.anchorMax = new Vector2(vp.x, vp.y);
             rt.sizeDelta = new Vector2(300f, 80f);
             var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.font = HudFontPass.Body;
             tmp.text = text;
             tmp.fontSize = sizePct * 0.01f * 1080f;
             tmp.fontStyle = FontStyles.Bold;

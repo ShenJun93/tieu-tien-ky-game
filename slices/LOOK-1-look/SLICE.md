@@ -51,7 +51,7 @@
   - Positions and sizes follow teardown §3.7.
   - The arena lab adds damage numbers (2.8% of height; crit 4.2% in orange) and renders `hud-gameplay.png`.
   - Follow-ups:
-    - The Vietnamese OFL font is waiting on the Director's download approval.
+    - Done in 1d2: OFL Vietnamese fonts (Be Vietnam Pro body, Philosopher titles) as dynamic TMP assets, with a realm title and kill feed in Vietnamese (`HudFontPass`). A shipping build bakes a static atlas from the Vietnamese character list.
     - The ChatGPT skill icons replace the placeholders.
     - Wiring into the runtime scene comes after NET-0.
 - Follow-ups:
