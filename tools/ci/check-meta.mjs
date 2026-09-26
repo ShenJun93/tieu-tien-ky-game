@@ -72,4 +72,4 @@ function main() {
   console.log(`check-meta: PASS (${tracked.length} tracked paths, ${tolerated.length} known-debt warning(s))`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

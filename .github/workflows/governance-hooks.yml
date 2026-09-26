@@ -34,4 +34,7 @@ jobs:
         run: node tools/ci/check-meta.mjs
 
       - name: Repository tool tests
-        run: node --test tools/ci/check-meta.test.mjs scripts/device/device-verify.test.mjs scripts/assets/asset-intake.test.mjs
+        run: node --test tools/ci/check-meta.test.mjs tools/hooks/hooks.test.mjs tools/unity/test.test.mjs scripts/device/device-verify.test.mjs scripts/assets/asset-intake.test.mjs
+
+      # Unity EditMode tests run locally (`node tools/unity/test.mjs EditMode`)
+      # until a Unity license is available to CI (GameCI secrets, see NOW.md).

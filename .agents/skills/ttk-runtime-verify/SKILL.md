@@ -9,10 +9,11 @@ Use to verify Unity changes: compile, EditMode, PlayMode, Android build. This sk
 
 ## Invocation rules (learned the hard way in this project)
 
-1. Tests: `-batchmode -nographics -projectPath . -runTests -testPlatform <EditMode|PlayMode> -testResults <path>`. **Never add `-quit` to a `-runTests` run.** The test runner exits by itself, and `-quit` has corrupted or truncated results here before.
-2. Builds via `-executeMethod` (e.g. `TieuTienKy.EditorTools.Build.AndroidBuildEntryPoint.Build`): **always add `-quit`.** Without it the Editor stays alive after the build and blocks every later batch run in the project until you kill it.
-3. Only one Unity process per project folder. If a run hangs, check for a stale Unity process before retrying.
-4. Read the test results XML and the log file. A zero exit code alone is not proof.
+1. Tests: use `node tools/unity/test.mjs <EditMode|PlayMode>`. It wraps `-batchmode -nographics -projectPath . -runTests -testPlatform <...> -testResults <path>`. **Never add `-quit` to a `-runTests` run.** The test runner exits by itself, and `-quit` has corrupted or truncated results here before.
+2. **Never write results or logs into the project `Temp/` folder.** Unity deletes `Temp/` when it exits, so the file vanishes even though the log says it was saved. The runner writes to `Logs/unity-tests/`.
+3. Builds via `-executeMethod` (e.g. `TieuTienKy.EditorTools.Build.AndroidBuildEntryPoint.Build`): **always add `-quit`.** Without it the Editor stays alive after the build and blocks every later batch run in the project until you kill it.
+4. Only one Unity process per project folder. If a run hangs, check for a stale Unity process before retrying.
+5. Read the test results XML and the log file. A zero exit code alone is not proof.
 
 ## Artifacts
 
