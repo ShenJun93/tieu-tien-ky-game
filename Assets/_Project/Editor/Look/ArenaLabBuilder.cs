@@ -9,6 +9,8 @@ using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using TMPro;
+using UnityEditor.Animations;
+using TieuTienKy.Showcase;
 
 namespace TieuTienKy.EditorTools.Look
 {
@@ -60,9 +62,6 @@ namespace TieuTienKy.EditorTools.Look
             BuildLighting();
             BuildPostProcessing();
 
-            Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
-            EditorSceneManager.SaveScene(scene, ScenePath);
-
             string outDir = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look");
             Directory.CreateDirectory(outDir);
             float heroHeight = Bounds(hero).size.y;
@@ -76,6 +75,9 @@ namespace TieuTienKy.EditorTools.Look
 
             foreach (var g in Graphs) g.Destroy();
             Graphs.Clear();
+            BuildShowcaseCamera(distance, focus);
+            Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
+            EditorSceneManager.SaveScene(scene, ScenePath);
             Debug.Log($"[ArenaLab] cell {cell:F2}, hero height {heroHeight:F2}, camera distance {distance:F1}; screenshots in {outDir}");
         }
 
@@ -226,6 +228,7 @@ namespace TieuTienKy.EditorTools.Look
                     r.sharedMaterials = Enumerable.Repeat(material, r.sharedMaterials.Length).ToArray();
             }
             Pose(go, AssetDatabase.GetAssetPath(model), clip, phase);
+            LoopAtRuntime(go, name, AssetDatabase.GetAssetPath(model), clip);
             CastByName[name] = go;
             return go;
         }
@@ -262,38 +265,82 @@ namespace TieuTienKy.EditorTools.Look
             var hooded = CastByName["RogueHooded"].transform;
             var cameraFacing = Quaternion.Euler(55f, 0f, 0f);
 
-            Spawn(FeedbackVfxLibrary.HeroRing, fx, hero.position, Quaternion.identity, 2.6f);
+            Motion(Spawn(FeedbackVfxLibrary.HeroRing, fx, hero.position, Quaternion.identity, 2.6f), ShowcaseMotion.Mode.Pulse, 1.4f, 0.06f);
 
-            Spawn(FeedbackVfxLibrary.HeroSlash, fx, hero.position + Vector3.up * 1.1f, Quaternion.Euler(0f, 52f, 0f), 2.1f);
+            Motion(Spawn(FeedbackVfxLibrary.HeroSlash, fx, hero.position + Vector3.up * 1.1f, Quaternion.Euler(0f, 52f, 0f), 2.1f), ShowcaseMotion.Mode.Pulse, 1.0f, 0.12f);
             Vector3 contact = Vector3.Lerp(hero.position, barbarian.position, 0.72f) + Vector3.up * 1.3f;
-            Spawn(FeedbackVfxLibrary.HitSpark, fx, contact, cameraFacing, 2.2f);
+            Motion(Spawn(FeedbackVfxLibrary.HitSpark, fx, contact, cameraFacing, 2.2f), ShowcaseMotion.Mode.Spin, 1f, 0.35f);
             var flash = new MaterialPropertyBlock();
             flash.SetFloat("_FlashAmount", 0.7f);
             foreach (var r in barbarian.GetComponentsInChildren<Renderer>())
                 r.SetPropertyBlock(flash);
+            Motion(barbarian.gameObject, ShowcaseMotion.Mode.Flash, 1.0f, 0f);
 
             Vector3 zone = rogue.position + new Vector3(cell * 0.35f, 0f, -cell * 0.1f);
             Spawn(FeedbackVfxLibrary.TelegraphEdge, fx, zone, Quaternion.identity, cell * 1.5f);
-            Spawn(FeedbackVfxLibrary.TelegraphFill, fx, zone, Quaternion.identity, cell * 1.5f * 0.7f);
+            Motion(Spawn(FeedbackVfxLibrary.TelegraphFill, fx, zone, Quaternion.identity, cell * 1.5f), ShowcaseMotion.Mode.Grow, 1.4f, 0.15f, 0.7f);
 
-            Spawn(FeedbackVfxLibrary.ParryGlint, fx, hooded.position + Vector3.up * 2.5f + hooded.forward * 0.4f, cameraFacing, 1.8f);
+            Motion(Spawn(FeedbackVfxLibrary.ParryGlint, fx, hooded.position + Vector3.up * 2.5f + hooded.forward * 0.4f, cameraFacing, 1.8f), ShowcaseMotion.Mode.Pulse, 0.6f, 0.25f);
 
             Vector3 from = mage.position + Vector3.up * 1.9f + mage.forward * 0.8f;
             Vector3 to = rogue.position + Vector3.up * 1.2f;
             Bolt(fx, from, to, 0.5f, 7);
             Bolt(fx, Vector3.Lerp(from, to, 0.45f), to + new Vector3(-0.8f, -0.6f, 1.4f), 0.22f, 11);
-            Spawn(FeedbackVfxLibrary.HitSpark, fx, to, cameraFacing, 1.4f);
+            Motion(Spawn(FeedbackVfxLibrary.HitSpark, fx, to, cameraFacing, 1.4f), ShowcaseMotion.Mode.Spin, 1f, -0.5f);
 
             DamageNumbers.Clear();
             DamageNumbers.Add((barbarian, "128", Color.white, 2.8f));
             DamageNumbers.Add((rogue, "342!", Hex("#FF9A3C"), 4.2f));
         }
 
-        static void Spawn(GameObject prefab, Transform parent, Vector3 position, Quaternion rotation, float scale)
+        static GameObject Spawn(GameObject prefab, Transform parent, Vector3 position, Quaternion rotation, float scale)
         {
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
             go.transform.SetPositionAndRotation(position, rotation);
             go.transform.localScale = Vector3.one * scale;
+            return go;
+        }
+
+        static void Motion(GameObject go, ShowcaseMotion.Mode mode, float period, float amount, float phase = 0f)
+            => go.AddComponent<ShowcaseMotion>().Configure(mode, period, amount, phase);
+
+        /// <summary>Showcase only: a one-state controller per clip, replayed with a short pause.</summary>
+        static void LoopAtRuntime(GameObject go, string castName, string clipSourcePath, string clipName)
+        {
+            var clip = AssetDatabase.LoadAllAssetsAtPath(clipSourcePath).OfType<AnimationClip>().FirstOrDefault(c => c.name == clipName);
+            if (clip == null) return;
+            const string folder = "Assets/_Project/Animation/Showcase";
+            if (!AssetDatabase.IsValidFolder(folder))
+            {
+                if (!AssetDatabase.IsValidFolder("Assets/_Project/Animation")) AssetDatabase.CreateFolder("Assets/_Project", "Animation");
+                AssetDatabase.CreateFolder("Assets/_Project/Animation", "Showcase");
+            }
+            string path = $"{folder}/{castName}_{clipName}.controller";
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(path) ?? AnimatorController.CreateAnimatorControllerAtPathWithClip(path, clip);
+            go.GetComponent<Animator>().runtimeAnimatorController = controller;
+            Motion(go, ShowcaseMotion.Mode.AnimatorLoop, 1f, 0.35f);
+        }
+
+        /// <summary>The persistent gameplay camera the showcase APK renders through (the capture cameras are temporary).</summary>
+        static void BuildShowcaseCamera(float distance, Vector3 focus)
+        {
+            var cam = new GameObject("Main Camera").AddComponent<Camera>();
+            cam.tag = "MainCamera";
+            cam.gameObject.AddComponent<AudioListener>();
+            cam.fieldOfView = 32f;
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = Hex("#0B0D12");
+            cam.transform.rotation = Quaternion.Euler(55f, 0f, 0f);
+            cam.transform.position = focus - cam.transform.forward * distance;
+            cam.farClipPlane = 300f;
+            var data = cam.GetUniversalAdditionalCameraData();
+            data.renderPostProcessing = true;
+            data.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            if (hud != null)
+            {
+                hud.SetActive(true);
+                hud.GetComponent<Canvas>().worldCamera = cam;
+            }
         }
 
         static void Bolt(Transform parent, Vector3 from, Vector3 to, float width, int seed)
