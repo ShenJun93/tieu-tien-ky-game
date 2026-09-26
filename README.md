@@ -2,70 +2,36 @@
 
 **Working title:** Tiểu Tiên Ký  
 **Tagline:** *Mỗi trận, một kỳ duyên.*  
-**Status:** Pre-production / Product Foundation accepted  
-**Platforms:** Android + iOS (mobile-first); Windows is internal dev/debug only.  
-**Gameplay orientation:** Landscape-only.
+**What it is:** a mobile-first xianxia arena roguelite. Direct-control combat, parry and elemental laws, 10–15 minute runs, and cultivation-realm progression.  
+**Platforms:** Android first, then iOS and Steam. Landscape only.  
+**Status:** R0 repo reset → G0–G3 toward a vertical slice (`docs/ROADMAP.md`).
 
-## Product identity
-
-Tiểu Tiên Ký is a **mobile-first PvE action-arena cultivation game**. The primary Product Proof direction is solo PvE: direct mobile combat, readable chaos, cultivation mechanics that change combat state/space/timing rather than only numbers, and runs capable of producing memorable/retellable moments.
-
-The accepted product-level authority is:
-
-- `docs/master/PRODUCT_FOUNDATION.md`
-- `docs/decisions/001-product-foundation.md`
-
-Do not infer that co-op or Human PvP is a current product dependency. Existing NGO + Unity Transport work is preserved as technical capability only until separately authorized.
-
-## Repository navigation
-
-Use the repository as the source of truth rather than duplicating mutable roadmap state here:
+## Start here
 
 ```text
-Current truth         → docs/governance/CURRENT_STATE.md
-Write authority       → docs/governance/NEXT_TASK.md
-Operating workflow    → docs/governance/WORKFLOW.md
-Product Foundation    → docs/master/PRODUCT_FOUNDATION.md
-Production doctrine   → docs/master/GAME_PRODUCTION_DOCTRINE.md
-Maturity / DoD        → docs/master/PRODUCTION_FOUNDATION.md
-Repository map        → docs/architecture/REPO_MAP.md
-Significant decisions → docs/decisions/
+What the game is        → docs/GAME.md
+This week               → NOW.md
+How we work (agents)    → AGENTS.md  (operating model: docs/decisions/004)
+Combat quality targets  → docs/COMBAT_BAR.md
+Gates and dates         → docs/ROADMAP.md
+Decisions               → docs/decisions/
+Playtests               → docs/PLAYTEST_LOG.md
+Research inputs         → docs/research/
+History (not rules)     → docs/archive/
 ```
-
-`docs/master/MASTER_PLAN.md`, `docs/master/RELEASE_TRACK.md`, historical task files and evidence reports preserve project history. Where historical product/mode assumptions conflict with the accepted Product Foundation, the accepted Product Foundation is current authority.
 
 ## Technical baseline
 
-- Unity `6000.3.21f1` + C#.
-- Unity Input System.
-- Android + iOS share one gameplay codebase; platform-specific adapters only when needed.
-- NGO + Unity Transport is the current evidence-backed networking implementation, but networking expansion is not current Product Proof authority.
-- Built-in Render Pipeline may remain until evidence justifies a rendering migration.
+- Unity `6000.3.21f1`, C#, Unity Input System, Android IL2CPP/ARM64.
+- The project is on the Built-in Render Pipeline today. R0.3 migrates it to URP, because Unity no longer recommends Built-in for new titles.
+- The NGO + Unity Transport code is historical capability. Multiplayer is not in v1.
 
-## Human evidence
+## How work happens
 
-For player-facing mobile slices, automated checks prove correctness; they do not prove fun, feel, readability or product identity. The normal high-value loop is:
-
-```text
-agent implementation
-→ focused automated/Unity verification
-→ exact SHA-bound artifact when required
-→ hard Human Gate
-→ physical-device verdict
-```
-
-No device reconnection, ADB polling or automatic resume grants authority.
-
-## Agent workflow
-
-`main` is the canonical baseline. Mutation occurs only on an explicitly authorized task branch/workspace. Human/Game Director remains merge authority; no auto-merge.
-
-Research is not considered closed until material findings are dispositioned into repository decisions/workflow as one of: integrated, partially integrated, to-integrate, deferred, rejected or superseded. Research is evidence input, not an automatic implementation mandate.
+The Director (human) sets weekly goals, playtests on a real phone and is the only one who merges. AI agents implement small slices on branches; each PR carries a runnable check. `main` is protected by the `repository-gate` CI job. There is no auto-merge.
 
 ## Public development and licensing
 
-This project is being prepared for public development. Source visibility, once enabled, does **not** by itself grant an open-source license. Unless a separate license file or third-party notice states otherwise, project-original code, game design, documentation, art and audio remain copyrighted by the repository owner.
+The source is visible, but that does **not** grant an open-source license. Unless a separate license file or third-party notice says otherwise, project-original code, game design, documentation, art and audio remain copyrighted by the repository owner.
 
-Third-party content, if introduced later, must retain and comply with its own license and redistribution terms; raw third-party assets must not be assumed safe to publish merely because they can be used inside a compiled game.
-
-Working-title trademark, store-name and domain clearance remain outside current implementation scope.
+Third-party content keeps its own license and redistribution terms. It is recorded in `ASSET_SOURCES.csv`. Raw third-party assets are not assumed safe to publish just because they may be used inside a compiled game.

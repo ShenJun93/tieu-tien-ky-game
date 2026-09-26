@@ -1,153 +1,27 @@
 # ttk-android-device-verification
 
-Process skill for using `scripts/device/device-verify.mjs` — a deterministic,
-dependency-free device helper (Node built-ins + `adb` + `git` only) that
-consumes an already-built exact-SHA Android APK and performs bounded machine
-device verification. Not a device-automation framework. Governing sources
-for authority/lifecycle and the Human Gate: `AGENTS.md`,
-`docs/governance/WORKFLOW.md`. This Skill does not restate or duplicate
-either.
+Use to install, launch and screenshot an **already built**, SHA-named APK on exactly one Android device with `scripts/device/device-verify.mjs`. The helper uses only Node built-ins, `adb` and `git`. It never rebuilds and never invokes Unity; `ttk-runtime-verify` produces the APK.
 
-## Architecture boundary — read this first
-
-```text
-.agents/skills/ttk-runtime-verify/  (Unity/artifact-level, unmodified by this Skill)
-  compile / EditMode / PlayMode / Android build -> produces a SHA-bound APK
-
-ttk-android-device-verification      (device-level, this Skill)
-  consumes that exact existing APK — never rebuilds it, never invokes Unity
-  identifies exactly one explicit device
-  validates artifact / device / package identity
-  performs bounded install / launch verification
-  captures bounded machine evidence
-  stops before the Human physical gate
+```bash
+node scripts/device/device-verify.mjs <device-info|verify-connected|verify-artifact|resolve-package-id|resolve-launch-component|clean-install|verify-installed-package|launch|verify-launched-process|capture-screenshot> [--flag value ...]
 ```
 
-## When to use
+## Rules the helper enforces (do not work around them)
 
-After a Unity-verified, SHA-bound APK already exists (produced by
-`ttk-runtime-verify` or an equivalent authorized build), and the active
-task's `required_evidence` declares real-device evidence keys (e.g.
-`clean_install_real_device`, `launch_real_device`,
-`launched_process_verified`, `screenshot_capture_real_device`).
+1. **Exactly one device.** Pass `--serial <serial>`, or have exactly one device in `state=device`. Zero or several devices is a FAIL, never a guess.
+2. **Artifact identity.** The APK must exist and be non-empty, and the short SHA in its filename must resolve to a commit. That commit must be `origin/main` or one of its ancestors, or match a pinned release in the helper's internal allowlist. APKs built only from a feature branch are rejected. There is no flag to override this.
+3. **Package id** is read live from `ProjectSettings/ProjectSettings.asset` and never hardcoded.
+4. **`clean-install`** re-verifies the artifact and package internally. It then uninstalls only that exact package and installs the verified APK. It never does a wildcard uninstall or `pm clear`.
+5. **Launch component** is resolved on the device right before launch. If resolution is ambiguous, the helper fails closed.
+6. **Launch check:** one bounded delay, then one process check. No polling loops, no retries, no monitoring.
+7. Every `adb` child process gets `MSYS_NO_PATHCONV=1`. This avoids Git Bash rewriting POSIX device paths on Windows.
+8. No scripted gameplay input (`adb shell input …`) and no logcat pipeline in this version.
 
-## Procedure
+## Evidence hygiene (public repository)
 
-1. Read live authority first — `docs/governance/CURRENT_STATE.md`,
-   `docs/governance/NEXT_TASK.md`, and the active task contract. Confirm
-   which device evidence keys, if any, the active task actually requires;
-   an absent key means do not run that stage (same
-   required-evidence-gating discipline as `ttk-runtime-verify`).
-2. Confirm `adb` resolves from `PATH`. Do not assume a fixed absolute path.
-3. Select exactly one device:
-   - explicit `--serial <serial>` → that exact transport must show
-     `state=device`; anything else is a FAIL, never a silent fallback to
-     another transport for "the same" physical device.
-   - no `--serial` → exactly one `state=device` entry may be auto-selected;
-     zero or multiple is a FAIL, never a guess.
-4. Verify the artifact before any device mutation: APK exists, is
-   non-empty, its filename encodes a short SHA that resolves to a real
-   commit in this repository via `git`. Record the SHA-256 and the full
-   source commit. Never accept a different artifact after Human handoff;
-   never silently rebuild one.
+- Screenshots are machine evidence that capture worked. They say nothing about fun or quality. Write them to OS temp or a gitignored folder (confirm with `git check-ignore`), and attach them to PRs rather than committing them.
+- Never publish device network endpoints, ADB/mDNS transport ids, hardware serials, local usernames, absolute local paths or process ids. Replace them with labels such as `DEVICE=REDACTED`, and keep the facts: platform/API level, APK SHA-256, source commit, PASS/FAIL, reason.
 
-   The resolved source commit must also carry **trusted provenance**, not
-   merely exist as a commit object: it is accepted only when it equals or is
-   an ancestor of trusted `main` (`refs/remotes/origin/main`), or is
-   reachable from an explicitly approved immutable release/tag pinned by an
-   internal, committed allowlist inside `device-verify.mjs` (both the exact
-   ref name and the exact expected commit are pinned; a moved/recreated tag
-   fails closed). Feature-branch-only provenance fails closed — a commit
-   that exists in this repository but is reachable only from a non-trusted
-   branch is rejected, not merely a commit that fails to resolve at all. The
-   caller can never nominate an arbitrary ref as trusted: there is no
-   `--trusted-ref`/`--allow-ref`/`--source-ref`/environment-variable
-   mechanism, by design — trusted-root identity is internal, fixed policy
-   only. `clean-install`'s internal preflight (step 6 below) enforces this
-   exact same trust boundary through the same shared artifact-identity
-   lookup, not a separate/weaker check — an untrusted artifact is rejected
-   there too, before any destructive `adb` call.
-5. Read the authoritative package id live from committed
-   `ProjectSettings/ProjectSettings.asset` at run time — never trust a
-   hardcoded/remembered value. Fail closed if it cannot be parsed.
-6. Clean install targets exactly one authoritative package id. This safety
-   is enforced **inside the `clean-install` command itself**, not by
-   whoever calls it having run steps 4-5 as separate commands first: before
-   any destructive `adb uninstall`/`adb install`, `clean-install`
-   internally re-verifies the artifact — including trusted-provenance
-   (step 4), via the exact same shared artifact-identity lookup
-   `verify-artifact` uses, not a duplicated or weaker check — and re-reads
-   the authoritative package id, and fails closed on any artifact defect,
-   untrusted source commit, or a mismatch between a caller-supplied
-   `--package` and that authoritative id. Only after that internal
-   preflight passes does it check current install state, uninstall only
-   that exact package if present, then install only the verified APK. No
-   wildcard uninstall, no `pm clear`, no unrelated package mutation.
-7. Resolve the launch component from the installed package on the device
-   itself (a read-only package-query command), immediately before use —
-   never hardcode an inferred fully-qualified activity class as canon. If
-   resolution is ambiguous or empty: FAIL CLOSED, do not guess.
-8. Launch the exact resolved component. `am start` reporting success is
-   not sufficient proof by itself — perform exactly one bounded process
-   check after one bounded delay. No polling loop, no repeated retry, no
-   monitoring, no auto-repair. If the process is not alive: FAIL and
-   report.
-9. Screenshot capture (when required) is machine evidence only — it proves
-   capture succeeded and exact session/device/artifact provenance. It does
-   **not** certify fun, gameplay quality, readability, art quality, TTK
-   identity, or Human acceptance. Never commit the captured image unless a
-   task separately, explicitly authorizes that; write it to OS temp or an
-   actually-gitignored location (verify with `git check-ignore`, don't
-   assume a path is ignored).
-10. Every `adb` child process the helper spawns must receive
-    `MSYS_NO_PATHCONV=1` in its own environment (never the caller's global
-    environment) to avoid the proven Windows/Git-Bash path-conversion
-    hazard for POSIX-looking device paths.
-11. Absolutely no scripted gameplay input in this Skill's scope: no
-    `adb shell input tap/swipe/keyevent`, no logcat pipeline in V1.
-12. Human Gate is unchanged and absolute. Once execution reports
-    `BLOCKED_ON_HUMAN_GATE` / `WAITING_FOR_EXPLICIT_OPERATOR_CONTINUE`, all
-    automation stops: no adb polling, no device monitoring, no retries, no
-    scheduled wakeups, no auto-install, no auto-launch, no
-    USB/Wi-Fi-reconnection-triggered resume, no background continuation.
-    Reconnection is never authorization to continue.
-13. Report every stage as exactly what actually happened — honest
-    `PASS`/`FAIL`, never a fabricated `PASS` when evidence is missing or a
-    stage could not be run.
-14. **Public-evidence data minimization is mandatory.** Raw command output may
-    contain values needed transiently to select and verify the device, but
-    committed/public evidence must not publish device network endpoints,
-    ADB/mDNS transport identifiers, hardware serials, local workstation
-    usernames or absolute local paths, or transient process ids. Replace
-    those values with stable redaction labels while retaining the engineering
-    fact being proved (for example: `DEVICE_ENDPOINT=REDACTED`, platform/API,
-    artifact SHA-256, source commit, PASS/FAIL, and failure reason). Device
-    model names should be omitted unless the active task explicitly requires
-    model-specific compatibility evidence.
+## When to stop
 
-    Before committing evidence, explicitly check the changed evidence/PR text
-    against **every** prohibited category below, not only a named subset, and
-    fail the closeout if any remains without an explicit allowed reason
-    recorded in the active task:
-
-    ```text
-    1. device network endpoint (e.g. IP:port)
-    2. ADB/mDNS transport identifier
-    3. hardware serial
-    4. local workstation username / absolute local path
-    5. transient process id
-    6. device-model identifier (default: omit/redact; allowed only when the
-       active task explicitly requires model-specific compatibility evidence)
-    ```
-
-## Explicitly not this Skill's job
-
-- Rebuilding, recompiling, or otherwise invoking Unity — that is
-  `ttk-runtime-verify`'s job; this Skill only consumes its output artifact.
-- Certifying gameplay/fun/feel/readability/TTK-identity — that remains the
-  Human physical gate, unautomated by this Skill.
-- Any device automation beyond the bounded V1 operations: no scripted
-  input, no polling/monitoring loops, no auto-repair, no logcat pipeline.
-- Deciding that a task *should* require device evidence merely because
-  this Skill knows how to produce it — that decision belongs to the active
-  task contract alone.
+When the next step is the Director's playtest, stop. Do not poll `adb`, and do not auto-install or auto-launch while you wait. A device reconnecting is not a signal to continue; wait for the Director's message.
