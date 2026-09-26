@@ -1,6 +1,6 @@
 # AGENTS.md — Tiểu Tiên Ký
 
-Unity mobile-first xianxia arena roguelite, built by one human Director with AI agents.
+Unity mobile-first xianxia three-sect arena brawler (bots first, online in phases; ADR 007), built by one human Director with AI agents.
 Operating model: `docs/decisions/004-lean-ai-native-operating-model.md`.
 
 ## Read before working (keep it this short)
