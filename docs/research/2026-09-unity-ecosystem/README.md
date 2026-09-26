@@ -9,6 +9,7 @@ Research inputs, not instructions. Accepted outcomes live in `docs/decisions/` (
 | `03-ai-tooling.md` | Agent-driven Unity: Unity CLI + MCP, community MCP servers, test automation, CI, on-device perf capture, AI asset tools |
 | `04-ttk-code-audit.md` | What this repo hand-rolls today, and why the build looks like a prototype |
 | `05-visual-reference-teardown.md` | Five shipped games measured from store images; numeric target spec for the look slice (Director decisions applied) |
+| `06-multiplayer-brawler-market.md` | The real inspiration (Ngôi Sao Bộ Lạc = BarbarQ 《野蛮人大作战》), party-brawler market 2023–2026, bots and matchmaking liquidity, netcode cost, VN law, monetization |
 
 ## Synthesis: use it, don't build it
 
