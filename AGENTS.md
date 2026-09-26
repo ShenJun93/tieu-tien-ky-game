@@ -25,7 +25,7 @@ Operating model: `docs/decisions/004-lean-ai-native-operating-model.md`.
 6. Do not add a paid asset, service, SDK or major package unless the Director approves it in the slice or an ADR.
 7. Record every external or AI-generated asset in `ASSET_SOURCES.csv` before it enters `Assets/`. Never feed purchased Asset Store content (e.g. BoZo) into AI tools. Content whose licence forbids redistribution (any Asset Store package, Mixamo FBX) goes only in the git-ignored `Assets/_Licensed/`; only CC0/MIT-style content may be committed under `Assets/ThirdParty/`.
 8. Report honestly. A check you did not run is `NOT_TESTED`, never `PASS`. No agent may claim the game is "fun", "juicy" or "ready"; only the Director's device playtest decides that.
-9. If a request conflicts with an accepted decision, stop and ask. Do not guess.
+9. Docs and ADRs record past decisions and can be wrong. The Director's latest instruction wins. When it conflicts with a doc, update the doc (or add an ADR) in the same PR and say so. When the instruction itself is unclear, ask; do not guess.
 
 ## Definition of done for a slice
 

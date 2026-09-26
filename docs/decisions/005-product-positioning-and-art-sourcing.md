@@ -39,7 +39,7 @@ Option A, as described in `docs/GAME.md`:
 
 The Director will not spend money on art. Sources, in order:
 
-1. **Owned assets.** BoZo Stylized Modular Characters (bought) for 3D characters and kitbashed enemies.
+1. **Owned assets.** ~~BoZo Stylized Modular Characters (bought)~~ *Corrected 2026-09-27: BoZo was never purchased. Characters now come from our own pipeline (ADR 008), with CC0 KayKit as a placeholder.*
 2. **Free assets.** Mixamo animations; CC0 environment kits (Quaternius, KayKit, Kenney); Sonniss GDC audio bundles; OFL fonts that cover Vietnamese.
 3. **ChatGPT image generation (Director's subscription).**
    - Use it for concept art, the visual-target paintover, UI plates and icons, textures and VFX sprite sheets.
