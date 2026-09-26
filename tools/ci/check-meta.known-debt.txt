@@ -1,7 +1,3 @@
-# Pre-existing .meta problems on main as of 2026-09-26.
-# These folders were committed without their Unity-generated .meta files.
-# R0.2 opens the project in Unity, lets it generate the metas, commits them,
-# and deletes these lines. Do not add new entries; fix new problems instead.
-missing .meta: Assets/_Project/Editor
-missing .meta: Assets/_Project/Editor/Build
-missing .meta: Assets/_Project/Resources/Textures/Characters
+# Known pre-existing .meta problems that only warn in check-meta.mjs.
+# Empty since R0.2 regenerated the missing folder metas in Unity.
+# Do not add entries; fix new problems instead.
