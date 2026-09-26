@@ -49,6 +49,7 @@ namespace TieuTienKy.EditorTools.Look
             BuildEdges(root);
             BuildPropClusters(root);
             var hero = BuildCast();
+            BuildFeedbackMoment();
             BuildLighting();
             BuildPostProcessing();
 
@@ -171,15 +172,17 @@ namespace TieuTienKy.EditorTools.Look
         static GameObject BuildCast()
         {
             var cast = new GameObject("Cast").transform;
-            var hero = SpawnCharacter("Knight", cast, new Vector3(0f, 0f, -cell * 0.4f), 200f, "Block_Attack");
+            var hero = SpawnCharacter("Knight", cast, new Vector3(0f, 0f, -cell * 0.4f), 52f, "Block_Attack");
             SpawnCharacter("Barbarian", cast, new Vector3(cell * 0.9f, 0f, cell * 0.3f), 230f, "2H_Melee_Attack_Chop");
             SpawnCharacter("Rogue", cast, new Vector3(-cell * 1.1f, 0f, cell * 0.5f), 140f, "Dodge_Left");
             SpawnCharacter("Mage", cast, new Vector3(-cell * 2.4f, 0f, -cell * 0.9f), 80f, "Spellcast_Shoot");
-            SpawnCharacter("RogueHooded", cast, new Vector3(cell * 2.6f, 0f, -cell * 1.2f), 250f, "Running_A");
+            SpawnCharacter("RogueHooded", cast, new Vector3(cell * 2.6f, 0f, -cell * 1.2f), 250f, "1H_Melee_Attack_Chop", 0.2f);
             return hero;
         }
 
-        static GameObject SpawnCharacter(string name, Transform parent, Vector3 position, float yaw, string clip)
+        static readonly Dictionary<string, GameObject> CastByName = new Dictionary<string, GameObject>();
+
+        static GameObject SpawnCharacter(string name, Transform parent, Vector3 position, float yaw, string clip, float phase = 0.45f)
         {
             var model = AssetDatabase.LoadAssetAtPath<GameObject>($"{CastRoot}/Characters/{name}.fbx");
             var go = (GameObject)PrefabUtility.InstantiatePrefab(model, parent);
@@ -188,11 +191,12 @@ namespace TieuTienKy.EditorTools.Look
             if (material != null)
                 foreach (var r in go.GetComponentsInChildren<Renderer>())
                     r.sharedMaterials = Enumerable.Repeat(material, r.sharedMaterials.Length).ToArray();
-            Pose(go, AssetDatabase.GetAssetPath(model), clip);
+            Pose(go, AssetDatabase.GetAssetPath(model), clip, phase);
+            CastByName[name] = go;
             return go;
         }
 
-        static void Pose(GameObject go, string clipSourcePath, string clipName)
+        static void Pose(GameObject go, string clipSourcePath, string clipName, float phase)
         {
             var clip = AssetDatabase.LoadAllAssetsAtPath(clipSourcePath).OfType<AnimationClip>().FirstOrDefault(c => c.name == clipName);
             if (clip == null) { Debug.LogWarning($"[ArenaLab] no clip {clipName}"); return; }
@@ -203,10 +207,82 @@ namespace TieuTienKy.EditorTools.Look
             var graph = PlayableGraph.Create($"Pose_{go.name}");
             graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
             var playable = AnimationClipPlayable.Create(graph, clip);
-            playable.SetTime(clip.length * 0.45f);
+            playable.SetTime(clip.length * phase);
             AnimationPlayableOutput.Create(graph, "Pose", animator).SetSourcePlayable(playable);
             graph.Evaluate();
             Graphs.Add(graph);
+        }
+
+        /// <summary>
+        /// One readable combat beat for the screenshot. The hero (jade ring) counters the Barbarian with a
+        /// jade slash, and the Barbarian flashes white with a hit spark. The Mage's Lôi bolt chases the Rogue
+        /// out of a red must-dodge circle, while the hooded rogue winds up a parryable chop (gold glint).
+        /// </summary>
+        static void BuildFeedbackMoment()
+        {
+            var fx = new GameObject("Feedback").transform;
+            var hero = CastByName["Knight"].transform;
+            var barbarian = CastByName["Barbarian"].transform;
+            var rogue = CastByName["Rogue"].transform;
+            var mage = CastByName["Mage"].transform;
+            var hooded = CastByName["RogueHooded"].transform;
+            var cameraFacing = Quaternion.Euler(55f, 0f, 0f);
+
+            Spawn(FeedbackVfxLibrary.HeroRing, fx, hero.position, Quaternion.identity, 2.6f);
+
+            Spawn(FeedbackVfxLibrary.HeroSlash, fx, hero.position + Vector3.up * 1.1f, Quaternion.Euler(0f, 52f, 0f), 2.1f);
+            Vector3 contact = Vector3.Lerp(hero.position, barbarian.position, 0.72f) + Vector3.up * 1.3f;
+            Spawn(FeedbackVfxLibrary.HitSpark, fx, contact, cameraFacing, 2.2f);
+            var flash = new MaterialPropertyBlock();
+            flash.SetFloat("_FlashAmount", 0.7f);
+            foreach (var r in barbarian.GetComponentsInChildren<Renderer>())
+                r.SetPropertyBlock(flash);
+
+            Vector3 zone = rogue.position + new Vector3(cell * 0.35f, 0f, -cell * 0.1f);
+            Spawn(FeedbackVfxLibrary.TelegraphEdge, fx, zone, Quaternion.identity, cell * 1.5f);
+            Spawn(FeedbackVfxLibrary.TelegraphFill, fx, zone, Quaternion.identity, cell * 1.5f * 0.7f);
+
+            Spawn(FeedbackVfxLibrary.ParryGlint, fx, hooded.position + Vector3.up * 2.5f + hooded.forward * 0.4f, cameraFacing, 1.8f);
+
+            Vector3 from = mage.position + Vector3.up * 1.9f + mage.forward * 0.8f;
+            Vector3 to = rogue.position + Vector3.up * 1.2f;
+            Bolt(fx, from, to, 0.5f, 7);
+            Bolt(fx, Vector3.Lerp(from, to, 0.45f), to + new Vector3(-0.8f, -0.6f, 1.4f), 0.22f, 11);
+            Spawn(FeedbackVfxLibrary.HitSpark, fx, to, cameraFacing, 1.4f);
+        }
+
+        static void Spawn(GameObject prefab, Transform parent, Vector3 position, Quaternion rotation, float scale)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+            go.transform.SetPositionAndRotation(position, rotation);
+            go.transform.localScale = Vector3.one * scale;
+        }
+
+        static void Bolt(Transform parent, Vector3 from, Vector3 to, float width, int seed)
+        {
+            var rng = new System.Random(seed);
+            var line = new GameObject("LoiBolt").AddComponent<LineRenderer>();
+            line.transform.SetParent(parent, false);
+            const int points = 9;
+            line.positionCount = points;
+            Vector3 side = Vector3.Cross((to - from).normalized, Vector3.up);
+            for (int i = 0; i < points; i++)
+            {
+                float t = i / (points - 1f);
+                float jitter = (i == 0 || i == points - 1) ? 0f : (float)(rng.NextDouble() - 0.5) * 1.1f;
+                line.SetPosition(i, Vector3.Lerp(from, to, t) + side * jitter + Vector3.up * jitter * 0.4f);
+            }
+            line.widthMultiplier = width;
+            line.alignment = LineAlignment.View;
+            line.textureMode = LineTextureMode.Stretch;
+            line.sharedMaterial = FeedbackVfxLibrary.LightningMaterial;
+            line.shadowCastingMode = ShadowCastingMode.Off;
+
+            // A thin white core over the lavender glow keeps the bolt readable as Lôi, not generic white.
+            var core = Object.Instantiate(line.gameObject, parent).GetComponent<LineRenderer>();
+            core.name = "LoiBoltCore";
+            core.widthMultiplier = width * 0.3f;
+            core.sharedMaterial = FeedbackVfxLibrary.LightningCoreMaterial;
         }
 
         // ---------- light and post ----------
@@ -240,19 +316,23 @@ namespace TieuTienKy.EditorTools.Look
 
         static void BuildPostProcessing()
         {
-            var profile = ScriptableObject.CreateInstance<VolumeProfile>();
-            var bloom = profile.Add<Bloom>(true);
-            bloom.threshold.Override(1.05f);
-            bloom.intensity.Override(0.6f);
-            var vignette = profile.Add<Vignette>(true);
-            vignette.intensity.Override(0.22f);
-            var tonemap = profile.Add<Tonemapping>(true);
-            tonemap.mode.Override(TonemappingMode.Neutral);
+            // Created once; later tuning happens on the asset in the Editor and survives re-runs.
             string path = $"{MaterialFolder}/ArenaLab_Volume.asset";
-            AssetDatabase.DeleteAsset(path);
-            AssetDatabase.CreateAsset(profile, path);
-            foreach (var c in profile.components) AssetDatabase.AddObjectToAsset(c, profile);
-            AssetDatabase.SaveAssets();
+            var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(path);
+            if (profile == null)
+            {
+                profile = ScriptableObject.CreateInstance<VolumeProfile>();
+                var bloom = profile.Add<Bloom>(true);
+                bloom.threshold.Override(1.05f);
+                bloom.intensity.Override(0.6f);
+                var vignette = profile.Add<Vignette>(true);
+                vignette.intensity.Override(0.22f);
+                var tonemap = profile.Add<Tonemapping>(true);
+                tonemap.mode.Override(TonemappingMode.Neutral);
+                AssetDatabase.CreateAsset(profile, path);
+                foreach (var c in profile.components) AssetDatabase.AddObjectToAsset(c, profile);
+                AssetDatabase.SaveAssets();
+            }
 
             var volume = new GameObject("PostProcess").AddComponent<Volume>();
             volume.isGlobal = true;

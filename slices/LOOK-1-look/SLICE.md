@@ -32,9 +32,21 @@
 - 1b (`feat/look-01b-arena`):
   - `Tieu Tien Ky/Look/Build Arena Lab` builds a dark jade arena from the CC0 KayKit Dungeon kit: a derived jade palette, a hex tile floor with rock tiles only on the outer ring, a centre seal and cracked patches, low walls, corner pillars, rubble and candle clusters, warm torch accents, and Bloom, Vignette and Neutral tonemapping.
   - Screenshots: `arena-gameplay.png`, `arena-closeup.png`.
+- 1c (`feat/look-01c-feedback`):
+  - `FeedbackVfxLibrary` creates reusable VFX prefabs under `Assets/_Project/VFX/`. It creates each only if missing, so Editor tuning survives. The prefabs:
+    - hero jade ground ring;
+    - red must-dodge telegraph (edge plus 42% fill that grows);
+    - gold parry glint;
+    - hit spark;
+    - jade toon slash arc (tapered mesh);
+    - Lôi lightning (lavender glow plus white core).
+  - `ToonPrototype` gains `_FlashColor`/`_FlashAmount`, driven by a MaterialPropertyBlock. This fixes the invisible-flash cause found in the code audit.
+  - The arena lab stages one readable beat: hero counter-slash plus hit flash, a bolt chasing a rogue out of a red zone, and a parryable wind-up with a gold glint.
+  - Screenshots: `feedback-gameplay.png`, `feedback-closeup.png`.
 - Follow-ups:
   - Sect banners are placed but fall outside the gameplay frame; revisit the back-wall dressing in 1e.
   - The KayKit dungeon style is Western; xianxia landmark pieces (gate, lanterns, incense) come in 1e.
-  - Characters read pale next to the floor; the hero ground ring and sect accents come in 1c/1e.
+  - Characters read pale next to the floor; sect accents come in 1e.
+  - Camera shake, hitstop and damage numbers cannot be judged from stills; they are wired at runtime after NET-0 (one time-scale owner, Cinemachine Impulse).
   - The KayKit costumes are Western (knight, witch); the xianxia pass is 1e.
   - The floor is still flat (1b).
