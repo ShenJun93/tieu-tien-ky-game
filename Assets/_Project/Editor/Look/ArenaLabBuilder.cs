@@ -55,6 +55,7 @@ namespace TieuTienKy.EditorTools.Look
             BuildFeedbackMoment();
             var hudPrefab = BrawlHudBuilder.Prefab;
             HudFontPass.Apply();
+            HudIconPass.Apply();
             hud = (GameObject)PrefabUtility.InstantiatePrefab(hudPrefab);
             BuildLighting();
             BuildPostProcessing();

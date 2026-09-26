@@ -52,7 +52,7 @@
   - The arena lab adds damage numbers (2.8% of height; crit 4.2% in orange) and renders `hud-gameplay.png`.
   - Follow-ups:
     - Done in 1d2: OFL Vietnamese fonts (Be Vietnam Pro body, Philosopher titles) as dynamic TMP assets, with a realm title and kill feed in Vietnamese (`HudFontPass`). A shipping build bakes a static atlas from the Vietnamese character list.
-    - The ChatGPT skill icons replace the placeholders.
+    - Done in 1d3: the Director's 4 ChatGPT icons replace the placeholder glyphs (`HudIconPass`). The human edit is still pending (ADR 005). Sword and bolt share a thin diagonal silhouette; a more vertical zigzag bolt would separate them at 64 px.
     - Wiring into the runtime scene comes after NET-0.
 - Follow-ups:
   - Sect banners are placed but fall outside the gameplay frame; revisit the back-wall dressing in 1e.
