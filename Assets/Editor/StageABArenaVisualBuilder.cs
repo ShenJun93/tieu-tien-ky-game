@@ -19,7 +19,8 @@ namespace TieuTienKy.EditorTools
     {
         const string ScenePath = "Assets/_Project/Scenes/Arena_VerticalSlice_01.unity";
         const string MaterialFolder = "Assets/_Project/Materials";
-        static readonly Shader StandardShader = Shader.Find("Standard");
+        // URP Lit replaces Built-in Standard since slice R0.3.
+        static readonly Shader StandardShader = Shader.Find("Universal Render Pipeline/Lit");
 
         [MenuItem("Tools/Stage AB/Build Arena Visual Hierarchy (A2)")]
         public static void BuildArenaVisuals()
@@ -75,7 +76,7 @@ namespace TieuTienKy.EditorTools
             }
 
             mat.color = color;
-            mat.SetFloat("_Glossiness", smoothness);
+            mat.SetFloat("_Smoothness", smoothness);
             EditorUtility.SetDirty(mat);
             return mat;
         }
