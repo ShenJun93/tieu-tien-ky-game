@@ -1,0 +1,17 @@
+{
+    "name": "TieuTienKy.Brawl",
+    "rootNamespace": "TieuTienKy.Brawl",
+    "references": [
+        "TieuTienKy.Combat",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
