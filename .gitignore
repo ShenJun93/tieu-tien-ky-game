@@ -58,3 +58,7 @@ Desktop.ini
 
 # AO-Lite local evidence
 .local/ao/
+
+# Generated at build time by the Unity performance testing package (pulled in by URP)
+/[Aa]ssets/[Rr]esources/PerformanceTestRun*.json*
+/[Aa]ssets/[Rr]esources.meta
