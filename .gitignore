@@ -12,6 +12,12 @@ Recordings/
 # Asset Store tools
 Assets/AssetStoreTools*
 
+# Licensed content that must never reach this public repo: Asset Store packages
+# (BoZo, free ones too), Mixamo FBX, anything whose licence forbids redistribution.
+# Lives only on the Director's machine; prefabs may reference it by GUID.
+/[Aa]ssets/_Licensed/
+/[Aa]ssets/_Licensed.meta
+
 # IDE / editor
 .vs/
 .idea/
