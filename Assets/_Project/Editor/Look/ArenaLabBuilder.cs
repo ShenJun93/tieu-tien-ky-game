@@ -139,15 +139,19 @@ namespace TieuTienKy.EditorTools.Look
             string[] back = { "wall_half", "wall_half", "wall_half", "wall_half", "wall_half" };
             for (int x = 0; x < Columns; x++)
             {
-                float px = -halfW + cell * (x + 0.5f);
-                Place(back[rng.Next(back.Length)], edges, new Vector3(px, 0f, halfD), stoneWall, 0f);
-                Place("barrier", edges, new Vector3(px, 0f, -halfD), stoneWall, 180f);
+                float x0 = -halfW + cell * x;
+                Place(back[rng.Next(back.Length)], edges, new Vector3(x0 + cell * 0.5f, 0f, halfD), stoneWall, 0f);
+                Place(back[rng.Next(back.Length)], edges, new Vector3(x0 + cell, 0f, halfD), stoneWall, 0f);
+                Place("barrier", edges, new Vector3(x0 + cell * 0.5f, 0f, -halfD), stoneWall, 180f);
             }
             for (int z = 0; z < Rows; z++)
             {
-                float pz = -halfD + cell * (z + 0.5f);
-                Place("wall_half", edges, new Vector3(-halfW, 0f, pz), stoneWall, 90f);
-                Place("wall_half", edges, new Vector3(halfW, 0f, pz), stoneWall, -90f);
+                float z0 = -halfD + cell * z;
+                // yaw 90 maps local +x to world -z; yaw -90 maps it to +z.
+                Place("wall_half", edges, new Vector3(-halfW, 0f, z0), stoneWall, 90f);
+                Place("wall_half", edges, new Vector3(-halfW, 0f, z0 + cell * 0.5f), stoneWall, 90f);
+                Place("wall_half", edges, new Vector3(halfW, 0f, z0 + cell * 0.5f), stoneWall, -90f);
+                Place("wall_half", edges, new Vector3(halfW, 0f, z0 + cell), stoneWall, -90f);
             }
             foreach (var c in new[] { new Vector3(-halfW, 0f, halfD), new Vector3(halfW, 0f, halfD), new Vector3(-halfW, 0f, -halfD), new Vector3(halfW, 0f, -halfD) })
                 Place("pillar_decorated", edges, c, stoneWall);
@@ -163,7 +167,7 @@ namespace TieuTienKy.EditorTools.Look
             for (int i = 0; i < 3; i++)
             {
                 float x = (i - 1) * halfW * 0.6f;
-                Place(banners[i], clusters, new Vector3(x, SizeOf("wall_half").y * 0.95f, halfD - 0.6f), props);
+                Place(banners[i], clusters, new Vector3(x, 0f, halfD - 0.55f), props, 180f);
                 Place("torch_lit", clusters, new Vector3(x + cell * 0.9f, 0f, halfD - cell * 0.35f), props);
             }
             // Corner clusters keep the centre 70% clear.
@@ -173,6 +177,16 @@ namespace TieuTienKy.EditorTools.Look
                 Place("candle_triple", clusters, pos + new Vector3(cell * 0.6f, 0f, -cell * 0.3f), props);
             }
             Place("pillar", clusters, new Vector3(halfW - cell * 1.2f, 0f, halfD - cell * 1.1f), stoneWall);
+
+            // Xianxia landmarks (LOOK-1e): a paifang gate framing the back of the arena with lanterns,
+            // and a bronze incense burner as the sect altar in front of it.
+            float gateZ = halfD - cell * 2.0f; // inside the frame, below the HUD match panel
+            XianxiaDressing.Paifang(clusters, new Vector3(0f, 0f, gateZ), cell * 2.4f, 5.4f);
+            foreach (float lx in new[] { -cell * 0.75f, cell * 0.75f })
+                XianxiaDressing.Lantern(clusters, new Vector3(lx, 3.0f, gateZ - 0.1f), 1.3f);
+            foreach (float lx in new[] { -halfW + cell * 1.6f, halfW - cell * 1.6f })
+                XianxiaDressing.Lantern(clusters, new Vector3(lx, 2.6f, halfD - 0.9f), 1.2f);
+            XianxiaDressing.IncenseBurner(clusters, new Vector3(0f, 0f, gateZ - cell * 0.75f), 1.5f);
             Place("rubble_half", clusters, new Vector3(-halfW + cell * 1.3f, 0f, -halfD + cell * 1.0f), stoneWall, 60f);
         }
 
@@ -190,15 +204,27 @@ namespace TieuTienKy.EditorTools.Look
 
         static readonly Dictionary<string, GameObject> CastByName = new Dictionary<string, GameObject>();
 
+        // Match the HUD sect pills: jade (hero's sect), crimson, azure.
+        static readonly Dictionary<string, SectLook.Sect> SectOf = new Dictionary<string, SectLook.Sect>
+        {
+            { "Knight", SectLook.Sect.Jade }, { "Mage", SectLook.Sect.Jade },
+            { "Barbarian", SectLook.Sect.Crimson }, { "RogueHooded", SectLook.Sect.Crimson },
+            { "Rogue", SectLook.Sect.Azure },
+        };
+
         static GameObject SpawnCharacter(string name, Transform parent, Vector3 position, float yaw, string clip, float phase = 0.45f)
         {
             var model = AssetDatabase.LoadAssetAtPath<GameObject>($"{CastRoot}/Characters/{name}.fbx");
             var go = (GameObject)PrefabUtility.InstantiatePrefab(model, parent);
             go.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, yaw, 0f));
-            var material = AssetDatabase.LoadAssetAtPath<Material>($"{MaterialFolder}/Toon_KayKit_{name}.mat");
-            if (material != null)
-                foreach (var r in go.GetComponentsInChildren<Renderer>())
+            var template = AssetDatabase.LoadAssetAtPath<Material>($"{MaterialFolder}/Toon_KayKit_{name}.mat");
+            SectLook.ApplyLoadout(go, name);
+            if (template != null)
+            {
+                var material = SectLook.SectMaterial(name, SectOf[name], template);
+                foreach (var r in go.GetComponentsInChildren<Renderer>(true))
                     r.sharedMaterials = Enumerable.Repeat(material, r.sharedMaterials.Length).ToArray();
+            }
             Pose(go, AssetDatabase.GetAssetPath(model), clip, phase);
             CastByName[name] = go;
             return go;

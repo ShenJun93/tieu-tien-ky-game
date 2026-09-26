@@ -50,13 +50,18 @@
     - an HP panel, a match timer and 3 sect score pills, and a pause button.
   - Positions and sizes follow teardown §3.7.
   - The arena lab adds damage numbers (2.8% of height; crit 4.2% in orange) and renders `hud-gameplay.png`.
-  - Follow-ups:
+  - 1e (`feat/look-01e-sects`):
+  - **Loadouts:** each KayKit FBX ships every weapon and shield enabled (the Knight carried 3 swords and 4 shields), and `SectLook` now shows one weapon per fighter. It also hides the wizard hat, bear hat, knight helm, crossbows, spellbooks and mug.
+  - **Sect palettes:** derived textures for jade (the hero's sect), crimson and azure, matching the HUD pills.
+  - **Walls:** fixed the gaps in the back wall (`wall_half` is 2 m wide), and the banners now hang on its inner face.
+  - **`XianxiaDressing`:** procedural paifang gate (red lacquer, jade roof, gold plaque), paper lanterns with warm lights, and a bronze ding with glowing incense.
+  - **Screenshots:** `sects-hud-gameplay.png`, `sects-closeup.png`.
+- Follow-ups:
     - Done in 1d2: OFL Vietnamese fonts (Be Vietnam Pro body, Philosopher titles) as dynamic TMP assets, with a realm title and kill feed in Vietnamese (`HudFontPass`). A shipping build bakes a static atlas from the Vietnamese character list.
     - Done in 1d3: the Director's 4 ChatGPT icons replace the placeholder glyphs (`HudIconPass`). The human edit is still pending (ADR 005). Sword and bolt share a thin diagonal silhouette; a more vertical zigzag bolt would separate them at 64 px.
     - Wiring into the runtime scene comes after NET-0.
 - Follow-ups:
-  - Sect banners are placed but fall outside the gameplay frame; revisit the back-wall dressing in 1e.
-  - The KayKit dungeon style is Western; xianxia landmark pieces (gate, lanterns, incense) come in 1e.
+  - The xianxia pieces are procedural placeholders. Modelled or kit art (roof tiles, carved plaque) should replace them before G3. The HUD match panel overlaps the gate roof in this framing.
   - Characters read pale next to the floor; sect accents come in 1e.
   - Camera shake, hitstop and damage numbers cannot be judged from stills; they are wired at runtime after NET-0 (one time-scale owner, Cinemachine Impulse).
   - The KayKit costumes are Western (knight, witch); the xianxia pass is 1e.

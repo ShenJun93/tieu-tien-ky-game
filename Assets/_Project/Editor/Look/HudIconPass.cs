@@ -30,7 +30,7 @@ namespace TieuTienKy.EditorTools.Look
                 {
                     var sprite = ImportSprite($"{IconRoot}/{file}.png");
                     var icon = root.transform.Find($"{button}/Icon")?.GetComponent<Image>();
-                    if (sprite == null || icon == null) continue;
+                    if (sprite == null || icon == null || icon.sprite == sprite) continue; // already applied: avoid float churn
                     icon.sprite = sprite;
                     icon.color = Color.white;
                     icon.preserveAspect = true;
