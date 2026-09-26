@@ -86,7 +86,7 @@ export function parseApkShortSha(filename) {
  * ProjectSettings.asset YAML-ish text blob. Returns null if not found.
  */
 export function parsePackageIdFromProjectSettings(text) {
-  const match = String(text ?? '').match(/applicationIdentifier:\s*\r?\n(?:[^\n]*\r?\n)*?\s*Android:\s*(\S+)/);
+  const match = String(text ?? '').match(/applicationIdentifier:\s*\r?\n[\s\S]*?^\s*Android:\s*(\S+)/m);
   return match ? match[1] : null;
 }
 
