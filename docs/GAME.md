@@ -42,7 +42,7 @@ Cut content scope before cutting quality. Anything beyond this list goes to the 
 
 ## Look and feel
 
-Semi-proportional stylized anime characters in 3D, a top-down/three-quarter arena camera, and a URP toon shader. The fantasy is spectacular cultivation power in a fictional world: no real maps, no real states. The style bible is produced at gate G2 (`docs/ROADMAP.md`).
+Chunky stylized 3D characters (BoZo proportions), a three-quarter arena camera (about 55° pitch), a URP toon shader with rim light and outline, and dark jade stone arenas where characters and VFX carry the brightness (ADR 006). The fantasy is spectacular cultivation power in a fictional world: no real maps, no real states. Measured visual targets: `docs/research/2026-09-unity-ecosystem/05-visual-reference-teardown.md`.
 
 ## Comparables
 
