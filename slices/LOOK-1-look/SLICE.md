@@ -43,6 +43,17 @@
   - `ToonPrototype` gains `_FlashColor`/`_FlashAmount`, driven by a MaterialPropertyBlock. This fixes the invisible-flash cause found in the code audit.
   - The arena lab stages one readable beat: hero counter-slash plus hit flash, a bolt chasing a rogue out of a red zone, and a parryable wind-up with a gold glint.
   - Screenshots: `feedback-gameplay.png`, `feedback-closeup.png`.
+- 1d (`feat/look-01d-hud`):
+  - `BrawlHudBuilder` creates `UI/HUD/BrawlHud.prefab` (uGUI + TextMeshPro) once; later edits happen in the Editor. The HUD has:
+    - a floating joystick (Input System `OnScreenStick`, dynamic origin);
+    - 4 round skill buttons (`OnScreenButton`) with a metallic ring, placeholder glyphs and a radial cooldown sweep with seconds;
+    - an HP panel, a match timer and 3 sect score pills, and a pause button.
+  - Positions and sizes follow teardown §3.7.
+  - The arena lab adds damage numbers (2.8% of height; crit 4.2% in orange) and renders `hud-gameplay.png`.
+  - Follow-ups:
+    - The Vietnamese OFL font is waiting on the Director's download approval.
+    - The ChatGPT skill icons replace the placeholders.
+    - Wiring into the runtime scene comes after NET-0.
 - Follow-ups:
   - Sect banners are placed but fall outside the gameplay frame; revisit the back-wall dressing in 1e.
   - The KayKit dungeon style is Western; xianxia landmark pieces (gate, lanterns, incense) come in 1e.

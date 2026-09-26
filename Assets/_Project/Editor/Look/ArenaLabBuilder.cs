@@ -8,6 +8,7 @@ using UnityEngine.Animations;
 using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using TMPro;
 
 namespace TieuTienKy.EditorTools.Look
 {
@@ -31,6 +32,8 @@ namespace TieuTienKy.EditorTools.Look
         static readonly List<PlayableGraph> Graphs = new List<PlayableGraph>();
         static Material stoneFloor, stoneWall, props;
         static float cell;
+        static GameObject hud;
+        static readonly List<(Transform target, string text, Color color, float sizePct)> DamageNumbers = new List<(Transform, string, Color, float)>();
 
         [MenuItem("Tieu Tien Ky/Look/Build Arena Lab")]
         public static void Build()
@@ -50,6 +53,7 @@ namespace TieuTienKy.EditorTools.Look
             BuildPropClusters(root);
             var hero = BuildCast();
             BuildFeedbackMoment();
+            hud = (GameObject)PrefabUtility.InstantiatePrefab(BrawlHudBuilder.Prefab);
             BuildLighting();
             BuildPostProcessing();
 
@@ -64,6 +68,7 @@ namespace TieuTienKy.EditorTools.Look
             Vector3 focus = hero.transform.position + Vector3.up * heroHeight * 0.5f;
             Capture(null, 55f, 32f, distance, focus);
             Capture(Path.Combine(outDir, "arena-gameplay.png"), 55f, 32f, distance, focus);
+            Capture(Path.Combine(outDir, "hud-gameplay.png"), 55f, 32f, distance, focus, withHud: true);
             Capture(Path.Combine(outDir, "arena-closeup.png"), 42f, 32f, distance * 0.45f, focus);
 
             foreach (var g in Graphs) g.Destroy();
@@ -249,6 +254,10 @@ namespace TieuTienKy.EditorTools.Look
             Bolt(fx, from, to, 0.5f, 7);
             Bolt(fx, Vector3.Lerp(from, to, 0.45f), to + new Vector3(-0.8f, -0.6f, 1.4f), 0.22f, 11);
             Spawn(FeedbackVfxLibrary.HitSpark, fx, to, cameraFacing, 1.4f);
+
+            DamageNumbers.Clear();
+            DamageNumbers.Add((barbarian, "128", Color.white, 2.8f));
+            DamageNumbers.Add((rogue, "342!", Hex("#FF9A3C"), 4.2f));
         }
 
         static void Spawn(GameObject prefab, Transform parent, Vector3 position, Quaternion rotation, float scale)
@@ -370,7 +379,7 @@ namespace TieuTienKy.EditorTools.Look
             return b;
         }
 
-        static void Capture(string file, float pitch, float fov, float distance, Vector3 focus)
+        static void Capture(string file, float pitch, float fov, float distance, Vector3 focus, bool withHud = false)
         {
             var cam = new GameObject("CaptureCamera").AddComponent<Camera>();
             cam.fieldOfView = fov;
@@ -385,7 +394,19 @@ namespace TieuTienKy.EditorTools.Look
 
             var rt = new RenderTexture(1920, 1080, 24);
             cam.targetTexture = rt;
+            var labels = new List<GameObject>();
+            if (hud != null)
+            {
+                hud.SetActive(withHud);
+                var canvas = hud.GetComponent<Canvas>();
+                canvas.worldCamera = cam;
+                if (withHud)
+                    foreach (var (target, text, color, sizePct) in DamageNumbers)
+                        labels.Add(DamageLabel(hud.transform, cam, target, text, color, sizePct));
+                Canvas.ForceUpdateCanvases();
+            }
             cam.Render();
+            foreach (var label in labels) Object.DestroyImmediate(label);
             if (file != null)
             {
                 RenderTexture.active = rt;
@@ -399,6 +420,26 @@ namespace TieuTienKy.EditorTools.Look
             cam.targetTexture = null;
             Object.DestroyImmediate(rt);
             Object.DestroyImmediate(cam.gameObject);
+        }
+
+        /// <summary>A screen-space damage number above a character's head (teardown 3.6).</summary>
+        static GameObject DamageLabel(Transform canvas, Camera cam, Transform target, string text, Color color, float sizePct)
+        {
+            var go = new GameObject($"Damage_{text}", typeof(RectTransform));
+            var rt = (RectTransform)go.transform;
+            rt.SetParent(canvas, false);
+            Vector3 vp = cam.WorldToViewportPoint(target.position + Vector3.up * 3.1f);
+            rt.anchorMin = rt.anchorMax = new Vector2(vp.x, vp.y);
+            rt.sizeDelta = new Vector2(300f, 80f);
+            var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.text = text;
+            tmp.fontSize = sizePct * 0.01f * 1080f;
+            tmp.fontStyle = FontStyles.Bold;
+            tmp.color = color;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.outlineWidth = 0.25f;
+            tmp.outlineColor = new Color32(12, 10, 16, 255);
+            return go;
         }
 
         static Material LitMaterial(string name, Texture texture, Color tint, float smoothness)
