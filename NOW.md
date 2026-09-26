@@ -14,6 +14,7 @@ Look first (ADR 006): one arena that looks like a shipped game (BoZo hero and en
 | R0.2 | Unity safety hooks, headless test runner, Smart Merge, missing folder metas | merged (#71) |
 | R0.3 | Built-in RP → URP (converter, rewrite 4 `P0A_*` shaders, 3 quality tiers, toon shader prototype) | merged (#73) |
 | LOOK-1 | "30 seconds that look like a real game" (see ADR 006) | next |
+| NET-0 | Netcode spike: NGO vs Photon Fusion on 2 phones over 4G (ADR 007) | before R0.4 |
 | R0.4 | Production architecture + combat skeleton (asmdef layers, CombatClock, MoveDefinition, FeedbackRouter, InputBuffer, CombatDirector) | after LOOK-1 |
 | R0.5 | Agent tooling (Unity MCP, 60 s PlayMode bot with screenshots, one-command build + install) | after LOOK-1 |
 | R0.6 | Store readiness (product name, application id, API 36, 16 KB pages, Localization, ASSET_SOURCES) | after LOOK-1 |

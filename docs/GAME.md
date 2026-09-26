@@ -1,57 +1,81 @@
 # GAME.md — Tiểu Tiên Ký
 
-Status: ACCEPTED (`docs/decisions/005-product-positioning-and-art-sourcing.md`).
-This file replaces `docs/archive/governance-v2/master/PRODUCT_FOUNDATION.md` as the current product one-pager. The three product bets below are carried over from it unchanged.
+Status: ACCEPTED (`docs/decisions/007-three-sect-arena-brawler.md`; look: `006`; art sourcing: `005`).
+This is the current product one-pager.
 
 ## Pitch
 
-A young cultivator enters sealed arenas. They parry demon strikes, chain Lôi (lightning) and Phong (wind) with water and terrain, and break through to a new cultivation realm after each boss. Runs are 10–15 minutes; a cultivation tree persists between runs.
+Three sects, three cultivators each, one sealed arena, six minutes. Grab spirit herbs and technique manuals that spawn at random, and grow in power mid-fight. Dash through lightning and parry a rival's strike back into their teammates. The last sect standing, or the one with the most points, wins, and the funniest play usually wins. Inspired by BarbarQ / Ngôi Sao Bộ Lạc ("nện nện nện"), rebuilt as direct-control 3D xianxia.
 
-**North Star:** every run should produce at least one moment the player wants to retell, recreate or clip.
+**North Star:** every match produces at least one moment players want to retell, recreate or clip.
 
 ## Product bets
 
-1. **Readable chaos.** Many things happen at once, but the player can always answer: what happened, why, and what can I do next? Readability is a gameplay constraint that governs telegraphs, the VFX hierarchy and information density. It is not a polish pass.
-2. **Cultivation as combat physics.** Techniques interact through skill × state × environment × position × enemy. An interaction counts only if it changes position, space, timing, targeting, risk, movement, arena state or enemy behaviour. A pure "+X% damage" rule does not count. Laws are world rules that enemies obey too (water conducts lightning for everyone).
-3. **Retellable run moments.** Setup → intent → interaction → escalation → payoff. Telegraphed build breakpoints (for example a realm Breakthrough that fuses two techniques) are the main source of these moments.
+1. **Readable chaos.** Nine fighters, random pickups and elemental reactions all happen at once. The player must still be able to answer: what happened, why, and what can I do next? Readability constrains telegraphs, the VFX hierarchy and information density. It is not a polish pass.
+2. **Cultivation as combat physics.** Techniques interact through skill × state × environment × position × opponent. Water conducts lightning for everyone; wind moves everyone. An interaction counts only if it changes position, space, timing, targeting, risk or behaviour. A pure "+X% damage" rule does not count.
+3. **Comedy over mastery.** A newcomer can land a hilarious swing against a veteran. Randomness creates moments, while skill (parry, positioning, dash timing) wins more often over many matches.
 
-## Core loop (one run)
+## Core loop (one match)
 
-Enter arena → fight waves (move, attack, dash, parry, 2 techniques, ultimate) → pick 1 of 3 upgrades → elite and boss fight → realm Breakthrough (a visible power spike) → next arena. A region has about 4 arenas and ends with a boss.
+Pick a sect and cosmetics → drop into the arena at a random point → fight and grab random herbs and manuals (grow stronger, gain a technique) → survive arena events → score by defeating rivals → the sect that wins after 5–6 minutes takes the match. A match is 3 sects × 3 cultivators. Empty slots are filled by bots, which are always labelled as bots.
 
-## Meta loop
+## Modes and phases (ADR 007)
 
-Cultivation realms (5 tiers at launch), a talent tree, techniques and relics unlocked for future runs, and 3 build archetypes (Lôi, Phong, Hộ Thể). No gacha, no tradeable items.
+1. **Offline vs bots.** The whole game is playable alone, with bot teammates and rivals. It is built as a network game in which the phone is the host.
+2. **Friends via room code.** Online with Relay.
+3. **Public matchmaking** with disclosed bot backfill. This phase opens only once enough players are online.
+
+## Meta
+
+Account level, sect identity, cosmetics (robes, weapons, auras, emotes), a season pass, and match stats. No power progression can be bought. No gacha, no tradeable items.
 
 ## Controls (touch, landscape)
 
-Floating joystick on the left. Up to 6 buttons on the right: attack, dash, guard/parry (tap = parry, hold = guard), 2 techniques, ultimate. Soft auto-target follows the stick direction, with optional lock-on for bosses. Assists: auto-dodge at a cost, a wider parry window, and shake/flash/haptics sliders. Targets are in `docs/COMBAT_BAR.md`.
+- **Left side:** a floating joystick.
+- **Right side:** attack, dash (Phong Bộ), guard/parry (Hộ Thể: tap = parry, hold = guard), and 1–2 technique slots filled by in-match pickups (for example Lôi Trảm).
+- **Aim:** soft auto-target follows the stick direction.
+- **Settings:** shake, flash and haptics sliders.
+
+Targets are in `docs/COMBAT_BAR.md`.
 
 ## Target player
 
-Mid-core action-roguelite players on mobile (Soul Knight, Grimvalor, Warm Snow, Hades), plus xianxia/tu tiên fans in Vietnam and Southeast Asia and the Chinese-myth action audience on Steam.
+- Mobile party-brawler players (Brawl Stars, Heroes Strike, Stumble Guys).
+- People who remember BarbarQ / Ngôi Sao Bộ Lạc.
+- Xianxia / tu tiên fans in Southeast Asia, and in Vietnam once licensing allows.
 
 ## Business model
 
-Free trial of the first region, then a one-time unlock at $4.99–6.99 (regional pricing). A Steam version with a demo comes later. v1 is offline-first, with no gacha, no player trading and no PvP. A free, ad-supported "Endless Trial" mode may be added later if premium sales stall; keep the combat design compatible with it.
+Free to play: cosmetics, a season pass, and optional rewarded ads. **Never sell power.** No paid randomized items. Available worldwide except Vietnam until a company and licence exist (ADR 005/007).
 
 ## Launch scope (content ceiling)
 
-1 playable hero with 3 elemental schools · about 12 arenas across 3 regions · about 20 enemy types (4–6 elites) · 5–6 bosses · 40–60 upgrades/modifiers · 5 realm tiers · endless mode · Vietnamese and English.
-Cut content scope before cutting quality. Anything beyond this list goes to the post-launch backlog.
+- 1 core mode (3-sect brawl)
+- 3–4 arenas with events
+- 3 sects
+- about 20 in-match techniques and pickups
+- a bot AI that is funny, fair and beatable
+- cosmetics for a first season
+- Vietnamese and English
+
+Cut content scope before cutting quality.
 
 ## Look and feel
 
-Chunky stylized 3D characters (BoZo proportions), a three-quarter arena camera (about 55° pitch), a URP toon shader with rim light and outline, and dark jade stone arenas where characters and VFX carry the brightness (ADR 006). The fantasy is spectacular cultivation power in a fictional world: no real maps, no real states. Measured visual targets: `docs/research/2026-09-unity-ecosystem/05-visual-reference-teardown.md`.
+Chunky stylized 3D characters (BoZo proportions), a three-quarter arena camera (about 55° pitch), a URP toon shader with rim light and outline, and dark jade stone arenas where characters and VFX carry the brightness (ADR 006). The world is fictional: no real maps, no real states. Measured visual targets: `docs/research/2026-09-unity-ecosystem/05-visual-reference-teardown.md`.
 
 ## Comparables
 
-Warm Snow (Chinese-myth action roguelite, small team) · Grimvalor (mobile premium unlock, 4 people) · Pascal's Wager (premium mobile action) · Soul Knight (small-team roguelite longevity). Sources: `docs/research/2026-09-global/round2-global/G2_market_landscape.md`.
+- BarbarQ 《野蛮人大作战》: the original fun; its 2025 sequel failed on pay-to-win.
+- Heroes Strike Offline (Wolffun, VN): a brawler against bots, 10M+ installs.
+- Brawl Stars: the genre leader.
+- Stumble Guys: party chaos.
+
+Sources: `docs/research/2026-09-unity-ecosystem/06-multiplayer-brawler-market.md`.
 
 ## Not this game
 
-- Not a gacha game and not a hero collector.
-- Not an idle cultivation sim; "numbers going up" is at most a meta layer.
-- Not an MMO, not PvP, and not online co-op in v1. The existing NGO code is technical history only.
-- Not an open world.
-- Not a survivor-like where combat is only automatic. Direct control and parry are the identity.
+- Not a gacha game, not a hero collector, and not pay-to-win.
+- Not a MOBA with lanes and towers, and not a battle royale with 50+ players.
+- Not an MMO and not an open world.
+- Not auto-combat. Direct control and parry are the identity.
