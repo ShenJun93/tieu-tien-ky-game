@@ -56,3 +56,26 @@ test('allows normal branch work', () => {
   assert.equal(checkCommand('gh pr create --fill', 'feat/x'), null);
   assert.equal(checkCommand('git switch main && git pull', 'feat/x'), null);
 });
+
+// Regression: the session starts in the main checkout but the command works
+// in a worktree on a feature branch (false positive seen in slice R0.3).
+const branches = { 'e:/repo': 'main', 'e:/wt/r03': 'feat/r0-3-urp' };
+const branchAt = (dir) => branches[dir.replace(/\\/g, '/').toLowerCase()] ?? 'unknown';
+
+test('uses the branch of the directory after cd or git -C', () => {
+  assert.equal(checkCommand('cd /e/wt/r03 && git add -A && git commit -m x', branchAt, 'e:/repo'), null);
+  assert.equal(checkCommand('git -C e:/wt/r03 commit -m x', branchAt, 'e:/repo'), null);
+  assert.ok(checkCommand('git commit -m x', branchAt, 'e:/repo'));
+  assert.ok(checkCommand('cd /e/wt/r03 && cd /e/repo && git commit -m x', branchAt, 'e:/repo'));
+});
+
+test('follows a branch switch earlier in the same command', () => {
+  assert.equal(checkCommand('git switch -c chore/fix && git commit -m x', 'main'), null);
+  assert.equal(checkCommand('git checkout -b chore/fix && git commit -m x', 'main'), null);
+  assert.ok(checkCommand('git switch main && git commit -m x', 'feat/x'));
+});
+
+test('ignores heredoc bodies such as commit messages', () => {
+  const cmd = "git commit -F - <<'EOF'\nfix: never git push origin main\ngh pr merge is Director-only\nEOF";
+  assert.equal(checkCommand(cmd, 'feat/x'), null);
+});
