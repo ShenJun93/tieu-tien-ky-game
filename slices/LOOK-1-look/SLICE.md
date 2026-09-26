@@ -29,6 +29,40 @@
 - Branch / PR: `feat/look-01-character-compare`
 - Check output: see the PR.
 - Screenshot / clip: attached to the PR.
+- 1b (`feat/look-01b-arena`):
+  - `Tieu Tien Ky/Look/Build Arena Lab` builds a dark jade arena from the CC0 KayKit Dungeon kit: a derived jade palette, a hex tile floor with rock tiles only on the outer ring, a centre seal and cracked patches, low walls, corner pillars, rubble and candle clusters, warm torch accents, and Bloom, Vignette and Neutral tonemapping.
+  - Screenshots: `arena-gameplay.png`, `arena-closeup.png`.
+- 1c (`feat/look-01c-feedback`):
+  - `FeedbackVfxLibrary` creates reusable VFX prefabs under `Assets/_Project/VFX/`. It creates each only if missing, so Editor tuning survives. The prefabs:
+    - hero jade ground ring;
+    - red must-dodge telegraph (edge plus 42% fill that grows);
+    - gold parry glint;
+    - hit spark;
+    - jade toon slash arc (tapered mesh);
+    - Lôi lightning (lavender glow plus white core).
+  - `ToonPrototype` gains `_FlashColor`/`_FlashAmount`, driven by a MaterialPropertyBlock. This fixes the invisible-flash cause found in the code audit.
+  - The arena lab stages one readable beat: hero counter-slash plus hit flash, a bolt chasing a rogue out of a red zone, and a parryable wind-up with a gold glint.
+  - Screenshots: `feedback-gameplay.png`, `feedback-closeup.png`.
+- 1d (`feat/look-01d-hud`):
+  - `BrawlHudBuilder` creates `UI/HUD/BrawlHud.prefab` (uGUI + TextMeshPro) once; later edits happen in the Editor. The HUD has:
+    - a floating joystick (Input System `OnScreenStick`, dynamic origin);
+    - 4 round skill buttons (`OnScreenButton`) with a metallic ring, placeholder glyphs and a radial cooldown sweep with seconds;
+    - an HP panel, a match timer and 3 sect score pills, and a pause button.
+  - Positions and sizes follow teardown §3.7.
+  - The arena lab adds damage numbers (2.8% of height; crit 4.2% in orange) and renders `hud-gameplay.png`.
+  - 1e (`feat/look-01e-sects`):
+  - **Loadouts:** each KayKit FBX ships every weapon and shield enabled (the Knight carried 3 swords and 4 shields), and `SectLook` now shows one weapon per fighter. It also hides the wizard hat, bear hat, knight helm, crossbows, spellbooks and mug.
+  - **Sect palettes:** derived textures for jade (the hero's sect), crimson and azure, matching the HUD pills.
+  - **Walls:** fixed the gaps in the back wall (`wall_half` is 2 m wide), and the banners now hang on its inner face.
+  - **`XianxiaDressing`:** procedural paifang gate (red lacquer, jade roof, gold plaque), paper lanterns with warm lights, and a bronze ding with glowing incense.
+  - **Screenshots:** `sects-hud-gameplay.png`, `sects-closeup.png`.
 - Follow-ups:
+    - Done in 1d2: OFL Vietnamese fonts (Be Vietnam Pro body, Philosopher titles) as dynamic TMP assets, with a realm title and kill feed in Vietnamese (`HudFontPass`). A shipping build bakes a static atlas from the Vietnamese character list.
+    - Done in 1d3: the Director's 4 ChatGPT icons replace the placeholder glyphs (`HudIconPass`). The human edit is still pending (ADR 005). Sword and bolt share a thin diagonal silhouette; a more vertical zigzag bolt would separate them at 64 px.
+    - Wiring into the runtime scene comes after NET-0.
+- Follow-ups:
+  - The xianxia pieces are procedural placeholders. Modelled or kit art (roof tiles, carved plaque) should replace them before G3. The HUD match panel overlaps the gate roof in this framing.
+  - Characters read pale next to the floor; sect accents come in 1e.
+  - Camera shake, hitstop and damage numbers cannot be judged from stills; they are wired at runtime after NET-0 (one time-scale owner, Cinemachine Impulse).
   - The KayKit costumes are Western (knight, witch); the xianxia pass is 1e.
   - The floor is still flat (1b).
