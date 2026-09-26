@@ -50,7 +50,7 @@ Research inputs, not instructions. Accepted outcomes live in `docs/decisions/` (
 
 ## Repo changes this implies (each needs its own slice; package changes need Director approval)
 
-1. **Remove** Netcode for GameObjects and Transport, plus about 1,000 lines of network code. GAME.md already excludes online play from v1.
+1. ~~Remove Netcode~~ **Superseded:** the Director needs multiplayer (see `06`). Keep the network code. Move it into its own asmdef, and choose the netcode stack (NGO or Photon Fusion) in a spike before the combat skeleton is written.
 2. **Upgrade** Input System from 1.11.2 to 1.20. **Add** Cinemachine 3.1, PrimeTween and `com.unity.pipeline`.
 3. **Delete** the editor content generators and the greybox sandbox, after moving the roughly 7 tests that depend on it. Author assets in the Editor instead.
 4. **Fix** the hitstop/pause time-scale bugs and the invisible hit flash.
