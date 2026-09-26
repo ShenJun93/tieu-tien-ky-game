@@ -29,6 +29,12 @@
 - Branch / PR: `feat/look-01-character-compare`
 - Check output: see the PR.
 - Screenshot / clip: attached to the PR.
+- 1b (`feat/look-01b-arena`):
+  - `Tieu Tien Ky/Look/Build Arena Lab` builds a dark jade arena from the CC0 KayKit Dungeon kit: a derived jade palette, a hex tile floor with rock tiles only on the outer ring, a centre seal and cracked patches, low walls, corner pillars, rubble and candle clusters, warm torch accents, and Bloom, Vignette and Neutral tonemapping.
+  - Screenshots: `arena-gameplay.png`, `arena-closeup.png`.
 - Follow-ups:
+  - Sect banners are placed but fall outside the gameplay frame; revisit the back-wall dressing in 1e.
+  - The KayKit dungeon style is Western; xianxia landmark pieces (gate, lanterns, incense) come in 1e.
+  - Characters read pale next to the floor; the hero ground ring and sect accents come in 1c/1e.
   - The KayKit costumes are Western (knight, witch); the xianxia pass is 1e.
   - The floor is still flat (1b).
