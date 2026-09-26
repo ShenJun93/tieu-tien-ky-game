@@ -32,6 +32,6 @@ The Director (human) sets weekly goals, playtests on a real phone and is the onl
 
 ## Public development and licensing
 
-The source is visible, but that does **not** grant an open-source license. Unless a separate license file or third-party notice says otherwise, project-original code, game design, documentation, art and audio remain copyrighted by the repository owner.
+The source is visible, but that does **not** grant an open-source license. See `LICENSE` (all rights reserved) and `THIRD_PARTY_NOTICES.md`. Project-original code, game design, documentation, art and audio remain copyrighted by the repository owner.
 
 Third-party content keeps its own license and redistribution terms. It is recorded in `ASSET_SOURCES.csv`. Raw third-party assets are not assumed safe to publish just because they may be used inside a compiled game.
