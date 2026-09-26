@@ -1,0 +1,12 @@
+# Unity YAML assets merge with UnityYAMLMerge (Smart Merge).
+# Run `node tools/unity/setup-merge.mjs` once per clone to register the driver.
+# If the driver is not registered, git falls back to its normal text merge.
+*.unity merge=unityyamlmerge
+*.prefab merge=unityyamlmerge
+*.asset merge=unityyamlmerge
+*.mat merge=unityyamlmerge
+*.anim merge=unityyamlmerge
+*.controller merge=unityyamlmerge
+*.overrideController merge=unityyamlmerge
+*.physicMaterial merge=unityyamlmerge
+*.mixer merge=unityyamlmerge
