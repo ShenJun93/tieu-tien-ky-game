@@ -4,7 +4,7 @@
 // git command actually runs: after `cd <dir>`, with `git -C <dir>`, and after
 // `git switch -c` / `git checkout -b` earlier in the same command.
 import { execFileSync } from 'node:child_process';
-import { isAbsolute, join } from 'node:path';
+import { posix } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { block, readHookInput } from './lib.mjs';
 
@@ -32,9 +32,11 @@ const segments = (command) => stripHeredocs(command).split(/&&|\|\||;|\||\n/).ma
 const unquote = (s) => s.replace(/^["']|["']$/g, '');
 // Git Bash paths (/e/x) -> Windows form (e:/x) so node can use them as cwd.
 const toNativeDir = (p) => p.replace(/^\/([a-z])(\/|$)/i, '$1:/');
+// Platform-independent: the same Windows-style paths are checked on Linux CI.
+const isAbsoluteDir = (p) => /^[a-z]:[\\/]/i.test(p) || p.startsWith('/');
 const resolveDir = (base, target) => {
-  const t = toNativeDir(unquote(target));
-  return isAbsolute(t) ? t : join(base, t);
+  const t = toNativeDir(unquote(target)).replace(/\\/g, '/');
+  return posix.normalize(isAbsoluteDir(t) ? t : `${base.replace(/\\/g, '/')}/${t}`);
 };
 
 /**
