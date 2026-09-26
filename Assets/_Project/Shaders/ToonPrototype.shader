@@ -15,6 +15,8 @@ Shader "TieuTienKy/ToonPrototype"
         _RimStrength ("Rim Strength", Range(0, 1)) = 0.35
         _OutlineColor ("Outline Color", Color) = (0.08, 0.06, 0.1, 1)
         _OutlineWidth ("Outline Width", Range(0, 0.05)) = 0.01
+        _FlashColor ("Hit Flash Color", Color) = (1, 1, 1, 1)
+        _FlashAmount ("Hit Flash Amount", Range(0, 1)) = 0
     }
 
     SubShader
@@ -38,6 +40,8 @@ Shader "TieuTienKy/ToonPrototype"
             half _RimStrength;
             half4 _OutlineColor;
             half _OutlineWidth;
+            half4 _FlashColor;
+            half _FlashAmount;
         CBUFFER_END
         ENDHLSL
 
@@ -92,6 +96,8 @@ Shader "TieuTienKy/ToonPrototype"
                 float3 viewDir = normalize(GetWorldSpaceViewDir(i.positionWS));
                 half rim = pow(saturate(1.0 - dot(n, viewDir)), _RimPower) * _RimStrength * lit;
                 color += _RimColor.rgb * rim;
+                // Hit flash (COMBAT_BAR): driven per renderer through a MaterialPropertyBlock.
+                color = lerp(color, _FlashColor.rgb, _FlashAmount);
 
                 return half4(color, albedo.a);
             }
