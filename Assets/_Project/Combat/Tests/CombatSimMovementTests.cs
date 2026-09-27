@@ -83,6 +83,21 @@ namespace TieuTienKy.Combat.Tests
         }
 
         [Test]
+        public void BodyRadiusComesFromTheCharacterAndDrivesSeparationAndBounds()
+        {
+            var sim = NewSim();
+            var big = sim.AddFighter(Team.Jade, new Vector2(0f, 0f), 1.5f);
+            var small = sim.AddFighter(Team.Crimson, new Vector2(0.5f, 0f), 0.5f);
+            Run(sim, Commands(Vector2.zero, Vector2.zero), 1);
+
+            Assert.AreEqual(1.5f, big.Radius);
+            Assert.GreaterOrEqual(Vector2.Distance(big.Position, small.Position), 2f - 1e-3f);
+
+            var edge = sim.AddFighter(Team.Azure, new Vector2(100f, 0f), 1.5f);
+            Assert.AreEqual(sim.Bounds.xMax - 1.5f, edge.Position.x, 1e-4f);
+        }
+
+        [Test]
         public void SameCommandsGiveSameResult()
         {
             Vector2 Final()

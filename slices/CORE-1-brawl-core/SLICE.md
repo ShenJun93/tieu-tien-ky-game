@@ -9,7 +9,10 @@
   - The netcode adapter (NET-0) will carry commands and state later. The old gameplay code is not reused (Director, 2026-09-27).
 - **Steps:**
   - **1a** movement and camera
-  - **1b** basic attack combo and hit feedback (per-fighter hitstop, flash, shake, damage numbers)
+  - **1b** in three PRs:
+    - **1b-i** character seam (ADR 008): a `CharacterDefinition` asset per body, fighters spawned at runtime from definitions, the camera tracks an anchor rather than a model;
+    - **1b-ii** sim obstacles (gate pillars, ding) and the gate roof fading when it hides the hero;
+    - **1b-iii** basic attack combo and hit feedback (per-fighter hitstop, flash, shake, damage numbers).
   - **1c** bots with telegraphs and parryable cues
   - **1d** Phong Bộ dash, Hộ Thể parry/counter, Lôi Trảm
 - **Files owned (1a):**
@@ -18,6 +21,12 @@
   - `Packages/manifest.json`: Cinemachine 3.1.7 added and Input System 1.20.0, both approved by the Director.
   - KayKit FBX import settings: Idle and Running_A set to loop.
   - The shared-environment refactor in `ArenaLabBuilder`.
+- **Files owned (1b-i):** as 1a, plus `Assets/_Project/Characters/` (KayKit placeholder definitions and loadout prefabs).
+- **Acceptance (1b-i):**
+  - EditMode `BodyRadiusComesFromTheCharacterAndDrivesSeparationAndBounds` passes.
+  - PlayMode `RosterSpawnsFromDefinitionsAndTheCameraAnchorFollowsTheHero` and `EveryCharacterDefinitionIsUsable` pass.
+  - The brawl start capture is unchanged from 1a.
+- **Humanoid switch:** it waits for the first pipeline hero. KayKit keeps its generic rig until then, because converting a placeholder is wasted work. The definition's `Animations` and `Avatar` fields take a Humanoid controller and avatar with no code change. This corrects ADR 008's "CORE-1b starts with the Humanoid switch".
 - **Out of scope:** old gameplay code (untouched until CORE-1 is playable, then deleted), netcode.
 - **Acceptance (1a):**
   - EditMode tests include `CombatSimMovementTests`.
@@ -26,4 +35,5 @@
 
 ## Result
 - 1a: branch `feat/core-1a-movement`. Checks and APK are listed in the PR.
+- 1b-i: branch `feat/core-1b-character-seam`. EditMode 192/192; PlayMode 38/40 (2 skipped, as on main).
 - Known gaps: fighters walk through the gate pillars and the ding (no obstacles in the sim yet). The static HUD values (HP, timer, scores, cooldown) are not bound yet.

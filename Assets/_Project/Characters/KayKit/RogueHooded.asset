@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0ac055283125144782d2b794ec8c5a3, type: 3}
+  m_Name: RogueHooded
+  m_EditorClassIdentifier: TieuTienKy.Brawl::TieuTienKy.Brawl.CharacterDefinition
+  CharacterId: kaykit.roguehooded
+  Prefab: {fileID: 2385323754746099608, guid: d88e01146ef795e4083197d2881ec882, type: 3}
+  Animations: {fileID: 9100000, guid: b0fe04e17ff3e324cb24c88ca9b25a9a, type: 2}
+  Avatar: {fileID: 0}
+  Height: 2.4359457
+  BodyRadius: 0.9
+  WeaponSocket: Rig/root/hips/spine/chest/upperarm.r/lowerarm.r/wrist.r/hand.r/handslot.r
+  SectSkins:
+  - Team: 1
+    Material: {fileID: 2100000, guid: a1f8c1b3bd2e071459004845cf4fa6aa, type: 2}
+  Source: 'KayKit Character Pack: Adventurers 1.0 (Kay Lousberg), placeholder until
+    the ADR 008 pipeline hero'
+  License: CC0-1.0
