@@ -26,6 +26,11 @@
   - EditMode `BodyRadiusComesFromTheCharacterAndDrivesSeparationAndBounds` passes.
   - PlayMode `RosterSpawnsFromDefinitionsAndTheCameraAnchorFollowsTheHero` and `EveryCharacterDefinitionIsUsable` pass.
   - The brawl start capture is unchanged from 1a.
+- **Acceptance (1b-ii):**
+  - EditMode `RunningIntoAnObstacleStopsAtItsSurface` and `GlancingAnObstacleSlidesAroundIt` pass.
+  - PlayMode `TheHeroCannotWalkThroughTheIncenseBurner` and `TheGateRoofFadesWhenTheHeroWalksBehindIt` pass.
+  - The `brawl-roof-fade.png` capture shows the hero behind the gate, with the roof and beams faded.
+  - On the phone, the hero stops at the gate pillars and the burner, and the roof fades behind the gate.
 - **Humanoid switch:** it waits for the first pipeline hero. KayKit keeps its generic rig until then, because converting a placeholder is wasted work. The definition's `Animations` and `Avatar` fields take a Humanoid controller and avatar with no code change. This corrects ADR 008's "CORE-1b starts with the Humanoid switch".
 - **Out of scope:** old gameplay code (untouched until CORE-1 is playable, then deleted), netcode.
 - **Acceptance (1a):**
@@ -36,4 +41,5 @@
 ## Result
 - 1a: branch `feat/core-1a-movement`. Checks and APK are listed in the PR.
 - 1b-i: branch `feat/core-1b-character-seam`. EditMode 192/192; PlayMode 38/40 (2 skipped, as on main).
-- Known gaps: fighters walk through the gate pillars and the ding (no obstacles in the sim yet). The static HUD values (HP, timer, scores, cooldown) are not bound yet.
+- 1b-ii: branch `feat/core-1b-obstacles`. 15 circles are baked from the props: the paifang pillar bases, the burner, rubble, the stone pillar, torches, candles and banners. The roof, eaves, ridge, plaque and beams fade to 25% while they hide the hero.
+- Known gaps: the static HUD values (HP, timer, scores, cooldown) are not bound yet.

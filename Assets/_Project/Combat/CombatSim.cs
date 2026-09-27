@@ -30,6 +30,20 @@ namespace TieuTienKy.Combat
         public float Radius = 0.9f;
     }
 
+    /// <summary>A static round blocker on the arena plane (gate pillar, incense burner, rubble).</summary>
+    [Serializable]
+    public struct CircleObstacle
+    {
+        public Vector2 Center;
+        public float Radius;
+
+        public CircleObstacle(Vector2 center, float radius)
+        {
+            Center = center;
+            Radius = radius;
+        }
+    }
+
     /// <summary>Tuning in arena units (KayKit fighters are about 2.5 units tall).</summary>
     [Serializable]
     public sealed class CombatConfig
@@ -46,13 +60,14 @@ namespace TieuTienKy.Combat
 
     /// <summary>
     /// The authoritative match simulation. It is pure C#: no MonoBehaviour, no scene, no Time.*,
-    /// and a fixed tick. CORE-1a covers movement, facing, fighter separation and arena bounds.
+    /// and a fixed tick. It covers movement, facing, fighter separation, static obstacles and arena bounds.
     /// </summary>
     public sealed class CombatSim
     {
         public readonly CombatConfig Config;
         public readonly Rect Bounds;
         public readonly List<FighterState> Fighters = new List<FighterState>();
+        public readonly List<CircleObstacle> Obstacles = new List<CircleObstacle>();
         public int Tick { get; private set; }
 
         public CombatSim(CombatConfig config, Rect bounds)
@@ -87,6 +102,7 @@ namespace TieuTienKy.Combat
             }
 
             Separate();
+            ResolveObstacles();
             foreach (var f in Fighters)
                 f.Position = ClampToBounds(f.Position, f.Radius);
             Tick++;
@@ -108,6 +124,26 @@ namespace TieuTienKy.Combat
                 Vector2 push = dir * ((minDist - dist) * 0.5f);
                 a.Position -= push;
                 b.Position += push;
+            }
+        }
+
+        /// <summary>
+        /// Pushes fighters out of obstacles and removes the velocity pointing into them, so a fighter
+        /// running into a pillar slides around it instead of sticking.
+        /// </summary>
+        void ResolveObstacles()
+        {
+            foreach (var f in Fighters)
+            foreach (var o in Obstacles)
+            {
+                Vector2 delta = f.Position - o.Center;
+                float minDist = f.Radius + o.Radius;
+                float dist = delta.magnitude;
+                if (dist >= minDist) continue;
+                Vector2 normal = dist > 1e-4f ? delta / dist : new Vector2(0f, -1f);
+                f.Position = o.Center + normal * minDist;
+                float into = Vector2.Dot(f.Velocity, normal);
+                if (into < 0f) f.Velocity -= normal * into;
             }
         }
 

@@ -26,6 +26,8 @@ namespace TieuTienKy.Brawl
         [SerializeField] int localPlayer;
         [SerializeField] Rect arenaBounds = new Rect(-22f, -14f, 44f, 28f);
         [SerializeField] CombatConfig config = new CombatConfig();
+        [Tooltip("Static blockers baked from the arena props (gate pillars, incense burner, rubble).")]
+        [SerializeField] CircleObstacle[] obstacles = Array.Empty<CircleObstacle>();
         [Tooltip("Follows the local fighter every frame; the gameplay camera tracks it, not the model.")]
         [SerializeField] Transform cameraTarget;
         [Tooltip("Ground marker placed under the local fighter (the hero ring).")]
@@ -49,10 +51,11 @@ namespace TieuTienKy.Brawl
         /// </summary>
         public Func<FighterCommand> LocalCommandOverride { get; set; }
 
-        /// <summary>Scene-building entry: roster, local player, arena rectangle and presentation hooks.</summary>
-        public void Configure(Entry[] entries, int local, Rect bounds, Transform target, GameObject marker)
+        /// <summary>Scene-building entry: roster, local player, arena rectangle, obstacles and presentation hooks.</summary>
+        public void Configure(Entry[] entries, int local, Rect bounds, CircleObstacle[] blockers, Transform target, GameObject marker)
         {
             roster = entries;
+            obstacles = blockers;
             localPlayer = local;
             arenaBounds = bounds;
             cameraTarget = target;
@@ -62,6 +65,7 @@ namespace TieuTienKy.Brawl
         void Awake()
         {
             sim = new CombatSim(config, arenaBounds);
+            sim.Obstacles.AddRange(obstacles);
             var parent = new GameObject("Fighters").transform;
             views = new FighterView[roster.Length];
             previous = new Vector2[roster.Length];

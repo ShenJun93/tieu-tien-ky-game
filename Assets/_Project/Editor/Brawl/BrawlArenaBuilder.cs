@@ -56,10 +56,13 @@ namespace TieuTienKy.EditorTools.Brawl
             var cameraTarget = new GameObject("CameraTarget").transform;
             cameraTarget.position = new Vector3(hero.Spawn.x, 0f, hero.Spawn.y);
 
+            var obstacles = ArenaBlockers.FromProps(playArea);
             var match = new GameObject("BrawlMatch").AddComponent<BrawlMatch>();
-            match.Configure(entries, 0, playArea, cameraTarget, FeedbackVfxLibrary.HeroRing);
+            match.Configure(entries, 0, playArea, obstacles, cameraTarget, FeedbackVfxLibrary.HeroRing);
+            var roofFade = ArenaBlockers.GateRoofFade(cameraTarget);
 
             var mainCamera = BuildCameras(cameraTarget, hero.Character.Height);
+            Vector3 cameraOffset = mainCamera.transform.position - cameraTarget.position;
             BuildHud(mainCamera);
 
             Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
@@ -75,7 +78,22 @@ namespace TieuTienKy.EditorTools.Brawl
             }
             Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-start.png"));
             Object.DestroyImmediate(preview.gameObject);
-            Debug.Log($"[BrawlArena] {entries.Length} fighters, play area {playArea}, hero height {hero.Character.Height:F2}");
+
+            // Second preview: the hero behind the paifang, with the roof faded as the match would.
+            if (roofFade != null)
+            {
+                var gate = roofFade.transform.position;
+                var behind = new Vector2(gate.x + 1.5f, Mathf.Min(gate.z + 1.8f, playArea.yMax - 1f));
+                var heroPreview = FighterSpawner.Spawn(hero.Character, hero.Team, behind, null);
+                hero.Character.Animations.animationClips.FirstOrDefault()?.SampleAnimation(heroPreview.gameObject, 0.3f);
+                mainCamera.transform.position = heroPreview.transform.position + cameraOffset;
+                roofFade.SetAlpha(0.25f);
+                Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-roof-fade.png"));
+                roofFade.SetAlpha(1f);
+                Object.DestroyImmediate(heroPreview.gameObject);
+            }
+            Debug.Log($"[BrawlArena] {entries.Length} fighters, play area {playArea}, hero height {hero.Character.Height:F2}, " +
+                      $"obstacles {obstacles.Length}: {string.Join(" ", obstacles.Select(o => $"({o.Center.x:F1},{o.Center.y:F1} r{o.Radius:F2})"))}");
         }
 
         /// <summary>KayKit clips import as play-once; locomotion clips must loop (edited through ModelImporter).</summary>
