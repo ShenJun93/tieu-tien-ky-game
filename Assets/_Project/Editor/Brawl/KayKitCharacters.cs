@@ -34,7 +34,7 @@ namespace TieuTienKy.EditorTools.Brawl
 
             def.CharacterId = $"kaykit.{cast.ToLowerInvariant()}";
             def.Prefab = EnsurePrefab(cast);
-            def.Animations = LocomotionController(cast);
+            def.Animations = FighterController(cast);
             def.Height = HeightOf(def.Prefab);
             def.BodyRadius = 0.9f;
             def.WeaponSocket = FindPath(def.Prefab.transform, "handslot.r");
@@ -69,23 +69,46 @@ namespace TieuTienKy.EditorTools.Brawl
             return prefab;
         }
 
-        /// <summary>Idle ↔ Running_A driven by Speed, the animation contract of <see cref="CharacterDefinition"/>.</summary>
-        static AnimatorController LocomotionController(string cast)
+        static readonly string[] OneHanded = { "1H_Melee_Attack_Slice_Diagonal", "1H_Melee_Attack_Slice_Horizontal", "1H_Melee_Attack_Chop" };
+        static readonly string[] TwoHanded = { "2H_Melee_Attack_Slice", "2H_Melee_Attack_Stab", "2H_Melee_Attack_Chop" };
+
+        /// <summary>
+        /// The <see cref="FighterView"/> animator contract for a KayKit body: a Speed blend for
+        /// Locomotion, three combo swings, Hit and Death. Swing clips are sped up so each fills
+        /// its combo step's length in the sim.
+        /// </summary>
+        static AnimatorController FighterController(string cast)
         {
-            string path = $"{ControllerFolder}/{cast}_Locomotion.controller";
+            string path = $"{ControllerFolder}/{cast}_Fighter.controller";
             var existing = AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
             if (existing != null) return existing;
             EnsureFolder(ControllerFolder);
+            AssetDatabase.DeleteAsset($"{ControllerFolder}/{cast}_Locomotion.controller"); // CORE-1a controller, superseded
 
-            var clips = AssetDatabase.LoadAllAssetsAtPath($"{CastRoot}/Characters/{cast}.fbx").OfType<AnimationClip>().ToList();
+            var clips = AssetDatabase.LoadAllAssetsAtPath($"{CastRoot}/Characters/{cast}.fbx").OfType<AnimationClip>()
+                .Where(c => !c.name.StartsWith("__preview__")).ToDictionary(c => c.name);
             var controller = AnimatorController.CreateAnimatorControllerAtPath(path);
             controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
-            var state = controller.CreateBlendTreeInController("Locomotion", out BlendTree tree);
+            var machine = controller.layers[0].stateMachine;
+
+            var locomotion = controller.CreateBlendTreeInController(FighterView.LocomotionState, out BlendTree tree);
             tree.blendParameter = "Speed";
             tree.useAutomaticThresholds = false;
-            tree.AddChild(clips.First(c => c.name == "Idle"), 0f);
-            tree.AddChild(clips.First(c => c.name == "Running_A"), 1f);
-            controller.layers[0].stateMachine.defaultState = state;
+            tree.AddChild(clips["Idle"], 0f);
+            tree.AddChild(clips["Running_A"], 1f);
+            machine.defaultState = locomotion;
+
+            var combo = new CombatConfig().Combo;
+            var swings = cast == "Barbarian" || cast == "Mage" ? TwoHanded : OneHanded;
+            for (int i = 0; i < combo.Length; i++)
+            {
+                var clip = clips[swings[i]];
+                var state = machine.AddState(FighterView.AttackState(i + 1));
+                state.motion = clip;
+                state.speed = clip.length / (combo[i].Total / (float)new CombatConfig().TickRate);
+            }
+            machine.AddState(FighterView.HitState).motion = clips["Hit_A"];
+            machine.AddState(FighterView.DeathState).motion = clips["Death_A"];
             return controller;
         }
 

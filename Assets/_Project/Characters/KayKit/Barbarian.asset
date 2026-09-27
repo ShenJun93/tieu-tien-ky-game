@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TieuTienKy.Brawl::TieuTienKy.Brawl.CharacterDefinition
   CharacterId: kaykit.barbarian
   Prefab: {fileID: 6956341171752232027, guid: cab5f1d6f3b4b924f8915e93de83729b, type: 3}
-  Animations: {fileID: 9100000, guid: a5e96f5669a4c194399e0e859a25bd7a, type: 2}
+  Animations: {fileID: 9100000, guid: 1a68b24e3092f9e40bd227642953de74, type: 2}
   Avatar: {fileID: 0}
   Height: 2.3710222
   BodyRadius: 0.9

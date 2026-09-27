@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TieuTienKy.Brawl::TieuTienKy.Brawl.CharacterDefinition
   CharacterId: kaykit.rogue
   Prefab: {fileID: 589418397668267789, guid: f29ccde0781c3374d9c6e311cb0094d8, type: 3}
-  Animations: {fileID: 9100000, guid: 241d0c517c6decc40a5173dff338e2ae, type: 2}
+  Animations: {fileID: 9100000, guid: e21dd02660129174fb8b266ebe0ed4c4, type: 2}
   Avatar: {fileID: 0}
   Height: 2.3716834
   BodyRadius: 0.9

@@ -3,7 +3,9 @@
     "rootNamespace": "TieuTienKy.Brawl",
     "references": [
         "TieuTienKy.Combat",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Cinemachine",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

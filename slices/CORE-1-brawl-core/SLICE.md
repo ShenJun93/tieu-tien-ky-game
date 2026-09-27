@@ -31,6 +31,10 @@
   - PlayMode `TheHeroCannotWalkThroughTheIncenseBurner`, `TheGateRoofFadesWhenTheHeroWalksBehindIt`, `CameraFramingKeepsScreenEdgesInsideTheArena` and `TheCameraAnchorStopsShortOfTheBackWall` pass.
   - The `brawl-roof-fade.png` capture shows the hero behind the gate, with the roof and beams faded.
   - On the phone, the hero stops at the gate pillars and the burner, and the roof fades behind the gate.
+- **Acceptance (1b-iii):**
+  - EditMode `CombatSimAttackTests` pass: hit once per swing; misses behind, out of range and on allies; held attack chains 1-2-3 with a heavier finisher; the combo resets; hitstop freezes both fighters; defeat and respawn; determinism.
+  - PlayMode `HoldingAttackNextToAnEnemyLandsTheComboWithFeedback` passes, and every definition meets the animator contract.
+  - On the phone, holding the attack button next to an enemy shows swings, slashes, sparks, the white flash, damage numbers, knockback and a camera kick.
 - **Humanoid switch:** it waits for the first pipeline hero. KayKit keeps its generic rig until then, because converting a placeholder is wasted work. The definition's `Animations` and `Avatar` fields take a Humanoid controller and avatar with no code change. This corrects ADR 008's "CORE-1b starts with the Humanoid switch".
 - **Out of scope:** old gameplay code (untouched until CORE-1 is playable, then deleted), netcode.
 - **Acceptance (1a):**

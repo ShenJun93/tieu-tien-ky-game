@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TieuTienKy.Brawl::TieuTienKy.Brawl.CharacterDefinition
   CharacterId: kaykit.knight
   Prefab: {fileID: 5124138974248162071, guid: 40a729df69b2a3246a24bfe372e8fef5, type: 3}
-  Animations: {fileID: 9100000, guid: 19946a755c38de94a8b1f61f5ee37731, type: 2}
+  Animations: {fileID: 9100000, guid: b60baf57c85b95048ab05f2943c14ef0, type: 2}
   Avatar: {fileID: 0}
   Height: 2.4823112
   BodyRadius: 0.9
