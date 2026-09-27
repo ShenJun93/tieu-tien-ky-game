@@ -56,6 +56,12 @@
   - **Walls:** fixed the gaps in the back wall (`wall_half` is 2 m wide), and the banners now hang on its inner face.
   - **`XianxiaDressing`:** procedural paifang gate (red lacquer, jade roof, gold plaque), paper lanterns with warm lights, and a bronze ding with glowing incense.
   - **Screenshots:** `sects-hud-gameplay.png`, `sects-closeup.png`.
+- 1f (`feat/look-01f-showcase`):
+  - The arena lab now saves a persistent gameplay camera with post-processing, and the HUD is bound to it.
+  - Characters replay their action loop through one-state showcase controllers.
+  - `ShowcaseMotion` (a showcase-only asmdef) keeps the beat alive on device: ring pulse, slash pulse, spark spin, telegraph fill growing, parry-glint pulse and a periodic hit flash.
+  - `Tieu Tien Ky/Look/Build Showcase APK` builds only this scene as `TieuTienKy-Showcase-<sha>.apk` under its own id (`com.shenjun93.tieutienky.showcase`), so it installs beside the game.
+  - Acceptance: the Director installs it on the phone and compares it side by side with Warm Snow / Brawl Stars store screenshots.
 - Follow-ups:
     - Done in 1d2: OFL Vietnamese fonts (Be Vietnam Pro body, Philosopher titles) as dynamic TMP assets, with a realm title and kill feed in Vietnamese (`HudFontPass`). A shipping build bakes a static atlas from the Vietnamese character list.
     - Done in 1d3: the Director's 4 ChatGPT icons replace the placeholder glyphs (`HudIconPass`). The human edit is still pending (ADR 005). Sword and bolt share a thin diagonal silhouette; a more vertical zigzag bolt would separate them at 64 px.
