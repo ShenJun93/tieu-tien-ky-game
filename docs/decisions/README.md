@@ -12,5 +12,6 @@ Fields: STATUS (PROPOSED / ACCEPTED / SUPERSEDED), SUPERSEDES, Question, Context
 | 005 | Product positioning (Option A) and zero-spend art sourcing | Product superseded by 007; art sourcing and VN exclusion ACCEPTED |
 | 006 | Look-first sequencing and visual direction (chunky BoZo, dark jade floor) | ACCEPTED |
 | 007 | Three-sect arena brawler, bots first, online in phases, F2P cosmetics | ACCEPTED |
+| 008 | Comedic chibi xianxia characters (~2.5 heads) and our own character pipeline | ACCEPTED |
 
 Records 001–003 are kept unedited as history. Some of the paths they reference now live under `docs/archive/governance-v2/`.
