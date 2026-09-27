@@ -26,10 +26,17 @@ namespace TieuTienKy.Brawl
         [SerializeField] int localPlayer;
         [SerializeField] Rect arenaBounds = new Rect(-22f, -14f, 44f, 28f);
         [SerializeField] CombatConfig config = new CombatConfig();
-        [Tooltip("Follows the local fighter every frame; the gameplay camera tracks it, not the model.")]
+        [Tooltip("Static blockers baked from the arena props (gate pillars, incense burner, rubble).")]
+        [SerializeField] CircleObstacle[] obstacles = Array.Empty<CircleObstacle>();
+        [Tooltip("Follows the local fighter (clamped to the arena framing); the gameplay camera tracks it, not the model.")]
         [SerializeField] Transform cameraTarget;
         [Tooltip("Ground marker placed under the local fighter (the hero ring).")]
         [SerializeField] GameObject localMarker;
+        [Tooltip("Arena rectangle (x, z) that may be on screen, walls included. Zero size = no clamp.")]
+        [SerializeField] Rect shownArea;
+        [SerializeField] float wallTop = 4f;
+        [Tooltip("Gameplay camera position minus its anchor (the follow offset).")]
+        [SerializeField] Vector3 cameraOffset;
 
         CombatSim sim;
         InputAction move;
@@ -42,6 +49,8 @@ namespace TieuTienKy.Brawl
         public IReadOnlyList<FighterView> Views => views;
         public FighterView LocalView => views.Length > localPlayer ? views[localPlayer] : null;
         public Transform CameraTarget => cameraTarget;
+        /// <summary>Anchor positions (x, z) the camera may take this frame; infinite when framing is off.</summary>
+        public Rect CameraAnchorRange { get; private set; } = Rect.MinMaxRect(float.NegativeInfinity, float.NegativeInfinity, float.PositiveInfinity, float.PositiveInfinity);
 
         /// <summary>
         /// When set, replaces the local player's stick input. Tests use it today; bots and the network
@@ -49,19 +58,29 @@ namespace TieuTienKy.Brawl
         /// </summary>
         public Func<FighterCommand> LocalCommandOverride { get; set; }
 
-        /// <summary>Scene-building entry: roster, local player, arena rectangle and presentation hooks.</summary>
-        public void Configure(Entry[] entries, int local, Rect bounds, Transform target, GameObject marker)
+        /// <summary>Scene-building entry: roster, local player, arena rectangle, obstacles and presentation hooks.</summary>
+        public void Configure(Entry[] entries, int local, Rect bounds, CircleObstacle[] blockers, Transform target, GameObject marker)
         {
             roster = entries;
+            obstacles = blockers;
             localPlayer = local;
             arenaBounds = bounds;
             cameraTarget = target;
             localMarker = marker;
         }
 
+        /// <summary>Scene-building entry: what the camera may show, so it never frames the void past the walls.</summary>
+        public void SetCameraFraming(Rect shown, float backWallTop, Vector3 offset)
+        {
+            shownArea = shown;
+            wallTop = backWallTop;
+            cameraOffset = offset;
+        }
+
         void Awake()
         {
             sim = new CombatSim(config, arenaBounds);
+            sim.Obstacles.AddRange(obstacles);
             var parent = new GameObject("Fighters").transform;
             views = new FighterView[roster.Length];
             previous = new Vector2[roster.Length];
@@ -121,8 +140,15 @@ namespace TieuTienKy.Brawl
 
         void FollowLocal()
         {
-            if (cameraTarget != null && LocalView != null)
-                cameraTarget.position = LocalView.transform.position;
+            if (cameraTarget == null || LocalView == null) return;
+            Vector3 anchor = LocalView.transform.position;
+            var view = Camera.main;
+            if (shownArea.width > 0f && view != null)
+            {
+                CameraAnchorRange = CameraFraming.AnchorRange(cameraOffset, view.transform.rotation, view.fieldOfView, view.aspect, shownArea, wallTop);
+                anchor = CameraFraming.Clamp(anchor, CameraAnchorRange);
+            }
+            cameraTarget.position = anchor;
         }
     }
 }

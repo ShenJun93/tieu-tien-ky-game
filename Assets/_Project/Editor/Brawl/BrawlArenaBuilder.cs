@@ -26,6 +26,7 @@ namespace TieuTienKy.EditorTools.Brawl
         public const string ScenePath = "Assets/_Project/Scenes/Brawl/Arena_Brawl_01.unity";
         const string CastRoot = "Assets/ThirdParty/KayKit/Adventurers";
         static readonly string[] LoopClips = { "Idle", "Running_A" };
+        const float HudBackStrip = 2f;
 
         static readonly (string cast, Team team, Vector2 spawn)[] Roster =
         {
@@ -50,16 +51,31 @@ namespace TieuTienKy.EditorTools.Brawl
                 Spawn = r.spawn,
             }).ToArray();
             ArenaLabBuilder.BuildEnvironment(out Rect playArea);
+            // The HUD match panel covers the strip along the back wall; fighters stay out of it (Director, 2026-09-27).
+            playArea.yMax -= HudBackStrip;
 
             // Fighters spawn at runtime from their definitions; the camera tracks this anchor, not a model.
             var hero = entries[0];
             var cameraTarget = new GameObject("CameraTarget").transform;
             cameraTarget.position = new Vector3(hero.Spawn.x, 0f, hero.Spawn.y);
 
+            var obstacles = ArenaBlockers.FromProps(playArea);
             var match = new GameObject("BrawlMatch").AddComponent<BrawlMatch>();
-            match.Configure(entries, 0, playArea, cameraTarget, FeedbackVfxLibrary.HeroRing);
+            match.Configure(entries, 0, playArea, obstacles, cameraTarget, FeedbackVfxLibrary.HeroRing);
+            var roofFade = ArenaBlockers.GateRoofFade(match);
 
             var mainCamera = BuildCameras(cameraTarget, hero.Character.Height);
+            Vector3 cameraOffset = mainCamera.transform.position - cameraTarget.position;
+            var walls = GameObject.Find("Edges").GetComponentsInChildren<Renderer>();
+            var wallBounds = walls[0].bounds;
+            foreach (var r in walls) wallBounds.Encapsulate(r.bounds);
+            var shown = Rect.MinMaxRect(wallBounds.min.x, wallBounds.min.z, wallBounds.max.x, wallBounds.max.z);
+            match.SetCameraFraming(shown, wallBounds.max.y, cameraOffset);
+            // Start (and preview) framed the way the match will clamp it, on a 16:9 capture.
+            Vector3 Framed(Vector3 anchor) => CameraFraming.Clamp(anchor,
+                CameraFraming.AnchorRange(cameraOffset, mainCamera.transform.rotation, mainCamera.fieldOfView, 16f / 9f, shown, wallBounds.max.y)) + cameraOffset;
+            mainCamera.transform.position = Framed(cameraTarget.position);
+            Object.FindFirstObjectByType<CinemachineCamera>().transform.position = mainCamera.transform.position;
             BuildHud(mainCamera);
 
             Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
@@ -75,7 +91,22 @@ namespace TieuTienKy.EditorTools.Brawl
             }
             Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-start.png"));
             Object.DestroyImmediate(preview.gameObject);
-            Debug.Log($"[BrawlArena] {entries.Length} fighters, play area {playArea}, hero height {hero.Character.Height:F2}");
+
+            // Second preview: the hero behind the paifang, with the roof faded as the match would.
+            if (roofFade != null)
+            {
+                var gate = roofFade.transform.position;
+                var behind = new Vector2(gate.x + 1.5f, Mathf.Min(gate.z + 4f, playArea.yMax - 1f)); // where the roof hides the hero
+                var heroPreview = FighterSpawner.Spawn(hero.Character, hero.Team, behind, null);
+                hero.Character.Animations.animationClips.FirstOrDefault()?.SampleAnimation(heroPreview.gameObject, 0.3f);
+                mainCamera.transform.position = Framed(heroPreview.transform.position);
+                roofFade.SetAlpha(0.25f);
+                Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-roof-fade.png"));
+                roofFade.SetAlpha(1f);
+                Object.DestroyImmediate(heroPreview.gameObject);
+            }
+            Debug.Log($"[BrawlArena] {entries.Length} fighters, play area {playArea}, hero height {hero.Character.Height:F2}, " +
+                      $"shown {shown}, wall top {wallBounds.max.y:F2}, obstacles {obstacles.Length}: {string.Join(" ", obstacles.Select(o => $"({o.Center.x:F1},{o.Center.y:F1} r{o.Radius:F2})"))}");
         }
 
         /// <summary>KayKit clips import as play-once; locomotion clips must loop (edited through ModelImporter).</summary>

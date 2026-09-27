@@ -26,6 +26,11 @@
   - EditMode `BodyRadiusComesFromTheCharacterAndDrivesSeparationAndBounds` passes.
   - PlayMode `RosterSpawnsFromDefinitionsAndTheCameraAnchorFollowsTheHero` and `EveryCharacterDefinitionIsUsable` pass.
   - The brawl start capture is unchanged from 1a.
+- **Acceptance (1b-ii):**
+  - EditMode `RunningIntoAnObstacleStopsAtItsSurface` and `GlancingAnObstacleSlidesAroundIt` pass.
+  - PlayMode `TheHeroCannotWalkThroughTheIncenseBurner`, `TheGateRoofFadesWhenTheHeroWalksBehindIt`, `CameraFramingKeepsScreenEdgesInsideTheArena` and `TheCameraAnchorStopsShortOfTheBackWall` pass.
+  - The `brawl-roof-fade.png` capture shows the hero behind the gate, with the roof and beams faded.
+  - On the phone, the hero stops at the gate pillars and the burner, and the roof fades behind the gate.
 - **Humanoid switch:** it waits for the first pipeline hero. KayKit keeps its generic rig until then, because converting a placeholder is wasted work. The definition's `Animations` and `Avatar` fields take a Humanoid controller and avatar with no code change. This corrects ADR 008's "CORE-1b starts with the Humanoid switch".
 - **Out of scope:** old gameplay code (untouched until CORE-1 is playable, then deleted), netcode.
 - **Acceptance (1a):**
@@ -36,4 +41,19 @@
 ## Result
 - 1a: branch `feat/core-1a-movement`. Checks and APK are listed in the PR.
 - 1b-i: branch `feat/core-1b-character-seam`. EditMode 192/192; PlayMode 38/40 (2 skipped, as on main).
-- Known gaps: fighters walk through the gate pillars and the ding (no obstacles in the sim yet). The static HUD values (HP, timer, scores, cooldown) are not bound yet.
+- 1b-ii: branch `feat/core-1b-obstacles`. 15 circles are baked from the props: the paifang pillar bases, the burner, rubble, the stone pillar, torches, candles and banners. The roof, eaves, ridge, plaque and beams fade to 25% while they hide the hero.
+- 1b-ii on device (`TieuTienKy-Brawl-1648b44.apk`, adb swipes):
+  - The hero stops against the burner.
+  - Behind the gate, the roof and beams fade and the hero stays visible.
+  - No Unity errors in logcat.
+  - This is not the Director's playtest.
+- Known gaps:
+  - Fixed in the same PR: near the back wall the camera showed a large dark band above the wall.
+    - `CameraFraming` now clamps the camera anchor, so no screen edge passes the walls.
+    - On a phone the arena almost fills the view, so the camera only slides a little in depth.
+    - Trade-off for the Director to judge: near the back wall the hero sits high on screen, close to the HUD match panel.
+    - Device (`TieuTienKy-Brawl-d403533.apk`, 2340×1080): the whole arena fits the screen, so the camera stays put. There is no void, and the roof fades behind the gate. Against the back wall, the HUD match panel covered the hero's head.
+    - Director chose option 1: the play area stops 2 units short of the back wall, a strip only banners and torches use.
+    - The roof fade now tracks the hero, not the camera anchor.
+  - The paper lanterns hanging under the gate can still cover the hero.
+  - The static HUD values (HP, timer, scores, cooldown) are not bound yet.

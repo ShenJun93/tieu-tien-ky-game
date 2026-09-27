@@ -98,6 +98,30 @@ namespace TieuTienKy.Combat.Tests
         }
 
         [Test]
+        public void RunningIntoAnObstacleStopsAtItsSurface()
+        {
+            var sim = NewSim();
+            sim.Obstacles.Add(new CircleObstacle(new Vector2(5f, 0f), 1f));
+            var f = sim.AddFighter(Team.Jade, Vector2.zero);
+            Run(sim, Commands(new Vector2(1f, 0f)), sim.Config.TickRate * 2);
+
+            Assert.AreEqual(5f - 1f - f.Radius, f.Position.x, 1e-3f, "fighter must rest against the obstacle, not pass through");
+            Assert.AreEqual(0f, f.Velocity.x, 1e-3f);
+        }
+
+        [Test]
+        public void GlancingAnObstacleSlidesAroundIt()
+        {
+            var sim = NewSim();
+            sim.Obstacles.Add(new CircleObstacle(new Vector2(5f, 0.3f), 1f));
+            var f = sim.AddFighter(Team.Jade, Vector2.zero);
+            Run(sim, Commands(new Vector2(1f, 0f)), sim.Config.TickRate * 3);
+
+            Assert.Greater(f.Position.x, 6.5f, "an off-centre hit should slide past the obstacle");
+            Assert.GreaterOrEqual(Vector2.Distance(f.Position, new Vector2(5f, 0.3f)), 1f + f.Radius - 1e-3f);
+        }
+
+        [Test]
         public void SameCommandsGiveSameResult()
         {
             Vector2 Final()
