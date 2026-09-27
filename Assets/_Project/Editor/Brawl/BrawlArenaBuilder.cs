@@ -61,6 +61,7 @@ namespace TieuTienKy.EditorTools.Brawl
 
             var obstacles = ArenaBlockers.FromProps(playArea);
             var match = new GameObject("BrawlMatch").AddComponent<BrawlMatch>();
+            AddFeedback(match.gameObject);
             match.Configure(entries, 0, playArea, obstacles, cameraTarget, FeedbackVfxLibrary.HeroRing);
             var roofFade = ArenaBlockers.GateRoofFade(match);
 
@@ -87,7 +88,7 @@ namespace TieuTienKy.EditorTools.Brawl
             {
                 var view = FighterSpawner.Spawn(e.Character, e.Team, e.Spawn, preview);
                 // Edit mode does not run the Animator; sample the idle clip so the capture is not a T-pose.
-                e.Character.Animations.animationClips.FirstOrDefault()?.SampleAnimation(view.gameObject, 0.3f);
+                e.Character.Animations.animationClips.FirstOrDefault(c => c.name == "Idle")?.SampleAnimation(view.gameObject, 0.3f);
             }
             Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-start.png"));
             Object.DestroyImmediate(preview.gameObject);
@@ -98,7 +99,7 @@ namespace TieuTienKy.EditorTools.Brawl
                 var gate = roofFade.transform.position;
                 var behind = new Vector2(gate.x + 1.5f, Mathf.Min(gate.z + 4f, playArea.yMax - 1f)); // where the roof hides the hero
                 var heroPreview = FighterSpawner.Spawn(hero.Character, hero.Team, behind, null);
-                hero.Character.Animations.animationClips.FirstOrDefault()?.SampleAnimation(heroPreview.gameObject, 0.3f);
+                hero.Character.Animations.animationClips.FirstOrDefault(c => c.name == "Idle")?.SampleAnimation(heroPreview.gameObject, 0.3f);
                 mainCamera.transform.position = Framed(heroPreview.transform.position);
                 roofFade.SetAlpha(0.25f);
                 Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-roof-fade.png"));
@@ -157,6 +158,7 @@ namespace TieuTienKy.EditorTools.Brawl
             lens.FieldOfView = 32f;
             lens.FarClipPlane = 300f;
             cm.Lens = lens;
+            cm.gameObject.AddComponent<CinemachineImpulseListener>(); // hit kicks from BrawlFeedback
             var follow = cm.gameObject.AddComponent<CinemachineFollow>();
             follow.FollowOffset = offset;
             var tracker = follow.TrackerSettings;
@@ -164,6 +166,18 @@ namespace TieuTienKy.EditorTools.Brawl
             tracker.PositionDamping = new Vector3(0.35f, 0.35f, 0.35f);
             follow.TrackerSettings = tracker;
             return camera;
+        }
+
+        /// <summary>CORE-1b-iii hit feedback: LOOK-1 spark and jade slash, damage numbers in the HUD font, a short camera kick.</summary>
+        static void AddFeedback(GameObject host)
+        {
+            var impulse = host.AddComponent<CinemachineImpulseSource>();
+            impulse.ImpulseDefinition.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
+            impulse.ImpulseDefinition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Recoil;
+            impulse.ImpulseDefinition.ImpulseDuration = 0.14f;
+            impulse.DefaultVelocity = new Vector3(0f, -0.35f, 0.15f);
+            var font = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/_Project/UI/Fonts/BeVietnamPro-Bold SDF.asset");
+            host.AddComponent<BrawlFeedback>().Configure(FeedbackVfxLibrary.HitSpark, FeedbackVfxLibrary.HeroSlash, font, impulse);
         }
 
         static void BuildHud(Camera camera)

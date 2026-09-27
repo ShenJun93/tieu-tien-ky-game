@@ -27,7 +27,7 @@ namespace TieuTienKy.Brawl
         [Tooltip("Visual root: model, loadout and renderers. No gameplay components.")]
         public GameObject Prefab;
 
-        [Tooltip("Controller or AnimatorOverrideController. Contract: a float 'Speed' (0 idle .. 1 full run).")]
+        [Tooltip("Controller or AnimatorOverrideController. Contract: a float 'Speed' (0 idle .. 1 full run) and the states in FighterView.RequiredStates.")]
         public RuntimeAnimatorController Animations;
 
         [Tooltip("Humanoid or generic avatar. Leave empty to keep the one on the prefab's Animator.")]

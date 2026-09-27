@@ -9,8 +9,9 @@ namespace TieuTienKy.Brawl
     /// <summary>
     /// Runs one offline match. It spawns the roster from <see cref="CharacterDefinition"/>s, steps
     /// <see cref="CombatSim"/> at its fixed tick, feeds it the local player's command from the Input
-    /// System (the HUD's OnScreenStick drives &lt;Gamepad&gt;/leftStick; WASD in the Editor), and hands
-    /// interpolated state to the fighter views. Bots come in CORE-1c.
+    /// System (the HUD's OnScreenStick drives &lt;Gamepad&gt;/leftStick and its attack button
+    /// &lt;Gamepad&gt;/buttonSouth; WASD and J/Space in the Editor), hands interpolated state to the
+    /// fighter views and hit events to <see cref="BrawlFeedback"/>. Bots come in CORE-1c.
     /// </summary>
     public sealed class BrawlMatch : MonoBehaviour
     {
@@ -40,6 +41,10 @@ namespace TieuTienKy.Brawl
 
         CombatSim sim;
         InputAction move;
+        InputAction attack;
+        bool attackPressed;
+        BrawlFeedback feedback;
+        int[] slashedStep = Array.Empty<int>();
         FighterView[] views = Array.Empty<FighterView>();
         readonly List<FighterCommand> commands = new List<FighterCommand>();
         Vector2[] previous = Array.Empty<Vector2>();
@@ -84,6 +89,8 @@ namespace TieuTienKy.Brawl
             var parent = new GameObject("Fighters").transform;
             views = new FighterView[roster.Length];
             previous = new Vector2[roster.Length];
+            slashedStep = new int[roster.Length];
+            feedback = GetComponent<BrawlFeedback>();
             for (int i = 0; i < roster.Length; i++)
             {
                 var e = roster[i];
@@ -107,15 +114,36 @@ namespace TieuTienKy.Brawl
             move.AddCompositeBinding("2DVector")
                 .With("Up", "<Keyboard>/w").With("Down", "<Keyboard>/s")
                 .With("Left", "<Keyboard>/a").With("Right", "<Keyboard>/d");
+
+            attack = new InputAction("Attack", InputActionType.Button);
+            attack.AddBinding("<Gamepad>/buttonSouth");
+            attack.AddBinding("<Keyboard>/j");
+            attack.AddBinding("<Keyboard>/space");
         }
 
-        void OnEnable() => move?.Enable();
-        void OnDisable() => move?.Disable();
-        void OnDestroy() => move?.Dispose();
+        void OnEnable()
+        {
+            move?.Enable();
+            attack?.Enable();
+        }
+
+        void OnDisable()
+        {
+            move?.Disable();
+            attack?.Disable();
+        }
+
+        void OnDestroy()
+        {
+            move?.Dispose();
+            attack?.Dispose();
+        }
 
         void Update()
         {
             accumulator += Time.deltaTime;
+            // A tap shorter than a tick must still reach the sim, so presses latch until the next tick.
+            if (attack.WasPressedThisFrame()) attackPressed = true;
             float tick = config.TickSeconds;
             // Clamp the backlog after a hitch so the sim never spirals.
             if (accumulator > tick * 5f) accumulator = tick * 5f;
@@ -124,18 +152,40 @@ namespace TieuTienKy.Brawl
                 for (int i = 0; i < views.Length; i++) previous[i] = sim.Fighters[i].Position;
                 commands[localPlayer] = LocalCommandOverride != null
                     ? LocalCommandOverride()
-                    : new FighterCommand { Move = move.ReadValue<Vector2>() };
+                    : new FighterCommand { Move = move.ReadValue<Vector2>(), Attack = attackPressed || attack.IsPressed() };
+                attackPressed = false;
                 sim.Step(commands);
                 accumulator -= tick;
+                Feedback();
             }
 
             float alpha = accumulator / tick;
             for (int i = 0; i < views.Length; i++)
             {
                 var s = sim.Fighters[i];
-                views[i].Present(Vector2.Lerp(previous[i], s.Position, alpha), s.Facing, s.Velocity.magnitude / config.MoveSpeed);
+                views[i].Present(Vector2.Lerp(previous[i], s.Position, alpha), s, s.Velocity.magnitude / config.MoveSpeed);
             }
             FollowLocal();
+        }
+
+        /// <summary>Hands this tick's swings and hits to the feedback layer.</summary>
+        void Feedback()
+        {
+            if (feedback == null) return;
+            for (int i = 0; i < views.Length; i++)
+            {
+                var s = sim.Fighters[i];
+                if (!s.IsAttacking || s.StepTick < config.Combo[s.ComboStep - 1].Startup)
+                {
+                    slashedStep[i] = 0;
+                    continue;
+                }
+                if (slashedStep[i] == s.ComboStep) continue;
+                slashedStep[i] = s.ComboStep;
+                feedback.Swing(views[i], s, roster[i].Character.Height, s.ComboStep == config.Combo.Length);
+            }
+            foreach (var hit in sim.Hits)
+                feedback.Hit(hit, roster[hit.Victim].Character.Height, hit.Attacker == localPlayer, hit.Victim == localPlayer);
         }
 
         void FollowLocal()

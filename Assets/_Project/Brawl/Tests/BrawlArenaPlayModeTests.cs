@@ -108,6 +108,31 @@ namespace TieuTienKy.Brawl.Tests
             Assert.AreEqual(1f, roof.Alpha, 1e-3f, "roof returns to opaque once the hero is in front");
         }
 
+        [UnityTest]
+        public IEnumerator HoldingAttackNextToAnEnemyLandsTheComboWithFeedback()
+        {
+            yield return LoadArena();
+            var match = Object.FindFirstObjectByType<BrawlMatch>();
+            var feedback = match.GetComponent<BrawlFeedback>();
+            Assert.IsNotNull(feedback, "BrawlMatch needs BrawlFeedback");
+            var hero = match.Sim.Fighters[0];
+            var enemy = match.Sim.Fighters.Find(f => f.Team != hero.Team);
+
+            // Face the enemy, then hold attack while keeping it within reach.
+            match.LocalCommandOverride = () =>
+            {
+                enemy.Position = hero.Position + new Vector2(2.2f, 0f);
+                return new FighterCommand { Move = hero.IsAttacking ? Vector2.zero : new Vector2(1f, 0f), Attack = true };
+            };
+            yield return new WaitForSeconds(1.5f);
+            match.LocalCommandOverride = () => FighterCommand.Idle;
+
+            Assert.Less(enemy.Hp, enemy.MaxHp, "the combo should damage the enemy");
+            Assert.GreaterOrEqual(enemy.HitsTaken, 3, "holding attack should land the whole three-step combo");
+            Assert.GreaterOrEqual(feedback.NumbersShown, enemy.HitsTaken, "every hit shows a damage number");
+            Assert.GreaterOrEqual(feedback.SlashesShown, 3, "every swing shows a slash");
+        }
+
         [Test]
         public void CameraFramingKeepsScreenEdgesInsideTheArena()
         {
@@ -156,6 +181,10 @@ namespace TieuTienKy.Brawl.Tests
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 var def = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDefinition>(path);
                 CollectionAssert.IsEmpty(def.Validate(), path);
+                var controller = def.Animations as UnityEditor.Animations.AnimatorController;
+                Assert.IsNotNull(controller, $"{path}: expected an AnimatorController");
+                var states = controller.layers[0].stateMachine.states.Select(st => st.state.name).ToArray();
+                CollectionAssert.IsSubsetOf(FighterView.RequiredStates, states, $"{path}: animator contract");
             }
         }
 #endif

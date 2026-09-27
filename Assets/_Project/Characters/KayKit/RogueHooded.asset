@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TieuTienKy.Brawl::TieuTienKy.Brawl.CharacterDefinition
   CharacterId: kaykit.roguehooded
   Prefab: {fileID: 2385323754746099608, guid: d88e01146ef795e4083197d2881ec882, type: 3}
-  Animations: {fileID: 9100000, guid: b0fe04e17ff3e324cb24c88ca9b25a9a, type: 2}
+  Animations: {fileID: 9100000, guid: bd78e94d6be672f4d85663edb9f80396, type: 2}
   Avatar: {fileID: 0}
   Height: 2.4359457
   BodyRadius: 0.9

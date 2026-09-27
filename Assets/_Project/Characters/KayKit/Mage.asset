@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TieuTienKy.Brawl::TieuTienKy.Brawl.CharacterDefinition
   CharacterId: kaykit.mage
   Prefab: {fileID: 961775948962646789, guid: 36e1d80688e0f55409a1cf328e41ebe3, type: 3}
-  Animations: {fileID: 9100000, guid: c9036c8bf80061a43ad2eea4843f6907, type: 2}
+  Animations: {fileID: 9100000, guid: deb6dd6cfe1a69d479f4f1e3e8051a19, type: 2}
   Avatar: {fileID: 0}
   Height: 2.3873835
   BodyRadius: 0.9
