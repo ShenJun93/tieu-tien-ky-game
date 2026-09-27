@@ -42,4 +42,12 @@
 - 1a: branch `feat/core-1a-movement`. Checks and APK are listed in the PR.
 - 1b-i: branch `feat/core-1b-character-seam`. EditMode 192/192; PlayMode 38/40 (2 skipped, as on main).
 - 1b-ii: branch `feat/core-1b-obstacles`. 15 circles are baked from the props: the paifang pillar bases, the burner, rubble, the stone pillar, torches, candles and banners. The roof, eaves, ridge, plaque and beams fade to 25% while they hide the hero.
-- Known gaps: the static HUD values (HP, timer, scores, cooldown) are not bound yet.
+- 1b-ii on device (`TieuTienKy-Brawl-1648b44.apk`, adb swipes):
+  - The hero stops against the burner.
+  - Behind the gate, the roof and beams fade and the hero stays visible.
+  - No Unity errors in logcat.
+  - This is not the Director's playtest.
+- Known gaps:
+  - Near the back wall, the camera shows a large dark band above the wall. It needs a camera confiner.
+  - The paper lanterns hanging under the gate can still cover the hero.
+  - The static HUD values (HP, timer, scores, cooldown) are not bound yet.
