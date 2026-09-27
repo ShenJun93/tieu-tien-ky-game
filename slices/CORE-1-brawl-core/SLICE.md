@@ -52,7 +52,8 @@
     - `CameraFraming` now clamps the camera anchor, so no screen edge passes the walls.
     - On a phone the arena almost fills the view, so the camera only slides a little in depth.
     - Trade-off for the Director to judge: near the back wall the hero sits high on screen, close to the HUD match panel.
-    - Device (`TieuTienKy-Brawl-d403533.apk`, 2340×1080): the whole arena fits the screen, so the camera stays put. There is no void, and the roof fades behind the gate. Against the back wall, the HUD match panel covers the hero's head.
+    - Device (`TieuTienKy-Brawl-d403533.apk`, 2340×1080): the whole arena fits the screen, so the camera stays put. There is no void, and the roof fades behind the gate. Against the back wall, the HUD match panel covered the hero's head.
+    - Director chose option 1: the play area stops 2 units short of the back wall, a strip only banners and torches use.
     - The roof fade now tracks the hero, not the camera anchor.
   - The paper lanterns hanging under the gate can still cover the hero.
   - The static HUD values (HP, timer, scores, cooldown) are not bound yet.

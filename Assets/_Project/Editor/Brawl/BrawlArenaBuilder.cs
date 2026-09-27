@@ -26,6 +26,7 @@ namespace TieuTienKy.EditorTools.Brawl
         public const string ScenePath = "Assets/_Project/Scenes/Brawl/Arena_Brawl_01.unity";
         const string CastRoot = "Assets/ThirdParty/KayKit/Adventurers";
         static readonly string[] LoopClips = { "Idle", "Running_A" };
+        const float HudBackStrip = 2f;
 
         static readonly (string cast, Team team, Vector2 spawn)[] Roster =
         {
@@ -50,6 +51,8 @@ namespace TieuTienKy.EditorTools.Brawl
                 Spawn = r.spawn,
             }).ToArray();
             ArenaLabBuilder.BuildEnvironment(out Rect playArea);
+            // The HUD match panel covers the strip along the back wall; fighters stay out of it (Director, 2026-09-27).
+            playArea.yMax -= HudBackStrip;
 
             // Fighters spawn at runtime from their definitions; the camera tracks this anchor, not a model.
             var hero = entries[0];
