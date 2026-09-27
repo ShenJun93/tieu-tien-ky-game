@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TieuTienKy.Brawl;
@@ -7,7 +6,6 @@ using TieuTienKy.EditorTools.Look;
 using Unity.Cinemachine;
 using Unity.Cinemachine.TargetTracking;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,17 +16,15 @@ using UnityEngine.Rendering.Universal;
 namespace TieuTienKy.EditorTools.Brawl
 {
     /// <summary>
-    /// CORE-1a: builds the playable brawl scene. It has the LOOK-1 arena, a KayKit cast with sect
-    /// palettes and locomotion controllers, a BrawlMatch driving the pure CombatSim, a Cinemachine
-    /// follow camera at the teardown framing, and the HUD with a floating OnScreenStick.
+    /// Builds the playable brawl scene: the LOOK-1 arena, a BrawlMatch whose roster is a list of
+    /// CharacterDefinitions (KayKit placeholders today, ADR 008), a Cinemachine follow camera at the
+    /// teardown framing that tracks a camera anchor, and the HUD with a floating OnScreenStick.
     ///   Unity -batchmode -projectPath . -executeMethod TieuTienKy.EditorTools.Brawl.BrawlArenaBuilder.Build -quit
     /// </summary>
     public static class BrawlArenaBuilder
     {
         public const string ScenePath = "Assets/_Project/Scenes/Brawl/Arena_Brawl_01.unity";
         const string CastRoot = "Assets/ThirdParty/KayKit/Adventurers";
-        const string LookMaterials = "Assets/_Project/Materials/Look";
-        const string ControllerFolder = "Assets/_Project/Animation/Brawl";
         static readonly string[] LoopClips = { "Idle", "Running_A" };
 
         static readonly (string cast, Team team, Vector2 spawn)[] Roster =
@@ -45,74 +41,41 @@ namespace TieuTienKy.EditorTools.Brawl
         {
             ShaderUtil.allowAsyncCompilation = false;
             EnsureLoopingClips();
+            // NewScene unloads unused assets, so the definitions are loaded after it.
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var entries = Roster.Select(r => new BrawlMatch.Entry
+            {
+                Character = KayKitCharacters.Ensure(r.cast, r.team),
+                Team = r.team,
+                Spawn = r.spawn,
+            }).ToArray();
             ArenaLabBuilder.BuildEnvironment(out Rect playArea);
 
-            var entries = new List<BrawlMatch.Entry>();
-            var castRoot = new GameObject("Fighters").transform;
-            foreach (var (cast, team, spawn) in Roster)
-                entries.Add(new BrawlMatch.Entry { View = SpawnFighter(castRoot, cast, team, spawn), Team = team });
-
-            var hero = entries[0].View;
-            var ring = (GameObject)PrefabUtility.InstantiatePrefab(FeedbackVfxLibrary.HeroRing, hero.transform);
-            ring.transform.localScale = Vector3.one * 2.6f / hero.transform.lossyScale.x;
+            // Fighters spawn at runtime from their definitions; the camera tracks this anchor, not a model.
+            var hero = entries[0];
+            var cameraTarget = new GameObject("CameraTarget").transform;
+            cameraTarget.position = new Vector3(hero.Spawn.x, 0f, hero.Spawn.y);
 
             var match = new GameObject("BrawlMatch").AddComponent<BrawlMatch>();
-            match.Configure(entries.ToArray(), 0, playArea);
+            match.Configure(entries, 0, playArea, cameraTarget, FeedbackVfxLibrary.HeroRing);
 
-            float heroHeight = HeightOf(hero.gameObject);
-            var mainCamera = BuildCameras(hero.transform, heroHeight);
+            var mainCamera = BuildCameras(cameraTarget, hero.Character.Height);
             BuildHud(mainCamera);
 
             Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
             EditorSceneManager.SaveScene(scene, ScenePath);
+
+            // Preview only, after saving: spawn the roster as the match will, then capture.
+            var preview = new GameObject("Preview").transform;
+            foreach (var e in entries)
+            {
+                var view = FighterSpawner.Spawn(e.Character, e.Team, e.Spawn, preview);
+                // Edit mode does not run the Animator; sample the idle clip so the capture is not a T-pose.
+                e.Character.Animations.animationClips.FirstOrDefault()?.SampleAnimation(view.gameObject, 0.3f);
+            }
             Capture(mainCamera, Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look", "brawl-start.png"));
-            Debug.Log($"[BrawlArena] {entries.Count} fighters, play area {playArea}, hero height {heroHeight:F2}");
-        }
-
-        static FighterView SpawnFighter(Transform parent, string cast, Team team, Vector2 spawn)
-        {
-            var model = AssetDatabase.LoadAssetAtPath<GameObject>($"{CastRoot}/Characters/{cast}.fbx");
-            var go = (GameObject)PrefabUtility.InstantiatePrefab(model, parent);
-            go.name = $"{cast}_{team}";
-            go.transform.SetPositionAndRotation(new Vector3(spawn.x, 0f, spawn.y), Quaternion.Euler(0f, 180f, 0f));
-            SectLook.ApplyLoadout(go, cast);
-            var template = AssetDatabase.LoadAssetAtPath<Material>($"{LookMaterials}/Toon_KayKit_{cast}.mat");
-            var material = SectLook.SectMaterial(cast, (SectLook.Sect)(int)team, template);
-            foreach (var r in go.GetComponentsInChildren<Renderer>(true))
-                r.sharedMaterials = Enumerable.Repeat(material, r.sharedMaterials.Length).ToArray();
-
-            var animator = go.GetComponent<Animator>();
-            if (animator == null) animator = go.AddComponent<Animator>(); // Unity fake-null: no ?? here
-            animator.applyRootMotion = false;
-            animator.runtimeAnimatorController = LocomotionController(cast);
-            var view = go.AddComponent<FighterView>();
-            view.Bind(animator);
-            return view;
-        }
-
-        /// <summary>Idle ↔ Running_A driven by the Speed parameter, one controller per KayKit character.</summary>
-        static AnimatorController LocomotionController(string cast)
-        {
-            string path = $"{ControllerFolder}/{cast}_Locomotion.controller";
-            var existing = AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
-            if (existing != null) return existing;
-            if (!AssetDatabase.IsValidFolder("Assets/_Project/Animation")) AssetDatabase.CreateFolder("Assets/_Project", "Animation");
-            if (!AssetDatabase.IsValidFolder(ControllerFolder)) AssetDatabase.CreateFolder("Assets/_Project/Animation", "Brawl");
-
-            var clips = AssetDatabase.LoadAllAssetsAtPath($"{CastRoot}/Characters/{cast}.fbx").OfType<AnimationClip>().ToList();
-            var idle = clips.First(c => c.name == "Idle");
-            var run = clips.First(c => c.name == "Running_A");
-
-            var controller = AnimatorController.CreateAnimatorControllerAtPath(path);
-            controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
-            var state = controller.CreateBlendTreeInController("Locomotion", out BlendTree tree);
-            tree.blendParameter = "Speed";
-            tree.useAutomaticThresholds = false;
-            tree.AddChild(idle, 0f);
-            tree.AddChild(run, 1f);
-            controller.layers[0].stateMachine.defaultState = state;
-            return controller;
+            Object.DestroyImmediate(preview.gameObject);
+            Debug.Log($"[BrawlArena] {entries.Length} fighters, play area {playArea}, hero height {hero.Character.Height:F2}");
         }
 
         /// <summary>KayKit clips import as play-once; locomotion clips must loop (edited through ModelImporter).</summary>
@@ -185,14 +148,6 @@ namespace TieuTienKy.EditorTools.Brawl
 
             var events = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
             events.transform.SetAsLastSibling();
-        }
-
-        static float HeightOf(GameObject go)
-        {
-            var renderers = go.GetComponentsInChildren<Renderer>();
-            var b = renderers[0].bounds;
-            foreach (var r in renderers) b.Encapsulate(r.bounds);
-            return b.size.y;
         }
 
         static void Capture(Camera camera, string file)

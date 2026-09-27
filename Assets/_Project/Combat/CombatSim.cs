@@ -61,9 +61,9 @@ namespace TieuTienKy.Combat
             Bounds = bounds;
         }
 
-        public FighterState AddFighter(Team team, Vector2 position)
+        public FighterState AddFighter(Team team, Vector2 position, float radius = 0.9f)
         {
-            var fighter = new FighterState { Id = Fighters.Count, Team = team, Position = ClampToBounds(position, 0.9f) };
+            var fighter = new FighterState { Id = Fighters.Count, Team = team, Radius = radius, Position = ClampToBounds(position, radius) };
             Fighters.Add(fighter);
             return fighter;
         }

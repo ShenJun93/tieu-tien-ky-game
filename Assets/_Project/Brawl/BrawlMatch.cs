@@ -7,31 +7,41 @@ using UnityEngine.InputSystem;
 namespace TieuTienKy.Brawl
 {
     /// <summary>
-    /// Runs one offline match: steps <see cref="CombatSim"/> at its fixed tick, feeds it the local
-    /// player's command from the Input System (the HUD's OnScreenStick drives &lt;Gamepad&gt;/leftStick;
-    /// WASD in the Editor), and hands interpolated state to the fighter views. Bots come in CORE-1c.
+    /// Runs one offline match. It spawns the roster from <see cref="CharacterDefinition"/>s, steps
+    /// <see cref="CombatSim"/> at its fixed tick, feeds it the local player's command from the Input
+    /// System (the HUD's OnScreenStick drives &lt;Gamepad&gt;/leftStick; WASD in the Editor), and hands
+    /// interpolated state to the fighter views. Bots come in CORE-1c.
     /// </summary>
     public sealed class BrawlMatch : MonoBehaviour
     {
         [Serializable]
         public struct Entry
         {
-            public FighterView View;
+            public CharacterDefinition Character;
             public Team Team;
+            public Vector2 Spawn;
         }
 
-        [SerializeField] Entry[] fighters = Array.Empty<Entry>();
+        [SerializeField] Entry[] roster = Array.Empty<Entry>();
         [SerializeField] int localPlayer;
         [SerializeField] Rect arenaBounds = new Rect(-22f, -14f, 44f, 28f);
         [SerializeField] CombatConfig config = new CombatConfig();
+        [Tooltip("Follows the local fighter every frame; the gameplay camera tracks it, not the model.")]
+        [SerializeField] Transform cameraTarget;
+        [Tooltip("Ground marker placed under the local fighter (the hero ring).")]
+        [SerializeField] GameObject localMarker;
 
         CombatSim sim;
         InputAction move;
+        FighterView[] views = Array.Empty<FighterView>();
         readonly List<FighterCommand> commands = new List<FighterCommand>();
         Vector2[] previous = Array.Empty<Vector2>();
         float accumulator;
 
         public CombatSim Sim => sim;
+        public IReadOnlyList<FighterView> Views => views;
+        public FighterView LocalView => views.Length > localPlayer ? views[localPlayer] : null;
+        public Transform CameraTarget => cameraTarget;
 
         /// <summary>
         /// When set, replaces the local player's stick input. Tests use it today; bots and the network
@@ -39,29 +49,39 @@ namespace TieuTienKy.Brawl
         /// </summary>
         public Func<FighterCommand> LocalCommandOverride { get; set; }
 
-        /// <summary>Editor/scene-building entry: sets the roster, the local player and the arena rectangle.</summary>
-        public void Configure(Entry[] roster, int local, Rect bounds)
+        /// <summary>Scene-building entry: roster, local player, arena rectangle and presentation hooks.</summary>
+        public void Configure(Entry[] entries, int local, Rect bounds, Transform target, GameObject marker)
         {
-            fighters = roster;
+            roster = entries;
             localPlayer = local;
             arenaBounds = bounds;
+            cameraTarget = target;
+            localMarker = marker;
         }
-        public FighterView LocalView => fighters.Length > localPlayer ? fighters[localPlayer].View : null;
 
         void Awake()
         {
             sim = new CombatSim(config, arenaBounds);
-            foreach (var e in fighters)
+            var parent = new GameObject("Fighters").transform;
+            views = new FighterView[roster.Length];
+            previous = new Vector2[roster.Length];
+            for (int i = 0; i < roster.Length; i++)
             {
-                var p = e.View.transform.position;
-                sim.AddFighter(e.Team, new Vector2(p.x, p.z));
-            }
-            previous = new Vector2[fighters.Length];
-            for (int i = 0; i < fighters.Length; i++)
-            {
-                previous[i] = sim.Fighters[i].Position;
+                var e = roster[i];
+                var state = sim.AddFighter(e.Team, e.Spawn, e.Character.BodyRadius);
+                views[i] = FighterSpawner.Spawn(e.Character, e.Team, state.Position, parent);
+                previous[i] = state.Position;
                 commands.Add(FighterCommand.Idle);
             }
+
+            var local = LocalView;
+            if (local != null && localMarker != null)
+            {
+                var ring = Instantiate(localMarker, local.transform);
+                ring.transform.localPosition = Vector3.zero;
+                ring.transform.localScale = Vector3.one * (roster[localPlayer].Character.BodyRadius * 2.9f) / local.transform.lossyScale.x;
+            }
+            FollowLocal();
 
             move = new InputAction("Move", InputActionType.Value);
             move.AddBinding("<Gamepad>/leftStick");
@@ -82,7 +102,7 @@ namespace TieuTienKy.Brawl
             if (accumulator > tick * 5f) accumulator = tick * 5f;
             while (accumulator >= tick)
             {
-                for (int i = 0; i < fighters.Length; i++) previous[i] = sim.Fighters[i].Position;
+                for (int i = 0; i < views.Length; i++) previous[i] = sim.Fighters[i].Position;
                 commands[localPlayer] = LocalCommandOverride != null
                     ? LocalCommandOverride()
                     : new FighterCommand { Move = move.ReadValue<Vector2>() };
@@ -91,11 +111,18 @@ namespace TieuTienKy.Brawl
             }
 
             float alpha = accumulator / tick;
-            for (int i = 0; i < fighters.Length; i++)
+            for (int i = 0; i < views.Length; i++)
             {
                 var s = sim.Fighters[i];
-                fighters[i].View.Present(Vector2.Lerp(previous[i], s.Position, alpha), s.Facing, s.Velocity.magnitude / config.MoveSpeed);
+                views[i].Present(Vector2.Lerp(previous[i], s.Position, alpha), s.Facing, s.Velocity.magnitude / config.MoveSpeed);
             }
+            FollowLocal();
+        }
+
+        void FollowLocal()
+        {
+            if (cameraTarget != null && LocalView != null)
+                cameraTarget.position = LocalView.transform.position;
         }
     }
 }
