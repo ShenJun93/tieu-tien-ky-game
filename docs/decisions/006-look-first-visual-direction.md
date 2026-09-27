@@ -25,7 +25,7 @@ In what order does TTK get to a market-looking build, and what do its characters
 ## Decision
 
 1. The next player-facing slice is **"30 seconds that look like a real game"**. R0.4 (combat skeleton), R0.5 (agent tooling) and R0.6 (store readiness) follow it, or run beside it when they do not touch the same files.
-2. **Characters use BoZo's chunky proportions.** Silhouettes must read at about 10% of screen height.
+2. ~~**Characters use BoZo's chunky proportions.**~~ *Superseded by ADR 008: comedic chibi at about 2.5 heads; BoZo was never owned.* Silhouettes must read at about 10% of screen height.
 3. **Arenas use a dark jade stone floor** (the Hades / Warm Snow approach). Characters and VFX carry brightness through rim light, outline and emissive effects.
 4. Visual targets and grey-box tells come from `05-visual-reference-teardown.md`. The Director judges the result on a phone, side by side with store screenshots of the reference games.
 

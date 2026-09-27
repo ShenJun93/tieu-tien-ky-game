@@ -13,7 +13,7 @@ Three sects, three cultivators each, one sealed arena, six minutes. Grab spirit 
 
 1. **Readable chaos.** Nine fighters, random pickups and elemental reactions all happen at once. The player must still be able to answer: what happened, why, and what can I do next? Readability constrains telegraphs, the VFX hierarchy and information density. It is not a polish pass.
 2. **Cultivation as combat physics.** Techniques interact through skill × state × environment × position × opponent. Water conducts lightning for everyone; wind moves everyone. An interaction counts only if it changes position, space, timing, targeting, risk or behaviour. A pure "+X% damage" rule does not count.
-3. **Comedy over mastery.** A newcomer can land a hilarious swing against a veteran. Randomness creates moments, while skill (parry, positioning, dash timing) wins more often over many matches.
+3. **Comedy over mastery (the tone of the whole game).** A newcomer can land a hilarious swing against a veteran. Randomness creates moments, while skill (parry, positioning, dash timing) wins more often over many matches.
 
 ## Core loop (one match)
 
@@ -62,7 +62,7 @@ Cut content scope before cutting quality.
 
 ## Look and feel
 
-Chunky stylized 3D characters (BoZo proportions), a three-quarter arena camera (about 55° pitch), a URP toon shader with rim light and outline, and dark jade stone arenas where characters and VFX carry the brightness (ADR 006). The world is fictional: no real maps, no real states. Measured visual targets: `docs/research/2026-09-unity-ecosystem/05-visual-reference-teardown.md`.
+**Funny first.** Chibi xianxia fighters about 2.5 heads tall, with East Asian faces, exaggerated expressions, robes and topknots, and comedic props next to classic weapons, made through our own character pipeline (ADR 008). Around them: a three-quarter arena camera (about 55° pitch), a URP toon shader with rim light and outline, and dark jade stone arenas where characters and VFX carry the brightness (ADR 006). The world is fictional: no real maps, no real states. Measured visual targets: `docs/research/2026-09-unity-ecosystem/05-visual-reference-teardown.md`.
 
 ## Comparables
 
