@@ -43,14 +43,14 @@ namespace TieuTienKy.EditorTools.Brawl
         }
 
         /// <summary>Adds an <see cref="OccluderFade"/> to the paifang, with transparent twins of its roof materials.</summary>
-        public static OccluderFade GateRoofFade(Transform cameraTarget)
+        public static OccluderFade GateRoofFade(BrawlMatch match)
         {
             var gate = GameObject.Find("Paifang");
             if (gate == null) return null;
             var renderers = gate.GetComponentsInChildren<Renderer>().Where(r => GateTop.Contains(r.name)).ToArray();
             var fades = renderers.Select(r => FadeTwin(r.sharedMaterial)).ToArray();
             var fade = gate.AddComponent<OccluderFade>();
-            fade.Configure(renderers, fades, cameraTarget);
+            fade.Configure(renderers, fades, match);
             return fade;
         }
 

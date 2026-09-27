@@ -14,7 +14,8 @@ namespace TieuTienKy.Brawl
         [SerializeField] Renderer[] renderers = System.Array.Empty<Renderer>();
         [Tooltip("Transparent twin for each renderer's material, same order as the renderers.")]
         [SerializeField] Material[] fadeMaterials = System.Array.Empty<Material>();
-        [SerializeField] Transform target;
+        [Tooltip("Whose local fighter must stay visible.")]
+        [SerializeField] BrawlMatch match;
         [Tooltip("Height above the target's feet that must stay visible (chest).")]
         [SerializeField] float targetHeight = 1.2f;
         [SerializeField, Range(0f, 1f)] float fadedAlpha = 0.25f;
@@ -30,11 +31,11 @@ namespace TieuTienKy.Brawl
         public bool IsOccluding { get; private set; }
         public float Alpha => alpha;
 
-        public void Configure(Renderer[] group, Material[] fades, Transform follow)
+        public void Configure(Renderer[] group, Material[] fades, BrawlMatch owner)
         {
             renderers = group;
             fadeMaterials = fades;
-            target = follow;
+            match = owner;
         }
 
         void Awake() => EnsureInit();
@@ -54,6 +55,7 @@ namespace TieuTienKy.Brawl
 
         void LateUpdate()
         {
+            var target = match != null && match.LocalView != null ? match.LocalView.transform : null;
             if (target == null || renderers.Length == 0) return;
             if (view == null) view = Camera.main;
             if (view == null) return;

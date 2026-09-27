@@ -28,7 +28,7 @@
   - The brawl start capture is unchanged from 1a.
 - **Acceptance (1b-ii):**
   - EditMode `RunningIntoAnObstacleStopsAtItsSurface` and `GlancingAnObstacleSlidesAroundIt` pass.
-  - PlayMode `TheHeroCannotWalkThroughTheIncenseBurner` and `TheGateRoofFadesWhenTheHeroWalksBehindIt` pass.
+  - PlayMode `TheHeroCannotWalkThroughTheIncenseBurner`, `TheGateRoofFadesWhenTheHeroWalksBehindIt`, `CameraFramingKeepsScreenEdgesInsideTheArena` and `TheCameraAnchorStopsShortOfTheBackWall` pass.
   - The `brawl-roof-fade.png` capture shows the hero behind the gate, with the roof and beams faded.
   - On the phone, the hero stops at the gate pillars and the burner, and the roof fades behind the gate.
 - **Humanoid switch:** it waits for the first pipeline hero. KayKit keeps its generic rig until then, because converting a placeholder is wasted work. The definition's `Animations` and `Avatar` fields take a Humanoid controller and avatar with no code change. This corrects ADR 008's "CORE-1b starts with the Humanoid switch".
@@ -48,6 +48,10 @@
   - No Unity errors in logcat.
   - This is not the Director's playtest.
 - Known gaps:
-  - Near the back wall, the camera shows a large dark band above the wall. It needs a camera confiner.
+  - Fixed in the same PR: near the back wall the camera showed a large dark band above the wall.
+    - `CameraFraming` now clamps the camera anchor, so no screen edge passes the walls.
+    - On a phone the arena almost fills the view, so the camera only slides a little in depth.
+    - Trade-off for the Director to judge: near the back wall the hero sits high on screen, close to the HUD match panel.
+    - The roof fade now tracks the hero, not the camera anchor.
   - The paper lanterns hanging under the gate can still cover the hero.
   - The static HUD values (HP, timer, scores, cooldown) are not bound yet.
