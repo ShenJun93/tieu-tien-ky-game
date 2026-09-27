@@ -42,25 +42,13 @@ namespace TieuTienKy.EditorTools.Look
         {
             ShaderUtil.allowAsyncCompilation = false;
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var jade = BuildJadePalette();
-            var original = AssetDatabase.LoadAssetAtPath<Texture2D>($"{KitRoot}/Textures/dungeon_texture.png");
-            stoneFloor = LitMaterial("Arena_StoneFloor", jade, Hex("#56675F"), 0.12f);
-            stoneWall = LitMaterial("Arena_StoneWall", jade, Hex("#3A4744"), 0.08f);
-            props = LitMaterial("Arena_Props", original, Color.white, 0.1f);
-
-            var root = new GameObject("Arena_Sect_01").transform;
-            cell = SizeOf("floor_tile_large").x;
-            BuildFloor(root);
-            BuildEdges(root);
-            BuildPropClusters(root);
+            BuildEnvironment(out _);
             var hero = BuildCast();
             BuildFeedbackMoment();
             var hudPrefab = BrawlHudBuilder.Prefab;
             HudFontPass.Apply();
             HudIconPass.Apply();
             hud = (GameObject)PrefabUtility.InstantiatePrefab(hudPrefab);
-            BuildLighting();
-            BuildPostProcessing();
 
             string outDir = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "look");
             Directory.CreateDirectory(outDir);
@@ -79,6 +67,31 @@ namespace TieuTienKy.EditorTools.Look
             Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
             EditorSceneManager.SaveScene(scene, ScenePath);
             Debug.Log($"[ArenaLab] cell {cell:F2}, hero height {heroHeight:F2}, camera distance {distance:F1}; screenshots in {outDir}");
+        }
+
+        /// <summary>
+        /// Builds the dark jade sect arena (floor, edges, props, xianxia landmarks, lighting, post) into
+        /// the open scene. Shared by the look lab and the playable brawl scene. <paramref name="playArea"/>
+        /// is the walkable rectangle on the X/Z plane, inside the walls.
+        /// </summary>
+        public static GameObject BuildEnvironment(out Rect playArea)
+        {
+            var jade = BuildJadePalette();
+            var original = AssetDatabase.LoadAssetAtPath<Texture2D>($"{KitRoot}/Textures/dungeon_texture.png");
+            stoneFloor = LitMaterial("Arena_StoneFloor", jade, Hex("#56675F"), 0.12f);
+            stoneWall = LitMaterial("Arena_StoneWall", jade, Hex("#3A4744"), 0.08f);
+            props = LitMaterial("Arena_Props", original, Color.white, 0.1f);
+
+            var root = new GameObject("Arena_Sect_01").transform;
+            cell = SizeOf("floor_tile_large").x;
+            BuildFloor(root);
+            BuildEdges(root);
+            BuildPropClusters(root);
+            BuildLighting();
+            BuildPostProcessing();
+            float halfW = Columns * cell * 0.5f - 1f, halfD = Rows * cell * 0.5f - 1f;
+            playArea = new Rect(-halfW, -halfD, halfW * 2f, halfD * 2f);
+            return root.gameObject;
         }
 
         // ---------- palette ----------
